@@ -1,0 +1,105 @@
+schemes:
+  darkside: &darkside
+    primary:
+      background: '#222324'
+      foreground: '#BABABA'
+
+    normal:
+      black:    '#000000'
+      red:      '#E8341C'
+      green:    '#68C256'
+      yellow:   '#F2D42C'
+      blue:     '#1C98E8'
+      magenta:  '#8E69C9'
+      cyan:     '#1C98E8'
+      white:    '#BABABA'
+
+    bright:
+      black:    '#666666'
+      red:      '#E05A4F'
+      green:    '#77B869'
+      yellow:   '#EFD64B'
+      blue:     '#387CD3'
+      magenta:  '#957BBE'
+      cyan:     '#3D97E2'
+      white:    '#BABABA'
+
+colors: *darkside
+
+background_opacity: 1.0
+
+tabspaces: 4
+
+font:
+  normal:
+    family: Hasklug Nerd Font Mono
+    style: Regular
+  bold:
+    family: Hasklug Nerd Font Mono
+    style: Bold
+  italic:
+    family: Hasklug Nerd Font Mono
+    style: Italic
+  bold_italic:
+    family: Hasklug Nerd Font Mono
+    style: Bold Italic
+
+  # Point size
+  size: 9.0
+
+  offset:
+    x: 0
+    y: 0
+  glyph_offset:
+    x: 0
+    y: 0
+
+window:
+  padding:
+    x: 0
+    y: 0
+
+bell:
+  animation: EaseOutExpo
+  color: '0xffffff'
+  duration: 1
+
+selection:
+  semantic_escape_chars: ",│`|:\"' ()[]{}<>"
+
+cursor:
+  style: Block
+
+scrolling:
+  # Maximum number of lines in the scrollback buffer.
+  # Specifying '0' will disable scrolling.
+  history: 10000
+
+  # Number of lines the viewport will move for every line scrolled when
+  # scrollback is enabled (history > 0).
+  multiplier: 10
+
+# If `true`, bold text is drawn using the bright color variants.
+draw_bold_text_with_bright_colors: true
+
+selection:
+  semantic_escape_chars: ',│`|:"'' ()[]{}<>'
+  save_to_clipboard: true
+
+live_config_reload: true
+
+key_bindings:
+  - { key: V,        mods: Control|Shift, action: Paste            }
+  - { key: C,        mods: Control|Shift, action: Copy             }
+  - { key: Insert,   mods: Shift,         action: PasteSelection   }
+  - { key: Key0,     mods: Control,       action: ResetFontSize    }
+  - { key: Plus,     mods: Control,       action: IncreaseFontSize }
+  - { key: Key6,     mods: Control,       action: DecreaseFontSize }
+  - { key: F11,      mods: None,          action: ToggleFullscreen }
+  - { key: Paste,    mods: None,          action: Paste            }
+  - { key: Copy,     mods: None,          action: Copy             }
+
+shell:
+  #program: bash
+  program: E:/Tools/git/bin/bash.exe
+
