@@ -7,7 +7,11 @@ mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME
 FONT_PATH=/usr/share/fonts
 
 CURRENT_FOLDER=$(pwd)
-if [ $EUID -ne 0 ]; then
+if [[ $1 == "uninstall" || $1 == "remove" ]]; then
+	rm -rf $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $HOME/.gitconfig $HOME/.bash_profile \
+		$XDG_CONFIG_HOME/alacritty/alacritty.yml $XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/coc-settings.json \
+		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config $XDG_CONFIG_HOME/polybar/scripts
+elif [ $EUID -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
 	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged
 
@@ -24,15 +28,21 @@ if [ $EUID -ne 0 ]; then
 	if [[ $1 == "server" ]]; then
 		ln -s $CURRENT_FOLDER/.bash_profile_server $HOME/.bash_profile
 	elif [[ $1 == "windows" ]]; then
-		rm -f $XDG_CONFIG_HOME/alacritty/alacritty.yml
+		rm -f $XDG_CONFIG_HOME/alacritty/alacritty.yml $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $HOME/.gitconfig \
+			$XDG_CONFIG_HOME/nvim/coc-settings.json
 
 		mkdir -p $XDG_CONFIG_HOME/alacritty
 
 		ln -s $CURRENT_FOLDER/alacritty/alacritty.yml $XDG_CONFIG_HOME/alacritty/alacritty.yml
 		ln -s $CURRENT_FOLDER/.bash_profile $HOME/.bash_profile
+		ln -s $CURRENT_FOLDER/nvim/init.lua $XDG_CONFIG_HOME/nvim/init.lua
+		ln -s $CURRENT_FOLDER/nvim/coc-settings.json $XDG_CONFIG_HOME/nvim/coc-settings.json
+		ln -s $CURRENT_FOLDER/neofetch/config.conf $XDG_CONFIG_HOME/neofetch/config.conf
+		ln -s $CURRENT_FOLDER/.bashrc $HOME/.bashrc
+		ln -s $CURRENT_FOLDER/.gitconfig $HOME/.gitconfig
 	else
-		rm -rf $XDG_CONFIG_HOME/alacritty/alacritty.yml $XDG_CONFIG_HOME/i3/config $HOME/.xinitrc \
-			$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config $XDG_CONFIG_HOME/polybar/scripts
+		rm -rf $XDG_CONFIG_HOME/alacritty/alacritty.yml $XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/init.lua \
+			$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config $XDG_CONFIG_HOME/polybar/scripts $XDG_CONFIG_HOME/nvim/coc-settings.json
 
 		mkdir -p $XDG_CONFIG_HOME/alacritty $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks
 
@@ -50,6 +60,8 @@ if [ $EUID -ne 0 ]; then
 		ln -s $CURRENT_FOLDER/polybar/config $XDG_CONFIG_HOME/polybar/config
 		ln -s $CURRENT_FOLDER/polybar/scripts $XDG_CONFIG_HOME/polybar/scripts
 		ln -s $CURRENT_FOLDER/i3/config $XDG_CONFIG_HOME/i3/config
+		ln -s $CURRENT_FOLDER/nvim/init.lua $XDG_CONFIG_HOME/nvim/init.lua
+		ln -s $CURRENT_FOLDER/nvim/coc-settings.json $XDG_CONFIG_HOME/nvim/coc-settings.json
 		ln -s $CURRENT_FOLDER/.xinitrc $HOME/.xinitrc
 		ln -s $CURRENT_FOLDER/.bash_profile $HOME/.bash_profile
 	fi
