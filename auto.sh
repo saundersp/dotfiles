@@ -44,7 +44,7 @@ elif [ $EUID -ne 0 ]; then
 		rm -rf $XDG_CONFIG_HOME/alacritty/alacritty.yml $XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/init.lua \
 			$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config $XDG_CONFIG_HOME/polybar/scripts $XDG_CONFIG_HOME/nvim/coc-settings.json
 
-		mkdir -p $XDG_CONFIG_HOME/alacritty $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks
+		mkdir -p $XDG_CONFIG_HOME/alacritty $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks $XDG_CONFIG_HOME/polybar
 
 		FILENAME=polybar/scripts/system-bluetooth-bluetoothctl.sh
 		if [ ! -f $FILENAME ]; then
@@ -66,13 +66,13 @@ elif [ $EUID -ne 0 ]; then
 		ln -s $CURRENT_FOLDER/.bash_profile $HOME/.bash_profile
 	fi
 else
-	pacman -S neovim git nodejs python alacritty wget unzip ripgrep npm python-pip
+	pacman -S --needed neovim git nodejs python alacritty wget unzip ripgrep npm python-pip
 	npm i -g neovim npm-check-updates
-	pip install pynvim
+	pip install pynvim autopep8 flake8
 
 	if [ ! -d $FONT_PATH/Hasklig ]; then
 		wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
-		mkdir $FONT_PATH/Hasklig && sudo unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
+		mkdir $FONT_PATH/Hasklig && unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
 		rm Hasklig.zip
 	fi
 
