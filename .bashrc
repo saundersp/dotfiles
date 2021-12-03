@@ -7,12 +7,12 @@
 export XDG_CONFIG_HOME=$HOME/.XDG/config
 export XDG_CACHE_HOME=$HOME/.XDG/cache
 export XDG_DATA_HOME=$HOME/.XDG/data
-AUR_PATH=/mnt/Shared/aur
+AUR_PATH=$HOME/aur
 
 __setprompt() {
 	local LAST_COMMAND=$? # Must come first!
 
-	# Define colors
+	# Define colours
 	local LIGHTGRAY="\033[0;37m"
 	local WHITE="\033[1;37m"
 	local BLACK="\033[0;30m"
@@ -162,17 +162,17 @@ alias	ls="ls -hN --color=auto --group-directories-first" \
 		ll="ls -hNClas --color=auto --group-directories-first"
 
 # Print out escape sequences usable for coloured text on tty.
-colors() {
+colours() {
 	local fgc bgc vals seq0
 
 	printf "Color escapes are %s\n" '\e[${value};...;${value}m'
-	printf "Values 30..37 are \e[33mforeground colors\e[m\n"
-	printf "Values 40..47 are \e[43mbackground colors\e[m\n"
+	printf "Values 30..37 are \e[33mforeground colours\e[m\n"
+	printf "Values 40..47 are \e[43mbackground colours\e[m\n"
 	printf "Value  1 gives a  \e[1mbold-faced look\e[m\n\n"
 
-	# foreground colors
+	# foreground colours
 	for fgc in {30..37}; do
-		# background colors
+		# background colours
 		for bgc in {40..47}; do
 			fgc=${fgc#37} # white
 			bgc=${bgc#40} # black
@@ -223,7 +223,7 @@ if command -v python >> /dev/null; then
 	}
 	echo "- activate                         : activate the python virtual environment"
 fi
-echo "- colors                           : show the colours palette of the current terminal"
+echo "- colours                          : show the colours palette of the current terminal"
 echo "- preview_csv <file>               : preview a csv file"
 if command -v nvim >> /dev/null; then
 	command -v nvim >> /dev/null && alias vi="nvim" vim="nvim" vid="nvim -d" vimdiff="nvim -d"
@@ -301,8 +301,15 @@ if command -v pacman >> /dev/null; then
 fi
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard' && echo "- xclip                            : copy/paste (with -i) from STDOUT to clipboard"
 command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &' && echo "- vpn                              : easily enable a secure VPN connection"
-command -v reflector >> /dev/null && alias update_mirrors='reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist' && echo "- update_mirrors                   : Update pacman's mirrors"
+command -v reflector >> /dev/null && alias update_mirrors='sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist' && echo "- update_mirrors                   : Update pacman's mirrors"
 command -v lazygit >> /dev/null && echo "- lazygit                          : fancy CLI git interface"
+
+if command -v xrandr >> /dev/null; then
+	alias hdmi_on="xrandr --output HDMI-1-0 --auto --left-of eDP1"
+	echo "- hdmi_on                          : turn on the HDMI connection and put it on the left"
+	alias hdmi_off="xrandr --output HDMI-1-0 --off"
+	echo "- hdmi_off                         : turn off the HDMI connection"
+fi
 
 echo -e "\nBash bang shortcuts remainders :"
 #echo "- !!                               : last command"
