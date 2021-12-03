@@ -100,6 +100,6 @@ key_bindings:
   - { key: Copy,     mods: None,          action: Copy             }
 
 shell:
-  #program: bash
-  program: E:/Tools/git/bin/bash.exe
+  program: bash
+  #program: E:/Tools/git/bin/bash.exe
 
