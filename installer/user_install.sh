@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 # Getting the dotfiles
-mkdir ~/git
-git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
 cd ~/git/dotfiles
 chmod +x auto.sh
 chmod +x polybar/launch.sh
