@@ -1,11 +1,12 @@
 #!/bin/bash
 
+# Getting the config file
+source config.conf
+
 # Updating the system clock
 timedatectl set-ntp true
 
 # List of disks
-lsblk
-echo -n "Enter the disk to install Arch :" && read DISK
 BOOT_PARTITION=$DISK\1
 ROOT_PARTITION=$DISK\2
 

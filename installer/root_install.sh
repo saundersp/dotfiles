@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-FONT_PATH=/usr/share/fonts
-DISK=/dev/sda
+# Getting the config file
+source config.conf
 ROOT_PARTITION=$DISK\2
 
 npm i -g neovim npm-check-updates
@@ -45,11 +45,11 @@ echo Enter root password
 passwd
 
 # Adding user and creating home directory
-useradd -G wheel -m _aspil0w
+useradd -G wheel $USERNAME
 
 # Setting a user password
 echo Enter user password
-passwd _aspil0w
+passwd $USERNAME
 
 # Enable the wheel group to use doas
 echo "permit persist :wheel" > /etc/doas.conf
