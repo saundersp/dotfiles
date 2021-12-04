@@ -4,7 +4,6 @@ export XDG_CONFIG_HOME=$HOME/.XDG/config
 export XDG_CACHE_HOME=$HOME/.XDG/cache
 export XDG_DATA_HOME=$HOME/.XDG/data
 mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME
-FONT_PATH=/usr/share/fonts
 
 CURRENT_FOLDER=$(pwd)
 if [[ $1 == "uninstall" || $1 == "remove" ]]; then
@@ -46,8 +45,8 @@ elif [ $EUID -ne 0 ]; then
 
 		mkdir -p $XDG_CONFIG_HOME/alacritty $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks $XDG_CONFIG_HOME/polybar
 
-		FILENAME=polybar/scripts/system-bluetooth-bluetoothctl.sh
-		if [ ! -f $FILENAME ]; then
+		FILENAME=$CURRENT_FOLDER/polybar/scripts/system-bluetooth-bluetoothctl.sh
+		if [[ $(command -v bluetoothctl >> /dev/null) && ! -f $FILENAME ]]; then
 			curl https://raw.githubusercontent.com/polybar/polybar-scripts/master/polybar-scripts/system-bluetooth-bluetoothctl/system-bluetooth-bluetoothctl.sh > $FILENAME
 			chmod +x $FILENAME
 			sed -i 's/#1//g' $FILENAME
@@ -66,16 +65,6 @@ elif [ $EUID -ne 0 ]; then
 		ln -s $CURRENT_FOLDER/.bash_profile $HOME/.bash_profile
 	fi
 else
-	pacman -S --needed neovim git nodejs python alacritty wget unzip ripgrep npm python-pip
-	npm i -g neovim npm-check-updates
-	pip install pynvim autopep8 flake8
-
-	if [ ! -d $FONT_PATH/Hasklig ]; then
-		wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
-		mkdir $FONT_PATH/Hasklig && unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
-		rm Hasklig.zip
-	fi
-
 	mkdir -p $HOME/.XDG/cache $XDG_CONFIG_HOME/neofetch
 	rm -r $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $HOME/.bash_profile
 
