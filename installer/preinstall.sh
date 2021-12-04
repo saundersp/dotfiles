@@ -61,7 +61,7 @@ pacstrap /mnt base linux linux-firmware fakeroot binutils make gcc pkgconf neovi
 			bash-completion reflector rsync nodejs npm python python-pip ripgrep
 
 # Installing the optional packages
-if [ $PACKAGES == "virtualbox" ]; then
+if [ $PACKAGES == "virtual" ]; then
 	pacstrap /mnt virtualbox-guest-utils networkmanager
 elif [ $PACKAGES == "laptop" ]; then
 	pacstrap /mnt xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings keepassxc networkmanager-iwd ntfs-3g pulseaudio pulsemixer \
