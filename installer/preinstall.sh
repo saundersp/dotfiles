@@ -55,10 +55,18 @@ sed -i 's/^#Para/Para/g' /etc/pacman.conf
 pacman -Sy --noconfirm reflector rsync
 reflector -a 48 -c $(curl -q ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 
-# Installing the packages
-pacstrap /mnt base linux linux-firmware fakeroot binutils make gcc pkgconf neovim doas networkmanager grub efibootmgr \
+# Installing the common packages
+pacstrap /mnt base linux linux-firmware fakeroot binutils make gcc pkgconf neovim doas grub efibootmgr \
 			neofetch which dmenu picom i3-gaps xorg-xinit xorg-server xorg-xset feh alacritty git wget unzip firefox \
-			virtualbox-guest-utils bash-completion reflector rsync nodejs npm python python-pip ripgrep
+			bash-completion reflector rsync nodejs npm python python-pip ripgrep
+
+# Installing the optional packages
+if [ $PACKAGES == "virtualbox" ]; then
+	pacstrap /mnt virtualbox-guest-utils networkmanager
+elif [ $PACKAGES == "laptop" ]; then
+	pacstrap /mnt xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings keepassxc networkmanager-iwd ntfs-3g pulseaudio pulsemixer \
+			pulseaudio-bluetooth bluez bluez-utils openssh xclip vlc intel-ucode lazygit
+fi
 
 # Copying optimized mirrors
 cp /etc/pacman.conf /mnt/etc/pacman.conf
