@@ -30,7 +30,6 @@ echo LANG=en_US.UTF-8 > /etc/locale.conf
 echo KEYMAP=fr > /etc/vconsole.conf
 
 # Setting the hostname
-echo -n "Enter the desired hostname:" && read HOSTNAME
 echo $HOSTNAME > /etc/hostname
 
 # Add networking entities to /etc/hosts
