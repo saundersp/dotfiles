@@ -46,12 +46,16 @@ elif [ $EUID -ne 0 ]; then
 		mkdir -p $XDG_CONFIG_HOME/alacritty $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks $XDG_CONFIG_HOME/polybar
 
 		FILENAME=$CURRENT_FOLDER/polybar/scripts/system-bluetooth-bluetoothctl.sh
-		if [[ $(command -v bluetoothctl >> /dev/null) && ! -f $FILENAME ]]; then
-			curl https://raw.githubusercontent.com/polybar/polybar-scripts/master/polybar-scripts/system-bluetooth-bluetoothctl/system-bluetooth-bluetoothctl.sh > $FILENAME
+		if [ ! -f $FILENAME ]; then
+			if command -v bluetoothctl >> /dev/null; then
+				curl https://raw.githubusercontent.com/polybar/polybar-scripts/master/polybar-scripts/system-bluetooth-bluetoothctl/system-bluetooth-bluetoothctl.sh > $FILENAME
+				sed -i 's/#1//g' $FILENAME
+				sed -i 's/#2//g' $FILENAME
+				sed -i 's/"$(systemctl is-active "bluetooth.service")" = "active"/bluetoothctl show | grep -q "Powered: yes"/g' $FILENAME
+			else
+				touch $FILENAME
+			fi
 			chmod +x $FILENAME
-			sed -i 's/#1//g' $FILENAME
-			sed -i 's/#2//g' $FILENAME
-			sed -i 's/"$(systemctl is-active "bluetooth.service")" = "active"/bluetoothctl show | grep -q "Powered: yes"/g' $FILENAME
 		fi
 
 		ln -s $CURRENT_FOLDER/alacritty/alacritty.yml $XDG_CONFIG_HOME/alacritty/alacritty.yml
