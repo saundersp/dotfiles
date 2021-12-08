@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-USERNAME=_aspil0w
+# Configuration (tweak to your liking)
+USERNAME=saundersp
 HOSTNAME=myarchbox
 DISK=/dev/sda
 FONT_PATH=/usr/share/fonts
@@ -8,6 +9,13 @@ PACKAGES=virtual
 SWAP_SIZE=4G
 CRYPTED_DISK_NAME=luks_root
 GRUB_ID=GRUB
+DISK_PASSWORD=
+ROOT_PASSWORD=
+USER_PASSWORD=
+
+test -z $DISK_PASSWORD && echo "Enter DISK password : " && read -s DISK_PASSWORD
+test -z $ROOT_PASSWORD && echo "Enter ROOT password : " && read -s ROOT_PASSWORD
+test -z $USER_PASSWORD && echo "Enter USER password : " && read -s USER_PASSWORD
 
 # Updating the system clock
 timedatectl set-ntp true
@@ -37,12 +45,12 @@ w
 EOF
 
 # Encrypting the root partition
-cryptsetup luksFormat -y -v  $ROOT_PARTITION
-cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
+echo -n $DISK_PASSWORD | cryptsetup luksFormat -v $ROOT_PARTITION
+echo -n $DISK_PASSWORD | cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
 
 # Formatting the partitions
 mkfs.vfat -n "UEFI Boot" -F 32 $BOOT_PARTITION
-mkfs.ext4 -L root /dev/mapper/$CRYPTED_DISK_NAME
+mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
 
 # Mounting the file systems
 mount /dev/mapper/$CRYPTED_DISK_NAME /mnt
@@ -64,9 +72,8 @@ pacman -Sy --noconfirm reflector rsync
 reflector -a 48 -c $(curl -q ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 
 # Installing the common packages
-pacstrap /mnt base linux linux-firmware fakeroot binutils make gcc pkgconf neovim doas grub efibootmgr \
-			neofetch which dmenu picom i3-gaps xorg-xinit xorg-server xorg-xset feh alacritty git wget unzip firefox \
-			bash-completion reflector rsync nodejs npm python python-pip ripgrep
+pacstrap /mnt base linux linux-firmware fakeroot make gcc neovim doas grub efibootmgr neofetch which dmenu picom i3-gaps xorg-xinit xorg-server \
+				xorg-xset feh alacritty git wget unzip firefox bash-completion reflector rsync nodejs npm python python-pip ripgrep man
 
 # Installing the optional packages
 if [ $PACKAGES == "virtual" ]; then
@@ -123,18 +130,22 @@ echo -e \"
 \" >> /etc/hosts
 
 # Setting a root password
-echo Enter root password
-passwd
+passwd << EOF
+$ROOT_PASSWORD
+$ROOT_PASSWORD
+EOF
 
 # Adding user and creating home directory
 useradd -m -G wheel $USERNAME
 
 # Setting a user password
-echo Enter user password
-passwd $USERNAME
+passwd $USERNAME << EOF
+$USER_PASSWORD
+$USER_PASSWORD
+EOF
 
 # Enable the wheel group to use doas
-echo \"permit persist :wheel\" > /etc/doas.conf
+echo \"permit nopass :wheel\" > /etc/doas.conf
 
 # Replace sudo
 ln -s /usr/bin/doas /usr/bin/sudo
@@ -146,17 +157,18 @@ mkinitcpio -p linux
 # Installing GRUB bootloader
 grub-install --target x86_64-efi --efi-directory /boot --bootloader-id $GRUB_ID --recheck
 
-# Get UUID
-UUID=\$(blkid | grep $ROOT_PARTITION | cut -d \\\" -f 2)
-
 # Prepare boot loader for LUKS
-sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$UUID:$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
+sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid | grep $ROOT_PARTITION | cut -d \\\\\" -f 2):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
 
 # Creating the GRUB configuration file
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enabling networking
 systemctl enable NetworkManager
+
+# Enabling all threads during makepkg
+sed -i \"s/^#MAKEFLAGS=\\\"-j2\\\"/MAKEFLAGS=\\\"-j\$(nproc)\\\"/g\" /etc/makepkg.conf
+sed -i \"s/^COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=\$(nproc))/g\" /etc/makepkg.conf
 " > /mnt/root/install.sh
 chmod +x /mnt/root/install.sh
 arch-chroot /mnt /root/install.sh
@@ -179,7 +191,7 @@ aur_install(){
 	local PACKAGE_NAME=\$(basename \$1 .git)
 	git clone \$1 ~/aur/\$PACKAGE_NAME
 	cd ~/aur/\$PACKAGE_NAME
-	makepkg -sri
+	makepkg -sri --noconfirm
 }
 
 aur_install https://aur.archlinux.org/polybar.git
@@ -194,13 +206,16 @@ arch-chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
 
 echo -e "
 #!/usr/bin/env bash
-
-bash /home/$USERNAME/git/dotfiles/auto.sh
+cd /home/$USERNAME/git/dotfiles
+./auto.sh
 " > /mnt/root/install.sh
 arch-chroot /mnt /root/install.sh
 
 # Cleaning leftovers
-rm /root/install.sh /home/$USERNAME/install.sh
+rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh
+
+# Removing the nopass option in doas
+sed -i 's/nopass/persist/g' /mnt/etc/doas.conf
 
 reboot
 
