@@ -7,7 +7,7 @@
 	"clangd.arguments": ["--fallback-style='{UseTab: always, IndentWidth: 4}'"],
 	"clangd.checkUpdates": true,
 	"java.project.referencedLibraries": ["lib/**/*.jar"],
-	"markdownlint.config": { "line_length": false },
+	"markdownlint.config": { "line_length": false, "MD010": false },
 	"cSpellExt.enableDictionaries": ["medical-terms", "french", "german"],
 	"cSpell.language": "en-GB,fr,de",
 	"cSpell.userWords": [
@@ -30,7 +30,9 @@
 		"tolist",
 		"tqdm",
 		"xclip",
-		"clangd"
+		"clangd",
+		"imgur",
+		"isdir"
 	],
 	"prettier.tabWidth": 4,
 	"prettier.useTabs": true,
