@@ -18,7 +18,7 @@ cmd([[
 call plug#begin('$XDG_CONFIG_HOME/nvim/autoload/plugged')
 	Plug 'tomasiser/vim-code-dark'					" Install the vscode's codedark theme
 	Plug 'nvim-lualine/lualine.nvim'				" Add a fancy bottom bar with details
-	Plug 'airblade/vim-gitgutter'					" Add the left column indicating git line status
+	Plug 'lewis6991/gitsigns.nvim'					" Add the left column indicating git line status and preview window
 	Plug 'norcalli/nvim-colorizer.lua'				" Colourize RGB codes to it designated colour
 	Plug 'tpope/vim-surround'						" Quickly surround word with given symbol
 	Plug 'nvim-telescope/telescope.nvim'			" Add fuzzy finder to files, command and more
@@ -74,7 +74,7 @@ o.completeopt				= "menu,menuone,noselect"									-- Add LSP complete popup men
 o.signcolumn				= "yes:1"													-- Always draw the signcolumn with 1 fixed space width
 o.title						= true														-- Change the window's title to the opened file name and directory
 cmd("set formatoptions		+=r")														-- Add asterisks in block comments
-cmd("set wildignore			+=*/node_modules/*,*/.git/*")								-- Ignore files in fuzzy finder
+cmd("set wildignore			+=*/node_modules/*,*/.git/*,*/venv/*")						-- Ignore files in fuzzy finder
 cmd("autocmd FileType python set noexpandtab")											-- Force disable expandtab on python's files
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -87,11 +87,11 @@ g.strip_whitespace_on_save	= 1															-- Remove trailing white spaces on 
 g.strip_whitespace_confirm	= 0															-- Disable the confirmation message on stripping white spaces
 g.lion_squeeze_spaces		= 1															-- Squeeze extra spaces when doing a vertical alignment
 
--- Configure the git gutter colours palette "
+-- Configure the git colours palette
 cmd([[
-hi GitGutterAdd	   guifg = #009900 ctermfg = 2
-hi GitGutterChange guifg = #bbbb00 ctermfg = 3
-hi GitGutterDelete guifg = #ff2222 ctermfg = 1
+hi GitSignsAdd    guifg = #009900 ctermfg = 2
+hi GitSignsChange guifg = #bbbb00 ctermfg = 3
+hi GitSignsDelete guifg = #ff2222 ctermfg = 1
 ]])
 
 require('lualine').setup {
@@ -100,11 +100,22 @@ require('lualine').setup {
 	}
 }
 
+require('gitsigns').setup {
+	keymaps = {
+		['n <leader>hp'] = '<cmd>Gitsigns preview_hunk<CR>',
+		['n <leader>hu'] = '<cmd>Gitsigns reset_hunk<CR>',
+		['n [h'] = '<cmd>Gitsigns prev_hunk<CR><leader>hp',
+		['n ]h'] = '<cmd>Gitsigns next_hunk<CR><leader>hp'
+	},
+	current_line_blame = true
+}
+
 require("nvim-autopairs").setup {}
 
 require'nvim-tree'.setup {
 	filters = {
 		custom = {
+			".git",
 			"node_modules",
 			"venv"
 		}
@@ -133,7 +144,7 @@ g.mapleader = ' '
 map('n', '<C-s>', ':w<CR>')
 map('n', '<C-F4>', ':q!<CR>')
 -- F28 Is CTRL F4 in Linux : LPT You can type key code in insert mode !
-map('n', '<F28>', ':q!<CR>')
+map('n', '<F28>', '<C-F4>')
 
 -- M is the ALT modifier key
 map('n', '<M-j>', ':resize -1<CR>')
@@ -162,8 +173,9 @@ map('v', '>', '>gv')
 
 -- Telescope keybinds
 map('n', '<C-p>',	  ':Telescope find_files<CR>')
-map('n', '<leader>f', ':Telescope live_grep<CR>')
-map('n', '<leader>h', ':Telescope help_tags<CR>')
+map('n', '<C-f>', ':Telescope live_grep<CR>')
+map('n', '<leader>f', ':Telescope grep_string<CR>')
+map('n', '<leader>t', ':Telescope help_tags<CR>')
 map('n', '<leader>c', ':Telescope commands<CR>')
 
 -- Open the nerd tree explorer
@@ -180,5 +192,6 @@ map('n', 'gv', ':vsp<Plug>(coc-definition)<C-W>L')
 map('n', '[g', '<Plug>(coc-diagnostic-prev)')
 map('n', ']g', '<Plug>(coc-diagnostic-next)')
 map('n', '<leader>r', '<Plug>(coc-rename)')
+map('n', '<leader>s', ':CocSearch ')
 map('n', '<leader>vd', ':CocDiagnostics<CR>')
 map('n', '<leader>ve', ':CocList extensions<CR>')
