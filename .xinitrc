@@ -29,7 +29,7 @@ picom -b -f -i 0.95 &
 # Set the wallpaper
 feh --bg-fill $HOME/Images/HD-Astronaut-Wallpaper.jpg &
 # Set the keyboard repeat delay to 200ms and rate to 80 repeat/s
-xset r rate 200 80 &
+xset r rate 150 80 &
 # Set the keyboard layout to french
 setxkbmap fr &
 exec i3
