@@ -12,6 +12,8 @@ PACKAGES=virtual
 SWAP_SIZE=4G
 CRYPTED_DISK_NAME=luks_root
 GRUB_ID=GRUB
+KEYMAP=fr
+LOCALE=en_US
 DISK_PASSWORD=
 ROOT_PASSWORD=
 USER_PASSWORD=
@@ -112,15 +114,15 @@ ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
 # Setting hardware clock
 hwclock --systohc
 
-# Edit the file /etc/locale.gen and uncomment en_US.UTF-8 UTF-8 and ISO then use
-sed -i 's/#en_US/en_US/g' /etc/locale.gen
+# Edit the file /etc/locale.gen uncomment UTF-8 and ISO
+sed -i 's/#$LOCALE/$LOCALE/g' /etc/locale.gen
 locale-gen
 
 # Set the LANG variable
-echo LANG=en_US.UTF-8 > /etc/locale.conf
+echo LANG=$LOCALE.UTF-8 > /etc/locale.conf
 
 # Setting the keyboard layout
-echo KEYMAP=fr > /etc/vconsole.conf
+echo KEYMAP=$KEYMAP > /etc/vconsole.conf
 
 # Setting the hostname
 echo $HOSTNAME > /etc/hostname
@@ -200,6 +202,7 @@ aur_install(){
 aur_install https://aur.archlinux.org/polybar.git
 if [ $PACKAGES == 'laptop' ]; then
 	aur_install https://aur.archlinux.org/davmail.git
+	gpg --auto-key-locate nodefault,wkd --locate-keys torbrowser@torproject.org
 	aur_install https://aur.archlitnux.org/tor-browser.git
 	aur_install https://aur.archlinux.org/font-manager.git
 fi
