@@ -4,6 +4,9 @@
 USERNAME=saundersp
 HOSTNAME=myarchbox
 DISK=/dev/sda
+DISK_LAST_SECTOR=
+BOOT_PARITION_INDEX=1
+ROOT_PARITION_INDEX=2
 FONT_PATH=/usr/share/fonts
 PACKAGES=virtual
 SWAP_SIZE=4G
@@ -13,16 +16,16 @@ DISK_PASSWORD=
 ROOT_PASSWORD=
 USER_PASSWORD=
 
-test -z $DISK_PASSWORD && echo "Enter DISK password : " && read -s DISK_PASSWORD
-test -z $ROOT_PASSWORD && echo "Enter ROOT password : " && read -s ROOT_PASSWORD
-test -z $USER_PASSWORD && echo "Enter USER password : " && read -s USER_PASSWORD
+test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
+test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
+test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
 
 # Updating the system clock
 timedatectl set-ntp true
 
 # List of disks
-BOOT_PARTITION=$DISK\1
-ROOT_PARTITION=$DISK\2
+BOOT_PARTITION=$DISK$BOOT_PARITION_INDEX
+ROOT_PARTITION=$DISK$ROOT_PARITION_INDEX
 
 # Partition the disks
 ### Disk 1 - +128M - Bootable - UEFI Boot partition
@@ -40,7 +43,7 @@ n
 
 
 
-
+$DISK_LAST_SECTOR
 w
 EOF
 
@@ -49,7 +52,7 @@ echo -n $DISK_PASSWORD | cryptsetup luksFormat -v $ROOT_PARTITION
 echo -n $DISK_PASSWORD | cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
 
 # Formatting the partitions
-mkfs.vfat -n "UEFI Boot" -F 32 $BOOT_PARTITION
+mkfs.vfat -n 'UEFI Boot' -F 32 $BOOT_PARTITION
 mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
 
 # Mounting the file systems
@@ -76,9 +79,9 @@ pacstrap /mnt base linux linux-firmware fakeroot make gcc neovim doas grub efibo
 				xorg-xset feh alacritty git wget unzip firefox bash-completion reflector rsync nodejs npm python python-pip ripgrep man
 
 # Installing the optional packages
-if [ $PACKAGES == "virtual" ]; then
+if [ $PACKAGES == 'vrtual' ]; then
 	pacstrap /mnt virtualbox-guest-utils networkmanager
-elif [ $PACKAGES == "laptop" ]; then
+elif [ $PACKAGES == 'laptop' ]; then
 	pacstrap /mnt xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings keepassxc networkmanager-iwd ntfs-3g pulseaudio pulsemixer \
 			pulseaudio-bluetooth bluez bluez-utils openssh xclip vlc intel-ucode lazygit
 fi
@@ -90,7 +93,7 @@ cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist
 # Generating the mounting points
 genfstab -U /mnt >> /mnt/etc/fstab
 
-echo -e "
+echo "
 #!/usr/bin/env bash
 
 npm i -g neovim npm-check-updates
@@ -123,11 +126,11 @@ echo KEYMAP=fr > /etc/vconsole.conf
 echo $HOSTNAME > /etc/hostname
 
 # Add networking entities to /etc/hosts
-echo -e \"
+echo '
 127.0.0.1    localhost
 ::1          localhost
 127.0.1.1    $HOSTNAME.localdomain $HOSTNAME
-\" >> /etc/hosts
+' >> /etc/hosts
 
 # Setting a root password
 passwd << EOF
@@ -145,7 +148,7 @@ $USER_PASSWORD
 EOF
 
 # Enable the wheel group to use doas
-echo \"permit nopass :wheel\" > /etc/doas.conf
+echo 'permit nopass :wheel' > /etc/doas.conf
 
 # Replace sudo
 ln -s /usr/bin/doas /usr/bin/sudo
@@ -158,7 +161,7 @@ mkinitcpio -p linux
 grub-install --target x86_64-efi --efi-directory /boot --bootloader-id $GRUB_ID --recheck
 
 # Prepare boot loader for LUKS
-sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid | grep $ROOT_PARTITION | cut -d \\\\\" -f 2):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
+sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid $ROOT_PARTITION | cut -d \\\\\" -f 2):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
 
 # Creating the GRUB configuration file
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -173,7 +176,7 @@ sed -i \"s/^COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=\$(nproc))/
 chmod +x /mnt/root/install.sh
 arch-chroot /mnt /root/install.sh
 
-echo -e "
+echo "
 #!/usr/bin/env bash
 
 # Getting the dotfiles
@@ -195,7 +198,7 @@ aur_install(){
 }
 
 aur_install https://aur.archlinux.org/polybar.git
-if [ $PACKAGES == \"laptop\" ]; then
+if [ $PACKAGES == 'laptop' ]; then
 	aur_install https://aur.archlinux.org/davmail.git
 	aur_install https://aur.archlitnux.org/tor-browser.git
 	aur_install https://aur.archlinux.org/font-manager.git
@@ -204,11 +207,7 @@ fi
 chmod +x /mnt/home/$USERNAME/install.sh
 arch-chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
 
-echo -e "
-#!/usr/bin/env bash
-cd /home/$USERNAME/git/dotfiles
-./auto.sh
-" > /mnt/root/install.sh
+echo -e "#!/usr/bin/env bash\ncd /home/$USERNAME/git/dotfiles\n./auto.sh" > /mnt/root/install.sh
 arch-chroot /mnt /root/install.sh
 
 # Cleaning leftovers
