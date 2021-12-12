@@ -35,7 +35,7 @@ call plug#end()
 ]])
 
 g.coc_global_extensions = {	"coc-cspell-dicts", "coc-spell-checker", "coc-json", "coc-pyright", "coc-lua", "coc-prettier", "coc-docker", "coc-java",
-							"coc-sh", "coc-markdownlint", "coc-markdown-preview-enhanced", "coc-webview"}
+							"coc-sh", "coc-markdownlint", "coc-markdown-preview-enhanced", "coc-webview", "coc-clangd"}
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General settings config
