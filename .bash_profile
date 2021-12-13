@@ -4,6 +4,6 @@
 TERMINAL=alacritty
 [[ -f ~/.bashrc ]] && . ~/.bashrc >> /dev/null
 
-if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
+if [[ ! ${DISPLAY} || ( ${XDG_VTNR} == 8 || ( -t 0 && $(tty) == /dev/tty1 ) ) ]]; then
 	exec startx
 fi
