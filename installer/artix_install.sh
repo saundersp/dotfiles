@@ -31,16 +31,14 @@ ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
 ### GPT partition table
 ### Disk 1 - +128M - Bootable - UEFI Boot partition
 ### Disk 2 - Root partition
-fdisk -w always $DISK << EOF
+fdisk $DISK << EOF
 g
 n
-
 
 
 +128M
 t
 uefi
-a
 n
 
 
@@ -113,9 +111,13 @@ fstabgen -U /mnt >> /mnt/etc/fstab
 echo "
 #!/usr/bin/env bash
 
+# Installing npm dependencies
 npm i -g neovim npm-check-updates
+
+# Installing pip dependencies
 pip install pynvim autopep8 flake8
 
+# Getting the Hasklig font
 if [ ! -d $FONT_PATH/Hasklig ]; then
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
 	mkdir $FONT_PATH/Hasklig
@@ -183,7 +185,7 @@ mkinitcpio -p linux
 grub-install --target x86_64-efi --efi-directory /boot --bootloader-id $GRUB_ID --recheck
 
 # Prepare boot loader for LUKS
-sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid $ROOT_PARTITION | cut -d \\\\\" -f 2):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
+sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid $ROOT_PARTITION | cut -d \\\" -f 2):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
 
 # Creating the GRUB configuration file
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -206,10 +208,12 @@ chmod +x auto.sh
 chmod +x polybar/launch.sh
 ./auto.sh
 
+# Getting the wallpaper
 mkdir ~/Images
 cd ~/Images
 wget https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
 
+# Installing the AUR packages
 aur_install(){
 	local PACKAGE_NAME=\$(basename \$1 .git)
 	git clone \$1 ~/aur/\$PACKAGE_NAME
@@ -228,6 +232,7 @@ fi
 chmod +x /mnt/home/$USERNAME/install.sh
 artix-chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
 
+# Getting dotfiles as root
 echo -e "#!/usr/bin/env bash\ncd /home/$USERNAME/git/dotfiles\n./auto.sh\n" > /mnt/root/install.sh
 artix-chroot /mnt /root/install.sh
 
@@ -236,11 +241,9 @@ rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh
 
 # Removing the nopass option in doas
 sed -i 's/nopass/persist/g' /mnt/etc/doas.conf
-echo 'permit nopass :wheel cmd openrc-shutdown' >> /mnt/etc/doas.conf
 
 # Allow user to shutdown and reboot
-sed -i 's,exec /usr/bin/,doas ,g' /mnt/usr/bin/shutdown
-sed -i 's,exec /usr/bin/,doas ,g' /mnt/usr/bin/reboot
+echo -e 'permit nopass :wheel cmd openrc-shutdown\npermit nopass :wheel cmd shutdown\npermit nopass :wheel cmd reboot' >> /mnt/etc/doas.conf
 
 # Unmounting the partitions
 umount -R /mnt
