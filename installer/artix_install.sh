@@ -5,8 +5,9 @@ USERNAME=saundersp
 HOSTNAME=myarchbox
 DISK=/dev/sda
 DISK_LAST_SECTOR=
-BOOT_PARITION_INDEX=1
-ROOT_PARITION_INDEX=2
+BOOT_PARTITION_INDEX=1
+ROOT_PARTITION_INDEX=2
+PARTITION_SEPARATOR=
 FONT_PATH=/usr/share/fonts
 PACKAGES=virtual
 SWAP_SIZE=4G
@@ -23,13 +24,15 @@ test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
 test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
 
 # List of disks
-BOOT_PARTITION=$DISK$BOOT_PARITION_INDEX
-ROOT_PARTITION=$DISK$ROOT_PARITION_INDEX
+BOOT_PARTITION=$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX
+ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
 
 # Partition the disks
+### GPT partition table
 ### Disk 1 - +128M - Bootable - UEFI Boot partition
 ### Disk 2 - Root partition
-fdisk $DISK << EOF
+fdisk -w always $DISK << EOF
+g
 n
 
 
@@ -238,6 +241,9 @@ echo 'permit nopass :wheel cmd openrc-shutdown' >> /mnt/etc/doas.conf
 # Allow user to shutdown and reboot
 sed -i 's,exec /usr/bin/,doas ,g' /mnt/usr/bin/shutdown
 sed -i 's,exec /usr/bin/,doas ,g' /mnt/usr/bin/reboot
+
+# Unmounting the partitions
+umount -R /mnt
 
 reboot
 

@@ -5,8 +5,9 @@ USERNAME=saundersp
 HOSTNAME=myarchbox
 DISK=/dev/sda
 DISK_LAST_SECTOR=
-BOOT_PARITION_INDEX=1
-ROOT_PARITION_INDEX=2
+BOOT_PARTITION_INDEX=1
+ROOT_PARTITION_INDEX=2
+PARTITION_SEPARATOR=
 FONT_PATH=/usr/share/fonts
 PACKAGES=virtual
 SWAP_SIZE=4G
@@ -26,13 +27,13 @@ test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
 timedatectl set-ntp true
 
 # List of disks
-BOOT_PARTITION=$DISK$BOOT_PARITION_INDEX
-ROOT_PARTITION=$DISK$ROOT_PARITION_INDEX
+BOOT_PARTITION=$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX
+ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
 
 # Partition the disks
 ### Disk 1 - +128M - Bootable - UEFI Boot partition
 ### Disk 2 - Root partition
-fdisk $DISK << EOF
+fdisk -w always $DISK << EOF
 n
 
 
@@ -218,6 +219,9 @@ rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh
 
 # Removing the nopass option in doas
 sed -i 's/nopass/persist/g' /mnt/etc/doas.conf
+
+# Unmounting the partitions
+umount -R /mnt
 
 reboot
 
