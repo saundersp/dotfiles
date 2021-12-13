@@ -82,7 +82,7 @@ pacstrap /mnt base linux linux-firmware fakeroot make gcc neovim doas grub efibo
 				xorg-xset feh alacritty git wget unzip firefox bash-completion reflector rsync nodejs npm python python-pip ripgrep man
 
 # Installing the optional packages
-if [ $PACKAGES == 'vrtual' ]; then
+if [ $PACKAGES == 'virtual' ]; then
 	pacstrap /mnt virtualbox-guest-utils networkmanager
 elif [ $PACKAGES == 'laptop' ]; then
 	pacstrap /mnt xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings keepassxc networkmanager-iwd ntfs-3g pulseaudio pulsemixer \
@@ -96,8 +96,7 @@ cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist
 # Generating the mounting points
 genfstab -U /mnt >> /mnt/etc/fstab
 
-echo "
-#!/usr/bin/env bash
+echo "#!/usr/bin/env bash
 
 # Installing npm dependencies
 npm i -g neovim npm-check-updates
@@ -106,12 +105,10 @@ npm i -g neovim npm-check-updates
 pip install pynvim autopep8 flake8
 
 # Getting the Hasklig font
-if [ ! -d $FONT_PATH/Hasklig ]; then
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
-	mkdir $FONT_PATH/Hasklig
-	unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
-	rm Hasklig.zip
-fi
+wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
+mkdir $FONT_PATH/Hasklig
+unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
+rm Hasklig.zip
 
 # Set the time zone
 ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
@@ -183,8 +180,7 @@ sed -i \"s/^COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=\$(nproc))/
 chmod +x /mnt/root/install.sh
 arch-chroot /mnt /root/install.sh
 
-echo "
-#!/usr/bin/env bash
+echo "#!/usr/bin/env bash
 
 # Getting the dotfiles
 mkdir ~/git

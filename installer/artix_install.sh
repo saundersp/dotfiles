@@ -108,8 +108,7 @@ cp /etc/pacman.d/mirrorlist-arch /mnt/etc/pacman.d/mirrorlist-arch
 # Generating the mounting points
 fstabgen -U /mnt >> /mnt/etc/fstab
 
-echo "
-#!/usr/bin/env bash
+echo "#!/usr/bin/env bash
 
 # Installing npm dependencies
 npm i -g neovim npm-check-updates
@@ -118,12 +117,10 @@ npm i -g neovim npm-check-updates
 pip install pynvim autopep8 flake8
 
 # Getting the Hasklig font
-if [ ! -d $FONT_PATH/Hasklig ]; then
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
-	mkdir $FONT_PATH/Hasklig
-	unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
-	rm Hasklig.zip
-fi
+wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
+mkdir $FONT_PATH/Hasklig
+unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
+rm Hasklig.zip
 
 # Set the time zone
 ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
@@ -197,8 +194,7 @@ sed -i \"s/^COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=\$(nproc))/
 chmod +x /mnt/root/install.sh
 artix-chroot /mnt /root/install.sh
 
-echo "
-#!/usr/bin/env bash
+echo "#!/usr/bin/env bash
 
 # Getting the dotfiles
 mkdir ~/git
