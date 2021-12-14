@@ -302,7 +302,7 @@ fi
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard' && echo '- xclip                            : copy/paste (with -o) from STDOUT to clipboard'
 command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &' && echo '- vpn                              : easily enable a secure VPN connection'
 command -v reflector >> /dev/null && alias update_mirrors='sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist' && echo "- update_mirrors                   : Update pacman's mirrors"
-command -v lazygit >> /dev/null && echo '- lazygit                          : fancy CLI git interface'
+command -v lazygit >> /dev/null && alias lg='lazygit' && echo '- lg                               : Shortcut to lazygit, a fancy CLI git interface'
 
 if command -v xrandr >> /dev/null; then
 	alias hdmi_on='xrandr --output HDMI-1-0 --auto --left-of eDP1'
