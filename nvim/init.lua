@@ -162,7 +162,7 @@ map('n', '<C-l>', '<C-w>l<CR>')
 map('t', '<Esc>', '<C-\\><C-n>')
 
 -- Clear the highlighting of :set hlsearch
-map('n', '<C-m>', ':noh<CR>>CR>')
+map('n', '<C-m>', ':noh<CR>')
 
 -- Disable the suspend signal
 map('n', '<C-z>', '<Nop>')
@@ -177,6 +177,7 @@ map('n', '<C-f>', ':Telescope live_grep<CR>')
 map('n', '<leader>f', ':Telescope grep_string<CR>')
 map('n', '<leader>t', ':Telescope help_tags<CR>')
 map('n', '<leader>c', ':Telescope commands<CR>')
+map('n', '<leader>b', ':Telescope buffers<CR>')
 
 -- Open the nerd tree explorer
 map('n', '<C-b>', '<cmd>NvimTreeToggle<CR>')
@@ -188,7 +189,6 @@ map('n', 'gd', '<Plug>(coc-definition)')
 map('n', 'gy', '<Plug>(coc-type-definition)')
 map('n', 'gr', '<Plug>(coc-references)')
 map('n', 'gi', '<Plug>(coc-implementation)')
-map('n', 'gv', ':vsp<Plug>(coc-definition)<C-W>L')
 map('n', '[g', '<Plug>(coc-diagnostic-prev)')
 map('n', ']g', '<Plug>(coc-diagnostic-next)')
 map('n', '<leader>r', '<Plug>(coc-rename)')
