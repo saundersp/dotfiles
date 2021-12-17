@@ -74,7 +74,7 @@ o.completeopt				= "menu,menuone,noselect"									-- Add LSP complete popup men
 o.signcolumn				= "yes:1"													-- Always draw the signcolumn with 1 fixed space width
 o.title						= true														-- Change the window's title to the opened file name and directory
 cmd("set formatoptions		+=r")														-- Add asterisks in block comments
-cmd("set wildignore			+=*/node_modules/*,*/.git/*,*/venv/*")						-- Ignore files in fuzzy finder
+cmd("set wildignore			+=*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json")	-- Ignore files in fuzzy finder
 cmd("autocmd FileType python set noexpandtab")											-- Force disable expandtab on python's files
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -117,7 +117,8 @@ require'nvim-tree'.setup {
 		custom = {
 			".git",
 			"node_modules",
-			"venv"
+			"venv",
+			"package-lock.json"
 		}
 	}
 }
@@ -157,6 +158,10 @@ map('n', '<C-h>', '<C-w>h<CR>')
 map('n', '<C-j>', '<C-w>j<CR>')
 map('n', '<C-k>', '<C-w>k<CR>')
 map('n', '<C-l>', '<C-w>l<CR>')
+
+-- Better tab movement
+map('n', '<S-l>', 'gt')
+map('n', '<S-h>', 'gT')
 
 -- Fix terminal exit button
 map('t', '<Esc>', '<C-\\><C-n>')
