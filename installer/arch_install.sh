@@ -36,14 +36,14 @@ ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
 
 # Partition the disks
 ### GPT partition table
-### Disk 1 - +128M - Bootable - UEFI Boot partition
+### Disk 1 - +256- Bootable - UEFI Boot partition
 ### Disk 2 - Root partition
 fdisk $DISK << EOF
 g
 n
 $BOOT_PARTITION_INDEX
 
-+128M
++256M
 t
 uefi
 n
@@ -78,21 +78,21 @@ swapon /mnt/swap
 sed -i 's/^#Para/Para/g' /etc/pacman.conf
 
 # Settings faster pacman mirrors
-pacman -Sy --noconfirm reflector rsync
+pacman -Sy --noconfirm --needed reflector rsync
 reflector -a 48 -c $(curl -q ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 
 # Installing the common packages
-pacstrap /mnt base $KERNEL linux-firmware fakeroot make gcc pkgconf neovim opendoas grub efibootmgr lazygit neofetch which dmenu picom i3-gaps xorg-xinit xorg-server \
+pacstrap /mnt --needed base $KERNEL linux-firmware fakeroot make gcc pkgconf neovim opendoas grub efibootmgr lazygit neofetch which dmenu picom i3-gaps xorg-xinit xorg-server \
 				xorg-xset feh alacritty git wget unzip keepass openssh xclip firefox bash-completion reflector rsync nodejs npm python python-pip ripgrep vlc man \
-				sed cryptsetup connman
+				sed htop cryptsetup connman
 
 # Installing the platform specific packages
 case $PACKAGES in
-	virtual) pacstrap /mnt virtualbox-guest-utils ;;
+	virtual) pacstrap /mnt --needed virtualbox-guest-utils ;;
 	laptop)
-		pacstrap /mnt os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer \
+		pacstrap /mnt --needed os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer \
 					pulseaudio-bluetooth patch bluez-utils intel-ucode wpa_supplicant
-		echo -e '#!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
+		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;
 	*) exit 1 ;;
@@ -175,6 +175,9 @@ grub-install --target x86_64-efi --efi-directory /boot --bootloader-id $GRUB_ID 
 
 # Prepare boot loader for LUKS
 sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid $ROOT_PARTITION | cut -d \\\" -f 2):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
+
+# Enable os-prober if laptop
+test $PACKAGES == 'laptop' && echo GRUB_DISABLE_OS_PROBER=0 >> /etc/default/grub
 
 # Creating the GRUB configuration file
 grub-mkconfig -o /boot/grub/grub.cfg
