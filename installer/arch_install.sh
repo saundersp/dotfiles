@@ -15,10 +15,14 @@ CRYPTED_DISK_NAME=luks_root
 GRUB_ID=GRUB
 KEYMAP=fr
 LOCALE=en_US
+TIMEZONE=Europe/London
 DISK_PASSWORD=
 ROOT_PASSWORD=
 USER_PASSWORD=
+KERNEL=linux-zen
+# Other options : linux linux-lts linux-zen linux-hardened
 
+# Configuration checker
 test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
 test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
 test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
@@ -37,13 +41,13 @@ ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
 fdisk $DISK << EOF
 g
 n
-
+$BOOT_PARTITION_INDEX
 
 +128M
 t
 uefi
 n
-
+$ROOT_PARTITION_INDEX
 
 
 $DISK_LAST_SECTOR
@@ -60,7 +64,7 @@ mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
 
 # Mounting the file systems
 mount /dev/mapper/$CRYPTED_DISK_NAME /mnt
-mkdir -p /mnt/boot
+mkdir /mnt/boot
 mount $BOOT_PARTITION /mnt/boot
 
 # Creating and mounting the swap file
@@ -78,16 +82,21 @@ pacman -Sy --noconfirm reflector rsync
 reflector -a 48 -c $(curl -q ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 
 # Installing the common packages
-pacstrap /mnt base linux linux-firmware fakeroot make gcc neovim doas grub efibootmgr neofetch which dmenu picom i3-gaps xorg-xinit xorg-server \
-				xorg-xset feh alacritty git wget unzip firefox bash-completion reflector rsync nodejs npm python python-pip ripgrep man
+pacstrap /mnt base $KERNEL linux-firmware fakeroot make gcc pkgconf neovim opendoas grub efibootmgr lazygit neofetch which dmenu picom i3-gaps xorg-xinit xorg-server \
+				xorg-xset feh alacritty git wget unzip keepass openssh xclip firefox bash-completion reflector rsync nodejs npm python python-pip ripgrep vlc man \
+				sed cryptsetup connman
 
-# Installing the optional packages
-if [ $PACKAGES == 'virtual' ]; then
-	pacstrap /mnt virtualbox-guest-utils networkmanager
-elif [ $PACKAGES == 'laptop' ]; then
-	pacstrap /mnt xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings keepassxc networkmanager-iwd ntfs-3g pulseaudio pulsemixer \
-			pulseaudio-bluetooth bluez bluez-utils openssh xclip vlc intel-ucode lazygit
-fi
+# Installing the platform specific packages
+case $PACKAGES in
+	virtual) pacstrap /mnt virtualbox-guest-utils ;;
+	laptop)
+		pacstrap /mnt os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer \
+					pulseaudio-bluetooth patch bluez-utils intel-ucode wpa_supplicant
+		echo -e '#!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
+		chmod +x /mnt/usr/bin/pvlc
+	;;
+	*) exit 1 ;;
+esac
 
 # Copying optimized mirrors
 cp /etc/pacman.conf /mnt/etc/pacman.conf
@@ -111,7 +120,7 @@ unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
 rm Hasklig.zip
 
 # Set the time zone
-ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
+ln -sf /usr/share/zoneinfo/$TIMEZONE /etc/localtime
 
 # Setting hardware clock
 hwclock --systohc
@@ -159,7 +168,7 @@ ln -s /usr/bin/doas /usr/bin/sudo
 
 # Initialize Initiramfs
 sed -i 's/modconf block filesystems /keyboard keymap modconf block encrypt filesystems /g' /etc/mkinitcpio.conf
-mkinitcpio -p linux
+mkinitcpio -p $KERNEL
 
 # Installing GRUB bootloader
 grub-install --target x86_64-efi --efi-directory /boot --bootloader-id $GRUB_ID --recheck
@@ -171,7 +180,7 @@ sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid $ROOT_PARTITION | cut -d \
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enabling networking
-systemctl enable NetworkManager
+systemctl enable connman
 
 # Enabling all threads during makepkg
 sed -i \"s/^#MAKEFLAGS=\\\"-j2\\\"/MAKEFLAGS=\\\"-j\$(nproc)\\\"/g\" /etc/makepkg.conf
@@ -186,8 +195,6 @@ echo "#!/usr/bin/env bash
 mkdir ~/git
 git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
 cd ~/git/dotfiles
-chmod +x auto.sh
-chmod +x polybar/launch.sh
 ./auto.sh
 
 # Getting the wallpaper
@@ -196,18 +203,17 @@ curl https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpape
 
 # Installing the AUR packages
 aur_install(){
-	local PACKAGE_NAME=\$(basename \$1 .git)
-	git clone \$1 ~/aur/\$PACKAGE_NAME
-	cd ~/aur/\$PACKAGE_NAME
+	git clone https://aur.archlinux.org/\$1.git ~/aur/\$1
+	cd ~/aur/\$1
 	makepkg -sri --noconfirm
 }
 
-aur_install https://aur.archlinux.org/polybar.git
+aur_install polybar
 if [ $PACKAGES == 'laptop' ]; then
-	aur_install https://aur.archlinux.org/davmail.git
+	aur_install davmail
 	gpg --auto-key-locate nodefault,wkd --locate-keys torbrowser@torproject.org
-	aur_install https://aur.archlitnux.org/tor-browser.git
-	aur_install https://aur.archlinux.org/font-manager.git
+	aur_install tor-browser
+	aur_install font-manager
 fi
 " > /mnt/home/$USERNAME/install.sh
 chmod +x /mnt/home/$USERNAME/install.sh
@@ -225,6 +231,9 @@ sed -i 's/nopass/persist/g' /mnt/etc/doas.conf
 
 # Allow user to shutdown and reboot
 echo -e 'permit nopass :wheel cmd shutdown\npermit nopass :wheel cmd reboot' >> /mnt/etc/doas.conf
+
+# Allow user to use brightnessctl (laptop only)
+test $PACKAGES == 'laptop' && echo 'permit nopass :wheel cmd brightnessctl' >> /mnt/etc/doas.conf
 
 # Unmounting the partitions
 umount -R /mnt
