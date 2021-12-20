@@ -142,10 +142,16 @@ require'colorizer'.setup(
 -- set leader key to space"
 g.mapleader = ' '
 
+-- Save buffer shortcut
 map('n', '<C-s>', ':w<CR>')
+
+-- Close window shortcut (keeps buffer open)
 map('n', '<C-F4>', ':q!<CR>')
--- F28 Is CTRL F4 in Linux : LPT You can type key code in insert mode !
-map('n', '<F28>', '<C-F4>')
+map('n', '<F28>', '<C-F4>') -- F28 Is CTRL F4 in Linux : LPT You can type key code in insert mode !
+
+-- Close buffer shortcut
+map('n', '<S-F4>', ':bd<CR>')
+map('n', '<F16>', '<S-F4>')
 
 -- M is the ALT modifier key
 map('n', '<M-j>', ':resize -1<CR>')
