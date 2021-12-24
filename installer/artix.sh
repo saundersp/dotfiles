@@ -106,7 +106,7 @@ case $PACKAGES in
 	virtual) basestrap /mnt --needed virtualbox-guest-utils ;;
 	laptop)
 		basestrap /mnt --needed os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer \
-					pulseaudio-bluetooth patch bluez-utils intel-ucode wpa_supplicant bluez-$INIT_SYSTEM
+					pulseaudio-bluetooth patch bluez-utils intel-ucode wpa_supplicant brightnessctl bluez-$INIT_SYSTEM
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;
@@ -189,7 +189,7 @@ mkinitcpio -p $KERNEL
 grub-install --target x86_64-efi --efi-directory /boot --bootloader-id $GRUB_ID --recheck
 
 # Prepare boot loader for LUKS
-sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid $ROOT_PARTITION | cut -d \\\" -f 2):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
+sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid -s UUID -o value $ROOT_PARTITION):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
 
 # Enable os-prober if laptop
 test $PACKAGES == 'laptop' && echo GRUB_DISABLE_OS_PROBER=0 >> /etc/default/grub
