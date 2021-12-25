@@ -22,11 +22,6 @@ USER_PASSWORD=
 KERNEL=linux-zen
 # Other options : linux linux-lts linux-zen linux-hardened
 INIT_SYSTEM=openrc
-# openrc  : nothing wrong detected
-# runit   : nothing wrong detected
-# s6      : shutdown signal is stuck
-# suite66 : socket permission && shutdown signal is stuck
-# dinit   : shutdown doesn't use the "now" argument && shutdown signal is stuck
 # Other options : openrc runit s6 suite66 dinit
 
 # Configuration checker
@@ -244,6 +239,9 @@ case $INIT_SYSTEM in
 
 		# Adding connman daemon at startup
 		66-enable -t boot connmand
+
+		# Fixing ping permission
+		chmod 4711 /usr/bin/ping
 	;;
 
 	dinit)
@@ -300,7 +298,7 @@ rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh
 sed -i 's/nopass/persist/g' /mnt/etc/doas.conf
 
 # Allow user to shutdown and reboot
-echo -e 'permit nopass :wheel cmd shutdown\npermit nopass :wheel cmd reboot' >> /mnt/etc/doas.conf
+echo -e 'permit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' >> /mnt/etc/doas.conf
 
 # Allow user to use brightnessctl (laptop only)
 test $PACKAGES == 'laptop' && echo 'permit nopass :wheel cmd brightnessctl' >> /mnt/etc/doas.conf
