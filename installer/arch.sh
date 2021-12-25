@@ -233,7 +233,7 @@ rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh
 sed -i 's/nopass/persist/g' /mnt/etc/doas.conf
 
 # Allow user to shutdown and reboot
-echo -e 'permit nopass :wheel cmd shutdown\npermit nopass :wheel cmd reboot' >> /mnt/etc/doas.conf
+echo -e 'permit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' >> /mnt/etc/doas.conf
 
 # Allow user to use brightnessctl (laptop only)
 test $PACKAGES == 'laptop' && echo 'permit nopass :wheel cmd brightnessctl' >> /mnt/etc/doas.conf
