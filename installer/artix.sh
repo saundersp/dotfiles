@@ -10,6 +10,7 @@ ROOT_PARTITION_INDEX=2
 PARTITION_SEPARATOR=
 FONT_PATH=/usr/share/fonts
 PACKAGES=virtual
+# Other options : virtual laptop
 SWAP_SIZE=4G
 CRYPTED_DISK_NAME=luks_root
 GRUB_ID=GRUB
@@ -28,6 +29,9 @@ INIT_SYSTEM=openrc
 test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
 test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
 test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
+
+# Exit immediately if a command exits with a non-zero exit status
+set -e
 
 # List of disks
 BOOT_PARTITION=$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX
@@ -63,8 +67,8 @@ mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
 
 # Mounting the file systems
 mount /dev/mapper/$CRYPTED_DISK_NAME /mnt
-mkdir /mnt/boot
-mount $BOOT_PARTITION /mnt/boot
+mkdir -p /mnt/boot/efi
+mount $BOOT_PARTITION /mnt/boot/efi
 
 # Creating and mounting the swap file
 fallocate -l $SWAP_SIZE /mnt/swap
@@ -77,7 +81,7 @@ swapon /mnt/swap
 sed -i 's/^#Para/Para/g' /etc/pacman.conf
 
 # Adding arch linux mirrors
-pacman -Sy --noconfirm artix-archlinux-support
+pacman -Sy --noconfirm --needed artix-archlinux-support
 echo -e '\n# Arch\n[extra]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[community]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[multilib]\nInclude = /etc/pacman.d/mirrorlist-arch' >> /etc/pacman.conf
 
 # Settings faster pacman arch mirrors
@@ -116,6 +120,9 @@ cp /etc/pacman.d/mirrorlist-arch /mnt/etc/pacman.d/mirrorlist-arch
 fstabgen -U /mnt >> /mnt/etc/fstab
 
 echo "#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero exit status
+set -e
 
 # Installing npm dependencies
 npm i -g neovim npm-check-updates
@@ -181,7 +188,7 @@ sed -i 's/modconf block filesystems /keyboard keymap modconf block encrypt files
 mkinitcpio -p $KERNEL
 
 # Installing GRUB bootloader
-grub-install --target x86_64-efi --efi-directory /boot --bootloader-id $GRUB_ID --recheck
+grub-install --target x86_64-efi --efi-directory /boot/efi --bootloader-id $GRUB_ID --recheck
 
 # Prepare boot loader for LUKS
 sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid -s UUID -o value $ROOT_PARTITION):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
@@ -259,15 +266,20 @@ artix-chroot /mnt /root/install.sh
 
 echo "#!/usr/bin/env bash
 
+# Exit immediately if a command exits with a non-zero exit status
+set -e
+
 # Getting the dotfiles
 mkdir ~/git
 git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
 cd ~/git/dotfiles
 ./auto.sh
+sudo bash auto.sh
 
 # Getting the wallpaper
 mkdir ~/Images
-curl https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg > ~/Images/HD-Astronaut-Wallpaper.jpg
+cd ~/Images
+wget https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
 
 # Installing the AUR packages
 aur_install(){
@@ -287,23 +299,20 @@ fi
 chmod +x /mnt/home/$USERNAME/install.sh
 artix-chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
 
-# Getting dotfiles as root
-echo -e "#!/usr/bin/env bash\ncd /home/$USERNAME/git/dotfiles\n./auto.sh" > /mnt/root/install.sh
-artix-chroot /mnt /root/install.sh
-
 # Cleaning leftovers
 rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh
 
 # Removing the nopass option in doas
 sed -i 's/nopass/persist/g' /mnt/etc/doas.conf
 
-# Allow user to shutdown and reboot
+# Allow user to poweroff and reboot
 echo -e 'permit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' >> /mnt/etc/doas.conf
 
 # Allow user to use brightnessctl (laptop only)
 test $PACKAGES == 'laptop' && echo 'permit nopass :wheel cmd brightnessctl' >> /mnt/etc/doas.conf
 
 # Unmounting the partitions
+cd
 umount -R /mnt
 
 reboot
