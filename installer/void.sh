@@ -129,7 +129,7 @@ mount --make-rslave /mnt/proc
 # Copying the DNS configuration
 cp /etc/resolv.conf /mnt/etc
 
-echo "#!/bin/bash
+echo "#!/usr/bin/env bash
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
@@ -228,7 +228,7 @@ ln -s /etc/sv/dhcpcd /etc/runit/runsvdir/default/
 chmod +x /mnt/install.sh
 chroot /mnt /install.sh
 
-echo "#!/bin/bash
+echo "#!/usr/bin/env bash
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e

@@ -105,7 +105,7 @@ mount --make-rslave /mnt/gentoo/dev
 mount -B /run /mnt/gentoo/run
 mount --make-slave /mnt/gentoo/run
 
-echo "#!/bin/bash
+echo "#!/usr/bin/env bash
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
