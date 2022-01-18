@@ -9,86 +9,51 @@ export XDG_CACHE_HOME=$HOME/.XDG/cache
 export XDG_DATA_HOME=$HOME/.XDG/data
 AUR_PATH=$HOME/aur
 
+# Define colours
+LIGHTGRAY='\033[0;37m'
+WHITE='\033[1;37m'
+BLACK='\033[0;30m'
+DARKGRAY='\033[1;30m'
+RED='\033[0;31m'
+LIGHTRED='\033[1;31m'
+GREEN='\033[0;32m'
+LIGHTGREEN='\033[1;32m'
+BROWN='\033[0;33m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+LIGHTBLUE='\033[1;34m'
+MAGENTA='\033[0;35m'
+LIGHTMAGENTA='\033[1;35m'
+CYAN='\033[0;36m'
+LIGHTCYAN='\033[1;36m'
+NOCOLOUR='\033[0m'
+USER_COLOUR=$DARKGRAY # Normal user
+test $EUID -eq 0 && USER_COLOUR=$LIGHTRED # Root user
+
+# Define text styles
+BOLD='\033[1m'
+DIM='\033[2m'
+ITALIC='\033[3m'
+UNDERLINED='\033[4m'
+BLINKING='\033[5m'
+
 __setprompt() {
 	local LAST_COMMAND=$? # Must come first!
 
-	# Define colours
-	local LIGHTGRAY='\033[0;37m'
-	local WHITE='\033[1;37m'
-	local BLACK='\033[0;30m'
-	local DARKGRAY='\033[1;30m'
-	local RED='\033[0;31m'
-	local LIGHTRED='\033[1;31m'
-	local GREEN='\033[0;32m'
-	local LIGHTGREEN='\033[1;32m'
-	local BROWN='\033[0;33m'
-	local YELLOW='\033[1;33m'
-	local BLUE='\033[0;34m'
-	local LIGHTBLUE='\033[1;34m'
-	local MAGENTA='\033[0;35m'
-	local LIGHTMAGENTA='\033[1;35m'
-	local CYAN='\033[0;36m'
-	local LIGHTCYAN='\033[1;36m'
-	local NOCOLOUR='\033[0m'
-	local USER_COLOUR=$DARKGRAY # Normal user
-	test $EUID -eq 0 && USER_COLOUR=$LIGHTRED # Root user
-
+	PS1="\[${USER_COLOUR}\]┌──"
 	# Show error exit code if there is one
 	if [[ $LAST_COMMAND != 0 ]]; then
-		PS1="\[${USER_COLOUR}\]┌──(\[${LIGHTRED}\]ERROR\[${USER_COLOUR}\])-(\[${RED}\]Exit Code \[${LIGHTRED}\]${LAST_COMMAND}\[${USER_COLOUR}\])-(\[${RED}\]"
-		if [[ $LAST_COMMAND == 1 ]]; then
-			PS1+='General error'
-		elif [ $LAST_COMMAND == 2 ]; then
-			PS1+='Missing keyword, command, or permission problem'
-		elif [ $LAST_COMMAND == 126 ]; then
-			PS1+='Permission problem or command is not an executable'
-		elif [ $LAST_COMMAND == 127 ]; then
-			PS1+='Command not found'
-		elif [ $LAST_COMMAND == 128 ]; then
-			PS1+='Invalid argument to exit'
-		elif [ $LAST_COMMAND == 129 ]; then
-			PS1+='Fatal error signal 1'
-		elif [ $LAST_COMMAND == 130 ]; then
-			PS1+='Script terminated by Control-C'
-		elif [ $LAST_COMMAND == 131 ]; then
-			PS1+='Fatal error signal 3'
-		elif [ $LAST_COMMAND == 132 ]; then
-			PS1+='Fatal error signal 4'
-		elif [ $LAST_COMMAND == 133 ]; then
-			PS1+='Fatal error signal 5'
-		elif [ $LAST_COMMAND == 134 ]; then
-			PS1+='Fatal error signal 6'
-		elif [ $LAST_COMMAND == 135 ]; then
-			PS1+='Fatal error signal 7'
-		elif [ $LAST_COMMAND == 136 ]; then
-			PS1+='Fatal error signal 8'
-		elif [ $LAST_COMMAND == 137 ]; then
-			PS1+='Fatal error signal 9'
-		elif [ $LAST_COMMAND -gt 255 ]; then
-			PS1+='Exit status out of range'
-		else
-			PS1+='Unknown error code'
-		fi
-		PS1+="\[${USER_COLOUR}\])\n├──"
-	else
-		PS1="\[${USER_COLOUR}\]┌──"
+		PS1+="(\[${LIGHTRED}\]ERROR\[${USER_COLOUR}\])-(\[${RED}\]Exit Code \[${LIGHTRED}\]${LAST_COMMAND}\[${USER_COLOUR}\])\n├──"
 	fi
 
-	# Date & time
-	PS1+="(\[${DARKGRAY}\]\[${CYAN}\]$(date +%a-'%-d'\ %b-'%-m'\ %y)\[${DARKGRAY}\]:"
-	PS1+="${MAGENTA}$(date +'%-I':%M:%S%P)\[${USER_COLOUR}\])-"
+	# Time
+	PS1+="(\[${DARKGRAY}\]\[${LIGHTBLUE}\]$(date +%I:%M:%S•%p)\[${USER_COLOUR}\])-"
 
-	# User and server
-	PS1+="(\[${RED}\]\u@\h"
+	# User and hostname
+	PS1+="(\[${MAGENTA}\]\u@\h"
 
 	# Current directory
-	PS1+="\[${DARKGRAY}\]:\[${BROWN}\]\w\[${USER_COLOUR}\])-"
-
-	# Total size of files in current directory
-	PS1+="(\[${GREEN}\]$(ls -lah | grep -m 1 total | sed 's/total //')\[${DARKGRAY}\]:"
-
-	# Number of files
-	PS1+="\[${GREEN}\]$(ls -A -1 | wc -l)\[${USER_COLOUR}\])"
+	PS1+="\[${DARKGRAY}\])-(\[${BROWN}\]\w\[${USER_COLOUR}\])"
 
 	# Git branch
 	PS1+="\[${BLUE}\]$(git branch 2>>/dev/null | sed -n 's/\* \(.*\)/ ( \1)/p')"
@@ -165,10 +130,14 @@ alias	ls='ls -hN --color=auto --group-directories-first' \
 colours() {
 	local fgc bgc vals seq0
 
-	printf 'Color escapes are %s\n' '\e[${value};...;${value}m'
+	printf 'Colour escapes are %s\n' '\e[${value};...;${value}m'
 	printf 'Values 30..37 are \e[33mforeground colours\e[m\n'
 	printf 'Values 40..47 are \e[43mbackground colours\e[m\n'
-	printf 'Value  1 gives a  \e[1mbold-faced look\e[m\n\n'
+	printf 'Value  1 gives a  \e[1mbold look\e[m\n'
+	printf 'Value  2 gives a  \e[2mdim look\e[m\n'
+	printf 'Value  3 gives a  \e[3mitalic look\e[m\n'
+	printf 'Value  4 gives a  \e[4munderlined look\e[m\n'
+	printf 'Value  5 gives a  \e[5mblinking look\e[m\n\n'
 
 	# foreground colours
 	for fgc in {30..37}; do
@@ -181,9 +150,13 @@ colours() {
 			vals=${vals%%;}
 
 			seq0="${vals:+\e[${vals}m}"
-			printf "  %-9s" "${seq0:-(default)}"
+			printf " %-9s" "${seq0:-(default)}"
 			printf " ${seq0}TEXT\e[m"
 			printf " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
+			printf " \e[${vals:+${vals+$vals;}}2mDIM\e[m"
+			printf " \e[${vals:+${vals+$vals;}}3mITA\e[m"
+			printf " \e[${vals:+${vals+$vals;}}4mUND\e[m"
+			printf " \e[${vals:+${vals+$vals;}}5mBLI\e[m"
 		done
 		echo; echo
 	done
@@ -201,13 +174,18 @@ preview_csv(){
 	cat "$1" | sed 's/,/ ,/g' | column -t -s, | less -S -n
 }
 
+# Command and description display helper
+print_cmd(){
+	printf "\055 \e[${ITALIC}%-32s\e[${NOCOLOUR} : $2\n" "$1"
+}
+
 if command -v neofetch >> /dev/null; then
 	alias neofetchupdate='neofetch --config $XDG_CONFIG_HOME/neofetch/config.conf > $XDG_CACHE_HOME/.neofetch'
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetchupdate
-	echo -e "\n$(cat $XDG_CACHE_HOME/.neofetch)Available commands :"
-	echo '- neofetchupdate                   : update the cached neofetch informations'
+	echo -e "\n$(cat $XDG_CACHE_HOME/.neofetch)${BOLD}Available commands :${NOCOLOUR}"
+	print_cmd 'neofetchupdate' 'Update the cached neofetch informations'
 else
-	echo -e 'Available commands :'
+	echo -e "${BOLD}Available commands :${NOCOLOUR}"
 fi
 if command -v python >> /dev/null; then
 	# Activate the python virtual environment in the current folder
@@ -221,22 +199,22 @@ if command -v python >> /dev/null; then
 		else echo 'Python virtual environment not detected !'
 		fi
 	}
-	echo '- activate                         : activate the python virtual environment'
+	print_cmd 'activate' 'Activate the python virtual environment'
 fi
-echo '- colours                          : show the colours palette of the current terminal'
-echo '- preview_csv <file>               : preview a csv file'
+print_cmd 'colours' 'Show the colours palette of the current terminal'
+print_cmd 'preview_csv <file>' 'Preview a csv file'
 if command -v nvim >> /dev/null; then
 	command -v nvim >> /dev/null && alias vi='nvim' vim='nvim' vid='nvim -d' vimdiff='nvim -d'
-	#echo '- vi or vim <file/directory/?>     : shortcut to nvim'
-	echo '- vid or vimdiff <file1> <file2>   : shortcut to nvim diff mode'
+	#print_cmd 'vi or vim <file/directory/?>' 'Shortcut to nvim'
+	print_cmd 'vid or vimdiff <file1> <file2>' 'Shortcut to nvim diff mode'
 fi
-echo '- ll <directory/?>                 : detailed ls'
+print_cmd 'll <directory/?>' 'Detailed ls'
 if command -v pacman >> /dev/null; then
 	alias pacprune='pacman -Qtdq | sudo pacman -Rns -'
-	echo '- pacprune                         : Remove unused packages (orphans)'
+	print_cmd 'pacprune' 'Remove unused packages (orphans)'
 
 	alias pacupdate='sudo pacman -Syu'
-	echo '- pacupdate                        : Update every packages'
+	print_cmd 'pacupdate' 'Update every packages'
 
 	aur_install() {
 		if [[ -z "$1" || "$1" == 'help' || "$1" == '--help' ]]; then
@@ -254,7 +232,7 @@ if command -v pacman >> /dev/null; then
 		makepkg -sri
 		cd -
 	}
-	echo '- aur_install <git_link>           : Install specified AUR package to AUR_PATH'
+	print_cmd 'aur_install <git_link>' 'Install specified AUR package to AUR_PATH'
 
 	aur_update() {
 		local PACKAGE_NAME
@@ -269,7 +247,7 @@ if command -v pacman >> /dev/null; then
 			fi
 		done
 	}
-	echo '- aur_update                       : Update every AUR packages'
+	print_cmd 'aur_update' 'Update every AUR packages'
 
 	aur_uninstall() {
 		if [[ -z "$1"  || "$1" == 'help' || "$1" == '--help' ]]; then
@@ -284,7 +262,7 @@ if command -v pacman >> /dev/null; then
 		rm -r $AUR_PATH/$1
 		echo Uninstalled $1 successfully
 	}
-	echo '- aur_uninstall <aur-package-name> : Uninstall a specified AUR package'
+	print_cmd 'aur_uninstall <aur-package-name>' 'Uninstall a specified AUR package'
 
 	aur_list() {
 		local PACKAGE_NAME PACMAN_INFO
@@ -297,22 +275,22 @@ if command -v pacman >> /dev/null; then
 			fi
 		done
 	}
-	echo '- aur_list                         : List of the installed AUR packages'
+	print_cmd 'aur_list' 'List of the installed AUR packages'
 fi
-command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard' && echo '- xclip                            : copy/paste (with -o) from STDOUT to clipboard'
-command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &' && echo '- vpn                              : easily enable a secure VPN connection'
-command -v reflector >> /dev/null && alias update_mirrors='sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist' && echo "- update_mirrors                   : Update pacman's mirrors"
-command -v lazygit >> /dev/null && alias lg='lazygit' && echo '- lg                               : Shortcut to lazygit, a fancy CLI git interface'
+command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard' && print_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
+command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &' && print_cmd 'vpn' 'Easily enable a secure VPN connection'
+command -v reflector >> /dev/null && alias update_mirrors='sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist' && print_cmd 'update_mirrors' "Update pacman's mirrors"
+command -v lazygit >> /dev/null && alias lg='lazygit' && print_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 
 if command -v xrandr >> /dev/null; then
 	alias hdmi_on='xrandr --output HDMI-1-0 --auto --left-of eDP1'
-	echo '- hdmi_on                          : turn on the HDMI connection and put it on the left'
+	print_cmd 'hdmi_on' 'Turn on the HDMI connection and put it on the left'
 	alias hdmi_off='xrandr --output HDMI-1-0 --off'
-	echo '- hdmi_off                         : turn off the HDMI connection'
+	print_cmd 'hdmi_off' 'Turn off the HDMI connection'
 fi
 
-echo -e '\nBash bang shortcuts remainders :'
-#echo '- !!                               : last command'
-#echo '- !$                               : last item ran'
-echo '- !^                               : first item ran'
-echo '- !*                               : all items ran'
+echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"
+#print_cmd '!!' 'Last command'
+#print_cmd '!$' 'Last item ran'
+print_cmd '!^' 'First item ran'
+print_cmd '!*' 'All items ran'
