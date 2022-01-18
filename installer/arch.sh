@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Pre-setup steps :
+# loadkeys $KEYMAP
+# If WiFi : iwctl
+
 # Configuration (tweak to your liking)
 USERNAME=saundersp
 HOSTNAME=myarchbox
@@ -10,7 +14,7 @@ ROOT_PARTITION_INDEX=2
 PARTITION_SEPARATOR=
 FONT_PATH=/usr/share/fonts
 PACKAGES=virtual
-# Other options : virtual laptop
+# Other options : virtual laptop server minimal
 SWAP_SIZE=4G
 CRYPTED_DISK_NAME=luks_root
 GRUB_ID=GRUB
@@ -68,8 +72,8 @@ mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
 
 # Mounting the file systems
 mount /dev/mapper/$CRYPTED_DISK_NAME /mnt
-mkdir -p /mnt/boot/efi
-mount $BOOT_PARTITION /mnt/boot/efi
+mkdir -p /mnt/boot
+mount $BOOT_PARTITION /mnt/boot
 
 # Creating and mounting the swap file
 fallocate -l $SWAP_SIZE /mnt/swap
@@ -82,20 +86,36 @@ swapon /mnt/swap
 sed -i 's/^#Para/Para/g' /etc/pacman.conf
 
 # Settings faster pacman mirrors
-pacman -Sy --noconfirm --needed reflector rsync
+pacman -Sy --noconfirm --needed reflector rsync python
 reflector -a 48 -c $(curl -q ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 
-# Installing the common packages
-pacstrap /mnt --needed base $KERNEL linux-firmware fakeroot make gcc pkgconf neovim opendoas grub efibootmgr lazygit neofetch which dmenu picom i3-gaps xorg-xinit xorg-server \
-				xorg-xset feh alacritty git wget unzip keepass openssh xclip firefox bash-completion reflector rsync nodejs npm python python-pip ripgrep vlc man \
-				sed htop cryptsetup connman
+# Install helpers
+install_pkg(){
+	pacstrap /mnt --needed $@
+}
+install_server(){
+	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop
+}
+install_ihm(){
+	install_pkg fakeroot make gcc pkgconf dmenu picom i3-gaps xorg-xinit xorg-server xorg-xset feh alacritty keepass xclip firefox vlc
+}
+
+# Installing the minimal packages
+install_pkg base $KERNEL linux-firmware opendoas grub efibootmgr which man sed cryptsetup connman
 
 # Installing the platform specific packages
 case $PACKAGES in
-	virtual) pacstrap /mnt --needed virtualbox-guest-utils ;;
+	virtual)
+		install_ihm
+		install_pkg virtualbox-guest-utils
+	;&
+	server) install_server ;&
+	minimal) ;;
 	laptop)
-		pacstrap /mnt --needed os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer \
-					pulseaudio-bluetooth patch bluez-utils intel-ucode wpa_supplicant brightnessctl
+		install_server
+		install_ihm
+		install_pkg os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth \
+								patch bluez-utils intel-ucode wpa_supplicant brightnessctl
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;
@@ -114,17 +134,24 @@ echo "#!/usr/bin/env bash
 # Exit immediately if a command exits with a non-zero exit status
 set -e
 
-# Installing npm dependencies
-npm i -g neovim npm-check-updates
+# Removing unused programs
+rm -rf \$(find / -name *sudo*) /sbin/vi
 
-# Installing pip dependencies
-pip install pynvim autopep8 flake8
+if [ '$PACKAGES' != 'minimal' ]; then
+	# Installing npm dependencies
+	npm i -g neovim npm-check-updates
 
-# Getting the Hasklig font
-wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
-mkdir $FONT_PATH/Hasklig
-unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
-rm Hasklig.zip
+	# Installing pip dependencies
+	pip install pynvim autopep8 flake8
+fi
+
+if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
+	# Getting the Hasklig font
+	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
+	mkdir -p $FONT_PATH/Hasklig
+	unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
+	rm Hasklig.zip
+fi
 
 # Set the time zone
 ln -sf /usr/share/zoneinfo/$TIMEZONE /etc/localtime
@@ -149,7 +176,6 @@ echo $HOSTNAME > /etc/hostname
 echo '
 127.0.0.1    localhost
 ::1          localhost
-127.0.1.1    $HOSTNAME.localdomain $HOSTNAME
 ' >> /etc/hosts
 
 # Setting a root password
@@ -177,14 +203,17 @@ ln -s /usr/bin/doas /usr/bin/sudo
 sed -i 's/modconf block filesystems /keyboard keymap modconf block encrypt filesystems /g' /etc/mkinitcpio.conf
 mkinitcpio -p $KERNEL
 
-# Installing GRUB bootloader
-grub-install --target x86_64-efi --efi-directory /boot/efi --bootloader-id $GRUB_ID --recheck
-
 # Prepare boot loader for LUKS
 sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid -s UUID -o value $ROOT_PARTITION):$CRYPTED_DISK_NAME root=/dev/mapper/$CRYPTED_DISK_NAME\\\",g\" /etc/default/grub
 
 # Enable os-prober if laptop
-test $PACKAGES == 'laptop' && echo GRUB_DISABLE_OS_PROBER=0 >> /etc/default/grub
+if [ '$PACKAGES' == 'laptop' ]; then
+	echo GRUB_DISABLE_OS_PROBER=0 >> /etc/default/grub
+	os-prober
+fi
+
+# Installing GRUB bootloader
+grub-install --target x86_64-efi --efi-directory /boot --bootloader-id $GRUB_ID --recheck
 
 # Creating the GRUB configuration file
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -204,17 +233,14 @@ echo "#!/usr/bin/env bash
 # Exit immediately if a command exits with a non-zero exit status
 set -e
 
-# Getting the dotfiles
-mkdir ~/git
-git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
-cd ~/git/dotfiles
-./auto.sh
-sudo bash auto.sh
+if [ '$PACKAGES' != 'minimal' ]; then
+	# Getting the dotfiles
+	mkdir ~/git
+	git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
+fi
 
-# Getting the wallpaper
-mkdir ~/Images
-cd ~/Images
-wget https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
+# Allow user to poweroff and reboot
+echo -e 'permit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' | sudo tee -a /etc/doas.conf
 
 # Installing the AUR packages
 aur_install(){
@@ -223,32 +249,48 @@ aur_install(){
 	makepkg -sri --noconfirm
 }
 
-aur_install polybar
+case $PACKAGES in
+	minimal) ;;
+	server)
+		# Enabling the dotfiles
+		cd ~/git/dotfiles
+		./auto.sh server
+		sudo bash auto.sh server
+	;;
+	virtual|laptop)
+		# Enabling the dotfiles
+		cd ~/git/dotfiles
+		./auto.sh
+		sudo bash auto.sh
+
+		# Getting the wallpaper
+		mkdir ~/Images
+		cd ~/Images
+		wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
+
+		# Allow user to use brightnessctl
+		test $PACKAGES == 'laptop' && echo 'permit nopass :wheel cmd brightnessctl' | sudo tee -a /etc/doas.conf
+
+		aur_install polybar
+	;;
+esac
+
 if [ $PACKAGES == 'laptop' ]; then
 	aur_install davmail
 	gpg --auto-key-locate nodefault,wkd --locate-keys torbrowser@torproject.org
 	aur_install tor-browser
 	aur_install font-manager
 fi
+
+# Removing the nopass option in doas
+sudo sed -i '1s/nopass/persist/g' /etc/doas.conf
+
 " > /mnt/home/$USERNAME/install.sh
 chmod +x /mnt/home/$USERNAME/install.sh
 arch-chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
 
 # Cleaning leftovers
 rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh
-
-# Removing the nopass option in doas
-sed -i 's/nopass/persist/g' /mnt/etc/doas.conf
-
-# Allow user to poweroff and reboot
-echo -e 'permit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' >> /mnt/etc/doas.conf
-
-# Allow user to use brightnessctl (laptop only)
-test $PACKAGES == 'laptop' && echo 'permit nopass :wheel cmd brightnessctl' >> /mnt/etc/doas.conf
-
-# Unmounting the partitions
-cd
-umount -R /mnt
 
 reboot
 
