@@ -14,7 +14,6 @@ DISK_LAST_SECTOR=
 BOOT_PARTITION_INDEX=1
 ROOT_PARTITION_INDEX=2
 PARTITION_SEPARATOR=
-FONT_PATH=/usr/share/fonts
 PACKAGES=virtual
 # Other options : virtual laptop server minimal
 SWAP_SIZE=4G
@@ -109,7 +108,6 @@ install_ihm(){
 case $INIT_SYSTEM in
 	openrc | runit | dinit | suite66) install_pkg base $KERNEL $INIT_SYSTEM elogind-$INIT_SYSTEM connman-$INIT_SYSTEM cryptsetup-$INIT_SYSTEM ;;
 	s6) install_pkg base $KERNEL s6-base elogind-s6 connman-s6 cryptsetup-s6 ;;
-	*) exit 1 ;;
 esac
 
 # Installing the common packages
@@ -131,7 +129,6 @@ case $PACKAGES in
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;
-	*) exit 1 ;;
 esac
 
 # Copying optimized mirrors
@@ -160,8 +157,8 @@ fi
 if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
 	# Getting the Hasklig font
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
-	mkdir -p $FONT_PATH/Hasklig
-	unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
+	mkdir -p /usr/share/fonts/Hasklig
+	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
 fi
 

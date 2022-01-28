@@ -14,7 +14,6 @@ DISK_LAST_SECTOR=
 BOOT_PARTITION_INDEX=1
 ROOT_PARTITION_INDEX=2
 PARTITION_SEPARATOR=
-FONT_PATH=/usr/share/fonts
 PACKAGES=virtual
 # Other options : virtual laptop server minimal
 SWAP_SIZE=4G
@@ -96,7 +95,7 @@ install_server(){
 	install_pkg neovim lazygit neofetch git wget unzip openssh curl bash-completion nodejs python3 python3-pip ripgrep htop
 }
 install_ihm(){
-	install_pkg dmenu picom i3-gaps xorg-minimal xset xterm setxkbmap xrdb xmodmap xrandr feh alacritty vlc firefox polybar
+	install_pkg dmenu picom i3-gaps xorg-minimal xset setxkbmap xrandr feh alacritty vlc firefox polybar
 }
 
 # Installing the platform specific packages
@@ -115,7 +114,6 @@ case $PACKAGES in
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;
-	*) exit 1 ;;
 esac
 
 # Mouting pseudo-filesystems
@@ -148,8 +146,8 @@ fi
 if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
 	# Getting the Hasklig font
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
-	mkdir -p $FONT_PATH/Hasklig
-	unzip -q Hasklig.zip -d $FONT_PATH/Hasklig
+	mkdir -p /usr/share/fonts/Hasklig
+	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
 fi
 
@@ -187,8 +185,8 @@ $USER_PASSWORD
 $USER_PASSWORD
 EOF
 
-# Enable the wheel group to use doas
-echo 'permit nopass :wheel' > /etc/doas.conf
+# Enable the wheel group to use doas and allow users to poweroff and reboot
+echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' | sudo tee -a /etc/doas.conf
 
 # Replace sudo
 ln -s /usr/bin/doas /usr/bin/sudo
@@ -238,9 +236,6 @@ if [ '$PACKAGES' != 'minimal' ]; then
 	mkdir ~/git
 	git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
 fi
-
-# Allow user to poweroff and reboot
-echo -e 'permit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' | sudo tee -a /etc/doas.conf
 
 case $PACKAGES in
 	minimal) ;;
