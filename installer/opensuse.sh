@@ -107,7 +107,7 @@ case $PACKAGES in
 esac
 
 # Installing the dotfiles
-su $USERNAME -c install_dotfiles $PACKAGES
+su $USERNAME -c "install_dotfiles $PACKAGES"
 
 # Removing the nopass option in doas
 sed -i '1s/nopass/persist/g' /etc/doas.conf
