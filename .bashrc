@@ -180,7 +180,9 @@ print_cmd(){
 }
 
 if command -v neofetch >> /dev/null; then
-	alias neofetchupdate='neofetch --config $XDG_CONFIG_HOME/neofetch/config.conf > $XDG_CACHE_HOME/.neofetch'
+	neofetchupdate(){
+		neofetch --config $XDG_CONFIG_HOME/neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
+	}
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetchupdate
 	echo -e "\n$(cat $XDG_CACHE_HOME/.neofetch)${BOLD}Available commands :${NOCOLOUR}"
 	print_cmd 'neofetchupdate' 'Update the cached neofetch informations'
