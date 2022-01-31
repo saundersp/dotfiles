@@ -118,13 +118,13 @@ export LESS_TERMCAP_se=$'\E[0m'     # reset reverse video
 export LESS_TERMCAP_us=$'\E[1;32m'  # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'     # reset underline
 
-alias	ls='ls -hN --color=auto --group-directories-first' \
+alias	ls='ls -h --color=auto --group-directories-first' \
 		grep='grep --color=auto' \
 		fgrep='fgrep --color=auto' \
 		egrep='egrep --color=auto' \
 		diff='diff --color=auto' \
 		ip='ip --color=auto' \
-		ll='ls -hNClas --color=auto --group-directories-first'
+		ll='ls -hClas --color=auto --group-directories-first'
 
 # Print out escape sequences usable for coloured text on tty.
 colours() {
