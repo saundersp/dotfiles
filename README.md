@@ -1,4 +1,6 @@
-# Pierre Saunders's dotfiles
+# @saundersp's dotfiles
+
+*Read this in other languages: [Français](README.fr.md)*
 
 ## Dependencies
 
@@ -9,6 +11,8 @@
 - neofetch
 - git
 - bash
+- Node (with npm)
+- Python (with pip)
 
 ### Linux specific
 
@@ -19,27 +23,44 @@
 - i3-gaps
 - polybar
 - bluez-utils
-- wget
-- unzip
-
-#### Root installation
-
-- pacman
-- npm
-- python-pip
 
 ## Installation
 
-Either pick any wanted files or use the install.sh script.
+Either pick any wanted files, code blocks, or just use the auto.sh script.
 
 ### Install helper usage
 
 ```bash
-# Default linux as user
-./install.sh
-# Linux server
-./install.sh server
-# Windows
-./install.sh windows
+# Default Linux as user (some dotfiles differ if installed as root)
+./auto.sh
+# For the minimal, terminal only, dotfiles
+./auto.sh server
+# Version Windows
+./auto.sh windows
 ```
 
+### Uninstallation
+
+```bash
+./auto.sh remove
+# Alternative
+./auto.sh uninstall
+```
+
+## Installers && post-installers
+
+These scripts are meant to install/rice a minimal Linux installation to my liking.
+
+Installers (these also include a minimal installation option):
+
+- Arch
+- Artix
+- Alpine
+- Gentoo
+- Void
+
+Post-installers :
+
+- Debian
+- Fedora
+- OpenSUSE
