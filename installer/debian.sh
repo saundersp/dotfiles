@@ -27,7 +27,7 @@
 # Unselect everything in software selection
 # Reboot
 # Login as root
-# apt update && apt upgrade && apt install -y curl
+# apt update && apt upgrade -y && apt install -y curl
 
 # Configuration (tweak to your liking)
 USERNAME=saundersp
@@ -42,13 +42,14 @@ echo -e 'Acquire::http::Timeout "9999";\nAcquire::https::Timeout "9999";\nAcquir
 
 # Add non-free repositories to debian mirrors
 sed -i 's/main/main non-free/g' /etc/apt/sources.list
+apt update
 
 # Install helpers
 install_pkg(){
-	apt install -C /etc/apt/sources.list -y $@
+	apt install -y $@
 }
 install_server(){
-	install_pkg doas neovim neofetch git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep htop
+	install_pkg doas neovim neofetch git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep htop man
 
 	# Enable the wheel group to use doas and allow users to poweroff and reboot
 	echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.conf
@@ -71,7 +72,7 @@ install_server(){
 	git clone https://github.com/jesseduffield/lazygit.git
 	cd lazygit
 	su $USERNAME -c 'go install'
-	ln -s /home/$USERNAME/go/bin/lazygit /usr/bin/lazygit
+	mv /home/$USERNAME/go/bin/lazygit /usr/bin/lazygit
 
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates

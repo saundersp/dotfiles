@@ -27,7 +27,7 @@ set -e
 # Adding missings mirrors
 zypper addrepo -G https://download.opensuse.org/repositories/security/openSUSE_Tumbleweed/security.repo               # For opendoas
 zypper addrepo -G https://download.opensuse.org/repositories/home:Dead_Mozay/openSUSE_Tumbleweed/home:Dead_Mozay.repo # For lazygit
-refresh
+zypper refresh
 
 # Disable the installation of recommended packages
 sed -i 's/# solver.onlyRequires = false/solver.onlyRequires = true/g' /etc/zypp/zypp.conf
@@ -60,7 +60,7 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg xinit xorg-x11-server xset polybar alacritty i3-gaps dmenu picom feh keepass xclip firefox vlc xrandr xf86-input-keyboard xf86-input-libinput xf86-input-mouse
+	install_pkg xinit xorg-x11-server xset polybar alacritty i3-gaps dmenu picom feh keepass xclip firefox vlc xrandr xf86-input-libinput
 
 	# Getting the Hasklig font
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
