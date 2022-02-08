@@ -102,5 +102,5 @@ key_bindings:
 
 shell:
   program: bash
-  #program: E:/Tools/git/bin/bash.exe
+  #program: C:\Users\user\scoop\apps\git\current\bin\bash.exe
 
