@@ -283,6 +283,7 @@ command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard' && pri
 command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &' && print_cmd 'vpn' 'Easily enable a secure VPN connection'
 command -v reflector >> /dev/null && alias update_mirrors='sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist' && print_cmd 'update_mirrors' "Update pacman's mirrors"
 command -v lazygit >> /dev/null && alias lg='lazygit' && print_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
+command -v lazydocker >> /dev/null && alias ldo='lazydocker' && print_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
 
 if command -v xrandr >> /dev/null; then
 	alias hdmi_on='xrandr --output HDMI-1-0 --auto --left-of eDP1'
@@ -290,6 +291,7 @@ if command -v xrandr >> /dev/null; then
 	alias hdmi_off='xrandr --output HDMI-1-0 --off'
 	print_cmd 'hdmi_off' 'Turn off the HDMI connection'
 fi
+alias cb='clear && exec bash' && print_cmd 'cb' 'Shortcut to clear && exec bash'
 
 echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"
 #print_cmd '!!' 'Last command'
