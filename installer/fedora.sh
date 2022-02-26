@@ -53,7 +53,7 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg i3-gaps xorg-x11-xinit xset polybar dmenu picom feh alacritty keepass xclip firefox \
+	install_pkg i3-gaps xorg-x11-xinit xset polybar dmenu picom feh alacritty xclip firefox \
 					xorg-x11-server-Xorg
 
 	# Installing vlc

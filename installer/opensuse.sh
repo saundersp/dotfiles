@@ -60,7 +60,7 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg xinit xorg-x11-server xset polybar alacritty i3-gaps dmenu picom feh keepass xclip firefox vlc xrandr xf86-input-libinput
+	install_pkg xinit xorg-x11-server xset polybar alacritty i3-gaps dmenu picom feh xclip firefox vlc xrandr xf86-input-libinput
 
 	# Getting the Hasklig font
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip

@@ -82,7 +82,7 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg dmenu picom xinit xserver-xorg-core x11-xserver-utils feh keepassx xclip firefox-esr vlc polybar xserver-xorg-input-kbd \
+	install_pkg dmenu picom xinit xserver-xorg-core x11-xserver-utils feh xclip firefox-esr vlc polybar xserver-xorg-input-kbd \
 				xserver-xorg-input-mouse xserver-xorg-input-libinput
 
 	# Compiling i3-gaps

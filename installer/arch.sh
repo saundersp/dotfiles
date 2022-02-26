@@ -96,7 +96,7 @@ install_server(){
 	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop
 }
 install_ihm(){
-	install_pkg fakeroot make gcc pkgconf dmenu picom i3-gaps xorg-xinit xorg-server xorg-xset feh alacritty keepass xclip firefox vlc
+	install_pkg fakeroot make gcc pkgconf dmenu picom i3-gaps xorg-xinit xorg-server xorg-xset feh alacritty xclip firefox vlc
 }
 
 # Installing the minimal packages

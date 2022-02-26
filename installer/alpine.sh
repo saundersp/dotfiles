@@ -169,7 +169,7 @@ EOF
 install_ihm(){
 	install_server
 	install_pkg dmenu picom xinit xset feh alacritty xclip firefox vlc setxkbmap mesa-dri-swrast \
-			i3wm-gaps polybar keepassxc
+			i3wm-gaps polybar
 
 	# Setup repositories for xorg (input and xserver)
 	setup-xorg-base 1>&2 | true
