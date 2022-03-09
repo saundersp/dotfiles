@@ -33,11 +33,6 @@ bindsym XF86MonBrightnessUp exec --no-startup-id sudo brightnessctl set +1%
 # Use Mouse+$mod to drag floating windows to their wanted position
 #floating_modifier $mod
 
-# Set the gaps
-smart_gaps on
-gaps inner 5
-gaps outer 5
-
 # start a terminal
 bindsym $mod+Return exec --no-startup-id alacritty
 
