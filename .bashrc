@@ -64,6 +64,9 @@ __setprompt() {
 	# Skip to the next line
 	PS1+="\r\n\[${USER_COLOUR}\]└─>\[${NOCOLOUR}\] "
 
+	# Window title
+	PS1+="\033]0;Alacritty (\w)\007"
+
 	# PS2 is used to continue a command using the \ character
 	PS2="\[${DARKGRAY}\]>\[${NOCOLOUR}\] "
 
@@ -98,11 +101,10 @@ complete -cf sudo
 # Allow the local root to make connections to the X server
 command -v xhost >> /dev/null && xhost +local:root >> /dev/null 2>&1
 
-# Add verbosity to common commands
-alias	cp='cp -iv' \
-		mv='mv -iv' \
-		rm='rm -v' \
-		mkdir='mkdir -pv' \
+# Add interactivity to common commands
+alias	cp='cp -i' \
+		mv='mv -i' \
+		mkdir='mkdir -p' \
 		df='df -h' \
 		free='free -h'
 
@@ -189,6 +191,7 @@ if command -v neofetch >> /dev/null; then
 else
 	echo -e "${BOLD}Available commands :${NOCOLOUR}"
 fi
+
 if command -v python >> /dev/null; then
 	# Activate the python virtual environment in the current folder
 	activate(){
@@ -203,13 +206,16 @@ if command -v python >> /dev/null; then
 	}
 	print_cmd 'activate' 'Activate the python virtual environment'
 fi
+
 print_cmd 'colours' 'Show the colours palette of the current terminal'
 print_cmd 'preview_csv <file>' 'Preview a csv file'
 if command -v nvim >> /dev/null; then
+	export EDITOR=nvim
 	command -v nvim >> /dev/null && alias vi='nvim' vim='nvim' vid='nvim -d' vimdiff='nvim -d'
 	#print_cmd 'vi or vim <file/directory/?>' 'Shortcut to nvim'
 	print_cmd 'vid or vimdiff <file1> <file2>' 'Shortcut to nvim diff mode'
 fi
+
 print_cmd 'll <directory/?>' 'Detailed ls'
 if command -v pacman >> /dev/null; then
 	alias pacprune='pacman -Qtdq | sudo pacman -Rns -'
@@ -281,11 +287,30 @@ if command -v pacman >> /dev/null; then
 	}
 	print_cmd 'aur_list' 'List of the installed AUR packages'
 fi
+
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard' && print_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
 command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &' && print_cmd 'vpn' 'Easily enable a secure VPN connection'
 command -v reflector >> /dev/null && alias update_mirrors='sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist' && print_cmd 'update_mirrors' "Update pacman's mirrors"
 command -v lazygit >> /dev/null && alias lg='lazygit' && print_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker' && print_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
+
+if command -v lf >> /dev/null; then
+	lfcd () {
+		tmp="$(mktemp)"
+		lf -last-dir-path="$tmp" "$@"
+		if [ -f "$tmp" ]; then
+			dir="$(cat "$tmp")"
+			rm -f "$tmp" >> /dev/null
+			if [ -d "$dir" ]; then
+				if [ "$dir" != "$(pwd)" ]; then
+					cd "$dir"
+				fi
+			fi
+		fi
+	}
+	bind '"\C-o":"lfcd\C-m"'
+	print_cmd 'lfcd / C-o' 'Modded lf to changed pwd on exit'
+fi
 
 if command -v xrandr >> /dev/null; then
 	alias hdmi_on='xrandr --output HDMI-1-0 --auto --left-of eDP1'
@@ -293,6 +318,7 @@ if command -v xrandr >> /dev/null; then
 	alias hdmi_off='xrandr --output HDMI-1-0 --off'
 	print_cmd 'hdmi_off' 'Turn off the HDMI connection'
 fi
+
 alias cb='clear && exec bash' && print_cmd 'cb' 'Shortcut to clear && exec bash'
 
 echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"
