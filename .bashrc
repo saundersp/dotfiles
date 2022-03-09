@@ -223,14 +223,16 @@ if command -v pacman >> /dev/null; then
 			echo "Usage : $FUNCNAME <git-link>"
 			return 0
 		fi
-		local PACKAGE_NAME=$(basename $1 .git)
+		local PACKAGE_NAME=$1
 		echo Package name : $PACKAGE_NAME
 		if [ ! -d $AUR_PATH/$PACKAGE_NAME ]; then
-			git clone $1 $AUR_PATH/$PACKAGE_NAME
-		else
-			git -C $1
+			git clone https://aur.archlinux.org/$PACKAGE_NAME.git $AUR_PATH/$PACKAGE_NAME
 		fi
 		cd $AUR_PATH/$PACKAGE_NAME
+		local GPG_KEY=$(cat PKGBUILD | grep validpgpkeys | cut -d "'" -f 2)
+		if [ -z $GPG_KEY ]; then
+			gpg --recv-keys $GPG_KEY
+		fi
 		makepkg -sri
 		cd -
 	}
