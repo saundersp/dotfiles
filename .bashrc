@@ -277,7 +277,7 @@ if command -v pacman >> /dev/null; then
 	aur_list() {
 		local PACKAGE_NAME PACMAN_INFO
 		for PACKAGE_NAME in $(ls $AUR_PATH); do
-			PACMAN_INFO=$(pacman -Q | grep $PACKAGE_NAME)
+			PACMAN_INFO=$(pacman -Q $PACKAGE_NAME)
 			if [[ ! -z $PACMAN_INFO ]]; then
 				echo - [x] $PACMAN_INFO
 			else
