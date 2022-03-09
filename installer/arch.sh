@@ -96,7 +96,7 @@ install_server(){
 	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop
 }
 install_ihm(){
-	install_pkg fakeroot make gcc pkgconf dmenu picom i3-gaps xorg-xinit xorg-server xorg-xset feh alacritty xclip firefox vlc
+	install_pkg fakeroot make gcc pkgconf dmenu picom i3-gaps xorg-xinit xorg-server xorg-xset feh alacritty xclip vlc
 }
 
 # Installing the minimal packages
@@ -244,6 +244,8 @@ echo -e 'permit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' | s
 aur_install(){
 	git clone https://aur.archlinux.org/\$1.git ~/aur/\$1
 	cd ~/aur/\$1
+	local GPG_KEY=\$(cat PKGBUILD | grep validpgpkeys | cut -d \"'\" -f 2)
+	test -z \$GPG_KEY && gpg --recv-key \$GPG_KEY
 	makepkg -sri --noconfirm
 }
 
@@ -254,6 +256,9 @@ case $PACKAGES in
 		cd ~/git/dotfiles
 		./auto.sh server
 		sudo bash auto.sh server
+
+		aur_install lazydocker
+		aur_install lf
 	;;
 	virtual|laptop)
 		# Enabling the dotfiles
@@ -266,19 +271,19 @@ case $PACKAGES in
 		cd ~/Images
 		wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
 
-		# Allow user to use brightnessctl
-		test $PACKAGES == 'laptop' && echo 'permit nopass :wheel cmd brightnessctl' | sudo tee -a /etc/doas.conf
+		if [ $PACKAGES == 'laptop' ]; then
+			# Allow user to use brightnessctl
+			echo 'permit nopass :wheel cmd brightnessctl' | sudo tee -a /etc/doas.conf
+		fi
 
+		aur_install davmail
+		aur_install tor-browser
+		aur_install font-manager
+		aur_install librewolf-bin
+		aur_install spotify
 		aur_install polybar
 	;;
 esac
-
-if [ $PACKAGES == 'laptop' ]; then
-	aur_install davmail
-	gpg --auto-key-locate nodefault,wkd --locate-keys torbrowser@torproject.org
-	aur_install tor-browser
-	aur_install font-manager
-fi
 
 # Removing the nopass option in doas
 sudo sed -i '1s/nopass/persist/g' /etc/doas.conf
@@ -288,7 +293,7 @@ chmod +x /mnt/home/$USERNAME/install.sh
 arch-chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
 
 # Cleaning leftovers
-rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh
+rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh $0
 
 reboot
 
