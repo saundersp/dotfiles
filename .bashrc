@@ -204,7 +204,7 @@ if command -v python >> /dev/null; then
 		else echo 'Python virtual environment not detected !'
 		fi
 	}
-	print_cmd 'activate' 'Activate the python virtual environment'
+	#print_cmd 'activate' 'Activate the python virtual environment'
 fi
 
 print_cmd 'colours' 'Show the colours palette of the current terminal'
@@ -213,7 +213,7 @@ if command -v nvim >> /dev/null; then
 	export EDITOR=nvim
 	command -v nvim >> /dev/null && alias vi='nvim' vim='nvim' vid='nvim -d' vimdiff='nvim -d'
 	#print_cmd 'vi or vim <file/directory/?>' 'Shortcut to nvim'
-	print_cmd 'vid or vimdiff <file1> <file2>' 'Shortcut to nvim diff mode'
+	#print_cmd 'vid or vimdiff <file1> <file2>' 'Shortcut to nvim diff mode'
 fi
 
 print_cmd 'll <directory/?>' 'Detailed ls'
@@ -224,82 +224,101 @@ if command -v pacman >> /dev/null; then
 	alias pacupdate='sudo pacman -Syu'
 	print_cmd 'pacupdate' 'Update every packages'
 
-	aur_install() {
-		if [[ -z "$1" || "$1" == 'help' || "$1" == '--help' ]]; then
-			echo "Usage : $FUNCNAME <git-link>"
-			return 0
-		fi
-		local PACKAGE_NAME=$1
-		echo Package name : $PACKAGE_NAME
-		if [ ! -d $AUR_PATH/$PACKAGE_NAME ]; then
-			git clone https://aur.archlinux.org/$PACKAGE_NAME.git $AUR_PATH/$PACKAGE_NAME
-		fi
-		cd $AUR_PATH/$PACKAGE_NAME
-		local GPG_KEY=$(cat PKGBUILD | grep validpgpkeys | cut -d "'" -f 2)
-		if [ -z $GPG_KEY ]; then
-			gpg --recv-keys $GPG_KEY
-		fi
-		makepkg -sri
-		cd -
-	}
-	print_cmd 'aur_install <git_link>' 'Install specified AUR package to AUR_PATH'
-
-	aur_update() {
-		local PACKAGE_NAME
-		for PACKAGE_NAME in $(ls $AUR_PATH); do
-			if [[ $(git -C $AUR_PATH/$PACKAGE_NAME pull) == 'Already up to date.' ]]; then
-				echo Package $PACKAGE_NAME already up to date
-			else
-				echo Updating $PACKAGE_NAME
+	aur(){
+		local USAGE="AUR Install helper\nImplemented by @saundersp\n\nDocumentation:\n
+			\taur install <aur-package-name>\n\tInstall the specified AUR package.\n\n
+			\taur uninstall <aur-package-name>\n\tUninstall the specified AUR package.\n\n
+			\taur list\n\tList all the AUR packages.\n\n
+			\taur update|upgrade\n\tUpdate all the AUR packages.\n\n
+			\taur help|--help\n\tShow this help message"
+		case "$1" in
+			install)
+				if [[ -z "$2" || "$2" == 'help' || "$2" == '--help' ]]; then
+					echo "Usage : $0 $1 install <aur-package-name>"
+					return 0
+				fi
+				local PACKAGE_NAME=$2
+				echo Package name : $PACKAGE_NAME
+				if [ ! -d $AUR_PATH/$PACKAGE_NAME ]; then
+					git clone https://aur.archlinux.org/$PACKAGE_NAME.git $AUR_PATH/$PACKAGE_NAME
+				fi
 				cd $AUR_PATH/$PACKAGE_NAME
+				local GPG_KEY=$(cat PKGBUILD | grep validpgpkeys | cut -d "'" -f 2)
+				if [ -z $GPG_KEY ]; then
+					gpg --recv-keys $GPG_KEY
+				fi
 				makepkg -sri
 				cd -
-			fi
-		done
-	}
-	print_cmd 'aur_update' 'Update every AUR packages'
+				;;
 
-	aur_uninstall() {
-		if [[ -z "$1"  || "$1" == 'help' || "$1" == '--help' ]]; then
-			echo "Usage : $FUNCNAME <aur-package-name"
-			return 0
-		fi
-		if [[ ! -d $AUR_PATH/$1 ]]; then
-			echo No such package : $1
-			return 1
-		fi
-		sudo pacman -Rns $1
-		rm -r $AUR_PATH/$1
-		echo Uninstalled $1 successfully
-	}
-	print_cmd 'aur_uninstall <aur-package-name>' 'Uninstall a specified AUR package'
+			update|upgrade)
+				local PACKAGE_NAME
+				for PACKAGE_NAME in $(ls $AUR_PATH); do
+					if [[ $(git -C $AUR_PATH/$PACKAGE_NAME pull) == 'Already up to date.' ]]; then
+						echo Package $PACKAGE_NAME already up to date
+					else
+						echo Updating $PACKAGE_NAME
+						cd $AUR_PATH/$PACKAGE_NAME
+						makepkg -sri
+						cd -
+					fi
+				done
+			;;
 
-	aur_list() {
-		local PACKAGE_NAME PACMAN_INFO
-		for PACKAGE_NAME in $(ls $AUR_PATH); do
-			PACMAN_INFO=$(pacman -Q $PACKAGE_NAME)
-			if [[ ! -z $PACMAN_INFO ]]; then
-				echo - [x] $PACMAN_INFO
-			else
-				echo - [ ] $PACKAGE_NAME
-			fi
-		done
+			uninstall)
+				if [[ -z "$2"  || "$2" == 'help' || "$2" == '--help' ]]; then
+					echo "Usage : $0 $1 <aur-package-name"
+					return 0
+				fi
+				local PACKAGE_NAME=$2
+				if [[ ! -d $AUR_PATH/$PACKAGE_NAME ]]; then
+					echo No such package : $PACKAGE_NAME
+					return 1
+				fi
+				sudo pacman -Rns $PACKAGE_NAME
+				rm -r $AUR_PATH/$PACKAGE_NAME
+				echo Uninstalled $PACKAGE_NAME successfully
+				;;
+
+			list)
+				local PACKAGE_NAME PACMAN_INFO
+				for PACKAGE_NAME in $(ls $AUR_PATH); do
+					PACMAN_INFO=$(pacman -Q $PACKAGE_NAME 2>>$1)
+					if [[ ! -z $PACMAN_INFO ]]; then
+						echo - [x] $PACMAN_INFO
+					else
+						echo - [ ] $PACKAGE_NAME
+					fi
+				done
+			;;
+
+			--help|help) echo -e $USAGE && return 0 ;;
+			*) echo -e $USAGE && return 1 ;;
+		esac
 	}
-	print_cmd 'aur_list' 'List of the installed AUR packages'
+
+	print_cmd 'aur' 'AUR Install helper script'
 fi
 
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard' && print_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
 command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &' && print_cmd 'vpn' 'Easily enable a secure VPN connection'
-command -v reflector >> /dev/null && alias update_mirrors='sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist' && print_cmd 'update_mirrors' "Update pacman's mirrors"
+if command -v reflector >> /dev/null; then
+	update_mirrors(){
+		local MIRRORFILE=/etc/pacman.d/mirrorlist
+		test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
+		sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+	}
+	print_cmd 'update_mirrors' "Update pacman's mirrors"
+fi
 command -v lazygit >> /dev/null && alias lg='lazygit' && print_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker' && print_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
 
 if command -v lf >> /dev/null; then
 	lfcd () {
-		tmp="$(mktemp)"
+		local tmp="$(mktemp)"
 		lf -last-dir-path="$tmp" "$@"
 		if [ -f "$tmp" ]; then
-			dir="$(cat "$tmp")"
+			local dir="$(cat "$tmp")"
 			rm -f "$tmp" >> /dev/null
 			if [ -d "$dir" ]; then
 				if [ "$dir" != "$(pwd)" ]; then
