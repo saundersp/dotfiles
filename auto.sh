@@ -9,7 +9,7 @@ CURRENT_FOLDER=$(pwd)
 if [[ $1 == 'uninstall' || $1 == 'remove' ]]; then
 	rm -rf $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $HOME/.gitconfig $HOME/.bash_profile \
 		$XDG_CONFIG_HOME/alacritty/alacritty.yml $XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/coc-settings.json \
-		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config $XDG_CONFIG_HOME/polybar/scripts
+		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config $XDG_CONFIG_HOME/polybar/scripts $HOME/.bashrc $HOME/.bash_profile
 elif [ $EUID -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
 	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged
@@ -33,7 +33,7 @@ elif [ $EUID -ne 0 ]; then
 		mkdir -p $XDG_CONFIG_HOME/alacritty
 
 		ln -s $CURRENT_FOLDER/alacritty/alacritty.yml $XDG_CONFIG_HOME/alacritty/alacritty.yml
-		ln -s $CURRENT_FOLDER/.bash_profile $HOME/.bash_profile
+		ln -s $CURRENT_FOLDER/win.bash_profile $HOME/.bash_profile
 		ln -s $CURRENT_FOLDER/nvim/init.lua $XDG_CONFIG_HOME/nvim/init.lua
 		ln -s $CURRENT_FOLDER/nvim/coc-settings.json $XDG_CONFIG_HOME/nvim/coc-settings.json
 		ln -s $CURRENT_FOLDER/neofetch/config.conf $XDG_CONFIG_HOME/neofetch/config.conf
