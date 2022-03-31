@@ -45,8 +45,9 @@ font:
     style: Bold Italic
 
   # Point size
-  size: 6.5
-  #size: 9.0
+  size: 6.5  # Laptop
+  #size: 9.0  # Main Desktop
+  #size: 15.0 # Second Desktop
 
   offset:
     x: 0
@@ -102,5 +103,4 @@ key_bindings:
 
 shell:
   program: bash
-  #program: C:\Users\user\scoop\apps\git\current\bin\bash.exe
 
