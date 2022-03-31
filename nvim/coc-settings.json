@@ -1,9 +1,14 @@
 {
-	"coc.preferences.formatOnSaveFiletypes": ["python", "json", "docker", "markdown", "lua", "sh"],
+	"coc.preferences.formatOnSaveFiletypes": ["python", "json", "docker", "markdown", "lua", "sh", "json", "js", "ts"],
 	"python.linting.flake8Enabled": true,
 	"python.linting.flake8Args": ["--max-line-length=150", "--ignore=W191,E302,E704,E101,E128,E265,E251,E301,E305,E731"],
+	"javascript.format.semicolons": "insert",
+	"typescript.format.semicolons": "insert",
 	"python.formatting.provider": "autopep8",
-	"python.formatting.autopep8Args": ["--max-line-length=150", "--ignore=E101,E11,E121,E127,E128,E129,E301,E302,E402,E704,E265,E251,E305,E731"],
+	"python.formatting.autopep8Args": [
+		"--max-line-length=150",
+		"--ignore=E101,E11,E111,E121,E127,E128,E129,E301,E302,E402,E704,E265,E251,E305,E731,E122,E123,W191"
+	],
 	"clangd.arguments": ["--fallback-style='{BasedOnStyle: LLVM, UseTab: Always, IndentWidth: 4}'", "--clang-tidy", "--tweaks=-std=c++17"],
 	"clangd.checkUpdates": true,
 	"java.project.referencedLibraries": ["lib/**/*.jar"],
