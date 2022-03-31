@@ -7,7 +7,7 @@ local b = vim.b
 local wo = vim.wo
 local g = vim.g
 
-function map(mode, shortcut, command)
+function Map(mode, shortcut, command)
 	vim.api.nvim_set_keymap(mode, shortcut, command, { noremap = false, silent = true })
 end
 
@@ -66,13 +66,13 @@ o.showmode					= false														-- We don't need to see things like	-- INSER
 o.clipboard					= 'unnamedplus'												-- Copy paste between vim and everything else
 o.foldmethod				= 'syntax'													-- Change the folding method to fold from { [ ...
 o.foldlevel					= 99														-- Fold are open when you first open a file
---o.shell						= 'bash'												-- Changes the internal terminal to bash
 o.visualbell				= true														-- Disable noise
 o.splitbelow				= true														-- Horizontal splits will automatically be below
 o.splitright				= true														-- Vertical splits will automatically be to the right
 o.completeopt				= "menu,menuone,noselect"									-- Add LSP complete popup menu
-o.signcolumn				= "yes:1"													-- Always draw the signcolumn with 1 fixed space width
+o.signcolumn				= "yes"														-- Always draw the signcolumn with 1 fixed space width
 o.title						= true														-- Change the window's title to the opened file name and directory
+o.updatetime				= 200														-- Time before CursorHold triggers
 cmd("set formatoptions		+=r")														-- Add asterisks in block comments
 cmd("set wildignore			+=*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json")	-- Ignore files in fuzzy finder
 cmd("autocmd FileType python set noexpandtab")											-- Force disable expandtab on python's files
@@ -120,89 +120,121 @@ require'nvim-tree'.setup {
 			"venv",
 			"package-lock.json"
 		}
+	},
+	actions = {
+		open_file = {
+			quit_on_open = true,
+		}
 	}
+
 }
 
 require'colorizer'.setup(
 	{'*';},
 	{
-		RGB		 = true;	-- #RGB hex codes
-		RRGGBB	 = true;	-- #RRGGBB hex codes
-		names	 = true;	-- "Name" codes like Blue
-		RRGGBBAA = true;	-- #RRGGBBAA hex codes
-		rgb_fn	 = true;	-- CSS rgb() and rgba() functions
-		hsl_fn	 = true;	-- CSS hsl() and hsla() functions
-		css		 = true;	-- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-		css_fn	 = true;	-- Enable all CSS *functions*: rgb_fn, hsl_fn
+		RGB		 = true,	-- #RGB hex codes
+		RRGGBB	 = true,	-- #RRGGBB hex codes
+		names	 = true,	-- "Name" codes like Blue
+		RRGGBBAA = true,	-- #RRGGBBAA hex codes
+		rgb_fn	 = true,	-- CSS rgb() and rgba() functions
+		hsl_fn	 = true,	-- CSS hsl() and hsla() functions
+		css		 = true,	-- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+		css_fn	 = true		-- Enable all CSS *functions*: rgb_fn, hsl_fn
 	})
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
--- Key mapping config "
+-- Key mapping config
 --------------------------------------------------------------------------------------------------------------------------------------------------------
--- set leader key to space"
+-- set leader key to space
 g.mapleader = ' '
 
 -- Save buffer shortcut
-map('n', '<C-s>', ':w<CR>')
+Map('n', '<C-s>', ':w<CR>')
 
 -- Close window shortcut (keeps buffer open)
-map('n', '<C-F4>', ':q!<CR>')
-map('n', '<F28>', '<C-F4>') -- F28 Is CTRL F4 in Linux : LPT You can type key code in insert mode !
+Map('n', '<C-F4>', ':q!<CR>')
+Map('n', '<F28>', '<C-F4>') -- F28 Is CTRL F4 in Linux : LPT You can type key code in insert mode !
 
 -- Close buffer shortcut
-map('n', '<S-F4>', ':bd<CR>')
-map('n', '<F16>', '<S-F4>')
+Map('n', '<S-F4>', ':bd<CR>')
+Map('n', '<F16>', '<S-F4>')
 
 -- M is the ALT modifier key
-map('n', '<M-j>', ':resize -1<CR>')
-map('n', '<M-k>', ':resize +1<CR>')
-map('n', '<M-h>', ':vertical resize -1<CR>')
-map('n', '<M-l>', ':vertical resize +1<CR>')
-
--- Better window movement
-map('n', '<C-h>', '<C-w>h<CR>')
-map('n', '<C-j>', '<C-w>j<CR>')
-map('n', '<C-k>', '<C-w>k<CR>')
-map('n', '<C-l>', '<C-w>l<CR>')
+Map('n', '<M-j>', ':resize -1<CR>')
+Map('n', '<M-k>', ':resize +1<CR>')
+Map('n', '<M-h>', ':vertical resize -1<CR>')
+Map('n', '<M-l>', ':vertical resize +1<CR>')
 
 -- Better tab movement
-map('n', '<S-l>', 'gt')
-map('n', '<S-h>', 'gT')
+Map('n', '<S-l>', 'gt')
+Map('n', '<S-h>', 'gT')
 
 -- Fix terminal exit button
-map('t', '<Esc>', '<C-\\><C-n>')
+Map('t', '<Esc>', '<C-\\><C-n>')
 
 -- Clear the highlighting of :set hlsearch
-map('n', '<C-m>', ':noh<CR>')
+Map('n', '<C-m>', ':noh<CR>')
 
 -- Disable the suspend signal
-map('n', '<C-z>', '<Nop>')
+Map('n', '<C-z>', '<Nop>')
 
 -- Better tabbing
-map('v', '<', '<gv')
-map('v', '>', '>gv')
+Map('v', '<', '<gv')
+Map('v', '>', '>gv')
 
 -- Telescope keybinds
-map('n', '<C-p>',	  ':Telescope find_files<CR>')
-map('n', '<C-f>', ':Telescope live_grep<CR>')
-map('n', '<leader>f', ':Telescope grep_string<CR>')
-map('n', '<leader>t', ':Telescope help_tags<CR>')
-map('n', '<leader>c', ':Telescope commands<CR>')
-map('n', '<leader>b', ':Telescope buffers<CR>')
+Map('n', '<C-p>', ':Telescope find_files<CR>')
+Map('n', '<C-f>', ':Telescope live_grep<CR>')
+Map('n', '<leader>f', ':Telescope grep_string<CR>')
+Map('n', '<leader>t', ':Telescope help_tags<CR>')
+Map('n', '<leader>c', ':Telescope commands<CR>')
+Map('n', '<leader>b', ':Telescope buffers<CR>')
 
 -- Open the nerd tree explorer
-map('n', '<C-b>', '<cmd>NvimTreeToggle<CR>')
+Map('n', '<C-b>', '<cmd>NvimTreeToggle<CR>')
 
 -- COC keybinds
-map('v', '<leader>a', '<Plug>(coc-codeaction-selected)w')
-map('n', '<leader>a', '<Plug>(coc-codeaction-selected)w')
-map('n', 'gd', '<Plug>(coc-definition)')
-map('n', 'gy', '<Plug>(coc-type-definition)')
-map('n', 'gr', '<Plug>(coc-references)')
-map('n', 'gi', '<Plug>(coc-implementation)')
-map('n', '[g', '<Plug>(coc-diagnostic-prev)')
-map('n', ']g', '<Plug>(coc-diagnostic-next)')
-map('n', '<leader>r', '<Plug>(coc-rename)')
-map('n', '<leader>s', ':CocSearch ')
-map('n', '<leader>vd', ':CocDiagnostics<CR>')
-map('n', '<leader>ve', ':CocList extensions<CR>')
+Map('v', '<leader>a', '<Plug>(coc-codeaction-selected)w')
+Map('n', '<leader>a', '<Plug>(coc-codeaction-selected)w')
+Map('n', 'gd', '<Plug>(coc-definition)')
+Map('n', 'gy', '<Plug>(coc-type-definition)')
+Map('n', 'gr', '<Plug>(coc-references)')
+Map('n', 'gi', '<Plug>(coc-implementation)')
+Map('n', '[g', '<Plug>(coc-diagnostic-prev)')
+Map('n', ']g', '<Plug>(coc-diagnostic-next)')
+Map('n', '<leader>r', '<Plug>(coc-rename)')
+Map('n', '<leader>s', ':CocSearch ')
+Map('n', '<leader>vd', ':CocDiagnostics<CR>')
+Map('n', '<leader>vo', ':CocOutline<CR>')
+Map('n', '<leader>vc', ':CocCommands<CR>')
+Map('n', '<leader>ve', ':CocList extensions<CR>')
+
+cmd([[
+function! s:check_back_space() abort
+	let col = col('.') - 1
+	return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <silent><expr> <C-Space> coc#refresh()
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+function! s:show_documentation()
+	if (index(['vim','help'], &filetype) >= 0)
+		execute 'h '.expand('<cword>')
+	elseif (coc#rpc#ready())
+		call CocActionAsync('doHover')
+	else
+		execute '!' . &keywordprg . " " . expand('<cword>')
+	endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')"
+
+" Add `:Format` command to format current buffer.
+command! -nargs=0 Format :call CocActionAsync('format')
+]])
+
