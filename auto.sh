@@ -12,7 +12,7 @@ if [[ $1 == 'uninstall' || $1 == 'remove' ]]; then
 		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config $XDG_CONFIG_HOME/polybar/scripts $HOME/.bashrc $HOME/.bash_profile
 elif [ $EUID -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
-	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/lf/lfrc
+	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/lf
 
 	FILENAME=$XDG_CONFIG_HOME/nvim/autoload/plug.vim
 	test ! -f $FILENAME && curl https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim > $FILENAME
