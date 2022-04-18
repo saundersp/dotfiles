@@ -12,7 +12,7 @@ if [[ $1 == 'uninstall' || $1 == 'remove' ]]; then
 		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config $XDG_CONFIG_HOME/polybar/scripts $HOME/.bashrc $HOME/.bash_profile
 elif [ $EUID -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
-	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/lf
+	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/lf $XDG_CONFIG_HOME/tmux/plugins
 
 	FILENAME=$XDG_CONFIG_HOME/nvim/autoload/plug.vim
 	test ! -f $FILENAME && curl https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim > $FILENAME
@@ -22,6 +22,10 @@ elif [ $EUID -ne 0 ]; then
 	ln -sf $CURRENT_FOLDER/lf/lfrc $XDG_CONFIG_HOME/lf/lfrc
 	ln -sf $CURRENT_FOLDER/.bashrc $HOME/.bashrc
 	ln -sf $CURRENT_FOLDER/.gitconfig $HOME/.gitconfig
+
+	FILENAME=$XDG_CONFIG_HOME/tmux/plugins/tpm
+	test ! -d $FILENAME && git clone https://github.com/tmux-plugins/tpm $FILENAME
+	ln -sf $CURRENT_FOLDER/.tmux.conf $HOME/.tmux.conf
 
 	if [[ $1 == 'server' ]]; then
 		ln -sf $CURRENT_FOLDER/.bash_profile_server $HOME/.bash_profile
