@@ -16,3 +16,5 @@ cmd remove ${{
 map d
 map dd delete
 map dD push :remove
+map H set hidden!
+map <esc> quit
