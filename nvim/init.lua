@@ -35,7 +35,7 @@ call plug#end()
 ]])
 
 g.coc_global_extensions = {	"coc-cspell-dicts", "coc-spell-checker", "coc-json", "coc-pyright", "coc-lua", "coc-prettier", "coc-docker", "coc-java",
-							"coc-sh", "coc-markdownlint", "coc-markdown-preview-enhanced", "coc-webview", "coc-clangd"}
+							"coc-sh", "coc-markdownlint", "coc-markdown-preview-enhanced", "coc-webview"}
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General settings config
@@ -121,6 +121,14 @@ require'nvim-tree'.setup {
 			"package-lock.json"
 		}
 	},
+	update_cwd = true,
+	view = {
+		mappings = {
+			list = {
+				{ key = "è", action = "cd" }
+			}
+		}
+	},
 	actions = {
 		open_file = {
 			quit_on_open = true,
@@ -165,10 +173,6 @@ Map('n', '<M-k>', ':resize +1<CR>')
 Map('n', '<M-h>', ':vertical resize -1<CR>')
 Map('n', '<M-l>', ':vertical resize +1<CR>')
 
--- Better tab movement
-Map('n', '<S-l>', 'gt')
-Map('n', '<S-h>', 'gT')
-
 -- Fix terminal exit button
 Map('t', '<Esc>', '<C-\\><C-n>')
 
@@ -189,9 +193,10 @@ Map('n', '<leader>f', ':Telescope grep_string<CR>')
 Map('n', '<leader>t', ':Telescope help_tags<CR>')
 Map('n', '<leader>c', ':Telescope commands<CR>')
 Map('n', '<leader>b', ':Telescope buffers<CR>')
+Map('n', '<leader>m', ':Telescope marks<CR>')
 
 -- Open the nerd tree explorer
-Map('n', '<C-b>', '<cmd>NvimTreeToggle<CR>')
+Map('n', '<C-n>', '<cmd>NvimTreeToggle<CR>')
 
 -- COC keybinds
 Map('v', '<leader>a', '<Plug>(coc-codeaction-selected)w')
@@ -209,18 +214,16 @@ Map('n', '<leader>vo', ':CocOutline<CR>')
 Map('n', '<leader>vc', ':CocCommands<CR>')
 Map('n', '<leader>ve', ':CocList extensions<CR>')
 
+-- Toggle clipboard pasting
+Map('n', '<F2>', ':set invpaste paste?<CR>')
+
 cmd([[
-function! s:check_back_space() abort
-	let col = col('.') - 1
-	return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
+"function! s:check_back_space() abort
+"	let col = col('.') - 1
+"	return !col || getline('.')[col - 1]  =~# '\s'
+"endfunction
+"inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : coc#refresh()
 
-inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-inoremap <silent><expr> <C-Space> coc#refresh()
-
-" Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
 function! s:show_documentation()
 	if (index(['vim','help'], &filetype) >= 0)
 		execute 'h '.expand('<cword>')
@@ -231,10 +234,17 @@ function! s:show_documentation()
 	endif
 endfunction
 
+inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')"
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocActionAsync('format')
 ]])
+
 
