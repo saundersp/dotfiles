@@ -46,8 +46,7 @@ font:
 
   # Point size
   size: 6.5  # Laptop
-  #size: 9.0  # Main Desktop
-  #size: 15.0 # Second Desktop
+  #size: 9.0  # Desktop
 
   offset:
     x: 0
@@ -91,15 +90,9 @@ selection:
 live_config_reload: true
 
 key_bindings:
-  - { key: V,        mods: Control|Shift, action: Paste            }
-  - { key: C,        mods: Control|Shift, action: Copy             }
-  - { key: Insert,   mods: Shift,         action: PasteSelection   }
   - { key: Key0,     mods: Control,       action: ResetFontSize    }
   - { key: Plus,     mods: Control,       action: IncreaseFontSize }
   - { key: Key6,     mods: Control,       action: DecreaseFontSize }
-  - { key: F11,      mods: None,          action: ToggleFullscreen }
-  - { key: Paste,    mods: None,          action: Paste            }
-  - { key: Copy,     mods: None,          action: Copy             }
 
 shell:
   program: bash
