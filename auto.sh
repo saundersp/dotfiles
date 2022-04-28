@@ -29,32 +29,8 @@ elif [ $EUID -ne 0 ]; then
 
 	if [[ $1 == 'server' ]]; then
 		ln -sf $CURRENT_FOLDER/.bash_profile_server $HOME/.bash_profile
-	elif [[ $1 == 'windows' ]]; then
-
-		mkdir -p $XDG_CONFIG_HOME/alacritty
-
-		ln -sf $CURRENT_FOLDER/alacritty/alacritty.yml $XDG_CONFIG_HOME/alacritty/alacritty.yml
-		ln -sf $CURRENT_FOLDER/win.bash_profile $HOME/.bash_profile
-		ln -sf $CURRENT_FOLDER/nvim/init.lua $XDG_CONFIG_HOME/nvim/init.lua
-		ln -sf $CURRENT_FOLDER/nvim/coc-settings.json $XDG_CONFIG_HOME/nvim/coc-settings.json
-		ln -sf $CURRENT_FOLDER/neofetch/config.conf $XDG_CONFIG_HOME/neofetch/config.conf
-		ln -sf $CURRENT_FOLDER/.bashrc $HOME/.bashrc
-		ln -sf $CURRENT_FOLDER/.gitconfig $HOME/.gitconfig
 	else
 		mkdir -p $XDG_CONFIG_HOME/alacritty $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks $XDG_CONFIG_HOME/polybar
-
-		FILENAME=$CURRENT_FOLDER/polybar/scripts/system-bluetooth-bluetoothctl.sh
-		if [ ! -f $FILENAME ]; then
-			if command -v bluetoothctl >> /dev/null; then
-				curl https://raw.githubusercontent.com/polybar/polybar-scripts/master/polybar-scripts/system-bluetooth-bluetoothctl/system-bluetooth-bluetoothctl.sh > $FILENAME
-				sed -i 's/#1//g' $FILENAME
-				sed -i 's/#2//g' $FILENAME
-				sed -i 's/"$(systemctl is-active "bluetooth.service")" = "active"/bluetoothctl show | grep -q "Powered: yes"/g' $FILENAME
-			else
-				touch $FILENAME
-			fi
-			chmod +x $FILENAME
-		fi
 
 		ln -sf $CURRENT_FOLDER/alacritty/alacritty.yml $XDG_CONFIG_HOME/alacritty/alacritty.yml
 		ln -sf $CURRENT_FOLDER/polybar/launch.sh $XDG_CONFIG_HOME/polybar/launch.sh
