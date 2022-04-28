@@ -7,7 +7,6 @@
 export XDG_CONFIG_HOME=$HOME/.XDG/config
 export XDG_CACHE_HOME=$HOME/.XDG/cache
 export XDG_DATA_HOME=$HOME/.XDG/data
-AUR_PATH=$HOME/aur
 
 # Define colours
 LIGHTGRAY='\033[0;37m'
@@ -27,7 +26,7 @@ LIGHTMAGENTA='\033[1;35m'
 CYAN='\033[0;36m'
 LIGHTCYAN='\033[1;36m'
 NOCOLOUR='\033[0m'
-USER_COLOUR=$DARKGRAY
+USER_COLOUR=$LIGHTRED
 
 # Define text styles
 BOLD='\033[1m'
@@ -93,9 +92,6 @@ if ! shopt -oq posix; then
 		source /etc/bash_completion
 	fi
 fi
-
-# Enable autocompletion as superuser
-complete -cf sudo
 
 # Allow the local root to make connections to the X server
 command -v xhost >> /dev/null && xhost +local:root >> /dev/null 2>&1
@@ -217,91 +213,19 @@ fi
 
 print_cmd 'll <directory/?>' 'Detailed ls'
 if command -v pacman >> /dev/null; then
-	alias pacprune='pacman -Qtdq | sudo pacman -Rns -'
+	alias pacprune='pacman -Qtdq | pacman -Rns -'
 	print_cmd 'pacprune' 'Remove unused packages (orphans)'
 
-	alias pacupdate='sudo pacman -Syu'
+	alias pacupdate='pacman -Syu'
 	print_cmd 'pacupdate' 'Update every packages'
-
-	aur(){
-		local USAGE="AUR Install helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\taur install <aur-package-name>\n\tInstall the specified AUR package.\n\n
-			\taur uninstall <aur-package-name>\n\tUninstall the specified AUR package.\n\n
-			\taur list\n\tList all the AUR packages.\n\n
-			\taur update|upgrade\n\tUpdate all the AUR packages.\n\n
-			\taur help|--help\n\tShow this help message"
-		case "$1" in
-			install)
-				if [[ -z "$2" || "$2" == 'help' || "$2" == '--help' ]]; then
-					echo "Usage : $0 $1 install <aur-package-name>"
-					return 0
-				fi
-				local PACKAGE_NAME=$2
-				echo Package name : $PACKAGE_NAME
-				test ! -d $AUR_PATH/$PACKAGE_NAME && git clone https://aur.archlinux.org/$PACKAGE_NAME.git $AUR_PATH/$PACKAGE_NAME
-				cd $AUR_PATH/$PACKAGE_NAME
-				local GPG_KEY=$(cat PKGBUILD | grep validpgpkeys | cut -d "'" -f 2)
-				test [ ! -z $GPG_KEY ] && gpg --recv-keys $GPG_KEY
-				makepkg -sri
-				cd -
-				;;
-
-			update|upgrade)
-				local PACKAGE_NAME
-				for PACKAGE_NAME in $(ls $AUR_PATH); do
-					if [[ $(git -C $AUR_PATH/$PACKAGE_NAME pull) == 'Already up to date.' ]]; then
-						echo Package $PACKAGE_NAME already up to date
-					else
-						echo Updating $PACKAGE_NAME
-						cd $AUR_PATH/$PACKAGE_NAME
-						makepkg -sri
-						cd -
-					fi
-				done
-			;;
-
-			uninstall)
-				if [[ -z "$2"  || "$2" == 'help' || "$2" == '--help' ]]; then
-					echo "Usage : $0 $1 <aur-package-name"
-					return 0
-				fi
-				local PACKAGE_NAME=$2
-				if [[ ! -d $AUR_PATH/$PACKAGE_NAME ]]; then
-					echo No such package : $PACKAGE_NAME
-					return 1
-				fi
-				sudo pacman -Rns $PACKAGE_NAME
-				rm -rf $AUR_PATH/$PACKAGE_NAME
-				echo Uninstalled $PACKAGE_NAME successfully
-				;;
-
-			list)
-				local PACKAGE_NAME PACMAN_INFO
-				for PACKAGE_NAME in $(ls $AUR_PATH); do
-					PACMAN_INFO=$(pacman -Q $PACKAGE_NAME)
-					if [[ ! -z $PACMAN_INFO ]]; then
-						echo - [x] $PACMAN_INFO
-					else
-						echo - [ ] $PACKAGE_NAME
-					fi
-				done
-			;;
-
-			--help|help) echo -e $USAGE && return 0 ;;
-			*) echo -e $USAGE && return 1 ;;
-		esac
-	}
-
-	print_cmd 'aur' 'AUR Install helper script'
 fi
 
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard' && print_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
-command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &' && print_cmd 'vpn' 'Easily enable a secure VPN connection'
 if command -v reflector >> /dev/null; then
 	update_mirrors(){
 		local MIRRORFILE=/etc/pacman.d/mirrorlist
 		test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
-		sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+		reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 	}
 	print_cmd 'update_mirrors' "Update pacman's mirrors"
 fi

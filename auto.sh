@@ -70,6 +70,6 @@ else
 	mkdir -p $HOME/.XDG/cache $XDG_CONFIG_HOME/neofetch
 
 	ln -sf $CURRENT_FOLDER/neofetch/config.conf $XDG_CONFIG_HOME/neofetch/config.conf
-	ln -sf $CURRENT_FOLDER/.bashrc $HOME/.bashrc
+	ln -sf $CURRENT_FOLDER/root.bashrc $HOME/.bashrc
 	ln -sf $CURRENT_FOLDER/root.bash_profile $HOME/.bash_profile
 fi
