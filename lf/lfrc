@@ -1,4 +1,5 @@
 set drawbox
+set info size
 
 # purge the unclean
 cmd remove ${{
@@ -16,5 +17,5 @@ cmd remove ${{
 map d
 map dd delete
 map dD push :remove
-map H set hidden!
+map dc cut
 map <esc> quit
