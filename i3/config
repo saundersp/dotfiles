@@ -31,7 +31,7 @@ bindsym XF86MonBrightnessDown exec --no-startup-id sudo brightnessctl set 1%-
 bindsym XF86MonBrightnessUp exec --no-startup-id sudo brightnessctl set +1%
 
 # Use Mouse+$mod to drag floating windows to their wanted position
-#floating_modifier $mod
+floating_modifier $mod
 
 # start a terminal
 bindsym $mod+Return exec --no-startup-id alacritty
@@ -78,17 +78,17 @@ bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
+# Gaps
+bindsym $mod+minus gaps inner all minus 5
+bindsym $mod+plus gaps inner all plus 5
+bindsym $mod+Shift+minus gaps outer all minus 5
+bindsym $mod+Shift+plus gaps outer all plus 5
+
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
 
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
-
-# focus the parent container
-#bindsym $mod+a focus parent
-
-# focus the child container
-#bindsym $mod+d focus child
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
