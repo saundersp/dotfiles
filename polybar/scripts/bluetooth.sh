@@ -48,12 +48,13 @@ bluetooth_toggle() {
 	fi
 }
 
-case "$1" in
-	--toggle)
-		bluetooth_toggle
-		;;
-	*)
-		bluetooth_print
-		;;
-esac
-
+if command -v bluetoothctl >> /dev/null; then
+	case "$1" in
+		--toggle)
+			bluetooth_toggle
+			;;
+		*)
+			bluetooth_print
+			;;
+	esac
+fi
