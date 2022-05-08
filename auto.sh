@@ -12,14 +12,15 @@ if [[ $1 == 'uninstall' || $1 == 'remove' ]]; then
 		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config.ini $XDG_CONFIG_HOME/polybar/scripts $HOME/.bashrc $HOME/.bash_profile
 elif [ $EUID -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
-	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/lf $XDG_CONFIG_HOME/tmux/plugins
+	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/tmux/plugins $XDG_CONFIG_HOME/ranger/plugins
 
 	FILENAME=$XDG_CONFIG_HOME/nvim/autoload/plug.vim
 	test ! -f $FILENAME && curl https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim > $FILENAME
 
+	test ! -d $XDG_CONFIG_HOME/ranger/plugins/ranger_devicons && git clone https://github.com/alexanderjeurissen/ranger_devicons.git $XDG_CONFIG_HOME/ranger/plugins/ranger_devicons
 	ln -sf $CURRENT_FOLDER/nvim/init.lua $XDG_CONFIG_HOME/nvim/init.lua
 	ln -sf $CURRENT_FOLDER/neofetch/config.conf $XDG_CONFIG_HOME/neofetch/config.conf
-	ln -sf $CURRENT_FOLDER/lf/lfrc $XDG_CONFIG_HOME/lf/lfrc
+	ln -sf $CURRENT_FOLDER/ranger/rc.conf $XDG_CONFIG_HOME/ranger/rc.conf
 	ln -sf $CURRENT_FOLDER/.bashrc $HOME/.bashrc
 	ln -sf $CURRENT_FOLDER/.gitconfig $HOME/.gitconfig
 
