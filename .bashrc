@@ -308,8 +308,8 @@ fi
 command -v lazygit >> /dev/null && alias lg='lazygit' && print_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker' && print_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
 
-if command -v lf >> /dev/null; then
-	ranger-cd () {
+if command -v ranger >> /dev/null; then
+	ranger-cd() {
 		local tmp="$(mktemp)"
 		ranger --choosedir=$tmp
 		if [ -f "$tmp" ]; then
