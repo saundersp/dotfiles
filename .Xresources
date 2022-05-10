@@ -58,7 +58,7 @@ i3wm.inner-gaps: 15
 i3wm.outer-gaps: 10
 
 ! ================================= Polybar ======================================
-polybar.height: 23
+polybar.height: 17pt
 polybar.padding-right: 2
 polybar.font: myfont:size=13:style=bold;0
 polybar.background: mybackground
