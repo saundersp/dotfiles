@@ -42,11 +42,26 @@ elif [ $EUID -ne 0 ]; then
 		ln -sf $CURRENT_FOLDER/nvim/coc-settings.json $XDG_CONFIG_HOME/nvim/coc-settings.json
 		ln -sf $CURRENT_FOLDER/.xinitrc $HOME/.xinitrc
 		ln -sf $CURRENT_FOLDER/.bash_profile $HOME/.bash_profile
+		ln -sf $CURRENT_FOLDER/.Xresources $HOME/.Xresources
 	fi
 else
-	mkdir -p $HOME/.XDG/cache $XDG_CONFIG_HOME/neofetch
+	mkdir -p $XDG_CONFIG_HOME/neofetch
 
 	ln -sf $CURRENT_FOLDER/neofetch/config.conf $XDG_CONFIG_HOME/neofetch/config.conf
 	ln -sf $CURRENT_FOLDER/root.bashrc $HOME/.bashrc
 	ln -sf $CURRENT_FOLDER/root.bash_profile $HOME/.bash_profile
+
+	if [[ $1 != 'server' ]]; then
+		ln -sf $CURRENT_FOLDER/.Xresources $HOME/.Xresources
+
+		PACKAGES='dmenu st'
+		for package in $PACKAGES; do
+			if [ ! -d /usr/local/src/$package ]; then
+				git clone git://git.suckless.org/$package /usr/local/src/$package
+				cd patches
+				./$package.sh
+				cd ..
+			fi
+		done
+	fi
 fi

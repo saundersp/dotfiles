@@ -232,22 +232,20 @@ fi
 command -v lazygit >> /dev/null && alias lg='lazygit' && print_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker' && print_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
 
-if command -v lf >> /dev/null; then
-	lfcd () {
+if command -v ranger >> /dev/null; then
+	ranger-cd() {
 		local tmp="$(mktemp)"
-		lf -last-dir-path="$tmp" "$@"
+		ranger --choosedir=$tmp
 		if [ -f "$tmp" ]; then
 			local dir="$(cat "$tmp")"
 			rm -f "$tmp" >> /dev/null
-			if [ -d "$dir" ]; then
-				if [ "$dir" != "$(pwd)" ]; then
-					cd "$dir"
-				fi
+			if [ "$dir" ] && [ "$dir" != "$(pwd)" ]; then
+				cd "$dir"
 			fi
 		fi
 	}
-	bind '"\C-o":"lfcd\C-m"'
-	print_cmd 'lfcd / C-o' 'Modded lf to changed pwd on exit'
+	bind '"\C-o":"ranger-cd\C-m"'
+	#print_cmd 'ranger-cd / C-o' 'Modded ranger to changed pwd on exit'
 fi
 
 if command -v xrandr >> /dev/null; then

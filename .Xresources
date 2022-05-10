@@ -1,0 +1,135 @@
+! NOTE: How to apply Xresources :
+! Dependencies: xorg-xrdb
+! xrdb .Xresources
+
+! Darkplus colour palette
+! normal:
+!   black:    '#000000'
+!   red:      '#e8341c'
+!   green:    '#68c256'
+!   yellow:   '#f2d42c'
+!   blue:     '#1c98e8'
+!   magenta:  '#8e69c9'
+!   cyan:     '#1c98e8'
+!   white:    '#bababa'
+
+! bright:
+!   black:    '#666666'
+!   red:      '#e05a4f'
+!   green:    '#77b869'
+!   yellow:   '#efd64b'
+!   blue:     '#387cd3'
+!   magenta:  '#957bbe'
+!   cyan:     '#3d97e2'
+!   white:    '#bababa'
+
+! Code dark colour palette
+#define black           #1e1e1e
+#define gray            #808080
+#define light_blue      #9cdcfe
+#define blue            #569cd6
+#define blue_green      #4ec9b0
+#define green           #608b4e
+#define light_green     #b5cea8
+#define yellow          #dcdcaa
+#define yellow_orange   #ce9178
+#define orange          #d7ba7d
+#define light_red       #d16969
+#define red             #f44747
+#define pink            #c586c0
+#define violet          #646695
+#define mybackground    #222324
+#define mybackgroundalt #444
+#define myforeground    #bababa
+#define myforegroundalt #dfdfdf
+#define myprimary       #ddb52a
+#define mysecondary     #d60053
+#define myalert         #bd2c40
+#define myfont Hasklug Nerd Font Mono
+
+!  # Point size
+!  #size: 6.5  # Laptop
+!  size: 9.0  # Desktop
+
+! ================================= i3 ==========================================
+i3wm*border: black
+i3wm*backgr: mybackground
+i3wm*text: myforeground
+i3wm.cf.backgr: mybackgroundalt
+i3wm.cf.text: myforegroundalt
+i3wm.font: myfont 10
+i3wm.inner-gaps: 15
+i3wm.outer-gaps: 10
+
+! ================================= Polybar ======================================
+polybar.font: myfont:style=Bold:size=13
+polybar.background: mybackground
+polybar.background-alt: mybackgroundalt
+polybar.foreground: myforeground
+polybar.foreground-alt: myforegroundalt
+polybar.primary: myprimary
+polybar.secondary: mysecondary
+polybar.alert: myalert
+
+! =================================== dmenu =======================================
+! font or font set (default: monospace:size=10)
+dmenu.font: myfont:size=9:style=bold
+! normal background colour (default: #222)
+dmenu.background: mybackground
+! normal foreground colour (default: #bbb)
+dmenu.foreground : myforegroundalt
+!selected background colour (default: #005577)
+dmenu.selbackground : blue
+! selected foreground colour (default: #eee)
+dmenu.selforeground : myforegroundalt
+
+! =================================== st =======================================
+! font or font set (default: Liberation Mono:pixelsize=12:antialias=true:autohint=true)
+st.font: myfont:pixelsize=14:antialias=true:autohint=true
+! default: gray90
+st.foreground: myforeground
+! default: black
+st.background: mybackground
+! default: #ccc
+st.cursorColor: myforegroundalt
+! default: #555
+st.reverse-cursor: #555
+! Default TERM value (default: st-256color)
+st.termname: st-256color
+! default: 800
+st.blinktimeout: 800
+! The bell volume, it must be a value between -100 and 100. Use 0 for disabling it (default: 0)
+st.bellvolume: 0
+! Terminal border size in pixels (default: 2)
+st.borderpx: 0
+! Default shape of cursor
+! 2: Block ("█")
+! 4: Underline ("_")
+! 6: Bar ("|")
+! 7: Snowman ("☃")
+! default: 2
+st.cursorshape: 2
+! Kerning / character bounding-box multipliers
+! default: 1.0
+st.cwscale: 1.0
+! default: 1.0
+st.chscale: 1.0
+! Terminal normal colours (default: black red3 green3 yellow3 blue2 magenta3 cyan3 gray90)
+st.color0: #000
+st.color1: #e8341c
+st.color2: #68c256
+st.color3: #f2d42c
+st.color4: #1c98e8
+st.color5: #8e69c9
+st.color6: #1c98e8
+st.color7: #bababa
+! Terminal bright colours (default: gray50 red green yellow #5c5cff magenta cyan white)
+st.color8:  #666
+st.color9:  #e05a4f
+st.color10: #77b869
+st.color11: #efd64b
+st.color12: #387cd3
+st.color13: #957bbe
+st.color14: #3d97e2
+st.color15: #bababa
+
