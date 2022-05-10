@@ -47,22 +47,20 @@
 #define myalert         #bd2c40
 #define myfont Hasklug Nerd Font Mono
 
-!  # Point size
-!  #size: 6.5  # Laptop
-!  size: 9.0  # Desktop
-
 ! ================================= i3 ==========================================
 i3wm*border: black
 i3wm*backgr: mybackground
 i3wm*text: myforeground
 i3wm.cf.backgr: mybackgroundalt
 i3wm.cf.text: myforegroundalt
-i3wm.font: myfont 10
+i3wm.font: myfont 9
 i3wm.inner-gaps: 15
 i3wm.outer-gaps: 10
 
 ! ================================= Polybar ======================================
-polybar.font: myfont:style=Bold:size=13
+polybar.height: 23
+polybar.padding-right: 2
+polybar.font: myfont:size=13:style=bold;0
 polybar.background: mybackground
 polybar.background-alt: mybackgroundalt
 polybar.foreground: myforeground
@@ -85,7 +83,7 @@ dmenu.selforeground : myforegroundalt
 
 ! =================================== st =======================================
 ! font or font set (default: Liberation Mono:pixelsize=12:antialias=true:autohint=true)
-st.font: myfont:pixelsize=14:antialias=true:autohint=true
+st.font: myfont:size=9
 ! default: gray90
 st.foreground: myforeground
 ! default: black
