@@ -64,7 +64,7 @@ __setprompt() {
 	PS1+="\r\n\[${USER_COLOUR}\]└─>\[${NOCOLOUR}\] "
 
 	# Window title
-	PS1+="\033]0;Alacritty (\w)\007"
+	PS1+="\033]0;st (\w)\007"
 
 	# PS2 is used to continue a command using the \ character
 	PS2="\[${DARKGRAY}\]>\[${NOCOLOUR}\] "
@@ -401,8 +401,8 @@ __helpme__(){
 	tprint_cmd 'vi or vim <file/directory/?>' 'Shortcut to nvim'
 	tprint_cmd 'vid or vimdiff <file1> <file2>' 'Shortcut to nvim diff mode'
 	tprint_cmd 'll <directory/?>' 'Detailed ls'
-	tprint_cmd 'pac' 'AUR Install helper script'
-	tprint_cmd 'aur' 'Pacman helper'
+	tprint_cmd 'pac' 'Pacman helper'
+	tprint_cmd 'aur' 'AUR Install helper script'
 	tprint_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
 	tprint_cmd 'vpn' 'Easily enable a secure VPN connection'
 	tprint_cmd 'update_mirrors' "Update pacman's mirrors"
