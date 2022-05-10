@@ -45,7 +45,8 @@
 #define myprimary       #ddb52a
 #define mysecondary     #d60053
 #define myalert         #bd2c40
-#define myfont Hasklug Nerd Font Mono
+#define myfont Hasklug Nerd Font
+#define myfontmono Hasklug Nerd Font Mono
 
 ! ================================= i3 ==========================================
 i3wm*border: black
@@ -53,14 +54,14 @@ i3wm*backgr: mybackground
 i3wm*text: myforeground
 i3wm.cf.backgr: mybackgroundalt
 i3wm.cf.text: myforegroundalt
-i3wm.font: myfont 9
+i3wm.font: myfontmono 9
 i3wm.inner-gaps: 15
 i3wm.outer-gaps: 10
 
 ! ================================= Polybar ======================================
 polybar.height: 17pt
 polybar.padding-right: 2
-polybar.font: myfont:size=13:style=bold;0
+polybar.font: myfont:size=9:style=bold
 polybar.background: mybackground
 polybar.background-alt: mybackgroundalt
 polybar.foreground: myforeground
@@ -71,7 +72,7 @@ polybar.alert: myalert
 
 ! =================================== dmenu =======================================
 ! font or font set (default: monospace:size=10)
-dmenu.font: myfont:size=9:style=bold
+dmenu.font: myfontmono:size=9:style=bold
 ! normal background colour (default: #222)
 dmenu.background: mybackground
 ! normal foreground colour (default: #bbb)
@@ -83,7 +84,7 @@ dmenu.selforeground : myforegroundalt
 
 ! =================================== st =======================================
 ! font or font set (default: Liberation Mono:pixelsize=12:antialias=true:autohint=true)
-st.font: myfont:size=9
+st.font: myfontmono:size=9
 ! default: gray90
 st.foreground: myforeground
 ! default: black
