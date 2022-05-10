@@ -337,7 +337,7 @@ if command -v pactl >> /dev/null; then
 		pactl unload-module module-native-protocol-tcp
 	}
 
-	__rsoff(){
+	__rsoff__(){
 		pactl unload-module module-tunnel-sink
 		pactl unload-module module-tunnel-source
 	}
