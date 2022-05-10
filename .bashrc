@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
@@ -10,31 +10,31 @@ export XDG_DATA_HOME=$HOME/.XDG/data
 AUR_PATH=$HOME/aur
 
 # Define colours
-LIGHTGRAY='\033[0;37m'
-WHITE='\033[1;37m'
-BLACK='\033[0;30m'
+#LIGHTGRAY='\033[0;37m'
+#WHITE='\033[1;37m'
+#BLACK='\033[0;30m'
 DARKGRAY='\033[1;30m'
 RED='\033[0;31m'
 LIGHTRED='\033[1;31m'
-GREEN='\033[0;32m'
-LIGHTGREEN='\033[1;32m'
-BROWN='\033[0;33m'
+#GREEN='\033[0;32m'
+#LIGHTGREEN='\033[1;32m'
+#BROWN='\033[0;33m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 LIGHTBLUE='\033[1;34m'
 MAGENTA='\033[0;35m'
-LIGHTMAGENTA='\033[1;35m'
-CYAN='\033[0;36m'
-LIGHTCYAN='\033[1;36m'
+#LIGHTMAGENTA='\033[1;35m'
+#CYAN='\033[0;36m'
+#LIGHTCYAN='\033[1;36m'
 NOCOLOUR='\033[0m'
 USER_COLOUR=$DARKGRAY
 
 # Define text styles
 BOLD='\033[1m'
-DIM='\033[2m'
+#DIM='\033[2m'
 ITALIC='\033[3m'
-UNDERLINED='\033[4m'
-BLINKING='\033[5m'
+#UNDERLINED='\033[4m'
+#BLINKING='\033[5m'
 
 __setprompt() {
 	local LAST_COMMAND=$? # Must come first!
@@ -82,7 +82,6 @@ HISTSIZE= HISTFILESIZE=   # Infinite history
 stty -ixon                # Disable ctrl-s and ctrl-q.
 shopt -s histappend       # Append to the history file, don't overwrite it
 shopt -s cdspell dirspell # Minor error corrections on directories/files names
-shopt -s checkwinsize     # Check the window size after each command and, if necessary, update the values of LINES and COLUMNS
 shopt -s expand_aliases   # Enable the alias keyword
 
 # Enable programmable completion features script by GNU (https://github.com/scop/bash-completion)
@@ -102,10 +101,10 @@ command -v xhost >> /dev/null && xhost +local:root >> /dev/null 2>&1
 
 # Add interactivity to common commands
 alias	cp='cp -i' \
-		mv='mv -i' \
-		mkdir='mkdir -p' \
-		df='df -h' \
-		free='free -h'
+	mv='mv -i' \
+	mkdir='mkdir -p' \
+	df='df -h' \
+	free='free -h'
 
 # Coloured GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -120,12 +119,12 @@ export LESS_TERMCAP_us=$'\E[1;32m'  # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'     # reset underline
 
 alias	ls='ls -h --color=auto --group-directories-first' \
-		grep='grep --color=auto' \
-		fgrep='fgrep --color=auto' \
-		egrep='egrep --color=auto' \
-		diff='diff --color=auto' \
-		ip='ip --color=auto' \
-		ll='ls -hClas --color=auto --group-directories-first'
+	grep='grep --color=auto' \
+	fgrep='fgrep --color=auto' \
+	egrep='egrep --color=auto' \
+	diff='diff --color=auto' \
+	ip='ip --color=auto' \
+	ll='ls -hClas --color=auto --group-directories-first'
 
 # Print out escape sequences usable for coloured text on tty.
 colours() {
@@ -175,18 +174,12 @@ preview_csv(){
 	cat "$1" | sed 's/,/ ,/g' | column -t -s, | less -S -n
 }
 
-# Command and description display helper
-print_cmd(){
-	printf "\055 \e[${ITALIC}%-32s\e[${NOCOLOUR} : $2\n" "$1"
-}
-
 if command -v neofetch >> /dev/null; then
 	neofetchupdate(){
 		neofetch --config $XDG_CONFIG_HOME/neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
 	}
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetchupdate
-	echo -e "\n$(cat $XDG_CACHE_HOME/.neofetch)${BOLD}Available commands :${NOCOLOUR}"
-	print_cmd 'neofetchupdate' 'Update the cached neofetch informations'
+	echo -e -n "\n$(cat $XDG_CACHE_HOME/.neofetch)"
 else
 	echo -e "${BOLD}Available commands :${NOCOLOUR}"
 fi
@@ -203,33 +196,34 @@ if command -v python >> /dev/null; then
 		else echo 'Python virtual environment not detected !'
 		fi
 	}
-	#print_cmd 'activate' 'Activate the python virtual environment'
 fi
 
-print_cmd 'colours' 'Show the colours palette of the current terminal'
-print_cmd 'preview_csv <file>' 'Preview a csv file'
 if command -v nvim >> /dev/null; then
 	export EDITOR=nvim
 	command -v nvim >> /dev/null && alias vi='nvim' vim='nvim' vid='nvim -d' vimdiff='nvim -d'
-	#print_cmd 'vi or vim <file/directory/?>' 'Shortcut to nvim'
-	#print_cmd 'vid or vimdiff <file1> <file2>' 'Shortcut to nvim diff mode'
 fi
 
-print_cmd 'll <directory/?>' 'Detailed ls'
 if command -v pacman >> /dev/null; then
-	alias pacprune='pacman -Qtdq | sudo pacman -Rns -'
-	print_cmd 'pacprune' 'Remove unused packages (orphans)'
-
-	alias pacupdate='sudo pacman -Syu'
-	print_cmd 'pacupdate' 'Update every packages'
+	pac(){
+		local USAGE="Pacman helper\nImplemented by @saundersp\n\nDocumentation:\n
+			\t$FUNCNAME update|upgrade\n\tUpdate every packages.\n\n
+			\t$FUNCNAME prune\n\tRemove unused packages (orphans).\n\n
+			\t$FUNCNAME help|--help\n\tShow this help message"
+		case "$1" in
+			update|upgrade) sudo pacman -Syu ;;
+			prune) pacman -Qtdq | sudo pacman -Rns - ;;
+			--help|help) echo -e $USAGE && return 0 ;;
+			*) echo -e $USAGE && return 1 ;;
+		esac
+	}
 
 	aur(){
 		local USAGE="AUR Install helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\taur install <aur-package-name>\n\tInstall the specified AUR package.\n\n
-			\taur uninstall <aur-package-name>\n\tUninstall the specified AUR package.\n\n
-			\taur list\n\tList all the AUR packages.\n\n
-			\taur update|upgrade\n\tUpdate all the AUR packages.\n\n
-			\taur help|--help\n\tShow this help message"
+			\t$FUNCNAME install <aur-package-name>\n\tInstall the specified AUR package.\n\n
+			\t$FUNCNAME uninstall <aur-package-name>\n\tUninstall the specified AUR package.\n\n
+			\t$FUNCNAME list\n\tList all the AUR packages.\n\n
+			\t$FUNCNAME update|upgrade\n\tUpdate all the AUR packages.\n\n
+			\t$FUNCNAME help|--help\n\tShow this help message"
 		case "$1" in
 			install)
 				if [[ -z "$2" || "$2" == 'help' || "$2" == '--help' ]]; then
@@ -241,7 +235,7 @@ if command -v pacman >> /dev/null; then
 				test ! -d $AUR_PATH/$PACKAGE_NAME && git clone https://aur.archlinux.org/$PACKAGE_NAME.git $AUR_PATH/$PACKAGE_NAME
 				cd $AUR_PATH/$PACKAGE_NAME
 				local GPG_KEY=$(cat PKGBUILD | grep validpgpkeys | cut -d "'" -f 2)
-				test [ ! -z $GPG_KEY ] && gpg --recv-keys $GPG_KEY
+				test ! -z $GPG_KEY && gpg --recv-keys $GPG_KEY
 				makepkg -sri
 				cd -
 				;;
@@ -278,7 +272,7 @@ if command -v pacman >> /dev/null; then
 			list)
 				local PACKAGE_NAME PACMAN_INFO
 				for PACKAGE_NAME in $(ls $AUR_PATH); do
-					PACMAN_INFO=$(pacman -Q $PACKAGE_NAME)
+					PACMAN_INFO=$(pacman -Q $PACKAGE_NAME 2>>/dev/null)
 					if [[ ! -z $PACMAN_INFO ]]; then
 						echo - [x] $PACMAN_INFO
 					else
@@ -292,21 +286,19 @@ if command -v pacman >> /dev/null; then
 		esac
 	}
 
-	print_cmd 'aur' 'AUR Install helper script'
 fi
 
-command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard' && print_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
-command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &' && print_cmd 'vpn' 'Easily enable a secure VPN connection'
+command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard'
+command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &'
 if command -v reflector >> /dev/null; then
 	update_mirrors(){
 		local MIRRORFILE=/etc/pacman.d/mirrorlist
 		test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
 		sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 	}
-	print_cmd 'update_mirrors' "Update pacman's mirrors"
 fi
-command -v lazygit >> /dev/null && alias lg='lazygit' && print_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
-command -v lazydocker >> /dev/null && alias ldo='lazydocker' && print_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
+command -v lazygit >> /dev/null && alias lg='lazygit'
+command -v lazydocker >> /dev/null && alias ldo='lazydocker'
 
 if command -v ranger >> /dev/null; then
 	ranger-cd() {
@@ -321,20 +313,112 @@ if command -v ranger >> /dev/null; then
 		fi
 	}
 	bind '"\C-o":"ranger-cd\C-m"'
-	#print_cmd 'ranger-cd / C-o' 'Modded ranger to changed pwd on exit'
 fi
 
 if command -v xrandr >> /dev/null; then
-	alias hdmi_on='xrandr --output HDMI-1-0 --auto --left-of eDP1'
-	print_cmd 'hdmi_on' 'Turn on the HDMI connection and put it on the left'
-	alias hdmi_off='xrandr --output HDMI-1-0 --off'
-	print_cmd 'hdmi_off' 'Turn off the HDMI connection'
+	hdmi(){
+		local USAGE="HDMI connection helper\nImplemented by @saundersp\n\nDocumentation:\n
+			\t$FUNCNAME left\n\tEnable the hdmi connection and put it on the left.\n\n
+			\t$FUNCNAME right\n\tEnable the hdmi connection and put it on the right.\n\n
+			\t$FUNCNAME help|--help\n\tShow this help message"
+		case "$1" in
+			left) xrandr --output HDMI-1-0 --auto --left-of eDP1 ;;
+			right) xrandr --output HDMI-1-0 --auto --right-of eDP1 ;;
+			off) xrandr --output HDMI-1-0 --off ;;
+			--help|help) echo -e $USAGE && return 0 ;;
+			*) echo -e $USAGE && return 1 ;;
+		esac
+	}
 fi
 
-alias cb='clear && exec bash' && print_cmd 'cb' 'Shortcut to clear && exec bash'
+alias cb='clear && exec bash'
+if command -v pactl >> /dev/null; then
+	__rpoff__(){
+		pactl unload-module module-native-protocol-tcp
+	}
 
-echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"
-#print_cmd '!!' 'Last command'
-#print_cmd '!$' 'Last item ran'
-print_cmd '!^' 'First item ran'
-print_cmd '!*' 'All items ran'
+	__rsoff(){
+		pactl unload-module module-tunnel-sink
+		pactl unload-module module-tunnel-source
+	}
+
+	__paloopoff__(){
+		pactl unload-module module-loopback
+	}
+
+	pa(){
+		local USAGE="Pulseaudio modules helper\nImplemented by @saundersp\n\nDocumentation:\n
+			\t$FUNCNAME poff\n\tDisable master audio modules.\n\n
+			\t$FUNCNAME p\n\tEnable master audio modules.\n\n
+			\t$FUNCNAME roff\n\tDisable slave audio modules.\n\n
+			\t$FUNCNAME r\n\tEnable slave audio modules.\n\n
+			\t$FUNCNAME loopoff\n\tDisable audio loopback.\n\n
+			\t$FUNCNAME loop\n\tEnable audio loopback.\n\n
+			\t$FUNCNAME help|--help\n\tShow this help message"
+		case "$1" in
+			poff) __rpoff__ ;;
+			p)
+				__rpoff__
+				pactl load-module module-native-protocol-tcp listen=192.168.137.1 auth-ip-acl=192.168.137.0/24
+			;;
+			roff) __rsoff ;;
+			r)
+				__rsoff__
+				pactl load-module module-tunnel-sink server=192.168.137.1
+				pactl load-module module-tunnel-source server=192.168.137.1
+			;;
+			loopoff) __paloopoff__ ;;
+			loop)
+				__paloopoff__
+				pactl load-module module-loopback sink=alsa_output.pci-0000_00_1f.3.analog-stereo source=alsa_input.pci-0000_00_1f.3.analog-stereo
+			;;
+			--help|help) echo -e $USAGE && return 0 ;;
+			*) echo -e $USAGE && return 1 ;;
+		esac
+	}
+fi
+
+alias weather='curl de.wttr.in/valbonne'
+
+__helpme__(){
+	print_cmd(){
+		printf "\055 \e[${ITALIC}%-32s\e[${NOCOLOUR} : $2\n" "$1"
+	}
+
+	tprint_cmd(){
+		if command -v $1 >> /dev/null; then
+			print_cmd "$1" "$2"
+		#else
+		#	echo The command $1 doesn\'t exists !
+		fi
+	}
+
+	echo -e "${BOLD}Available commands :${NOCOLOUR}"
+	tprint_cmd 'neofetchupdate' 'Update the cached neofetch informations'
+	tprint_cmd 'activate' 'Activate the python virtual environment'
+	tprint_cmd 'colours' 'Show the colours palette of the current terminal'
+	tprint_cmd 'preview_csv <file>' 'Preview a csv file'
+	tprint_cmd 'vi or vim <file/directory/?>' 'Shortcut to nvim'
+	tprint_cmd 'vid or vimdiff <file1> <file2>' 'Shortcut to nvim diff mode'
+	tprint_cmd 'll <directory/?>' 'Detailed ls'
+	tprint_cmd 'pac' 'AUR Install helper script'
+	tprint_cmd 'aur' 'Pacman helper'
+	tprint_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
+	tprint_cmd 'vpn' 'Easily enable a secure VPN connection'
+	tprint_cmd 'update_mirrors' "Update pacman's mirrors"
+	tprint_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
+	tprint_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
+	tprint_cmd 'ranger-cd / C-o' 'Modded ranger to changed pwd on exit'
+	tprint_cmd 'hdmi' 'HDMI connection helper script'
+	tprint_cmd 'cb' 'Shortcut to clear && exec bash'
+	tprint_cmd 'pa' 'Pulseaudio modules helper script'
+	tprint_cmd 'weather' 'Get current weather status'
+	tprint_cmd '?' 'Print this reminder'
+
+	echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"
+	print_cmd '!!' 'Last command'
+	print_cmd '!$' 'Last item ran'
+	print_cmd '!^' 'First item ran'
+	print_cmd '!*' 'All items ran'
+}
+alias ?='__helpme__'
