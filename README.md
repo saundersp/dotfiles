@@ -1,28 +1,24 @@
 # @saundersp's dotfiles
 
-*Read this in other languages: [Français](README.fr.md)*
+_Read this in other languages: [Français](README.fr.md)_
 
 ## Dependencies
 
-### Common
-
-- alacritty
 - neovim
 - neofetch
 - git
 - bash
 - Node (with npm)
 - Python (with pip)
-
-### Linux specific
-
 - xorg-xinit
 - xorg-xset
 - feh
 - picom
 - i3-gaps
 - polybar
-- bluez-utils
+- tmux
+- ranger
+- bluez-utils (optionnal)
 
 ## Installation
 
@@ -32,11 +28,9 @@ Either pick any wanted files, code blocks, or just use the auto.sh script.
 
 ```bash
 # Default Linux as user (some dotfiles differ if installed as root)
-./auto.sh
+./auto.sh install
 # For the minimal, terminal only, dotfiles
 ./auto.sh server
-# Version Windows
-./auto.sh windows
 ```
 
 ### Uninstallation

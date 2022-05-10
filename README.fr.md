@@ -1,28 +1,24 @@
 # @saundersp's dotfiles
 
-*Lisez ceci dans d'autres langues: [English](README.md)*
+_Lisez ceci dans d'autres langues: [English](README.md)_
 
 ## Dépendances
 
-### Commun
-
-- alacritty
 - neovim
 - neofetch
 - git
 - bash
 - Node (with npm)
 - Python (with pip)
-
-### Spécifique à Linux
-
 - xorg-xinit
 - xorg-xset
 - feh
 - picom
 - i3-gaps
 - polybar
-- bluez-utils
+- tmux
+- ranger
+- bluez-utils (optionnel)
 
 ## Installation
 
@@ -32,11 +28,9 @@ Vous pouvez choisir n'importe quel fichier ou bloc de code, ou simplement utilis
 
 ```bash
 # Installation par défaut sur Linux en tant qu'utilisateur (certains fichiers différent s'ils sont installés en tant que root)
-./auto.sh
+./auto.sh install
 # Pour la version minimale, uniquement en mode terminal
 ./auto.sh server
-# Version Windows
-./auto.sh windows
 ```
 
 ### Désinstallation
