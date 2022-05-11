@@ -206,26 +206,26 @@ fi
 if command -v pacman >> /dev/null; then
 	pac(){
 		local USAGE="Pacman helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t$FUNCNAME update|upgrade\n\tUpdate every packages.\n\n
-			\t$FUNCNAME prune\n\tRemove unused packages (orphans).\n\n
-			\t$FUNCNAME help|--help\n\tShow this help message"
+			\t$FUNCNAME u|update|upgrade\n\tUpdate every packages.\n\n
+			\t$FUNCNAME p|prune\n\tRemove unused packages (orphans).\n\n
+			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
-			update|upgrade) sudo pacman -Syu ;;
-			prune) pacman -Qtdq | sudo pacman -Rns - ;;
-			--help|help) echo -e $USAGE && return 0 ;;
+			u|update|upgrade) sudo pacman -Syu ;;
+			p|prune) pacman -Qtdq | sudo pacman -Rns - ;;
+			h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
 
 	aur(){
 		local USAGE="AUR Install helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t$FUNCNAME install <aur-package-name>\n\tInstall the specified AUR package.\n\n
-			\t$FUNCNAME uninstall <aur-package-name>\n\tUninstall the specified AUR package.\n\n
-			\t$FUNCNAME list\n\tList all the AUR packages.\n\n
+			\t$FUNCNAME i|install <aur-package-name>\n\tInstall the specified AUR package.\n\n
+			\t$FUNCNAME uninstall|remove <aur-package-name>\n\tUninstall the specified AUR package.\n\n
+			\t$FUNCNAME l|list\n\tList all the AUR packages.\n\n
 			\t$FUNCNAME update|upgrade\n\tUpdate all the AUR packages.\n\n
-			\t$FUNCNAME help|--help\n\tShow this help message"
+			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
-			install)
+			i|install)
 				if [[ -z "$2" || "$2" == 'help' || "$2" == '--help' ]]; then
 					echo "Usage : $0 $1 install <aur-package-name>"
 					return 0
@@ -254,7 +254,7 @@ if command -v pacman >> /dev/null; then
 				done
 			;;
 
-			uninstall)
+			remove|uninstall)
 				if [[ -z "$2"  || "$2" == 'help' || "$2" == '--help' ]]; then
 					echo "Usage : $0 $1 <aur-package-name"
 					return 0
@@ -269,7 +269,7 @@ if command -v pacman >> /dev/null; then
 				echo Uninstalled $PACKAGE_NAME successfully
 				;;
 
-			list)
+			l|list)
 				local PACKAGE_NAME PACMAN_INFO
 				for PACKAGE_NAME in $(ls $AUR_PATH); do
 					PACMAN_INFO=$(pacman -Q $PACKAGE_NAME 2>>/dev/null)
@@ -281,7 +281,7 @@ if command -v pacman >> /dev/null; then
 				done
 			;;
 
-			--help|help) echo -e $USAGE && return 0 ;;
+			h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
@@ -294,7 +294,7 @@ if command -v reflector >> /dev/null; then
 	update_mirrors(){
 		local MIRRORFILE=/etc/pacman.d/mirrorlist
 		test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
-		sudo reflector -a 48 -c $(curl -s ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+		sudo reflector -a 48 -c $(curl -s ifconfig.io/country_code) -f 5 -l 20 --sort rate --save $MIRRORFILE
 	}
 fi
 command -v lazygit >> /dev/null && alias lg='lazygit'
@@ -318,14 +318,34 @@ fi
 if command -v xrandr >> /dev/null; then
 	hdmi(){
 		local USAGE="HDMI connection helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t$FUNCNAME left\n\tEnable the hdmi connection and put it on the left.\n\n
-			\t$FUNCNAME right\n\tEnable the hdmi connection and put it on the right.\n\n
-			\t$FUNCNAME help|--help\n\tShow this help message"
+			\t$FUNCNAME e|extend\n\tExtend the primary display to the secondary.\n\n
+			\t$FUNCNAME m|mirror\n\tMirror the primary display to the secondary.\n\n
+			\t$FUNCNAME h|help|--help\n\tShow this help message"
+		__get_display__(){
+			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
+		}
 		case "$1" in
-			left) xrandr --output HDMI-1-0 --auto --left-of eDP1 ;;
-			right) xrandr --output HDMI-1-0 --auto --right-of eDP1 ;;
-			off) xrandr --output HDMI-1-0 --off ;;
-			--help|help) echo -e $USAGE && return 0 ;;
+			e|extend)
+				local Primary=$(__get_display__ Primary)
+				test -z $Primary&& return 0
+				local Secondary=$(__get_display__ Secondary)
+				test -z $Secondary && return 0
+				local mode=$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c)
+				echo xrandr --output $Secondary --auto --$mode $Primary
+			;;
+			m|mirror)
+				local Primary=$(__get_display__ Primary)
+				test -z $Primary&& return 0
+				local Secondary=$(__get_display__ Secondary)
+				test -z $Secondary && return 0
+				echo xrandr --output $Secondary --auto --same-as $Primary
+			;;
+			o|off)
+				local Primary=$(__get_display__ Primary)
+				test -z $Primary && return 0
+				echo xrandr --output $Primary --off
+			;;
+			h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
@@ -334,16 +354,16 @@ fi
 alias cb='clear && exec bash'
 if command -v pactl >> /dev/null; then
 	__rpoff__(){
-		pactl unload-module module-native-protocol-tcp
+		pactl unload-module module-native-protocol-tcp 2>>/dev/null
 	}
 
 	__rsoff__(){
-		pactl unload-module module-tunnel-sink
-		pactl unload-module module-tunnel-source
+		pactl unload-module module-tunnel-sink 2>>/dev/null
+		pactl unload-module module-tunnel-source 2>>/dev/null
 	}
 
 	__paloopoff__(){
-		pactl unload-module module-loopback
+		pactl unload-module module-loopback 2>>/dev/null
 	}
 
 	pa(){
@@ -353,8 +373,8 @@ if command -v pactl >> /dev/null; then
 			\t$FUNCNAME roff\n\tDisable slave audio modules.\n\n
 			\t$FUNCNAME r\n\tEnable slave audio modules.\n\n
 			\t$FUNCNAME loopoff\n\tDisable audio loopback.\n\n
-			\t$FUNCNAME loop\n\tEnable audio loopback.\n\n
-			\t$FUNCNAME help|--help\n\tShow this help message"
+			\t$FUNCNAME loop [ms]\n\tEnable audio loopback.\n\n
+			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
 			poff) __rpoff__ ;;
 			p)
@@ -370,9 +390,17 @@ if command -v pactl >> /dev/null; then
 			loopoff) __paloopoff__ ;;
 			loop)
 				__paloopoff__
-				pactl load-module module-loopback sink=alsa_output.pci-0000_00_1f.3.analog-stereo source=alsa_input.pci-0000_00_1f.3.analog-stereo
+				local source=$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )
+				test -z $source && return 0
+				local sink=$(pactl list sinks | grep Na |  awk '{ print $2 }' | dmenu -p 'Sink:' -c -l 10 )
+				test -z $sink && return 0
+				if [ -z $2 ]; then
+					pactl load-module module-loopback sink="$sink" source="$source"
+				else
+					pactl load-module module-loopback sink="$sink" source="$source" latency_msec=$2
+				fi
 			;;
-			--help|help) echo -e $USAGE && return 0 ;;
+			h---help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
