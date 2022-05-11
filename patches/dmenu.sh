@@ -14,7 +14,7 @@ __apply_patch__(){
 		rm *.orig *.rej
 
 		cd -
-		patch -p1 -t -d $dmenu_path < ./dmenu-xresources-4.9.diff
+		patch -p1 -R -d $dmenu_path < ./dmenu-patches.diff
 
 		cd $dmenu_path
 		rm *.orig *.rej config.h
@@ -23,7 +23,7 @@ __apply_patch__(){
 		exit 0
 	fi
 
-	patch -p1 -d $dmenu_path < ./dmenu-xresources-4.9.diff
+	patch -p1 -d $dmenu_path < ./dmenu-patches.diff
 	cd $dmenu_path
 	make install
 	cd -
