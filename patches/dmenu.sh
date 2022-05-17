@@ -1,7 +1,7 @@
 #/usr/bin/env bash
 
 __apply_patch__(){
-	if [ $EUID -ne 0 ]; then
+	if [ "$(id -u)" -ne 0 ]; then
 		echo Root priviliges required !
 		exit 1
 	fi

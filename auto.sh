@@ -32,7 +32,7 @@ if [[ $1 == 'uninstall' || $1 == 'remove' ]]; then
 		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config.ini $XDG_CONFIG_HOME/polybar/scripts \
 		$XDG_CONFIG_HOME/ranger/rc.conf $XDG_CONFIG_HOME/ranger/plugins $XDG_CONFIG_HOME/tmux/plugins $HOME/.tmux.conf
 
-elif [ $EUID -ne 0 ]; then
+elif [ "$(id -u)" -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
 	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/tmux/plugins $XDG_CONFIG_HOME/ranger/plugins
 
