@@ -220,9 +220,9 @@ if command -v pacman >> /dev/null; then
 	aur(){
 		local USAGE="AUR Install helper\nImplemented by @saundersp\n\nDocumentation:\n
 			\t$FUNCNAME i|install <aur-package-name>\n\tInstall the specified AUR package.\n\n
-			\t$FUNCNAME uninstall|remove <aur-package-name>\n\tUninstall the specified AUR package.\n\n
+			\t$FUNCNAME r|remove|uninstall <aur-package-name>\n\tUninstall the specified AUR package.\n\n
 			\t$FUNCNAME l|list\n\tList all the AUR packages.\n\n
-			\t$FUNCNAME update|upgrade\n\tUpdate all the AUR packages.\n\n
+			\t$FUNCNAME u|update|upgrade\n\tUpdate all the AUR packages.\n\n
 			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
 			i|install)
@@ -240,7 +240,7 @@ if command -v pacman >> /dev/null; then
 				cd -
 				;;
 
-			update|upgrade)
+			u|update|upgrade)
 				local PACKAGE_NAME
 				for PACKAGE_NAME in $(ls $AUR_PATH); do
 					if [[ $(git -C $AUR_PATH/$PACKAGE_NAME pull) == 'Already up to date.' ]]; then
@@ -254,7 +254,7 @@ if command -v pacman >> /dev/null; then
 				done
 			;;
 
-			remove|uninstall)
+			r|remove|uninstall)
 				if [[ -z "$2"  || "$2" == 'help' || "$2" == '--help' ]]; then
 					echo "Usage : $0 $1 <aur-package-name"
 					return 0
