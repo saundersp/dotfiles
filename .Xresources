@@ -48,6 +48,9 @@
 #define myfont Hasklug Nerd Font
 #define myfontmono Hasklug Nerd Font Mono
 
+! Smaller X11 cursor (default: 24 by Adwaita icons)
+Xcursor.size: 16
+
 ! ================================= i3 ==========================================
 i3wm*border: black
 i3wm*backgr: mybackground
@@ -66,7 +69,7 @@ polybar.background: mybackground
 polybar.background-alt: mybackgroundalt
 polybar.foreground: myforeground
 polybar.foreground-alt: myforegroundalt
-polybar.primary: myprimary
+polybar.primary: mybackgroundalt
 polybar.secondary: mysecondary
 polybar.alert: myalert
 
