@@ -358,8 +358,8 @@ if command -v pactl >> /dev/null; then
 	}
 
 	__rsoff__(){
-		pactl unload-module module-tunnel-sink 2>>/dev/null
-		pactl unload-module module-tunnel-source 2>>/dev/null
+		pactl unload-module module-tunnel-sink-new 2>>/dev/null
+		pactl unload-module module-tunnel-source-new 2>>/dev/null
 	}
 
 	__paloopoff__(){
@@ -384,8 +384,8 @@ if command -v pactl >> /dev/null; then
 			roff) __rsoff ;;
 			r)
 				__rsoff__
-				pactl load-module module-tunnel-sink server=192.168.137.1
-				pactl load-module module-tunnel-source server=192.168.137.1
+				pactl load-module module-tunnel-sink-new server=192.168.137.1
+				pactl load-module module-tunnel-source-new server=192.168.137.1
 			;;
 			loopoff) __paloopoff__ ;;
 			loop)
@@ -404,6 +404,7 @@ if command -v pactl >> /dev/null; then
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
+	alias pm='pulsemixer'
 fi
 
 alias weather='curl de.wttr.in/valbonne'
@@ -440,6 +441,7 @@ __helpme__(){
 	tprint_cmd 'hdmi' 'HDMI connection helper script'
 	tprint_cmd 'cb' 'Shortcut to clear && exec bash'
 	tprint_cmd 'pa' 'Pulseaudio modules helper script'
+	tprint_cmd 'pm' 'Pulsemixer shortcut'
 	tprint_cmd 'weather' 'Get current weather status'
 	tprint_cmd '?' 'Print this reminder'
 
