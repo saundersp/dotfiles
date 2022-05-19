@@ -381,7 +381,7 @@ if command -v pactl >> /dev/null; then
 				__rpoff__
 				pactl load-module module-native-protocol-tcp listen=192.168.137.1 auth-ip-acl=192.168.137.0/24
 			;;
-			roff) __rsoff ;;
+			roff) __rsoff__ ;;
 			r)
 				__rsoff__
 				pactl load-module module-tunnel-sink-new server=192.168.137.1
