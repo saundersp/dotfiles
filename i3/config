@@ -8,10 +8,13 @@ set $alt Mod1
 # Font for window titles
 set_from_resource $font i3wm.font 'DejaVu Sans Mono 10'
 font pango:$font
+
 # Center the title of windows
 title_align center
+
 # Remove windows borders
 default_border none
+
 # Loading from .Xresources, otherwise fallback to default values
 set_from_resource $cf-border        i3wm.cf.border        #4c7899
 set_from_resource $cf-backgr        i3wm.cf.backgr        #285577
@@ -83,7 +86,6 @@ exec_always --no-startup-id $XDG_CONFIG_HOME/polybar/launch.sh
 # toggle the display of polybar
 bindsym $mod+b exec --no-startup-id polybar-msg -p $(pgrep polybar) cmd toggle
 
-
 # Screenshot button
 bindsym --release Print exec --no-startup-id "FILENAME=$(date +%H%M%S%d%m%Y); import /tmp/$FILENAME-screenshot.png; feh -d /tmp/$FILENAME-screenshot.png"
 
@@ -118,6 +120,8 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+s layout stacking
 bindsym $mod+t layout tabbed
 bindsym $mod+e layout toggle split
+bindsym $mod+v split v
+bindsym $mod+w split h
 
 # Gaps
 set_from_resource $inner_gaps i3wm.inner-gaps 0
@@ -131,49 +135,35 @@ bindsym $mod+Shift+space floating toggle
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
 
-# Define names for default workspaces for which we configure key bindings later on.
-# We use variables to avoid repeating the names in multiple places.
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
-
 # switch to workspace
-bindsym $mod+1 workspace number $ws1
-bindsym $mod+2 workspace number $ws2
-bindsym $mod+3 workspace number $ws3
-bindsym $mod+4 workspace number $ws4
-bindsym $mod+5 workspace number $ws5
-bindsym $mod+6 workspace number $ws6
-bindsym $mod+7 workspace number $ws7
-bindsym $mod+8 workspace number $ws8
-bindsym $mod+9 workspace number $ws9
-bindsym $mod+0 workspace number $ws10
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
 
 # move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace number $ws1
-bindsym $mod+Shift+2 move container to workspace number $ws2
-bindsym $mod+Shift+3 move container to workspace number $ws3
-bindsym $mod+Shift+4 move container to workspace number $ws4
-bindsym $mod+Shift+5 move container to workspace number $ws5
-bindsym $mod+Shift+6 move container to workspace number $ws6
-bindsym $mod+Shift+7 move container to workspace number $ws7
-bindsym $mod+Shift+8 move container to workspace number $ws8
-bindsym $mod+Shift+9 move container to workspace number $ws9
-bindsym $mod+Shift+0 move container to workspace number $ws10
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-# bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 bindsym $mod+Shift+e exec --no-startup-id i3-msg exit
 
 # resize window (you can also use the mouse for that)
@@ -207,6 +197,20 @@ mode "Resize" {
 
 	# back to normal
 	bindsym Escape mode "default"
+	bindsym Return mode "default"
 }
 
 bindsym $mod+r mode "Resize"
+
+set $mode_system System (l) lock, (e) logout, (r) reboot, (p) poweroff
+mode "$mode_system" {
+	# i3lock
+	bindsym l exec --no-startup-id i3lock -i $(cat ~/.fehbg | sed 1d | cut -d "'" -f 2) -e -f, mode "default"
+	bindsym e exec --no-startup-id i3-msg exit
+	bindsym r exec --no-startup-id sudo reboot, mode "default"
+	bindsym p exec --no-startup-id sudo poweroff, mode "default"
+	bindsym Escape mode "default"
+	bindsym Return mode "default"
+}
+
+bindsym $mod+End mode "$mode_system"
