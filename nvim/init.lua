@@ -153,6 +153,8 @@ require'colorizer'.setup(
 		css_fn	 = true		-- Enable all CSS *functions*: rgb_fn, hsl_fn
 	})
 
+g.livepreview_previewer = 'zathura'
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping config
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -181,6 +183,7 @@ Map('t', '<Esc>', '<C-\\><C-n>')
 
 -- Clear the highlighting of :set hlsearch
 Map('n', '<C-m>', ':noh<CR>')
+Map('n', '<CR>', ':noh<CR>') -- <C-M> == <CR> in st
 
 -- Disable the suspend signal
 Map('n', '<C-z>', '<Nop>')
@@ -214,19 +217,13 @@ Map('n', '<leader>r', '<Plug>(coc-rename)')
 Map('n', '<leader>s', ':CocSearch ')
 Map('n', '<leader>vd', ':CocDiagnostics<CR>')
 Map('n', '<leader>vo', ':CocOutline<CR>')
-Map('n', '<leader>vc', ':CocCommands<CR>')
+Map('n', '<leader>vc', ':CocCommand<CR>')
 Map('n', '<leader>ve', ':CocList extensions<CR>')
 
 -- Toggle clipboard pasting
 Map('n', '<F2>', ':set invpaste paste?<CR>')
 
 cmd([[
-"function! s:check_back_space() abort
-"	let col = col('.') - 1
-"	return !col || getline('.')[col - 1]  =~# '\s'
-"endfunction
-"inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : coc#refresh()
-
 function! s:show_documentation()
 	if (index(['vim','help'], &filetype) >= 0)
 		execute 'h '.expand('<cword>')
