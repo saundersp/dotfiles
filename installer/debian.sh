@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Can't bind to /bin/sh because of export -f ...
 
 # Pre-setup steps :
 # Using the official graphical installer :
@@ -49,7 +50,11 @@ install_pkg(){
 	apt install -y $@
 }
 install_server(){
-	install_pkg doas neovim neofetch git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep htop man
+	install_pkg doas neovim neofetch git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep htop man ranger tmux \
+		fd-find ccls dash docker docker-compose dos2unix gcc gdb highlight make man-db pkgconf progress
+	ln -s /usr/bin/fdfind /usr/bin/fd
+	ln -s /usr/bin/python3 /usr/bin/python
+	ln -sf /bin/dash /bin/sh
 
 	# Enable the wheel group to use doas and allow users to poweroff and reboot
 	echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.conf
@@ -63,9 +68,13 @@ install_server(){
 	usermod -aG wheel $USERNAME
 
 	# Installing go
-	wget https://go.dev/dl/go1.17.6.linux-amd64.tar.gz
-	tar -C /usr/local -xzf go1.17.6.linux-amd64.tar.gz
+	local GO_LINK=https://go.dev/dl/
+	local LATEST_GO_VERSION=$(curl $GO_LINK?mode=json | grep version | sed 2,100000d | cut -d \" -f 4)
+	local GO_FILE=$LATEST_GO_VERSION.linux-amd64.tar.gz
+	wget $GO_LINK$GO_FILE
+	tar -C /usr/local -xzf $GO_FILE
 	ln -s /usr/local/go/bin/go /usr/bin/go
+	rm $GO_FILE
 
 	# Compiling lazygit
 	cd /usr/local/src
@@ -73,6 +82,13 @@ install_server(){
 	cd lazygit
 	su $USERNAME -c 'go install'
 	mv /home/$USERNAME/go/bin/lazygit /usr/bin/lazygit
+
+	# Compiling lazydocker
+	cd /usr/local/src
+	git clone https://github.com/jesseduffield/lazydocker.git
+	cd lazydocker
+	su $USERNAME -c 'go install'
+	mv /home/$USERNAME/go/bin/lazydocker /usr/bin/lazydocker
 
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
@@ -83,12 +99,15 @@ install_server(){
 install_ihm(){
 	install_server
 	install_pkg dmenu picom xinit xserver-xorg-core x11-xserver-utils feh xclip firefox-esr vlc polybar xserver-xorg-input-kbd \
-				xserver-xorg-input-mouse xserver-xorg-input-libinput
+		xserver-xorg-input-mouse xserver-xorg-input-libinput libxinerama-dev autokey-qt calibre filezilla openvpn zathura \
+		imagemagick
+
+	pip install ueberzug
 
 	# Compiling i3-gaps
 	install_pkg dh-autoreconf libxcb-keysyms1-dev libpango1.0-dev libxcb-util0-dev xcb libxcb1-dev libxcb-icccm4-dev libyajl-dev \
-					libev-dev libxcb-xkb-dev libxcb-cursor-dev libxkbcommon-dev libxcb-xinerama0-dev libxkbcommon-x11-dev \
-					libstartup-notification0-dev libxcb-randr0-dev libxcb-xrm0 libxcb-xrm-dev libxcb-shape0 libxcb-shape0-dev meson ninja-build
+		libev-dev libxcb-xkb-dev libxcb-cursor-dev libxkbcommon-dev libxcb-xinerama0-dev libxkbcommon-x11-dev \
+		libstartup-notification0-dev libxcb-randr0-dev libxcb-xrm0 libxcb-xrm-dev libxcb-shape0 libxcb-shape0-dev meson ninja-build
 	cd /usr/local/src
 	git clone https://www.github.com/Airblader/i3 i3-gaps
 	cd i3-gaps
@@ -98,18 +117,15 @@ install_ihm(){
 	ninja
 	ln -s /usr/local/src/i3-gaps/build/i3 /usr/bin/i3
 
-	# Compiling alacritty
+	# Compiling zathura-pdf-mupdf
+	install_pkg zathura-dev libgirara-dev libmupdf-dev libjpeg-dev libjbig2dec-dev libopenjp2-7-dev libgumbo-dev libtesseract-dev libmujs-dev
 	cd /usr/local/src
-	git clone https://github.com/alacritty/alacritty
-	cd alacritty
-	curl https://sh.rustup.rs -sSf | bash -s - '-y'
-	ln -s /root/.cargo/bin/rustup /usr/bin/rustup
-	rustup override set stable
-	rustup update stable
-	install_pkg cmake pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev
-	ln -s /root/.cargo/bin/cargo /usr/bin/cargo
-	cargo build --release
-	ln -s /usr/local/src/alacritty/target/release/alacritty /usr/bin/alacritty
+	git clone https://gitlab.com/paretje/zathura-pdf-mupdf.git
+	cd zathura-pdf-mupdf
+	meson build
+	cd build
+	ninja
+	ninja install
 
 	# Getting the Hasklig font
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
@@ -124,13 +140,15 @@ install_dotfiles(){
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
-	./auto.sh $@
-	sudo bash auto.sh $@
+	./auto.sh $1
+	sudo bash auto.sh $1
 
 	# Getting the wallpaper
 	mkdir ~/Images
 	cd ~/Images
 	wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
+	convert HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+	rm Astronaut-Wallpaper.jpg
 }
 export -f install_dotfiles
 
@@ -143,16 +161,13 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober brightnessctl
+		install_pkg os-prober xbacklight
 		# bumblebee-status-module-nvidia-prime ntfs-3g ucode-intel wpa_supplicant pulseaudio
-		# xf86-video-intel pulseaudio-module-bluetooth bluez nvidia nvidia-utils nvidia-settings pulsemixer
+		# xf86-video-intel pulseaudio-module-bluetooth bluez nvidia nvidia-utils pulsemixer
 
 		# Allow vlc to use nvidia gpu
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc
 		chmod +x /usr/bin/pvlc
-
-		# Allow user to use brightnessctl
-		echo 'permit nopass :wheel cmd brightnessctl' >> /etc/doas.conf
 	;;
 esac
 
@@ -163,5 +178,6 @@ su $USERNAME -c "install_dotfiles $PACKAGES"
 sed -i '1s/nopass/persist/g' /etc/doas.conf
 
 # Cleaning leftovers
-rm $0
+cd /root && rm $0
+reboot
 

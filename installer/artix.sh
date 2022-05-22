@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # Pre-setup steps :
 # Setup keymaps and timezone in menu
@@ -30,10 +30,13 @@ KERNEL=linux-zen
 INIT_SYSTEM=openrc
 # Other options : openrc runit s6 suite66 dinit
 
+# BIOS not supported
+test ! -d /sys/firmware/efi/efivars && echo 'Missing UEFI vars, exiting...' && exit 1
+
 # Configuration checker
-test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
-test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
-test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
+test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
+test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
+test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
@@ -91,17 +94,17 @@ echo -e '\n# Arch\n[extra]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[communit
 
 # Settings faster pacman arch mirrors
 pacman -Sy --noconfirm reflector rsync python
-reflector -a 48 -c $(curl -q ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist-arch
+reflector -a 48 -c $(curl -q ifconfig.io/country_code) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist-arch
 
 # Install helpers
 install_pkg(){
 	basestrap /mnt --needed $@
 }
 install_server(){
-	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop
+	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress
 }
 install_ihm(){
-	install_pkg fakeroot make gcc pkgconf dmenu picom i3-gaps xorg-xinit xorg-server xorg-xset feh alacritty xclip vlc
+	install_pkg picom i3-gaps xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura zathura-pdf-mupdf imagemagick
 }
 
 # Installing the init system
@@ -111,7 +114,7 @@ case $INIT_SYSTEM in
 esac
 
 # Installing the common packages
-install_pkg linux-firmware opendoas grub efibootmgr which man sed
+install_pkg linux-firmware opendoas grub efibootmgr which man sed dash
 
 # Installing the platform specific packages
 case $PACKAGES in
@@ -124,8 +127,7 @@ case $PACKAGES in
 	laptop)
 		install_server
 		install_ihm
-		install_pkg os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth \
-								patch bluez-utils intel-ucode wpa_supplicant brightnessctl bluez-$INIT_SYSTEM
+		install_pkg os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth bluez-utils intel-ucode wpa_supplicant xorg-xbacklight bluez-$INIT_SYSTEM
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;
@@ -142,6 +144,9 @@ echo "#!/usr/bin/env bash
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
+
+# Use dash instead of bash as default shell
+ln -sf /bin/dash /bin/sh
 
 # Removing unused programs
 rm -rf \$(find / -name *sudo*) /sbin/vi
@@ -185,6 +190,7 @@ echo $HOSTNAME > /etc/hostname
 echo '
 127.0.0.1    localhost
 ::1          localhost
+127.0.1.1    $HOSTNAME.localdomain $HOSTNAME
 ' >> /etc/hosts
 
 # Setting a root password
@@ -217,7 +223,7 @@ sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid -s UUID -o value $ROOT_PAR
 
 # Enable os-prober if laptop
 if [ '$PACKAGES' == 'laptop' ]; then
-	echo GRUB_DISABLE_OS_PROBER=0 >> /etc/default/grub
+	echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub
 	os-prober
 fi
 
@@ -230,6 +236,9 @@ grub-mkconfig -o /boot/grub/grub.cfg
 # Configuring the connmand per init system
 case $INIT_SYSTEM in
 	openrc)
+		# Enable faster startup times
+		sed 's/#rc_parallel=\\\"NO\\\"/rc_parallel=\"YES\\\"/' -i /etc/rc.conf
+
 		# Adding connman daemon at startup
 		rc-update add connmand
 
@@ -311,7 +320,7 @@ aur_install(){
 	git clone https://aur.archlinux.org/\$1.git ~/aur/\$1
 	cd ~/aur/\$1
 	local GPG_KEY=\$(cat PKGBUILD | grep validpgpkeys | cut -d \"'\" -f 2)
-	test -z \$GPG_KEY && gpg --recv-key \$GPG_KEY
+	test ! -z \$GPG_KEY && gpg --recv-key \$GPG_KEY
 	makepkg -sri --noconfirm
 }
 
@@ -324,30 +333,24 @@ case $PACKAGES in
 		sudo bash auto.sh server
 
 		aur_install lazydocker
-		aur_install lf
 	;;
 	virtual|laptop)
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
-		./auto.sh
-		sudo bash auto.sh
+		./auto.sh install
+		sudo bash auto.sh install
 
 		# Getting the wallpaper
 		mkdir ~/Images
 		cd ~/Images
 		wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
+		convert HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+		rm Astronaut-Wallpaper.jpg
 
-		if [ $PACKAGES == 'laptop' ]; then
-			# Allow user to use brightnessctl
-			echo 'permit nopass :wheel cmd brightnessctl' | sudo tee -a /etc/doas.conf
-		fi
-
-		aur_install davmail
+		aur_install lazydocker
 		aur_install tor-browser
-		aur_install font-manager
 		aur_install librewolf-bin
 		aur_install spotify
-		aur_install polybar
 	;;
 esac
 

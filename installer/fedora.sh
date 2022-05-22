@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Can't bind to /bin/sh because of export -f ...
 
 # Pre-setup steps :
 # /!\ Use the 'Everything' Fedora alternative iso image
@@ -21,19 +22,30 @@ PACKAGES=virtual
 set -e
 
 # Removing unused programs
-rm -rf $(find / -name *sudo*) $(which vi) | echo ''
+rm -rf $(find / -name *sudo*)
+dnf uninstall -y sudo vi
 
 # Install helpers
 install_pkg(){
 	dnf install -y $@
 }
 install_server(){
-	install_pkg neofetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep \
-					htop opendoas git
+	# Setup docker repository
+	dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
 
 	# Installing lazygit
 	dnf copr enable atim/lazygit -y
-	install_pkg lazygit
+	# Installing lazydocker
+	dnf copr enable atim/lazydocker -y
+
+	install_pkg neofetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep \
+		htop opendoas git ranger tmux dash dnf-plugins-core docker-ce docker-ce-cli containerd.io\
+		docker-compose-plugin dos2unix fd-find gcc gdb make highlight lazygit lazydocker man-db openvpn \
+		patch pkgconf progress
+	# ccls is temporally not available
+
+	# Use dash instead of bash as default shell
+	ln -sf /bin/dash /bin/sh
 
 	# Enable the wheel group to use doas and allow user to poweroff and reboot
 	echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.conf
@@ -54,7 +66,11 @@ install_server(){
 install_ihm(){
 	install_server
 	install_pkg i3-gaps xorg-x11-xinit xset polybar dmenu picom feh alacritty xclip firefox \
-					xorg-x11-server-Xorg
+		xorg-x11-server-Xorg python-xlib autokey-qt calibre i3lock torbrowser-launcher \
+		zathura zathura-pdf-mupdf python-devel libX11-devel libXext-devel libXft-devel \
+		libXinerama-devel imagemagick
+
+	pip install ueberzug
 
 	# Installing vlc
 	install_pkg https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
@@ -73,13 +89,15 @@ install_dotfiles(){
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
-	./auto.sh $@
-	sudo bash auto.sh $@
+	./auto.sh $1
+	sudo bash auto.sh $1
 
 	# Getting the wallpaper
 	mkdir ~/Images
 	cd ~/Images
 	wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
+	convert HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+	rm Astronaut-Wallpaper.jpg
 }
 export -f install_dotfiles
 
@@ -92,17 +110,14 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober brightnessctl ntfs-3g wpa_supplicant pulseaudio bluez-tools \
+		install_pkg os-prober xbacklight ntfs-3g wpa_supplicant pulseaudio bluez-tools \
 					pulseaudio-module-bluetooth xorg-x11-drv-intel xorg-x11-drv-nvidia \
-					xorg-x11-drv-nvidia-cuda akmod-nvidia nvidia-settings
+					xorg-x11-drv-nvidia-cuda akmod-nvidia
 		# bumblebee-status-module-nvidia-prime ucode-intel nvidia-utils pulsemixer
 
 		# Allow vlc to use nvidia gpu
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc
 		chmod +x /usr/bin/pvlc
-
-		# Allow user to use brightnessctl
-		echo 'permit nopass :wheel cmd brightnessctl' >> /etc/doas.conf
 	;;
 esac
 

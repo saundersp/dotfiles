@@ -1,4 +1,4 @@
-#!/usr/bin/env ash
+#!/bin/sh
 
 # Pre-setup steps :
 # login as root
@@ -30,10 +30,13 @@ KERNEL=lts
 NTP=chrony
 # other options busybox openntpd chrony none
 
+# BIOS not supported
+test ! -d /sys/firmware/efi/efivars && echo 'Missing UEFI vars, exiting...' && exit 1
+
 # Configuration checker
-test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
-test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
-test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
+test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
+test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
+test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
@@ -61,20 +64,20 @@ EOF
 setup-ntp -c $NTP
 
 # Partitioning the disks
-apk add sfdisk 1>&2 | true
+apk add sfdisk
 sfdisk $DISK << EOF
 ,256M,ef
 ,$DISK_LAST_SECTOR
 EOF
 
 # Encrypting the root partition
-apk add cryptsetup 1>&2 | true
+apk add cryptsetup
 echo -n $DISK_PASSWORD | cryptsetup luksFormat -v $ROOT_PARTITION
 echo -n $DISK_PASSWORD | cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
 
 # Formatting the partitions
 mkfs.vfat -n 'UEFI Boot' $BOOT_PARTITION
-apk add e2fsprogs 1>&2 | true
+apk add e2fsprogs
 mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
 
 # Mounting the file systems
@@ -87,7 +90,7 @@ mkdir /mnt/boot
 mount $BOOT_PARTITION
 
 # Installing running systems
-apk add grub-efi efibootmgr 1>&2 | true
+apk add grub-efi efibootmgr
 BOOTLOADER=grub
 USE_EFI=1
 setup-disk -s $SWAP_SIZE -e -k $KERNEL -m sys /mnt
@@ -100,33 +103,37 @@ echo "#!/usr/bin/env ash
 # Exit immediately if a command exits with a non-zero exit status
 set -e
 
+# Enable faster startup times
+sed 's/#rc_parallel=\\\"NO\\\"/rc_parallel=\"YES\\\"/' -i /etc/rc.conf
+
 # Configuration of initramfs
 sed -i 's/\"\$/ keymap cryptsetup\"/g' /etc/mkinitfs/mkinitfs.conf
 mkinitfs \$(ls /lib/modules)
 
 # Configuration of grub
 sed -i 's;GRUB_CMDLINE_LINUX_DEFAULT=\"\\(.*\\)\";GRUB_CMDLINE_LINUX_DEFAULT=\"\\1 cryptroot=$ROOT_PARTITION cryptdm=root\";g' /etc/default/grub
-grub-mkconfig -o /boot/grub/grub.cfg 1>&2 | true
+grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enabling all repositories mirrors
 sed -i 's/^# \\?http/http/g' /etc/apk/repositories
-apk update 1>&2 | true
-apk upgrade 1>&2 | true
+apk update
+apk upgrade
 
 # Install helpers
 install_pkg(){
-	apk add \$@ 1>&2 | true
+	apk add \$@
 }
 install_server(){
 	install_pkg neovim doas lazygit neofetch git wget unzip openssh bash-completion nodejs npm python3 \
 			py3-pip ripgrep mandoc htop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc \
-			man-pages mandoc-apropos less less-doc
+			man-pages mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev \
+			tmux lazydocker dash docker docker-compose dos2unix gdb highlight progress
 
 	# Replace sudo
 	ln -s /usr/bin/doas /usr/bin/sudo
 
 	# Enable the wheel group to use doas
-	echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.conf
+	echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.d/doas.conf
 
 	# Replace default root shell
 	sed -i 's,root:/root:/bin/ash,root:/root:/bin/bash,g' /etc/passwd
@@ -137,14 +144,14 @@ $USER_PASSWORD
 $USER_PASSWORD
 EOF
 
+	# Add the user to the wheel group
+	adduser $USERNAME wheel
+
 	# Installing the dotfiles
 	echo \"#!/usr/bin/env bash
 
 	# Exit immediately if a command exits with a non-zero exit status
 	set -e
-
-	# Add the user to the wheel group
-	adduser $USERNAME wheel
 
 	# Getting the dotfiles
 	mkdir ~/git
@@ -152,13 +159,16 @@ EOF
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
-	./auto.sh \$@
-	sudo bash auto.sh \$@
+	./auto.sh server
 
 	\" > /home/$USERNAME/install.sh
 	chmod +x /home/$USERNAME/install.sh
-	sudo -u $USERNAME /home/$USERNAME/install.sh $PACKAGES
+	su -c \"/home/$USERNAME/install.sh $PACKAGES \" $USERNAME
 	rm /home/$USERNAME/install.sh
+
+	# Installing the dotfiles as root
+	cd /home/$USERNAME/git/dotfiles
+	./auto.sh server
 
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
@@ -168,11 +178,21 @@ EOF
 }
 install_ihm(){
 	install_server
-	install_pkg dmenu picom xinit xset feh alacritty xclip firefox vlc setxkbmap mesa-dri-swrast \
-			i3wm-gaps polybar
+	install_pkg dmenu picom xinit xset feh xclip firefox vlc setxkbmap mesa-dri-swrast patch \
+			i3wm-gaps polybar make harfbuzz-dev libxinerama-dev xorg-server \
+			filezilla i3lock openvpn pkgconf zathura zathura-pdf-mupdf xf86-input-libinput \
+			eudev udev-init-scripts udev-init-scripts-openrc imagemagick
 
-	# Setup repositories for xorg (input and xserver)
-	setup-xorg-base 1>&2 | true
+	pip install ueberzug
+
+	# Add pkg-config as alias of pkgconf
+	ln -sf /usr/bin/pkgconf /usr/bin/pkg-config
+
+	# Added udev services
+	rc-update add udev sysinit
+	rc-update add udev-trigger sysinit
+	rc-update add udev-settle sysinit
+	rc-update add udev-postmount default
 
 	# Add the user to the necessary groups
 	adduser $USERNAME input
@@ -187,18 +207,22 @@ install_ihm(){
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
 	./auto.sh remove
-	./auto.sh \$@
-	sudo bash auto.sh remove
-	sudo bash auto.sh \$@
+	./auto.sh install
 
 	# Getting the wallpaper
 	mkdir ~/Images
 	cd ~/Images
 	wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
+	convert HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+	rm Astronaut-Wallpaper.jpg
 	\" > /home/$USERNAME/install.sh
 	chmod +x /home/$USERNAME/install.sh
-	sudo -u $USERNAME /home/$USERNAME/install.sh $PACKAGES
+	su -c \"/home/$USERNAME/install.sh $PACKAGES\" $USERNAME
 	rm /home/$USERNAME/install.sh
+
+	cd /home/$USERNAME/git/dotfiles
+	./auto.sh remove
+	./auto.sh install
 
 	# Getting the Hasklig font
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
@@ -217,28 +241,24 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober brightnessctl intel-ucode wpa_supplicant ntfs-3g linux-firmware-nvidia pulseaudio \
+		install_pkg os-prober xbacklight intel-ucode wpa_supplicant ntfs-3g linux-firmware-nvidia pulseaudio \
 					pulseaudio-bluez bluez pulsemixer
-		# bumblebee-status-module-nvidia-prime xf86-video-intel nvidia nvidia-utils nvidia-settings
+		# bumblebee-status-module-nvidia-prime xf86-video-intel nvidia nvidia-utils
 
 		# Allow vlc to use nvidia gpu
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc
 		chmod +x /usr/bin/pvlc
-
-		# Allow user to use brightnessctl
-		echo 'permit nopass :wheel cmd brightnessctl' >> /etc/doas.conf
 	;;
 esac
 
 # Removing the nopass option in doas
-sed -i '1s/nopass/persist/g' /etc/doas.conf
-
+sed -i '1s/nopass/persist/g' /etc/doas.d/doas.conf
 " > /mnt/root/install.sh
 chmod +x /mnt/root/install.sh
 chroot /mnt /root/install.sh
 
 # Cleaning leftovers
-rm /mnt/root/install.sh $@
+rm /mnt/root/install.sh $1
 
 reboot
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Can't bind to /bin/sh because of export -f ...
 
 # Pre-setup steps :
 # select $KEYMAP
@@ -31,9 +32,9 @@ STAGE_TYPE=openrc
 # - hardened-selinux-openrc
 # - nomultilib-openrc
 
-test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
-test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
-test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
+test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
+test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
+test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
@@ -87,7 +88,7 @@ STAGE_FILENAME=$(basename $STAGE_NAME)
 tar xpf $STAGE_FILENAME --xattrs-include='*.*' --numeric-owner
 
 sed -i 's/COMMON_FLAGS="/COMMON_FLAGS="-march=native /g' /mnt/gentoo/etc/portage/make.conf
-echo -e "MAKEOPTS=\"-j$(nproc)\"\nACCEPT_LICENSE=\"*\"" >> /mnt/gentoo/etc/portage/make.conf
+echo -e "MAKEOPTS=\"-j$(nproc)\"\nACCEPT_LICENSE=\"*\"\nACCEPT_KEYWORDS=\"~amd64\"" >> /mnt/gentoo/etc/portage/make.conf
 
 mirrorselect -a -s 20 -o >> /mnt/gentoo/etc/portage/make.conf
 
@@ -111,14 +112,17 @@ set -e
 
 source /etc/profile
 
+# Enable faster startup times
+sed 's/#rc_parallel=\\\"NO\\\"/rc_parallel=\"YES\\\"/' -i /etc/rc.conf
+
 # Updating the Gentoo ebuild repository
-emerge --quiet --sync
+emerge -q --sync
 
 # Choosing the default minimal profile
 eselect profile set 1
 
 # Apply the default USE flags to the @world set
-emerge --quiet --update --deep --newuse @world
+emerge -q --update --deep --newuse @world
 
 # Removing the existing package.use
 rm -rf /etc/portage/package.use /etc/portage/package.accept_keywords /etc/portage/package.mask
@@ -135,30 +139,24 @@ case $PACKAGES in
 	server)
 		# Global flags
 		echo 'USE=\"X bash-completion elogind python\"' >> /etc/portage/make.conf
-		# Package accept_keywords
-		echo 'app-editors/neovim ~amd64' >> /etc/portage/package.accept_keywords
 	;;
 	virtual)
 		# Global flags
 		echo 'USE=\"X bash-completion elogind python\"' >> /etc/portage/make.conf
 		# Local flags
-		echo -e 'x11-misc/polybar i3wm\n>=sys-libs/zlib-1.2.11-r4 minizip\nmedia-libs/libvpx postproc' > /etc/portage/package.use
-		# Package accept_keywords
-		echo 'app-editors/neovim ~amd64' >> /etc/portage/package.accept_keywords
+		echo -e 'x11-misc/polybar i3wm\nmedia-libs/libvpx postproc' > /etc/portage/package.use
 	;;
 	laptop)
 		# Global flags
 		echo 'USE=\"X bash-completion connman elogind pulseaudio python\"' >> /etc/portage/make.conf
 		# Local flags
-		echo -e 'x11-misc/polybar i3wm\n>=sys-libs/zlib-1.2.11-r4 minizip\nmedia-libs/libvpx postproc' > /etc/portage/package.use
-		# Package accept_keywords
-		echo 'app-editors/neovim ~amd64' >> /etc/portage/package.accept_keywords
+		echo -e 'x11-misc/polybar i3wm\nmedia-libs/libvpx postproc' > /etc/portage/package.use
 	;;
 esac
 
 # Setting the timezone
 echo $TIMEZONE > /etc/timezone
-emerge --quiet --config sys-libs/timezone-data
+emerge -q --config sys-libs/timezone-data
 
 # Setting the locale
 echo -e '$LOCALE.UTF-8 UTF-8\n$LOCALE ISO-8859-1' >> /etc/locale.gen
@@ -168,25 +166,26 @@ env-update
 source /etc/profile
 
 # Installing cryptsetup
-emerge --quiet sys-fs/cryptsetup
+emerge -q sys-fs/cryptsetup
 rc-update add dmcrypt boot
 
 # Compilation and installation of the kernel
-emerge --quiet sys-kernel/gentoo-sources
+emerge -q sys-kernel/gentoo-sources
 eselect kernel set 1
 #cd /usr/src/linux
 #make menuconfig
-#make
-#make modules_install
+#make -j\$(nproc)
+#make modules_install -j\$(nproc)
 #make install
-#emerge --quiet sys-apps/pciutils
+#emerge -q sys-apps/pciutils
 
 # Building the kernel and initramfs
-emerge --quiet sys-kernel/genkernel
+emerge -q sys-kernel/genkernel
 genkernel --luks all
+#genkernel --luks initramfs
 
 # Installing the firmware
-emerge --quiet sys-kernel/linux-firmware
+emerge -q sys-kernel/linux-firmware
 
 # Setting up the fstab auto mouting
 echo \"
@@ -197,10 +196,15 @@ UUID=\$(blkid -s UUID -o value /dev/mapper/$CRYPTED_DISK_NAME) / ext4 noatime 0 
 
 # Setting the hostname
 sed -i 's/localhost/$HOSTNAME/g' /etc/conf.d/hostname
+cat << EOF
+127.0.0.1	localhost
+::1		localhost
+127.0.1.1	$HOSTNAME.localdomain $HOSTNAME
+EOF > /etc/hosts
 
 # Setting network
-emerge --quiet --noreplace net-misc/netifrc
-emerge --quiet net-misc/dhcpcd
+emerge -q --noreplace net-misc/netifrc
+emerge -q net-misc/dhcpcd
 rc-update add dhcpcd default
 
 # Setting a root password
@@ -219,7 +223,7 @@ $USER_PASSWORD
 EOF
 
 # Installing and setting up doas
-emerge --quiet app-admin/doas
+emerge -q app-admin/doas
 echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.conf
 
 # Replace sudo
@@ -229,23 +233,23 @@ ln -s /usr/bin/doas /usr/bin/sudo
 sed -i 's/\"us\"/\"$KEYMAP\"/g' /etc/conf.d/keymaps
 
 # Setup logging system
-emerge --quiet app-admin/sysklogd
+emerge -q app-admin/sysklogd
 rc-update add sysklogd default
 
 # Getting the filesystems packages
-emerge --quiet sys-fs/e2fsprogs sys-fs/dosfstools
+emerge -q sys-fs/e2fsprogs sys-fs/dosfstools
 
 # Installing the bootloader
 echo 'GRUB_PLATFORMS=\"efi-64\"' >> /etc/portage/make.conf
-emerge --quiet sys-boot/grub
+emerge -q sys-boot/grub
 
 # Prepare boot loader for LUKS
 sed -i \"s,^#GRUB_CMDLINE_LINUX=\\\"\\\",GRUB_CMDLINE_LINUX=\\\"quiet crypt_root=UUID=\$(blkid -s UUID -o value $ROOT_PARTITION) root=/dev/mapper/root keymap=$KEYMAP\\\",g\" /etc/default/grub
 
 # Enable os-prober if laptop
 if [ '$PACKAGES' == 'laptop' ]; then
-	echo GRUB_DISABLE_OS_PROBER=0 >> /etc/default/grub
-	emerge --quiet sys-boot/os-prober
+	echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub
+	emerge -q sys-boot/os-prober
 	os-prober
 fi
 
@@ -256,11 +260,11 @@ grub-install --target x86_64-efi --efi-directory /boot --removable --bootloader-
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Installing minimal packages
-emerge --quiet sys-auth/elogind sys-apps/which
+emerge -q sys-auth/elogind sys-apps/which
 
 install_server(){
-	emerge --quiet app-misc/neofetch app-editors/neovim sys-apps/which dev-vcs/git net-misc/wget app-arch/unzip app-shells/bash-completion net-libs/nodejs \
-					dev-lang/python sys-apps/ripgrep sys-apps/man-db dev-python/pip sys-process/htop dev-lang/go
+	emerge -q app-misc/neofetch app-editors/neovim sys-apps/which dev-vcs/git net-misc/wget app-arch/unzip app-shells/bash-completion net-libs/nodejs \
+			dev-lang/python sys-apps/ripgrep sys-apps/man-db dev-python/pip sys-process/htop dev-lang/go app-misc/tmux app-misc/ranger
 
 	# Creating user's custom packages location
 	mkdir /usr/local/src
@@ -271,6 +275,13 @@ install_server(){
 	cd lazygit
 	sudo -u $USERNAME go install
 	mv /home/$USERNAME/go/bin/lazygit /usr/bin/lazygit
+
+	# Compiling lazygit
+	cd ..
+	git clone https://github.com/jesseduffield/lazydocker.git
+	cd lazydocker
+	sudo -u $USERNAME go install
+	mv /home/$USERNAME/go/bin/lazydocker /usr/bin/
 	cd \$HOME
 
 	# Installing npm dependencies
@@ -278,13 +289,17 @@ install_server(){
 
 	# Installing pip dependencies
 	sudo -u $USERNAME pip install --user pynvim autopep8 flake8
-	ls /home/$USERNAME/.local/bin | xargs -I{} sudo ln -s /home/$USERNAME/.local/bin/{} /usr/bin/{}
-
+	ls /home/$USERNAME/.local/bin | xargs -I{} sudo mv /home/$USERNAME/.local/bin/{} /usr/bin/{}
 }
 install_ihm(){
 	install_server
-	emerge --quiet x11-misc/dmenu x11-misc/picom x11-wm/i3-gaps x11-apps/xinit x11-base/xorg-server x11-apps/xset media-gfx/feh x11-terms/alacritty \
-					x11-misc/polybar x11-apps/xrandr x11-misc/xclip x11-apps/setxkbmap www-client/firefox
+	emerge -q x11-misc/dmenu x11-misc/picom x11-wm/i3-gaps x11-apps/xinit x11-base/xorg-server x11-apps/xset media-gfx/feh \
+			x11-misc/polybar x11-apps/xrandr x11-misc/xclip x11-apps/setxkbmap app-eselect/eselect-repository \
+			x11-libs/libXinerama media-gfx/ueberzug media-gfx/imagemagick
+
+	eselect repository add librewolf git https://gitlab.com/librewolf-community/browser/gentoo.git
+	emaint -r librewolf sync
+	emerge -q www-client/librewolf
 
 	# Getting the Hasklig font
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
@@ -299,20 +314,22 @@ install_dotfiles(){
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
-	./auto.sh \$@
-	sudo bash auto.sh \$@
+	./auto.sh \$1
+	sudo bash auto.sh \$1
 
 	# Getting the wallpaper
 	mkdir ~/Images
 	cd ~/Images
 	wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
+	convert HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+	rm Astronaut-Wallpaper.jpg
 }
 export -f install_dotfiles
 
 case $PACKAGES in
 	virtual)
 		install_ihm
-		emerge --quiet app-emulation/virtualbox-guest-additions
+		emerge -q app-emulation/virtualbox-guest-additions
 		su $USERNAME -c \"install_dotfiles $PACKAGES\"
 	;;
 	server)
@@ -322,9 +339,8 @@ case $PACKAGES in
 	minimal) ;;
 	laptop)
 		install_ihm
+		emerge -q x11-apps/xbacklight net-misc/connman net-wireless/wpa_supplicant net-vpn/openvpn
 		su $USERNAME -c \"install_dotfiles $PACKAGES\"
-		echo 'permit nopass :wheel cmd brightnessctl' >> /etc/doas.conf
-		emerge --quiet net-wireless/iw net-wireless/wpa_supplicant
 	;;
 esac
 

@@ -1,10 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # Pre-setup steps :
 # login as root:voidlinux
 # loadkeys fr
 # If WiFi : wpa_supplicant https://docs.voidlinux.org/config/network/wpa_supplicant.html
-# xbps-install -Sy wget
+# xbps-install -Sy curl
 
 # Configuration (tweak to your liking)
 USERNAME=saundersp
@@ -87,15 +87,16 @@ install_pkg(){
 	env XBPS_ARCH=$ARCH xbps-install -Sy -R $MIRROR -r /mnt $@
 }
 
-install_pkg base-system opendoas grub-x86_64-efi efibootmgr cryptsetup which man-db sed connman << EOF
+install_pkg base-system opendoas grub-x86_64-efi efibootmgr cryptsetup which man-db sed connman dash << EOF
 
 EOF
 
 install_server(){
-	install_pkg neovim lazygit neofetch git wget unzip openssh curl bash-completion nodejs python3 python3-pip ripgrep htop
+	install_pkg neovim lazygit lazydocker neofetch git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep htop ranger tmux docker dos2unix fd highlight ccls gcc gdb xtools docker-compose progress
 }
 install_ihm(){
-	install_pkg dmenu picom i3-gaps xorg-minimal xset setxkbmap xrandr feh alacritty vlc firefox polybar
+	install_server
+	install_pkg dmenu picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar ueberzug calibre filezilla zathura zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch openvpn imagemagick
 }
 
 # Installing the platform specific packages
@@ -107,9 +108,8 @@ case $PACKAGES in
 	server)	install_server ;&
 	minimal) ;;
 	laptop)
-		install_server
 		install_ihm
-		install_pkg os-prober xf86-video-intel ntfs-3g pulseaudio pulsemixer wpa_supplicant brightnessctl
+		install_pkg os-prober xf86-video-intel ntfs-3g pulseaudio pulsemixer wpa_supplicant xbacklight
 		env XBPS_ARCH=$ARCH xbps-install -Sy -R $MIRROR/nonfree -r /mnt nvidia intel-ucode
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
@@ -131,6 +131,9 @@ echo "#!/usr/bin/env bash
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
+
+# Use dash instead of bash
+ln -sf /bin/dash /bin/sh
 
 # Removing unused programs
 rm -rf \$(find / -name *sudo*) /sbin/vi
@@ -185,11 +188,11 @@ $USER_PASSWORD
 $USER_PASSWORD
 EOF
 
-# Enable the wheel group to use doas and allow users to poweroff and reboot
-echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' | sudo tee -a /etc/doas.conf
-
 # Replace sudo
 ln -s /usr/bin/doas /usr/bin/sudo
+
+# Enable the wheel group to use doas and allow users to poweroff and reboot
+echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' >> /etc/doas.conf
 
 # Setting up the fstab auto mouting
 echo \"
@@ -205,7 +208,7 @@ sed -i 's/loglevel=4\"/loglevel=4 rd.vconsole.keymap=$KEYMAP\"/g' /etc/default/g
 
 # Enable os-prober if laptop
 if [ '$PACKAGES' == 'laptop' ]; then
-	echo GRUB_DISABLE_OS_PROBER=0 >> /etc/default/grub
+	echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub
 	os-prober
 fi
 
@@ -248,16 +251,15 @@ case $PACKAGES in
 	virtual|laptop)
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
-		./auto.sh
-		sudo bash auto.sh
+		./auto.sh install
+		sudo bash auto.sh install
 
 		# Getting the wallpaper
 		mkdir ~/Images
 		cd ~/Images
 		wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
-
-		# Allow user to use brightnessctl
-		test $PACKAGES == 'laptop' && echo 'permit nopass :wheel cmd brightnessctl' | sudo tee -a /etc/doas.conf
+		convert HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+		rm Astronaut-Wallpaper.jpg
 	;;
 esac
 
@@ -269,7 +271,7 @@ chmod +x /mnt/home/$USERNAME/install.sh
 chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
 
 # Cleaning leftovers
-rm /mnt/install.sh /mnt/home/$USERNAME/install.sh
+rm /mnt/install.sh /mnt/home/$USERNAME/install.sh $0
 
 reboot
 

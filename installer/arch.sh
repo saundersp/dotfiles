@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # Pre-setup steps :
 # loadkeys $KEYMAP
@@ -26,10 +26,13 @@ USER_PASSWORD=
 KERNEL=linux-zen
 # Other options : linux linux-lts linux-zen linux-hardened
 
+# BIOS not supported
+test ! -d /sys/firmware/efi/efivars && echo 'Missing UEFI vars, exiting...' && exit 1
+
 # Configuration checker
-test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
-test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
-test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
+test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
+test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
+test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
@@ -86,21 +89,21 @@ sed -i 's/^#Para/Para/g' /etc/pacman.conf
 
 # Settings faster pacman mirrors
 pacman -Sy --noconfirm --needed reflector rsync python
-reflector -a 48 -c $(curl -q ifconfig.co/country-iso) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+reflector -a 48 -c $(curl -q ifconfig.io/country_code) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 
 # Install helpers
 install_pkg(){
 	pacstrap /mnt --needed $@
 }
 install_server(){
-	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop
+	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress
 }
 install_ihm(){
-	install_pkg fakeroot make gcc pkgconf dmenu picom i3-gaps xorg-xinit xorg-server xorg-xset feh alacritty xclip vlc
+	install_pkg picom i3-gaps xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura zathura-pdf-mupdf imagemagick
 }
 
 # Installing the minimal packages
-install_pkg base $KERNEL linux-firmware opendoas grub efibootmgr which man sed cryptsetup connman
+install_pkg base $KERNEL linux-firmware opendoas grub efibootmgr which man sed cryptsetup connman dash
 
 # Installing the platform specific packages
 case $PACKAGES in
@@ -113,8 +116,7 @@ case $PACKAGES in
 	laptop)
 		install_server
 		install_ihm
-		install_pkg os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth \
-								patch bluez-utils intel-ucode wpa_supplicant brightnessctl
+		install_pkg os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth bluez-utils intel-ucode wpa_supplicant xorg-xbacklight
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;
@@ -131,6 +133,9 @@ echo "#!/usr/bin/env bash
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
+
+# Use dash instead of bash as default shell
+ln -sf /bin/dash /bin/sh
 
 # Removing unused programs
 rm -rf \$(find / -name *sudo*) /sbin/vi
@@ -174,6 +179,7 @@ echo $HOSTNAME > /etc/hostname
 echo '
 127.0.0.1    localhost
 ::1          localhost
+127.0.1.1    $HOSTNAME.localdomain $HOSTNAME
 ' >> /etc/hosts
 
 # Setting a root password
@@ -206,7 +212,7 @@ sed -i \"s,X=\\\"\\\",X=\\\"cryptdevice=UUID=\$(blkid -s UUID -o value $ROOT_PAR
 
 # Enable os-prober if laptop
 if [ '$PACKAGES' == 'laptop' ]; then
-	echo GRUB_DISABLE_OS_PROBER=0 >> /etc/default/grub
+	echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub
 	os-prober
 fi
 
@@ -245,7 +251,7 @@ aur_install(){
 	git clone https://aur.archlinux.org/\$1.git ~/aur/\$1
 	cd ~/aur/\$1
 	local GPG_KEY=\$(cat PKGBUILD | grep validpgpkeys | cut -d \"'\" -f 2)
-	test -z \$GPG_KEY && gpg --recv-key \$GPG_KEY
+	test ! -z \$GPG_KEY && gpg --recv-key \$GPG_KEY
 	makepkg -sri --noconfirm
 }
 
@@ -258,30 +264,24 @@ case $PACKAGES in
 		sudo bash auto.sh server
 
 		aur_install lazydocker
-		aur_install lf
 	;;
 	virtual|laptop)
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
-		./auto.sh
-		sudo bash auto.sh
+		./auto.sh install
+		sudo bash auto.sh install
 
 		# Getting the wallpaper
 		mkdir ~/Images
 		cd ~/Images
 		wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
+		convert HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+		rm Astronaut-Wallpaper.jpg
 
-		if [ $PACKAGES == 'laptop' ]; then
-			# Allow user to use brightnessctl
-			echo 'permit nopass :wheel cmd brightnessctl' | sudo tee -a /etc/doas.conf
-		fi
-
-		aur_install davmail
+		aur_install lazydocker
 		aur_install tor-browser
-		aur_install font-manager
 		aur_install librewolf-bin
 		aur_install spotify
-		aur_install polybar
 	;;
 esac
 
