@@ -1,3 +1,7 @@
 [user]
 	email = pierre.saundersgb@gmail.com
 	name = saundersp
+[safe]
+	directory = ~/git/**
+	directory = ~/aur/**
+	directory = /usr/local/src/**
