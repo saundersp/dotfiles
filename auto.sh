@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-if [[ -z $1 || $1 == 'help' ]]; then
+if [[ -z $1 || $1 == 'help' || $1 == 'h' || $1 == '--help' ]]; then
 	echo -e "Auto-installation of my dotfiles script helper
 Implemented by @saundersp
 
 Command(s) should be formatted like:
-\t$0 install
+\t$0 i|install
 \tInstall all my dotfiles
 \t/!\ Note: When executed as root, the script install and apply the patches in the patches folder
 
-\t$0 uninstall|remove
+\t$0 r|uninstall|remove
 \tRemove all my dotfiles
 
-\t$0 server
+\t$0 s|server
 \tInstall the server's version of my dotfiles
 
-\t$0 help
+\t$0 h|help|--help
 \tWhich display this help message."
 	exit 0
 fi
@@ -26,7 +26,7 @@ export XDG_DATA_HOME=$HOME/.XDG/data
 mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME
 
 CURRENT_FOLDER=$(pwd)
-if [[ $1 == 'uninstall' || $1 == 'remove' ]]; then
+if [[ $1 == 'uninstall' || $1 == 'remove' || $1 == 'r' ]]; then
 	rm -rf $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $HOME/.gitconfig $HOME/.bash_profile \
 		$XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/coc-settings.json $HOME/.Xresources \
 		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config.ini $XDG_CONFIG_HOME/polybar/scripts \
@@ -47,7 +47,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 	ln -sf $CURRENT_FOLDER/.gitconfig $HOME/.gitconfig
 	ln -sf $CURRENT_FOLDER/.tmux.conf $HOME/.tmux.conf
 
-	if [[ $1 == 'server' ]]; then
+	if [[ $1 == 'server' || $1 == 's' ]]; then
 		ln -sf $CURRENT_FOLDER/.bash_profile_server $HOME/.bash_profile
 	else
 		mkdir -p $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks $XDG_CONFIG_HOME/polybar
@@ -70,7 +70,7 @@ else
 	ln -sf $CURRENT_FOLDER/root.bash_profile $HOME/.bash_profile
 	ln -sf $CURRENT_FOLDER/root.tmux.conf $HOME/.tmux.conf
 
-	if [[ $1 != 'server' ]]; then
+	if [[ $1 != 'server' && $1 != 's' ]]; then
 		ln -sf $CURRENT_FOLDER/.Xresources $HOME/.Xresources
 
 		PACKAGES='dmenu st'
