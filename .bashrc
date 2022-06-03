@@ -320,6 +320,7 @@ if command -v xrandr >> /dev/null; then
 		local USAGE="HDMI connection helper\nImplemented by @saundersp\n\nDocumentation:\n
 			\t$FUNCNAME e|extend\n\tExtend the primary display to the secondary.\n\n
 			\t$FUNCNAME m|mirror\n\tMirror the primary display to the secondary.\n\n
+			\t$FUNCNAME o|off\n\tTurn off a display.\n\n
 			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		__get_display__(){
 			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
@@ -330,20 +331,20 @@ if command -v xrandr >> /dev/null; then
 				test -z $Primary&& return 0
 				local Secondary=$(__get_display__ Secondary)
 				test -z $Secondary && return 0
-				local mode=$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c)
-				echo xrandr --output $Secondary --auto --$mode $Primary
+				local mode=$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)
+				xrandr --output $Secondary --auto --$mode $Primary
 			;;
 			m|mirror)
 				local Primary=$(__get_display__ Primary)
 				test -z $Primary&& return 0
 				local Secondary=$(__get_display__ Secondary)
 				test -z $Secondary && return 0
-				echo xrandr --output $Secondary --auto --same-as $Primary
+				xrandr --output $Secondary --auto --same-as $Primary
 			;;
 			o|off)
 				local Primary=$(__get_display__ Primary)
 				test -z $Primary && return 0
-				echo xrandr --output $Primary --off
+				xrandr --output $Primary --off
 			;;
 			h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
