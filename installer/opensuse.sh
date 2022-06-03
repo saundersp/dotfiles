@@ -110,7 +110,7 @@ case $PACKAGES in
 	laptop)
 		install_ihm
 		install_pkg os-prober xbacklight bumblebee-status-module-nvidia-prime ntfs-3g ucode-intel wpa_supplicant pulseaudio \
-					xf86-video-intel pulseaudio-module-bluetooth bluez #nvidia nvidia-utils pulsemixer
+					xf86-video-intel pulseaudio-module-bluetooth bluez wireguard-tools  #nvidia nvidia-utils pulsemixer
 
 		# Allow vlc to use nvidia gpu
 		printf '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc

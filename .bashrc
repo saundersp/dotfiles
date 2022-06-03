@@ -289,7 +289,7 @@ if command -v pacman >> /dev/null; then
 fi
 
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard'
-command -v openvpn >> /dev/null && alias vpn='sudo openvpn ~/.ssh/LinodeVPN.ovpn &'
+command -v wg-quick >> /dev/null && alias vpn='sudo wg-quick up wg0'
 if command -v reflector >> /dev/null; then
 	update_mirrors(){
 		local MIRRORFILE=/etc/pacman.d/mirrorlist

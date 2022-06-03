@@ -96,7 +96,7 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg dmenu picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar ueberzug calibre filezilla zathura zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch openvpn imagemagick
+	install_pkg dmenu picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar ueberzug calibre filezilla zathura zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch wireguard imagemagick
 }
 
 # Installing the platform specific packages

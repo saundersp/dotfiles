@@ -127,7 +127,14 @@ case $PACKAGES in
 	laptop)
 		install_server
 		install_ihm
-		install_pkg os-prober xf86-video-intel nvidia nvidia-utils nvidia-prime ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth bluez-utils intel-ucode wpa_supplicant xorg-xbacklight bluez-$INIT_SYSTEM
+		install_pkg os-prober xf86-video-intel nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth \
+			patch bluez-utils intel-ucode wpa_supplicant xorg-xbacklight bluez-$INIT_SYSTEM wireguard-tools
+		case $KERNEL in
+			linux) install_pkg nvidia ;;
+			linux-lts) install_pkg nvidia-lts ;;
+			*) install_pkg nvidia-dkms;;
+		esac
+
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;

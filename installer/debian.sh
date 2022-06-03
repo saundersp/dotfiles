@@ -99,7 +99,7 @@ install_server(){
 install_ihm(){
 	install_server
 	install_pkg dmenu picom xinit xserver-xorg-core x11-xserver-utils feh xclip firefox-esr vlc polybar xserver-xorg-input-kbd \
-		xserver-xorg-input-mouse xserver-xorg-input-libinput libxinerama-dev autokey-qt calibre filezilla openvpn zathura \
+		xserver-xorg-input-mouse xserver-xorg-input-libinput libxinerama-dev autokey-qt calibre filezilla wireguard-tools zathura \
 		imagemagick
 
 	pip install ueberzug

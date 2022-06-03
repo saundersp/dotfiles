@@ -339,7 +339,7 @@ case $PACKAGES in
 	minimal) ;;
 	laptop)
 		install_ihm
-		emerge -q x11-apps/xbacklight net-misc/connman net-wireless/wpa_supplicant net-vpn/openvpn
+		emerge -q x11-apps/xbacklight net-misc/connman net-wireless/wpa_supplicant net-vpn/wireguard-tools
 		su $USERNAME -c \"install_dotfiles $PACKAGES\"
 	;;
 esac

@@ -180,7 +180,7 @@ install_ihm(){
 	install_server
 	install_pkg dmenu picom xinit xset feh xclip firefox vlc setxkbmap mesa-dri-swrast patch \
 			i3wm-gaps polybar make harfbuzz-dev libxinerama-dev xorg-server \
-			filezilla i3lock openvpn pkgconf zathura zathura-pdf-mupdf xf86-input-libinput \
+			filezilla i3lock wireguard-tools pkgconf zathura zathura-pdf-mupdf xf86-input-libinput \
 			eudev udev-init-scripts udev-init-scripts-openrc imagemagick
 
 	pip install ueberzug

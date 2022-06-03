@@ -40,7 +40,7 @@ install_server(){
 
 	install_pkg neofetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep \
 		htop opendoas git ranger tmux dash dnf-plugins-core docker-ce docker-ce-cli containerd.io\
-		docker-compose-plugin dos2unix fd-find gcc gdb make highlight lazygit lazydocker man-db openvpn \
+		docker-compose-plugin dos2unix fd-find gcc gdb make highlight lazygit lazydocker man-db wireguard-tools \
 		patch pkgconf progress
 	# ccls is temporally not available
 
