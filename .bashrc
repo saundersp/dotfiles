@@ -405,7 +405,7 @@ if command -v pactl >> /dev/null; then
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
-	alias pm='pulsemixer'
+	command -v pulsemixer >> /dev/null && alias pm='pulsemixer'
 fi
 
 alias weather='curl de.wttr.in/valbonne'
