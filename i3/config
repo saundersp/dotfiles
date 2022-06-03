@@ -213,4 +213,4 @@ mode "$mode_system" {
 	bindsym Return mode "default"
 }
 
-bindsym $mod+End mode "$mode_system"
+bindsym $mod+Home mode "$mode_system"
