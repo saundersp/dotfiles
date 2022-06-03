@@ -5,7 +5,7 @@ xset s off &
 # Disable the control Energy Star features
 xset -dpms &
 # Starting the compositor
-picom -b -f -i 0.9 &
+picom -b -f -i 0.9 --vsync &
 # Set the wallpaper
 feh --bg-fill $HOME/Images/WanderingAstronaut.png &
 # Set the keyboard repeat delay to 150ms and rate to 80 repeat/s
