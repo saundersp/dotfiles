@@ -360,7 +360,7 @@ if command -v pactl >> /dev/null; then
 
 	__rsoff__(){
 		pactl unload-module module-tunnel-sink-new 2>>/dev/null
-		pactl unload-module module-tunnel-source-new 2>>/dev/null
+		pactl unload-module module-tunnel-source 2>>/dev/null
 	}
 
 	__paloopoff__(){
@@ -386,7 +386,7 @@ if command -v pactl >> /dev/null; then
 			r)
 				__rsoff__
 				pactl load-module module-tunnel-sink-new server=192.168.137.1
-				pactl load-module module-tunnel-source-new server=192.168.137.1
+				pactl load-module module-tunnel-source server=192.168.137.1
 			;;
 			loopoff) __paloopoff__ ;;
 			loop)
