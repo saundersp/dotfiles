@@ -30,11 +30,11 @@ if [[ $1 == 'uninstall' || $1 == 'remove' ]]; then
 	rm -rf $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $HOME/.gitconfig $HOME/.bash_profile \
 		$XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/coc-settings.json $HOME/.Xresources \
 		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config.ini $XDG_CONFIG_HOME/polybar/scripts \
-		$XDG_CONFIG_HOME/ranger/rc.conf $XDG_CONFIG_HOME/ranger/plugins $XDG_CONFIG_HOME/tmux/plugins $HOME/.tmux.conf
+		$XDG_CONFIG_HOME/ranger/rc.conf $XDG_CONFIG_HOME/ranger/plugins $HOME/.tmux.conf
 
 elif [ "$(id -u)" -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
-	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/tmux/plugins $XDG_CONFIG_HOME/ranger/plugins
+	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/ranger/plugins
 
 	FILENAME=$XDG_CONFIG_HOME/nvim/autoload/plug.vim
 	test ! -f $FILENAME && curl https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim > $FILENAME
@@ -45,9 +45,6 @@ elif [ "$(id -u)" -ne 0 ]; then
 	ln -sf $CURRENT_FOLDER/ranger/rc.conf $XDG_CONFIG_HOME/ranger/rc.conf
 	ln -sf $CURRENT_FOLDER/.bashrc $HOME/.bashrc
 	ln -sf $CURRENT_FOLDER/.gitconfig $HOME/.gitconfig
-
-	FILENAME=$XDG_CONFIG_HOME/tmux/plugins/tpm
-	test ! -d $FILENAME && git clone https://github.com/tmux-plugins/tpm $FILENAME
 	ln -sf $CURRENT_FOLDER/.tmux.conf $HOME/.tmux.conf
 
 	if [[ $1 == 'server' ]]; then
