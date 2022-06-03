@@ -2,7 +2,6 @@
 
 # Disable screensaver
 xset s off &
-xset s noblank &
 # Disable the control Energy Star features
 xset -dpms &
 # Starting the compositor
