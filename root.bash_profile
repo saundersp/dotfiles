@@ -1,7 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Set the tty keyboard typematic delay and rate
-kbdrate --silent -d 200 -r 30.0 &
-# Set the keyboard layout to french
-setxkbmap fr &
+kbdrate --silent -d 250 -r 30.0 &
 clear
-[[ -f ~/.bashrc ]] && . ~/.bashrc
+test -f ~/.bashrc && . ~/.bashrc
+test "$TERM" != "screen" && tmux
+# Dirty way to not return exit code 1
+printf ""
