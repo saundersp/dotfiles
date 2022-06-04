@@ -351,8 +351,10 @@ case $PACKAGES in
 		mkdir ~/Images
 		cd ~/Images
 		wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
-		convert HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
-		rm Astronaut-Wallpaper.jpg
+		convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+		rm HD-Astronaut-Wallpaper.jpg
+		echo -e '#!/bin/sh\nfeh --bg-fill ~/Images/WanderingAstronaut.png' > ~/.fehbg
+		chmod +x ~/.fehbg
 
 		aur_install lazydocker
 		aur_install tor-browser
