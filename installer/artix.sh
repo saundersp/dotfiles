@@ -85,8 +85,8 @@ chown root /mnt/swap
 mkswap /mnt/swap
 swapon /mnt/swap
 
-# Enable pacman's parallels downloads
-sed -i 's/^#Para/Para/g' /etc/pacman.conf
+# Enable pacman's parallels downloads and colours
+sed -i 's/^#Color/Color/g;s/^#Para/Para/g' /etc/pacman.conf
 
 # Adding arch linux mirrors
 pacman -Sy --noconfirm --needed artix-archlinux-support
