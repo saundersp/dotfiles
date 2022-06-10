@@ -74,7 +74,6 @@ floating_modifier $mod
 bindsym $mod+Return exec --no-startup-id st
 
 # kill focused window
-bindsym $mod+Shift+q kill
 bindsym $alt+F4 kill
 
 # start dmenu (a program launcher)
@@ -83,8 +82,12 @@ bindsym $mod+d exec --no-startup-id dmenu_run -n -c -l 20
 # Start polybar
 exec_always --no-startup-id $XDG_CONFIG_HOME/polybar/launch.sh
 
+bindsym $mod+Shift+m move scratchpad
+bindsym $mod+m scratchpad show
+bindsym $mod+p sticky toggle
+
 # toggle the display of polybar
-bindsym $mod+b exec --no-startup-id polybar-msg -p $(pgrep polybar) cmd toggle
+bindsym $mod+b exec --no-startup-id polybar-msg cmd toggle
 
 # Screenshot button
 bindsym --release Print exec --no-startup-id "FILENAME=$(date +%H%M%S%d%m%Y); import /tmp/$FILENAME-screenshot.png; feh -d /tmp/$FILENAME-screenshot.png"
@@ -95,23 +98,11 @@ bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-# alternatively, you can use the cursor keys:
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
-
 # move focused window
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
-
-# alternatively, you can use the cursor keys:
-bindsym $mod+Shift+Left move left
-bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
-bindsym $mod+Shift+Right move right
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -145,7 +136,7 @@ bindsym $mod+6 workspace number 6
 bindsym $mod+7 workspace number 7
 bindsym $mod+8 workspace number 8
 bindsym $mod+9 workspace number 9
-bindsym $mod+0 workspace number 10
+bindsym $mod+0 workspace $ws10
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace number 1
@@ -157,35 +148,19 @@ bindsym $mod+Shift+6 move container to workspace number 6
 bindsym $mod+Shift+7 move container to workspace number 7
 bindsym $mod+Shift+8 move container to workspace number 8
 bindsym $mod+Shift+9 move container to workspace number 9
-bindsym $mod+Shift+0 move container to workspace number 10
+bindsym $mod+Shift+0 move container to workspace $ws10
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec --no-startup-id i3-msg exit
 
-# resize window (you can also use the mouse for that)
 mode "Resize" {
-	# These bindings trigger as soon as you enter the resize mode
-
-	# Pressing left will shrink the window’s width.
-	# Pressing right will grow the window’s width.
-	# Pressing up will shrink the window’s height.
-	# Pressing down will grow the window’s height.
 	bindsym l resize shrink width 1 px or 1 ppt
 	bindsym j resize grow height 1 px or 1 ppt
 	bindsym k resize shrink height 1 px or 1 ppt
 	bindsym h resize grow width 1 px or 1 ppt
 
-	# same bindings, but for the arrow keys
-	bindsym Right resize shrink width 1 px or 1 ppt
-	bindsym Down resize grow height 1 px or 1 ppt
-	bindsym Up resize shrink height 1 px or 1 ppt
-	bindsym Left resize grow width 1 px or 1 ppt
-
-	# Resizing gaps
 	bindsym 0 gaps inner all set 0
 	bindsym Shift+0 gaps outer all set 0
 	bindsym parenright gaps inner all set $inner_gaps
@@ -195,22 +170,17 @@ mode "Resize" {
 	bindsym Shift+minus gaps outer all minus 5
 	bindsym Shift+plus gaps outer all plus 5
 
-	# back to normal
 	bindsym Escape mode "default"
-	bindsym Return mode "default"
 }
-
 bindsym $mod+r mode "Resize"
 
 set $mode_system System (l) lock, (e) logout, (r) reboot, (p) poweroff
 mode "$mode_system" {
-	# i3lock
 	bindsym l exec --no-startup-id i3lock -i $(cat ~/.fehbg | sed 1d | cut -d "'" -f 2) -e -f, mode "default"
 	bindsym e exec --no-startup-id i3-msg exit
 	bindsym r exec --no-startup-id sudo reboot, mode "default"
 	bindsym p exec --no-startup-id sudo poweroff, mode "default"
-	bindsym Escape mode "default"
-	bindsym Return mode "default"
-}
 
+	bindsym Escape mode "default"
+}
 bindsym $mod+Home mode "$mode_system"
