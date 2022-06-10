@@ -132,6 +132,9 @@ install_server(){
 	# Replace sudo
 	ln -s /usr/bin/doas /usr/bin/sudo
 
+	# Replace default shell
+	ln -sf /bin/dash /bin/sh
+
 	# Enable the wheel group to use doas
 	echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.d/doas.conf
 
