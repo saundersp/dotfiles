@@ -82,6 +82,14 @@ bindsym $mod+d exec --no-startup-id dmenu_run -n -c -l 20
 # Start polybar
 exec_always --no-startup-id $XDG_CONFIG_HOME/polybar/launch.sh
 
+set $ws10 10: 
+
+# MainDesktop startup layout
+#assign [class="synergy"] workspace $ws10
+#assign [class="pulsemixer"] workspace $ws10
+#exec --no-startup-id synergy
+#exec --no-startup-id st -c pulsemixer -e pulsemixer
+
 bindsym $mod+Shift+m move scratchpad
 bindsym $mod+m scratchpad show
 bindsym $mod+p sticky toggle
