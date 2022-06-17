@@ -209,6 +209,28 @@ if command -v pacman >> /dev/null; then
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
+
+fi
+
+if command -v emerge >> /dev/null; then
+	em(){
+		local USAGE="Portage's emerge helper\nImplemented by @saundersp\n\nDocumentation:\n
+			\t$FUNCNAME s|sync\n\tSync the packages repository.\n\n
+			\t$FUNCNAME u|update|upgrade\n\tUpdate every packages.\n\n
+			\t$FUNCNAME p|prune\n\tRemove unused packages (orphans).\n\n
+			\t$FUNCNAME d|desc\n\tList all possible USE variable.\n\n
+			\t$FUNCNAME U|use\n\tList all set USE variable.\n\n
+			\t$FUNCNAME h|help|--help\n\tShow this help message"
+		case "$1" in
+			s|sync) emerge --sync ;;
+			u|update|upgrade) emerge -aNDuq @world;;
+			p|prune) emerge -acD && emerge -aD --clean ;;
+			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
+			U|use) emerge --info | grep ^USE | cut -d '"' -f 2 ;;
+			h|--help|help) echo -e $USAGE && return 0 ;;
+			*) echo -e $USAGE && return 1 ;;
+		esac
+	}
 fi
 
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard'
@@ -355,6 +377,7 @@ __helpme__(){
 	tprint_cmd 'vid or vimdiff <file1> <file2>' 'Shortcut to nvim diff mode'
 	tprint_cmd 'll <directory/?>' 'Detailed ls'
 	tprint_cmd 'pac' 'Pacman helper'
+	tprint_cmd 'em' "Portage's emerge helper"
 	tprint_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
 	tprint_cmd 'vpn' 'Easily enable a secure VPN connection'
 	tprint_cmd 'update_mirrors' "Update pacman's mirrors"
