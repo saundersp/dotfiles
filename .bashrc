@@ -300,7 +300,7 @@ if command -v emerge >> /dev/null; then
 		case "$1" in
 			s|sync) sudo emerge --sync ;;
 			u|update|upgrade) sudo emerge -aNDuq @world;;
-			p|prune) sudo emerge -acDq && sudo emerge -aDq --clean ;;
+			p|prune) sudo emerge -acD && sudo emerge -aD --clean ;;
 			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
 			U|use) emerge --info | grep ^USE | cut -d '"' -f 2 ;;
 			h|--help|help) echo -e $USAGE && return 0 ;;
