@@ -88,12 +88,22 @@ swapon /mnt/swap
 # Enable pacman's parallels downloads and colours
 sed -i 's/^#Color/Color/g;s/^#Para/Para/g' /etc/pacman.conf
 
+# Adding "Universe" repository
+echo -e '\n[universe]
+Server = https://universe.artixlinux.org/$arch
+Server = https://mirror1.artixlinux.org/universe/$arch
+Server = https://mirror.pascalpuffke.de/artix-universe/$arch
+Server = https://artixlinux.qontinuum.space/artixlinux/universe/os/$arch
+Server = https://mirror1.cl.netactuate.com/artix/universe/$arch
+Server = https://ftp.crifo.org/artix-universe/
+' >> /etc/pacman.conf
+
 # Adding arch linux mirrors
 pacman -Sy --noconfirm --needed artix-archlinux-support
 echo -e '\n# Arch\n[extra]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[community]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[multilib]\nInclude = /etc/pacman.d/mirrorlist-arch' >> /etc/pacman.conf
 
 # Settings faster pacman arch mirrors
-pacman -Sy --noconfirm reflector rsync python
+pacman -Sy --noconfirm --needed reflector rsync python
 reflector -a 48 -c $(curl -q ifconfig.io/country_code) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist-arch
 
 # Install helpers
@@ -104,7 +114,7 @@ install_server(){
 	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress
 }
 install_ihm(){
-	install_pkg picom i3-gaps xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura zathura-pdf-mupdf imagemagick
+	install_pkg picom i3-gaps xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura zathura-pdf-mupdf imagemagick tor-browser librewolf
 }
 
 # Installing the init system
@@ -132,7 +142,7 @@ case $PACKAGES in
 		case $KERNEL in
 			linux) install_pkg nvidia ;;
 			linux-lts) install_pkg nvidia-lts ;;
-			*) install_pkg nvidia-dkms;;
+			*) install_pkg nvidia-dkms $KERNEL-headers ;;
 		esac
 
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
@@ -357,8 +367,6 @@ case $PACKAGES in
 		chmod +x ~/.fehbg
 
 		aur_install lazydocker
-		aur_install tor-browser
-		aur_install librewolf-bin
 		aur_install spotify
 	;;
 esac
