@@ -121,7 +121,7 @@ case $PACKAGES in
 		case $KERNEL in
 			linux) install_pkg nvidia ;;
 			linux-lts) install_pkg nvidia-lts ;;
-			*) install_pkg nvidia-dkms;;
+			*) install_pkg nvidia-dkms $KERNEL-headers ;;
 		esac
 
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
