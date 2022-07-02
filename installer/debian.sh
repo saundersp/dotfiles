@@ -51,7 +51,8 @@ install_pkg(){
 }
 install_server(){
 	install_pkg doas neovim neofetch git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep htop man ranger tmux \
-		fd-find ccls dash docker docker-compose dos2unix gcc gdb highlight make man-db pkgconf progress
+		fd-find ccls dash docker docker-compose dos2unix gcc gdb highlight make man-db pkgconf progress flake8 python3-autopep8 \
+		python3-pynvim
 	ln -s /usr/bin/fdfind /usr/bin/fd
 	ln -s /usr/bin/python3 /usr/bin/python
 	ln -sf /bin/dash /bin/sh
@@ -92,9 +93,6 @@ install_server(){
 
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
-
-	# Installing pip dependencies
-	pip install pynvim autopep8 flake8
 }
 install_ihm(){
 	install_server
@@ -142,6 +140,8 @@ install_dotfiles(){
 	cd ~/git/dotfiles
 	./auto.sh $1
 	sudo bash auto.sh $1
+	nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+	nvim --headless -c CocUpdateSync +q
 
 	# Getting the wallpaper
 	mkdir ~/Images

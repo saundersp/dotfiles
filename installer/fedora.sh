@@ -41,7 +41,7 @@ install_server(){
 	install_pkg neofetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep \
 		htop opendoas git ranger tmux dash dnf-plugins-core docker-ce docker-ce-cli containerd.io\
 		docker-compose-plugin dos2unix fd-find gcc gdb make highlight lazygit lazydocker man-db wireguard-tools \
-		patch pkgconf progress
+		patch pkgconf progress python-flake8 python3-autopep8 python2-neovim
 	# ccls is temporally not available
 
 	# Use dash instead of bash as default shell
@@ -55,9 +55,6 @@ install_server(){
 
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
-
-	# Installing pip dependencies
-	pip install pynvim autopep8 flake8
 
 	# Adding user to wheel groups
 	usermod -aG wheel $USERNAME
@@ -91,6 +88,8 @@ install_dotfiles(){
 	cd ~/git/dotfiles
 	./auto.sh $1
 	sudo bash auto.sh $1
+	nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+	nvim --headless -c CocUpdateSync +q
 
 	# Getting the wallpaper
 	mkdir ~/Images

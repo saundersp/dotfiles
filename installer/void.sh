@@ -92,7 +92,7 @@ install_pkg base-system opendoas grub-x86_64-efi efibootmgr cryptsetup which man
 EOF
 
 install_server(){
-	install_pkg neovim lazygit lazydocker neofetch git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep htop ranger tmux docker dos2unix fd highlight ccls gcc gdb xtools docker-compose progress
+	install_pkg neovim lazygit lazydocker neofetch git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep htop ranger tmux docker dos2unix fd highlight ccls gcc gdb xtools docker-compose progress python3-neovim flake8 autopep8
 }
 install_ihm(){
 	install_server
@@ -141,9 +141,6 @@ rm -rf \$(find / -name *sudo*) /sbin/vi
 if [ '$PACKAGES' != 'minimal' ]; then
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
-
-	# Installing pip dependencies
-	pip install pynvim autopep8 flake8
 fi
 
 if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
@@ -247,12 +244,16 @@ case $PACKAGES in
 		cd ~/git/dotfiles
 		./auto.sh server
 		sudo bash auto.sh server
+		nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+		nvim --headless -c CocUpdateSync +q
 	;;
 	virtual|laptop)
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
 		./auto.sh install
 		sudo bash auto.sh install
+		nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+		nvim --headless -c CocUpdateSync +q
 
 		# Getting the wallpaper
 		mkdir ~/Images

@@ -127,7 +127,8 @@ install_server(){
 	install_pkg neovim doas lazygit neofetch git wget unzip openssh bash-completion nodejs npm python3 \
 			py3-pip ripgrep mandoc htop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc \
 			man-pages mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev \
-			tmux lazydocker dash docker docker-compose dos2unix gdb highlight progress
+			tmux lazydocker dash docker docker-compose dos2unix gdb highlight progress py3-flake8 \
+			py3-autopep8 py3-pynvim
 
 	# Replace sudo
 	ln -s /usr/bin/doas /usr/bin/sudo
@@ -163,6 +164,8 @@ EOF
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
 	./auto.sh server
+	nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+	nvim --headless -c CocUpdateSync +q
 
 	\" > /home/$USERNAME/install.sh
 	chmod +x /home/$USERNAME/install.sh
@@ -175,9 +178,6 @@ EOF
 
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
-
-	# Installing pip dependencies
-	pip install pynvim autopep8 flake8
 }
 install_ihm(){
 	install_server

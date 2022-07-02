@@ -111,7 +111,7 @@ install_pkg(){
 	basestrap /mnt --needed $@
 }
 install_server(){
-	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress
+	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress python-pynvim flake8 autopep8
 }
 install_ihm(){
 	install_pkg picom i3-gaps xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura zathura-pdf-mupdf imagemagick tor-browser librewolf
@@ -171,9 +171,6 @@ rm -rf \$(find / -name *sudo*) /sbin/vi
 if [ '$PACKAGES' != 'minimal' ]; then
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
-
-	# Installing pip dependencies
-	pip install pynvim autopep8 flake8
 fi
 
 if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
@@ -348,6 +345,8 @@ case $PACKAGES in
 		cd ~/git/dotfiles
 		./auto.sh server
 		sudo bash auto.sh server
+		nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+		nvim --headless -c CocUpdateSync +q
 
 		aur_install lazydocker
 	;;
@@ -356,6 +355,8 @@ case $PACKAGES in
 		cd ~/git/dotfiles
 		./auto.sh install
 		sudo bash auto.sh install
+		nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+		nvim --headless -c CocUpdateSync +q
 
 		# Getting the wallpaper
 		mkdir ~/Images

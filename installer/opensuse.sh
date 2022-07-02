@@ -44,7 +44,7 @@ install_server(){
 	zypper addrepo -G https://download.opensuse.org/repositories/home:lemmy04/openSUSE_Tumbleweed/home:lemmy04.repo       # For lazydocker
 	zypper addrepo -G https://download.opensuse.org/repositories/home:pandom79/openSUSE_Tumbleweed/home:pandom79.repo     # For ueberzug
 	zypper refresh
-	install_pkg git neofetch neovim unzip bash-completion nodejs npm python3 python3-pip ripgrep htop lazygit opendoas ranger lazydocker patch gcc make fd tmux ccls dash docker docker-compose dos2unix gdb highlight
+	install_pkg git neofetch neovim unzip bash-completion nodejs npm python3 python3-pip ripgrep htop lazygit opendoas ranger lazydocker patch gcc make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python-neovim python-flake8 python-autopep8
 
 	# Use dash instead of bash as default shell
 	ln -sf /bin/dash /bin/sh
@@ -57,9 +57,6 @@ install_server(){
 
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
-
-	# Installing pip dependencies
-	pip install pynvim autopep8 flake8
 
 	# Adding user to wheel groups
 	usermod -aG wheel $USERNAME
@@ -90,6 +87,8 @@ install_dotfiles(){
 	cd ~/git/dotfiles
 	./auto.sh $1
 	sudo bash auto.sh $1
+	nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+	nvim --headless -c CocUpdateSync +q
 
 	# Getting the wallpaper
 	mkdir ~/Images
