@@ -7,6 +7,7 @@
 export XDG_CONFIG_HOME=$HOME/.XDG/config
 export XDG_CACHE_HOME=$HOME/.XDG/cache
 export XDG_DATA_HOME=$HOME/.XDG/data
+export XDG_STATE_HOME=$HOME/.XDG/state
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
@@ -73,12 +74,13 @@ __setprompt() {
 }
 PROMPT_COMMAND='__setprompt' # Will run function every time a command is entered
 
-HISTCONTROL=ignoreboth    # Don't put duplicate lines or lines starting with space in the history
-HISTSIZE= HISTFILESIZE=   # Infinite history
-stty -ixon                # Disable ctrl-s and ctrl-q.
-shopt -s histappend       # Append to the history file, don't overwrite it
-shopt -s cdspell dirspell # Minor error corrections on directories/files names
-shopt -s expand_aliases   # Enable the alias keyword
+HISTCONTROL=ignoreboth                       # Don't put duplicate lines or lines starting with space in the history
+HISTSIZE= HISTFILESIZE=                      # Infinite history
+export HISTFILE=$XDG_STATE_HOME/bash/history # Change the default history file location
+stty -ixon                                   # Disable ctrl-s and ctrl-q.
+shopt -s histappend                          # Append to the history file, don't overwrite it
+shopt -s cdspell dirspell                    # Minor error corrections on directories/files names
+shopt -s expand_aliases                      # Enable the alias keyword
 
 # Enable programmable completion features script by GNU (https://github.com/scop/bash-completion)
 if ! shopt -oq posix; then
@@ -118,6 +120,8 @@ alias	ls='ls -h --color=auto --group-directories-first' \
 	diff='diff --color=auto' \
 	ip='ip --color=auto' \
 	ll='ls -hClas --color=auto --group-directories-first'
+
+command -v wget >> /dev/null && alias wget="wget --hsts-file=\"$XDG_CACHE_HOME=wget-hsts\""
 
 # Print out escape sequences usable for coloured text on tty.
 colours() {
@@ -168,10 +172,10 @@ preview_csv(){
 }
 
 if command -v neofetch >> /dev/null; then
-	neofetchupdate(){
+	nfu(){
 		neofetch --config $XDG_CONFIG_HOME/neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
 	}
-	test ! -r $XDG_CACHE_HOME/.neofetch && neofetchupdate
+	test ! -r $XDG_CACHE_HOME/.neofetch && nfu
 	echo -e -n "\n$(cat $XDG_CACHE_HOME/.neofetch)"
 else
 	echo -e "${BOLD}Available commands :${NOCOLOUR}"
@@ -200,10 +204,20 @@ if command -v pacman >> /dev/null; then
 	pac(){
 		local USAGE="Pacman helper\nImplemented by @saundersp\n\nDocumentation:\n
 			\t$FUNCNAME u|update|upgrade\n\tUpdate every packages.\n\n
+			\t$FUNCNAME m|mirrors\n\tUpdate the mirrorlist.\n\n
 			\t$FUNCNAME p|prune\n\tRemove unused packages (orphans).\n\n
 			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
 			u|update|upgrade) pacman -Syu ;;
+			m|mirrors)
+				if command -v reflector >> /dev/null; then
+						local MIRRORFILE=/etc/pacman.d/mirrorlist
+						test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
+						reflector -a 48 -c $(curl -s ifconfig.io/country_code) -f 5 -l 20 --sort rate --save $MIRRORFILE
+					else
+						echo 'This command requires reflector installed' && return 1
+				fi
+				;;
 			p|prune) pacman -Qtdq | pacman -Rns - ;;
 			h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
@@ -220,13 +234,15 @@ if command -v emerge >> /dev/null; then
 			\t$FUNCNAME p|prune\n\tRemove unused packages (orphans).\n\n
 			\t$FUNCNAME d|desc\n\tList all possible USE variable.\n\n
 			\t$FUNCNAME U|use\n\tList all set USE variable.\n\n
+			\t$FUNCNAME m|mirrors\n\tUpdate the mirrorlist.\n\n
 			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
 			s|sync) emerge --sync ;;
 			u|update|upgrade) emerge -aNDuq @world;;
 			p|prune) emerge -acD && emerge -aD --clean ;;
 			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
-			U|use) emerge --info | grep ^USE | cut -d '"' -f 2 ;;
+			U|use) portageq envvar USE ;;
+			m|mirrors) sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
 			h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
@@ -234,14 +250,7 @@ if command -v emerge >> /dev/null; then
 fi
 
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard'
-command -v wg-quick >> /dev/null && alias vpn='wg-quick up wg0'
-if command -v reflector >> /dev/null; then
-	update_mirrors(){
-		local MIRRORFILE=/etc/pacman.d/mirrorlist
-		test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
-		reflector -a 48 -c $(curl -s ifconfig.io/country_code) -f 5 -l 20 --sort rate --save $MIRRORFILE
-	}
-fi
+command -v wg-quick >> /dev/null && alias vpn='wg-quick up wg0' && alias vpn_off='wg-quick down wg0'
 command -v lazygit >> /dev/null && alias lg='lazygit'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker'
 
@@ -353,7 +362,7 @@ if command -v pactl >> /dev/null; then
 	command -v pulsemixer >> /dev/null && alias pm='pulsemixer'
 fi
 
-alias weather='curl de.wttr.in/valbonne'
+command -v curl >> /dev/null && alias weather='curl de.wttr.in/valbonne'
 
 __helpme__(){
 	print_cmd(){
@@ -369,7 +378,7 @@ __helpme__(){
 	}
 
 	echo -e "${BOLD}Available commands :${NOCOLOUR}"
-	tprint_cmd 'neofetchupdate' 'Update the cached neofetch informations'
+	tprint_cmd 'nfu' 'Update the cached neofetch informations'
 	tprint_cmd 'activate' 'Activate the python virtual environment'
 	tprint_cmd 'colours' 'Show the colours palette of the current terminal'
 	tprint_cmd 'preview_csv <file>' 'Preview a csv file'
@@ -380,7 +389,7 @@ __helpme__(){
 	tprint_cmd 'em' "Portage's emerge helper"
 	tprint_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
 	tprint_cmd 'vpn' 'Easily enable a secure VPN connection'
-	tprint_cmd 'update_mirrors' "Update pacman's mirrors"
+	tprint_cmd 'vpn_off' 'Easily disable a VPN connection'
 	tprint_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 	tprint_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
 	tprint_cmd 'ranger-cd / C-o' 'Modded ranger to changed pwd on exit'
