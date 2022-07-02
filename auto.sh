@@ -37,7 +37,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
 	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/ $XDG_CONFIG_HOME/ranger/plugins $XDG_CONFIG_HOME/tmux
 
-	FILENAME=$XDG_DATA_HOME/nvim/site/pack/packer/start/packer.nvim
+	FILENAME=$XDG_DATA_HOME/nvim/site/pack/packer/opt/packer.nvim
 	test ! -d $FILENAME && git clone --depth=1 https://github.com/wbthomason/packer.nvim $FILENAME
 	FILENAME=$XDG_CONFIG_HOME/ranger/plugins/ranger_devicons
 	test ! -d $FILENAME && git clone https://github.com/alexanderjeurissen/ranger_devicons.git $FILENAME
