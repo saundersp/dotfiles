@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 local cmd = vim.cmd
 local o = vim.o
-local b = vim.b
+--local b = vim.b
 local wo = vim.wo
 local g = vim.g
 
@@ -14,30 +14,209 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Plugin enabler
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-cmd([[
-call plug#begin('$XDG_CONFIG_HOME/nvim/autoload/plugged')
-	Plug 'tomasiser/vim-code-dark'				" Install the vscode's codedark theme
-	Plug 'nvim-lualine/lualine.nvim'			" Add a fancy bottom bar with details
-	Plug 'lewis6991/gitsigns.nvim'				" Add the left column indicating git line status and preview window
-	Plug 'norcalli/nvim-colorizer.lua'			" Colourize RGB codes to it designated colour
-	Plug 'tpope/vim-surround'				" Quickly surround word with given symbol
-	Plug 'nvim-telescope/telescope.nvim'			" Add fuzzy finder to files, command and more
-	Plug 'nvim-lua/plenary.nvim'				" Telescope dependency
-	Plug 'windwp/nvim-autopairs'				" Automatic pairs of ( [ { insertion
-	Plug 'kyazdani42/nvim-tree.lua'				" Add a fancy file explorer
-	Plug 'kyazdani42/nvim-web-devicons'			" nvim-tree dependency for file icons
-	Plug 'tommcdo/vim-lion'					" add the vmap gl<SYMBOL> to vertical align to the given symbol
-	Plug 'luochen1990/rainbow'				" Colourize multiple inner level to ( [ {
-	Plug 'ntpeters/vim-better-whitespace'			" Automatic white spaces trimming
-	Plug 'chrisbra/csv.vim'					" CSV file handling
-	Plug 'neoclide/coc.nvim', {'branch': 'release'}		" LSP Functionnalities
-	Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }	" Lively Previewing LaTeX PDF Output
-	Plug 'puremourning/vimspector'				" Add debugging capabilities
-call plug#end()
-]])
+cmd("packadd packer.nvim")
+-- TODO use PackerCompile if changed
+require('packer').startup(function(use)
+	-- Plugin/Package management
+	use { 'wbthomason/packer.nvim', opt = true }
+	-- Install the vscode's codedark theme
+	use { 'tomasiser/vim-code-dark', opt = true }
+	-- Add a fancy bottom bar with details
+	use { 'nvim-lualine/lualine.nvim',
+		config = function()
+			require('lualine').setup {
+				options = {
+					theme = 'codedark',
+					disabled_filetypes = { 'NvimTree' }
+				}
+			}
+		end,
+		requires = 'kyazdani42/nvim-web-devicons'
+	}
+	-- Add the left column indicating git line status and preview window
+	use {'lewis6991/gitsigns.nvim',
+		config = function()
+			require('gitsigns').setup {
+				keymaps = {
+					['n <leader>hp'] = '<cmd>Gitsigns preview_hunk<CR>',
+					['n <leader>hU'] = '<cmd>Gitsigns reset_hunk<CR>',
+					['n <leader>hs'] = '<cmd>Gitsigns stage_hunk<CR>',
+					['n <leader>hu'] = '<cmd>Gitsigns undo_stage_hunk<CR>',
+					['n <leader>hd'] = '<cmd>Gitsigns diffthis<CR>',
+					['n [h'] = '<cmd>Gitsigns prev_hunk<CR><leader>hp',
+					['n ]h'] = '<cmd>Gitsigns next_hunk<CR><leader>hp'
+				},
+				current_line_blame = true
+			}
+			-- Configure the git colours palette
+			vim.cmd([[
+			hi GitSignsAdd    guifg = #009900
+			hi GitSignsChange guifg = #bbbb00
+			hi GitSignsDelete guifg = #ff2222
+			]])
+		end,
+		requires = 'nvim-lua/plenary.nvim'
+	}
+	-- Colourize RGB codes to it designated colour
+	use { 'norcalli/nvim-colorizer.lua',
+		config = function()
+			require'colorizer'.setup(
+				{'*';},
+				{
+					RRGGBBAA = true,	-- #RRGGBBAA hex codes
+					rgb_fn	 = true,	-- CSS rgb() and rgba() functions
+					hsl_fn	 = true,	-- CSS hsl() and hsla() functions
+					css	 = true,	-- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+					css_fn	 = true		-- Enable all CSS *functions*: rgb_fn, hsl_fn
+				}
+			)
+		end
+	}
+	-- Quickly surround word with given symbol
+	use 'tpope/vim-surround'
+	-- Add fuzzy finder to files, command and more
+	use {'nvim-telescope/telescope.nvim',
+		config = function()
+			Map('n', '<C-p>', ':Telescope find_files<CR>')
+			Map('n', '<leader>ff', ':Telescope live_grep<CR>')
+			Map('n', '<leader>f*', ':Telescope grep_string<CR>')
+			Map('n', '<leader>ft', ':Telescope help_tags<CR>')
+			Map('n', '<leader>fc', ':Telescope commands<CR>')
+			Map('n', '<leader>fb', ':Telescope buffers<CR>')
+			Map('n', '<leader>fm', ':Telescope marks<CR>')
+			Map('n', '<leader>fk', ':Telescope keymaps<CR>')
+			Map('n', '<leader>fr', ':Telescope registers<CR>')
+		end,
+		requires = {
+			'nvim-lua/plenary.nvim',
+			'kyazdani42/nvim-web-devicons'
+		}
+	}
+	-- Automatic pairs of ( [ { insertion
+	use { 'windwp/nvim-autopairs', config = function() require("nvim-autopairs").setup{} end }
+	-- Add a fancy file explorer
+	use {'kyazdani42/nvim-tree.lua',
+		config = function()
+			require'nvim-tree'.setup {
+				filters = {
+					custom = {
+						".git",
+						"node_modules",
+						"venv",
+						"package-lock.json"
+					}
+				},
+				sync_root_with_cwd = true,
+				view = {
+					mappings = {
+						list = {
+							{ key = "è", action = "cd" }
+						}
+					}
+				},
+				actions = {
+					open_file = {
+						quit_on_open = true,
+					}
+				}
+			}
 
-g.coc_global_extensions = { "coc-cspell-dicts", "coc-spell-checker", "coc-json", "coc-pyright", "coc-lua", "coc-prettier", "coc-docker", "coc-java",
-			"coc-sh", "coc-markdownlint", "coc-markdown-preview-enhanced", "coc-webview"}
+			-- Open the nerd tree explorer
+			Map('n', '<C-n>', '<cmd>NvimTreeToggle<CR>')
+		end,
+		requires = 'kyazdani42/nvim-web-devicons'
+	}
+	-- add the vmap gl<SYMBOL> to vertical align to the given symbol
+	use { 'tommcdo/vim-lion',
+		config = function()
+			vim.g.lion_squeeze_spaces = 1	-- Squeeze extra spaces when doing a vertical alignment
+		end
+	}
+	-- Colourize multiple inner level to ( [ {
+	use { 'luochen1990/rainbow',
+		config = function()
+			vim.g.rainbow_active = 1 -- Enable rainbow plugin
+		end
+	}
+	-- Automatic white spaces trimming
+	use { 'ntpeters/vim-better-whitespace',
+		config = function()
+			vim.g.better_whitespace_enabled	= 1	-- Enable the plugin
+			vim.g.strip_whitespace_on_save	= 1	-- Remove trailing white spaces on save
+			vim.g.strip_whitespace_confirm	= 0	-- Disable the confirmation message on stripping white spaces
+		end
+	}
+	-- CSV file handling
+	use { 'chrisbra/csv.vim',
+		config = function()
+			vim.b.csv_arrange_align = 'lc.'	-- Left align when using ArrangeColumn in a csv file
+		end
+	}
+	-- LSP Functionnalities}
+	use {'neoclide/coc.nvim',
+		branch = 'release',
+		config = function()
+			Map('v', '<leader>a', '<Plug>(coc-codeaction-selected)w')
+			Map('n', '<leader>a', '<Plug>(coc-codeaction-selected)w')
+			Map('n', 'gd', '<Plug>(coc-definition)')
+			Map('n', 'gy', '<Plug>(coc-type-definition)')
+			Map('n', 'gr', '<Plug>(coc-references)')
+			Map('n', 'gi', '<Plug>(coc-implementation)')
+			Map('n', '[g', '<Plug>(coc-diagnostic-prev)')
+			Map('n', ']g', '<Plug>(coc-diagnostic-next)')
+			Map('n', '<leader>r', '<Plug>(coc-rename)')
+			Map('n', '<leader>s', ':CocSearch ')
+			Map('n', '<leader>vd', ':CocList diagnostics<CR>')
+			Map('n', '<leader>vo', ':CocOutline<CR>')
+			Map('n', '<leader>vc', ':CocCommand<CR>')
+			Map('n', '<leader>ve', ':CocList extensions<CR>')
+
+			vim.cmd([[
+			function! s:show_documentation()
+				if (index(['vim','help'], &filetype) >= 0)
+					execute 'h '.expand('<cword>')
+				elseif (coc#rpc#ready())
+					call CocActionAsync('doHover')
+				else
+					execute '!' . &keywordprg . " " . expand('<cword>')
+				endif
+			endfunction
+
+			inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+			inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+			" Use K to show documentation in preview window
+			nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+			" Highlight the symbol and its references when holding the cursor.
+			autocmd CursorHold * silent call CocActionAsync('highlight')"
+
+			" Add `:Format` command to format current buffer.
+			command! -nargs=0 Format :call CocActionAsync('format')
+
+			" Add `:Fold` command to fold current buffer.
+			command! -nargs=? Fold :call CocAction('fold', <f-args>)
+
+			" Add `:OR` command for organize imports of the current buffer.
+			command! -nargs=0 OR :call CocActionAsync('runCommand', 'editor.action.organizeImport')
+			]])
+
+			vim.g.coc_global_extensions = { "coc-cspell-dicts", "coc-spell-checker", "coc-json", "coc-pyright", "coc-lua", "coc-prettier",
+				"coc-docker", "coc-java", "coc-sh", "coc-markdownlint", "coc-markdown-preview-enhanced", "coc-webview", "coc-texlab"}
+		end
+	}
+	-- Allow use of background jobs
+	use { 'tpope/vim-dispatch',
+		config = function()
+			vim.cmd("autocmd FileType tex autocmd BufWritePost <buffer> :Spawn! make") -- Auto compile LaTeX document on save
+			Map('n', '<leader>tp', ':Dispatch! make preview<CR>')
+
+			-- TUI programs
+			Map('n', '<leader>$g', ':Start lazygit<CR>')
+			Map('n', '<leader>$d', ':Start lazydocker<CR>')
+		end
+	}
+end)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General settings config
@@ -46,7 +225,7 @@ wo.t_Co					= "256"								-- Support 256 colours
 wo.t_ut					= ""								-- Reset the value to apply colorscheme
 cmd("colorscheme			codedark")							-- Set the colour scheme to codedark (VSCode's dark+)
 o.termguicolors				= true								-- Enable 24-bit RGB colours in the terminal
-o.syntax				= "true"							-- Enables syntax highlighting
+o.syntax				= true								-- Enables syntax highlighting
 o.listchars				= 'eol:﬋,tab:→ ,trail:•,extends:>,precedes:<,space:·,nbsp:ﴔ'	-- List of whitespace characters replacement (see :h listchars)
 o.list					= true								-- Enable replacement of listchars
 o.hidden				= true								-- Required to keep multiple buffers open multiple buffers
@@ -56,7 +235,6 @@ o.fileencoding				= 'UTF-8'							-- The encoding written to file
 o.ruler					= true								-- Show the cursor position all the time
 cmd("set iskeyword			+=-")								-- treat dash separated words as a word text object
 o.tabstop				= 8								-- Set the width of a tab
-o.softtabstop				= 8								 -- TODO Add desc
 o.shiftwidth				= 8								-- Change the number of space characters inserted for indentation
 o.smartindent				= true								-- Does smart autoindenting when starting a new line
 o.expandtab				= false								-- Disable the tab expansion of spaces
@@ -75,175 +253,30 @@ o.completeopt				= "menu,menuone,noselect"					-- Add LSP complete popup menu
 o.signcolumn				= "yes"								-- Always draw the signcolumn with 1 fixed space width
 o.title					= true								-- Change the window's title to the opened file name and directory
 o.updatetime				= 200								-- Time before CursorHold triggers
+o.swapfile				= false								-- Disable swapfile usage
 cmd("set formatoptions			+=r")								-- Add asterisks in block comments
 cmd("set wildignore			+=*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json")	-- Ignore files in fuzzy finder
 cmd("autocmd FileType python set	noexpandtab")							-- Force disable expandtab on python's files
-cmd("autocmd FileType tex		set wrap")							-- Enable wraping only for LaTeX files
-
---------------------------------------------------------------------------------------------------------------------------------------------------------
--- Plugin config
---------------------------------------------------------------------------------------------------------------------------------------------------------
-b.csv_arrange_align			= 'lc.'								-- Left align when using ArrangeColumn in a csv file "
-g.rainbow_active			= 1								-- Enable rainbow plugin
-g.better_whitespace_enabled		= 1								-- Enable the vim-better-whitespace plugin
-g.strip_whitespace_on_save		= 1								-- Remove trailing white spaces on save
-g.strip_whitespace_confirm		= 0								-- Disable the confirmation message on stripping white spaces
-g.lion_squeeze_spaces			= 1								-- Squeeze extra spaces when doing a vertical alignment
-
--- Configure the git colours palette
-cmd([[
-hi GitSignsAdd	  guifg = #009900 ctermfg = 2
-hi GitSignsChange guifg = #bbbb00 ctermfg = 3
-hi GitSignsDelete guifg = #ff2222 ctermfg = 1
-]])
-
-require('lualine').setup {
-	options = {
-		theme = 'codedark'
-	}
-}
-
-require('gitsigns').setup {
-	keymaps = {
-		['n <leader>hp'] = '<cmd>Gitsigns preview_hunk<CR>',
-		['n <leader>hu'] = '<cmd>Gitsigns reset_hunk<CR>',
-		['n [h'] = '<cmd>Gitsigns prev_hunk<CR><leader>hp',
-		['n ]h'] = '<cmd>Gitsigns next_hunk<CR><leader>hp'
-	},
-	current_line_blame = true
-}
-
-require("nvim-autopairs").setup {}
-
-require'nvim-tree'.setup {
-	filters = {
-		custom = {
-			".git",
-			"node_modules",
-			"venv",
-			"package-lock.json"
-		}
-	},
-	update_cwd = true,
-	view = {
-		mappings = {
-			list = {
-				{ key = "è", action = "cd" }
-			}
-		}
-	},
-	actions = {
-		open_file = {
-			quit_on_open = true,
-		}
-	}
-
-}
-
-require'colorizer'.setup(
-	{'*';},
-	{
-		RGB	 = true,	-- #RGB hex codes
-		RRGGBB	 = true,	-- #RRGGBB hex codes
-		names	 = true,	-- "Name" codes like Blue
-		RRGGBBAA = true,	-- #RRGGBBAA hex codes
-		rgb_fn	 = true,	-- CSS rgb() and rgba() functions
-		hsl_fn	 = true,	-- CSS hsl() and hsla() functions
-		css	 = true,	-- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-		css_fn	 = true		-- Enable all CSS *functions*: rgb_fn, hsl_fn
-	})
-
-g.livepreview_previewer = 'zathura'
+cmd("autocmd FileType tex set		wrap")								-- Enable wraping only for LaTeX files
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping config
 --------------------------------------------------------------------------------------------------------------------------------------------------------
--- set leader key to space
-g.mapleader = ' '
-
--- Save buffer shortcut
-Map('n', '<C-s>', ':w<CR>')
-
--- Close window shortcut (keeps buffer open)
-Map('n', '<C-F4>', ':q!<CR>')
-Map('n', '<F28>', '<C-F4>') -- F28 Is CTRL F4 in Linux : LPT You can type key code in insert mode !
-
--- Close buffer shortcut
-Map('n', '<S-F4>', ':bd<CR>')
-Map('n', '<F16>', '<S-F4>')
-
--- M is the ALT modifier key
-Map('n', '<M-j>', ':resize -1<CR>')
-Map('n', '<M-k>', ':resize +1<CR>')
+g.mapleader = ' ' 				-- set leader key to space
+Map('n', '<C-s>', ':w<CR>') 			-- Save buffer shortcut
+Map('n', '<C-F4>', ':q!<CR>') 			-- Close window shortcut (keeps buffer open)
+Map('n', '<F28>', '<C-F4>') 			-- F28 Is CTRL F4 in Linux : LPT You can type key code in insert mode !
+Map('n', '<S-F4>', ':bd<CR>') 			-- Close buffer shortcut
+Map('n', '<F16>', '<S-F4>') 			-- F16 Is Shift F4 in Linux
+Map('n', '<M-j>', ':resize -1<CR>') 		-- Buffer resize shortcuts
+Map('n', '<M-k>', ':resize +1<CR>') 		-- M is the ALT modifier key
 Map('n', '<M-h>', ':vertical resize -1<CR>')
 Map('n', '<M-l>', ':vertical resize +1<CR>')
-
--- Fix terminal exit button
-Map('t', '<Esc>', '<C-\\><C-n>')
-
--- Clear the highlighting of :set hlsearch
-Map('n', '<C-m>', ':noh<CR>')
-Map('n', '<CR>', ':noh<CR>') -- <C-M> == <CR> in st
-
--- Disable the suspend signal
-Map('n', '<C-z>', '<Nop>')
-
--- Better tabbing
-Map('v', '<', '<gv')
+Map('t', '<Esc>', '<C-\\><C-n>') 		-- Fix terminal exit button
+Map('n', '<C-m>', ':noh<CR>') 			-- Clear the highlighting of :set hlsearch
+Map('n', '<CR>', ':noh<CR>') 			-- <C-M> == <CR> in st
+Map('n', '<C-z>', '<Nop>') 			-- Disable the suspend signal
+Map('v', '<', '<gv') 				-- Better tabbing
 Map('v', '>', '>gv')
-
--- Telescope keybinds
-Map('n', '<C-p>', ':Telescope find_files<CR>')
-Map('n', '<C-f>', ':Telescope live_grep<CR>')
-Map('n', '<leader>f', ':Telescope grep_string<CR>')
-Map('n', '<leader>t', ':Telescope help_tags<CR>')
-Map('n', '<leader>c', ':Telescope commands<CR>')
-Map('n', '<leader>b', ':Telescope buffers<CR>')
-Map('n', '<leader>m', ':Telescope marks<CR>')
-
--- Open the nerd tree explorer
-Map('n', '<C-n>', '<cmd>NvimTreeToggle<CR>')
-
--- COC keybinds
-Map('v', '<leader>a', '<Plug>(coc-codeaction-selected)w')
-Map('n', '<leader>a', '<Plug>(coc-codeaction-selected)w')
-Map('n', 'gd', '<Plug>(coc-definition)')
-Map('n', 'gy', '<Plug>(coc-type-definition)')
-Map('n', 'gr', '<Plug>(coc-references)')
-Map('n', 'gi', '<Plug>(coc-implementation)')
-Map('n', '[g', '<Plug>(coc-diagnostic-prev)')
-Map('n', ']g', '<Plug>(coc-diagnostic-next)')
-Map('n', '<leader>r', '<Plug>(coc-rename)')
-Map('n', '<leader>s', ':CocSearch ')
-Map('n', '<leader>vd', ':CocDiagnostics<CR>')
-Map('n', '<leader>vo', ':CocOutline<CR>')
-Map('n', '<leader>vc', ':CocCommand<CR>')
-Map('n', '<leader>ve', ':CocList extensions<CR>')
-
--- Toggle clipboard pasting
-Map('n', '<F2>', ':set invpaste paste?<CR>')
-
-cmd([[
-function! s:show_documentation()
-	if (index(['vim','help'], &filetype) >= 0)
-		execute 'h '.expand('<cword>')
-	elseif (coc#rpc#ready())
-		call CocActionAsync('doHover')
-	else
-		execute '!' . &keywordprg . " " . expand('<cword>')
-	endif
-endfunction
-
-inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-" Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-" Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold * silent call CocActionAsync('highlight')"
-
-" Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocActionAsync('format')
-]])
+Map('n', '<F2>', ':set invpaste paste?<CR>')	-- Toggle clipboard pasting
 

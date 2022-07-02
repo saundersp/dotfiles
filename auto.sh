@@ -23,6 +23,7 @@ fi
 export XDG_CONFIG_HOME=$HOME/.XDG/config
 export XDG_CACHE_HOME=$HOME/.XDG/cache
 export XDG_DATA_HOME=$HOME/.XDG/data
+export XDG_STATE_HOME=$HOME/.XDG/state
 mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME
 
 CURRENT_FOLDER=$(pwd)
@@ -34,12 +35,12 @@ if [[ $1 == 'uninstall' || $1 == 'remove' || $1 == 'r' ]]; then
 
 elif [ "$(id -u)" -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
-	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/plugged $XDG_CONFIG_HOME/ranger/plugins
+	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/ $XDG_CONFIG_HOME/ranger/plugins $XDG_CONFIG_HOME/tmux
 
-	FILENAME=$XDG_CONFIG_HOME/nvim/autoload/plug.vim
-	test ! -f $FILENAME && curl https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim > $FILENAME
-
-	test ! -d $XDG_CONFIG_HOME/ranger/plugins/ranger_devicons && git clone https://github.com/alexanderjeurissen/ranger_devicons.git $XDG_CONFIG_HOME/ranger/plugins/ranger_devicons
+	FILENAME=$XDG_DATA_HOME/nvim/site/pack/packer/start/packer.nvim
+	test ! -d $FILENAME && git clone --depth=1 https://github.com/wbthomason/packer.nvim $FILENAME
+	FILENAME=$XDG_CONFIG_HOME/ranger/plugins/ranger_devicons
+	test ! -d $FILENAME && git clone https://github.com/alexanderjeurissen/ranger_devicons.git $FILENAME
 	ln -sf $CURRENT_FOLDER/nvim/init.lua $XDG_CONFIG_HOME/nvim/init.lua
 	ln -sf $CURRENT_FOLDER/neofetch/config.conf $XDG_CONFIG_HOME/neofetch/config.conf
 	ln -sf $CURRENT_FOLDER/ranger/rc.conf $XDG_CONFIG_HOME/ranger/rc.conf
