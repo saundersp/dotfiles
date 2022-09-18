@@ -24,18 +24,18 @@ export XDG_CONFIG_HOME=$HOME/.XDG/config
 export XDG_CACHE_HOME=$HOME/.XDG/cache
 export XDG_DATA_HOME=$HOME/.XDG/data
 export XDG_STATE_HOME=$HOME/.XDG/state
-mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME
+mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME $XDG_STATE_HOME
 
 CURRENT_FOLDER=$(pwd)
 if [[ $1 == 'uninstall' || $1 == 'remove' || $1 == 'r' ]]; then
-	rm -rf $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $HOME/.gitconfig $HOME/.bash_profile \
+	rm -rf $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $XDG_CONFIG_HOME/git/config $HOME/.bash_profile \
 		$XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/coc-settings.json $HOME/.Xresources \
 		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config.ini $XDG_CONFIG_HOME/polybar/scripts \
 		$XDG_CONFIG_HOME/ranger/rc.conf $XDG_CONFIG_HOME/ranger/plugins $XDG_CONFIG_HOME/tmux/tmux.conf
 
 elif [ "$(id -u)" -ne 0 ]; then
 	test ! -r $XDG_CACHE_HOME/.neofetch && neofetch --config neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
-	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/ $XDG_CONFIG_HOME/ranger/plugins $XDG_CONFIG_HOME/tmux
+	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/nvim/autoload/ $XDG_CONFIG_HOME/ranger/plugins $XDG_CONFIG_HOME/tmux $XDG_CONFIG_HOME/git
 
 	FILENAME=$XDG_DATA_HOME/nvim/site/pack/packer/opt/packer.nvim
 	test ! -d $FILENAME && git clone --depth=1 https://github.com/wbthomason/packer.nvim $FILENAME
@@ -45,7 +45,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 	ln -sf $CURRENT_FOLDER/neofetch/config.conf $XDG_CONFIG_HOME/neofetch/config.conf
 	ln -sf $CURRENT_FOLDER/ranger/rc.conf $XDG_CONFIG_HOME/ranger/rc.conf
 	ln -sf $CURRENT_FOLDER/.bashrc $HOME/.bashrc
-	ln -sf $CURRENT_FOLDER/.gitconfig $HOME/.gitconfig
+	ln -sf $CURRENT_FOLDER/.gitconfig $XDG_CONFIG_HOME/git/config
 	ln -sf $CURRENT_FOLDER/.tmux.conf $XDG_CONFIG_HOME/tmux/tmux.conf
 
 	if [[ $1 == 'server' || $1 == 's' ]]; then
@@ -57,6 +57,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 		ln -sf $CURRENT_FOLDER/polybar/config.ini $XDG_CONFIG_HOME/polybar/config.ini
 		test ! -d $XDG_CONFIG_HOME/polybar/scripts && ln -sf $CURRENT_FOLDER/polybar/scripts $XDG_CONFIG_HOME/polybar/scripts
 		ln -sf $CURRENT_FOLDER/i3/config $XDG_CONFIG_HOME/i3/config
+		ln -sf $CURRENT_FOLDER/picom $XDG_CONFIG_HOME
 		ln -sf $CURRENT_FOLDER/nvim/init.lua $XDG_CONFIG_HOME/nvim/init.lua
 		ln -sf $CURRENT_FOLDER/nvim/coc-settings.json $XDG_CONFIG_HOME/nvim/coc-settings.json
 		ln -sf $CURRENT_FOLDER/.xinitrc $HOME/.xinitrc
@@ -72,8 +73,6 @@ else
 	ln -sf $CURRENT_FOLDER/root.tmux.conf $XDG_CONFIG_HOME/tmux/tmux.conf
 
 	if [[ $1 != 'server' && $1 != 's' ]]; then
-		ln -sf $CURRENT_FOLDER/.Xresources $HOME/.Xresources
-
 		PACKAGES='dmenu st'
 		for package in $PACKAGES; do
 			if [ ! -d /usr/local/src/$package ]; then
