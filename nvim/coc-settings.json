@@ -28,6 +28,7 @@
 		"Bpedia",
 		"Codium",
 		"Corese",
+		"Elem",
 		"Fullscreen",
 		"Hadoop",
 		"Hasklug",
@@ -65,8 +66,11 @@
 		"imgur",
 		"imshow",
 		"includegraphics",
+		"ipywidgets",
 		"isdir",
+		"jupyterlab",
 		"markdownlint",
+		"matplotlib",
 		"ndarray",
 		"neofetch",
 		"neovim",
@@ -91,6 +95,8 @@
 		"texhash",
 		"tllocalmgr",
 		"tolist",
+		"torchsummary",
+		"torchvision",
 		"tqdm",
 		"xclip",
 		"xinit",
@@ -109,6 +115,12 @@
 				"cache": { "directory": ".ccls-cache" },
 				"client": { "snippetSupport": true }
 			}
+		},
+		"haskell": {
+			"command": "haskell-language-server-wrapper",
+			"args": ["--lsp"],
+			"rootPatterns": ["*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml"],
+			"filetypes": ["haskell", "lhaskell"]
 		}
 	}
 }

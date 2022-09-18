@@ -1,11 +1,11 @@
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Global shortcuts/helper
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-local cmd = vim.cmd
-local o = vim.o
---local b = vim.b
-local wo = vim.wo
-local g = vim.g
+cmd = vim.cmd
+o = vim.o
+b = vim.b
+wo = vim.wo
+g = vim.g
 
 function Map(mode, shortcut, command)
 	vim.api.nvim_set_keymap(mode, shortcut, command, { noremap = false, silent = true })
@@ -49,7 +49,7 @@ require('packer').startup(function(use)
 				current_line_blame = true
 			}
 			-- Configure the git colours palette
-			vim.cmd([[
+			cmd([[
 			hi GitSignsAdd    guifg = #009900
 			hi GitSignsChange guifg = #bbbb00
 			hi GitSignsDelete guifg = #ff2222
@@ -129,27 +129,27 @@ require('packer').startup(function(use)
 	-- add the vmap gl<SYMBOL> to vertical align to the given symbol
 	use { 'tommcdo/vim-lion',
 		config = function()
-			vim.g.lion_squeeze_spaces = 1	-- Squeeze extra spaces when doing a vertical alignment
+			g.lion_squeeze_spaces = 1	-- Squeeze extra spaces when doing a vertical alignment
 		end
 	}
 	-- Colourize multiple inner level to ( [ {
 	use { 'luochen1990/rainbow',
 		config = function()
-			vim.g.rainbow_active = 1 -- Enable rainbow plugin
+			g.rainbow_active = 1 -- Enable rainbow plugin
 		end
 	}
 	-- Automatic white spaces trimming
 	use { 'ntpeters/vim-better-whitespace',
 		config = function()
-			vim.g.better_whitespace_enabled	= 1	-- Enable the plugin
-			vim.g.strip_whitespace_on_save	= 1	-- Remove trailing white spaces on save
-			vim.g.strip_whitespace_confirm	= 0	-- Disable the confirmation message on stripping white spaces
+			g.better_whitespace_enabled	= 1	-- Enable the plugin
+			g.strip_whitespace_on_save	= 1	-- Remove trailing white spaces on save
+			g.strip_whitespace_confirm	= 0	-- Disable the confirmation message on stripping white spaces
 		end
 	}
 	-- CSV file handling
 	use { 'chrisbra/csv.vim',
 		config = function()
-			vim.b.csv_arrange_align = 'lc.'	-- Left align when using ArrangeColumn in a csv file
+			b.csv_arrange_align = 'lc.'	-- Left align when using ArrangeColumn in a csv file
 		end
 	}
 	-- LSP Functionnalities}
@@ -171,7 +171,7 @@ require('packer').startup(function(use)
 			Map('n', '<leader>vc', ':CocCommand<CR>')
 			Map('n', '<leader>ve', ':CocList extensions<CR>')
 
-			vim.cmd([[
+			cmd([[
 			function! s:show_documentation()
 				if (index(['vim','help'], &filetype) >= 0)
 					execute 'h '.expand('<cword>')
@@ -182,8 +182,24 @@ require('packer').startup(function(use)
 				endif
 			endfunction
 
-			inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-			inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+			" inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+			" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+			inoremap <silent><expr> <TAB>
+				\ coc#pum#visible() ? coc#pum#next(1):
+				\ CheckBackspace() ? "\<Tab>" :
+				\ coc#refresh()
+			inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+			" Make <CR> to accept selected completion item or notify coc.nvim to format
+			" <C-g>u breaks current undo, please make your own choice.
+			inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+						      \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+			function! CheckBackspace() abort
+			  let col = col('.') - 1
+			  return !col || getline('.')[col - 1]  =~# '\s'
+			endfunction
 
 			" Use K to show documentation in preview window
 			nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -201,19 +217,31 @@ require('packer').startup(function(use)
 			command! -nargs=0 OR :call CocActionAsync('runCommand', 'editor.action.organizeImport')
 			]])
 
-			vim.g.coc_global_extensions = { "coc-cspell-dicts", "coc-spell-checker", "coc-json", "coc-pyright", "coc-lua", "coc-prettier",
-				"coc-docker", "coc-java", "coc-sh", "coc-markdownlint", "coc-markdown-preview-enhanced", "coc-webview", "coc-texlab"}
+			g.coc_global_extensions = { "coc-cspell-dicts", "coc-spell-checker", "coc-json", "coc-pyright", "coc-lua", "coc-prettier",
+				"coc-docker", "coc-java", "coc-sh", "coc-markdownlint", "coc-markdown-preview-enhanced", "coc-webview", "coc-texlab" }
 		end
 	}
 	-- Allow use of background jobs
 	use { 'tpope/vim-dispatch',
 		config = function()
-			vim.cmd("autocmd FileType tex autocmd BufWritePost <buffer> :Spawn! make") -- Auto compile LaTeX document on save
+			cmd("autocmd FileType tex autocmd BufWritePost <buffer> :Spawn! make") -- Auto compile LaTeX document on save
 			Map('n', '<leader>tp', ':Dispatch! make preview<CR>')
 
 			-- TUI programs
 			Map('n', '<leader>$g', ':Start lazygit<CR>')
 			Map('n', '<leader>$d', ':Start lazydocker<CR>')
+		end
+	}
+	-- Arduino commands
+ 	use { 'stevearc/vim-arduino',
+		config = function()
+			Map('n', '<leader>aa', ':ArduinoAttach<CR>')
+			Map('n', '<leader>am', ':ArduinoVerify<CR>')
+			Map('n', '<leader>au', ':ArduinoUpload<CR>')
+			Map('n', '<leader>ad', ':ArduinoUploadAndSerial<CR>')
+			Map('n', '<leader>ab', ':ArduinoChooseBoard<CR>')
+			Map('n', '<leader>ap', ':ArduinoChooseProgrammer<CR>')
+			Map('n', '<leader>as', ':ArduinoSerial<CR>')
 		end
 	}
 end)
