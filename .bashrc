@@ -315,10 +315,10 @@ if command -v emerge >> /dev/null; then
 		case "$1" in
 			s|sync) sudo emerge --sync ;;
 			u|update|upgrade) sudo emerge -aNDuq @world;;
-			p|prune) sudo emerge -acD && sudo emerge -aD --clean ;;
+			p|prune) sudo emerge -acD ;;
 			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
 			U|use) portageq envvar USE ;;
-			m|mirrors) sudo sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
+			m|mirrors) sudo sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
 			h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
