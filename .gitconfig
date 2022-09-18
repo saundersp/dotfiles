@@ -3,5 +3,5 @@
 	name = saundersp
 [safe]
 	directory = ~/git/**
-	directory = ~/aur/**
+	directory = ~/.aur/**
 	directory = /usr/local/src/**

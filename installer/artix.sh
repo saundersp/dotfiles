@@ -331,8 +331,8 @@ echo -e 'permit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' | s
 
 # Installing the AUR packages
 aur_install(){
-	git clone https://aur.archlinux.org/\$1.git ~/aur/\$1
-	cd ~/aur/\$1
+	git clone https://aur.archlinux.org/\$1.git ~/.aur/\$1
+	cd ~/.aur/\$1
 	local GPG_KEY=\$(cat PKGBUILD | grep validpgpkeys | cut -d \"'\" -f 2)
 	test ! -z \$GPG_KEY && gpg --recv-key \$GPG_KEY
 	makepkg -sri --noconfirm

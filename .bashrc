@@ -8,7 +8,6 @@ export XDG_CONFIG_HOME=$HOME/.XDG/config
 export XDG_CACHE_HOME=$HOME/.XDG/cache
 export XDG_DATA_HOME=$HOME/.XDG/data
 export XDG_STATE_HOME=$HOME/.XDG/state
-AUR_PATH=$HOME/aur
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
@@ -232,6 +231,7 @@ if command -v pacman >> /dev/null; then
 	}
 
 	aur(){
+		local AUR_PATH=$HOME/.aur
 		local USAGE="AUR Install helper\nImplemented by @saundersp\n\nDocumentation:\n
 			\t$FUNCNAME i|install <aur-package-name>\n\tInstall the specified AUR package.\n\n
 			\t$FUNCNAME r|remove|uninstall <aur-package-name>\n\tUninstall the specified AUR package.\n\n
