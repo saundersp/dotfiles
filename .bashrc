@@ -8,6 +8,14 @@ export XDG_CONFIG_HOME=$HOME/.XDG/config
 export XDG_CACHE_HOME=$HOME/.XDG/cache
 export XDG_DATA_HOME=$HOME/.XDG/data
 export XDG_STATE_HOME=$HOME/.XDG/state
+export XDG_RUNTIME_DIR=$HOME/.XDG/runtime
+
+# Set extras dotfiles location to clean home (xdg-ninja)
+command -v nvidia-settings >> /dev/null && alias nvidia-settings="nvidia-settings --config=\"$XDG_CONFIG_HOME/nvidia/settings\""
+export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
+export XAUTHORITY="$XDG_RUNTIME_DIR"/Xauthority
+export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
@@ -127,7 +135,7 @@ alias	ls='ls -h --color=auto --group-directories-first' \
 	ip='ip --color=auto' \
 	ll='ls -hClas --color=auto --group-directories-first'
 
-command -v wget >> /dev/null && alias wget="wget --hsts-file=\"$XDG_CACHE_HOME=wget-hsts\""
+command -v wget >> /dev/null && alias wget="wget --hsts-file=\"$XDG_DATA_HOME=wget-hsts\""
 
 # Print out escape sequences usable for coloured text on tty.
 colours() {
@@ -314,10 +322,10 @@ if command -v emerge >> /dev/null; then
 			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
 			s|sync) sudo emerge --sync ;;
-			u|update|upgrade) sudo emerge -aNDuq @world;;
+			u|update|upgrade) sudo emerge -aNDuq @world ;;
 			p|prune) sudo emerge -acD ;;
 			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
-			U|use) portageq envvar USE ;;
+			U|use) portageq envvar USE | xargs -n1 | less ;;
 			m|mirrors) sudo sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
 			h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
@@ -441,6 +449,31 @@ fi
 command -v curl >> /dev/null && alias weather='curl de.wttr.in/valbonne'
 command -v rsync >> /dev/null && alias sync_books='rsync -aP ~/"Calibre Library"/* linode:~/"Calibre Library"/*'
 
+pow(){
+	# The script assumes that all availables cpus has the same governor
+	local MODES=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors)
+
+	local USAGE="CPU scaling governor helper\nImplemented by @saundersp\n\nDocumentation:
+	$FUNCNAME l|list|-l|--list\n\tList all the availables scaling governors.\n\n
+	$FUNCNAME c|current|-c|--current\n\tDisplay the current selected scaling governor.\n\n
+	$FUNCNAME $(echo "$MODES" | sed 's/ /|/')\n\tSet the scaling governor to argument name.\n\n
+	$FUNCNAME h|help|-h|--help\n\tShow this help message"
+
+	case "$1" in
+		l|list|-l|--list) echo "$MODES" ;;
+		c|current|-c|--current) cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ;;
+		h|help|-h|--help) echo -e "$USAGE" && return 0 ;;
+		*)
+			if $(echo "$MODES" | grep -wq "$1"); then
+				echo "$1" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >> /dev/null
+			else
+				echo -e "$USAGE"
+				return 1
+			fi
+		;;
+	esac
+}
+
 __helpme__(){
 	print_cmd(){
 		printf "\055 \e[${ITALIC}%-32s\e[${NOCOLOUR} : $2\n" "$1"
@@ -476,8 +509,9 @@ __helpme__(){
 	tprint_cmd 'pa' 'Pulseaudio modules helper script'
 	tprint_cmd 'pm' 'Pulsemixer shortcut'
 	tprint_cmd 'weather' 'Get current weather status'
+	print_cmd 'pow' 'CPU scaling governor helper'
 	tprint_cmd 'sync_books' "Sync calibre's books to the linode's VPS"
-	tprint_cmd '?' 'Print this reminder'
+	print_cmd '?' 'Print this reminder'
 
 	echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"
 	print_cmd '!!' 'Last command'
