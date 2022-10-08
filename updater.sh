@@ -6,6 +6,9 @@ USAGE="Kernel/Local packages update helper\nImplemented by @saundersp\n\nDocumen
 \t$0 m, mod, -m, --mod
 \tShow the options that can be modularized.
 
+\t$0 M, make, -M, --make
+\tTransfer arguments to Makefile in the current selected kernel, open the current kernel setup menu by default.
+
 \t$0 f, fill, -f, --fill
 \tShow the options that are not enabled.
 \t/!\ Intended for the MAXIMUM profile.
@@ -25,7 +28,8 @@ USAGE="Kernel/Local packages update helper\nImplemented by @saundersp\n\nDocumen
 \t$0 h, help, -h, --help
 \tWhich display this help message."
 
-CURRENT=LAPTOP.config
+CURRENT=DEFAULT.config
+#CURRENT=MAXIMUM.config
 
 case "$1" in
 	m|mod|-m|--mod) rg "=y" /usr/src/linux/.config | sed "s/=y/=m/" | xargs -I{} rg "{}" MAXIMUM.config | less ;;
@@ -34,7 +38,7 @@ case "$1" in
 	c|compare|-c|--compare) nvim -d /usr/src/linux/.config $CURRENT ;;
 	u|update|-u|--update)
 		cd /usr/src/linux
-		local NPROC=$(nproc)
+		NPROC=$(nproc)
 		make -j$NPROC \
 			&& make modules_install -j$NPROC \
 			&& make install && genkernel --luks initramfs \
@@ -65,12 +69,24 @@ case "$1" in
 		__updatepackages__ 'dmenu st' 'make clean install'
 		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh  /usr/bin/xdg-ninja'
 		__updatepackages__ 'grub-holdshift' 'ln -sf /usr/local/src/grub-holdshift/31_hold_shift /etc/grub.d/'
+		__update_anki(){
+			./tools/bundle && cd .bazel/out/dist && tar xf anki*qt6.* && cd anki*qt6
+			./install.sh &&	cd .. && rm -r * && cd ../../..
+		}
+		__updatepackages__ 'anki' '__update_anki'
 
 		cd ~
-		if [ -d go ]; then
-			mv go/bin/* /usr/bin/
-			#rm -r go
+		test "$(ls -A go/bin)" != "" && mv go/bin/* /usr/bin/
+		exit 0
+	;;
+	M|make|-M|--make)
+		cd /usr/src/linux
+		if [ ! -z "$2" ]; then
+			make $2
+		else
+			make menuconfig
 		fi
+		cd
 	;;
 	h|help|-h|--help) echo -e "$USAGE" && exit 0 ;;
 	*) echo -e "$USAGE" && exit 1 ;;
