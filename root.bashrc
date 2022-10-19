@@ -208,6 +208,24 @@ if command -v nvim >> /dev/null; then
 	command -v nvim >> /dev/null && alias vi='nvim' vim='nvim' vid='nvim -d' vimdiff='nvim -d'
 fi
 
+# Little helper for missing packages
+__command_requirer_pkg__(){
+	if command -v $2 >> /dev/null; then
+			bash -c "$1 $4"
+		else
+			echo "This command requires $2 from \"$3\" installed" && return 1
+	fi
+}
+
+__command_requirer__(){
+	if command -v $2 >> /dev/null; then
+			bash -c "$1 $3"
+		else
+			echo "This command requires $2 installed" && return 1
+	fi
+}
+
+
 if command -v pacman >> /dev/null; then
 	pac(){
 		local USAGE="Pacman helper\nImplemented by @saundersp\n\nDocumentation:\n
@@ -218,13 +236,12 @@ if command -v pacman >> /dev/null; then
 		case "$1" in
 			u|update|upgrade) pacman -Syu ;;
 			m|mirrors)
-				if command -v reflector >> /dev/null; then
+				__update_mirrors__(){
 						local MIRRORFILE=/etc/pacman.d/mirrorlist
 						test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
 						reflector -a 48 -c $(curl -s ifconfig.io/country_code) -f 5 -l 20 --sort rate --save $MIRRORFILE
-					else
-						echo 'This command requires reflector installed' && return 1
-				fi
+				}
+				__command_requirer__ __update_mirrors__ reflector
 				;;
 			p|prune) pacman -Qtdq | pacman -Rns - ;;
 			h|--help|help) echo -e $USAGE && return 0 ;;
@@ -239,6 +256,9 @@ if command -v emerge >> /dev/null; then
 		local USAGE="Portage's emerge helper\nImplemented by @saundersp\n\nDocumentation:\n
 			\t$FUNCNAME s|sync\n\tSync the packages repository.\n\n
 			\t$FUNCNAME u|update|upgrade\n\tUpdate every packages.\n\n
+			\t$FUNCNAME l|list\n\tList every packages in the @world set.\n\n
+			\t$FUNCNAME q|query\n\tSearch packages that contains a given file.\n\n
+			\t$FUNCNAME c|clean\n\tClean the unused distfiles and packages remainders.\n\n
 			\t$FUNCNAME p|prune\n\tRemove unused packages (orphans).\n\n
 			\t$FUNCNAME d|desc\n\tList all possible USE variable.\n\n
 			\t$FUNCNAME U|use\n\tList all set USE variable.\n\n
@@ -246,10 +266,13 @@ if command -v emerge >> /dev/null; then
 			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
 			s|sync) emerge --sync ;;
-			u|update|upgrade) emerge -aUDuq @world ;;
+			u|update|upgrade) emerge -UNDuq @world ;;
+			l|list) cat /var/lib/portage/world ;;
+			q|query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
+			c|clean) __command_requirer_pkg__ 'eclean -d packages && eclean -d distfiles' eclean app-portage/gentoolkit ;;
 			p|prune) emerge -acD ;;
 			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
-			U|use) portageq envvar USE | xargs -n1 | less ;;
+			U|use) __command_requirer_pkg__ 'portageq envvar USE | xargs -n1 | less' portageq sys-apps/portage ;;
 			m|mirrors) sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
 			h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
