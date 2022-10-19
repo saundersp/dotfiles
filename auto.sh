@@ -65,12 +65,13 @@ elif [ "$(id -u)" -ne 0 ]; then
 		ln -sf $CURRENT_FOLDER/.Xresources $HOME/.Xresources
 	fi
 else
-	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/tmux
+	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/tmux $XDG_CONFIG_HOME/nvim
 
 	ln -sf $CURRENT_FOLDER/neofetch/config.conf $XDG_CONFIG_HOME/neofetch/config.conf
 	ln -sf $CURRENT_FOLDER/root.bashrc $HOME/.bashrc
 	ln -sf $CURRENT_FOLDER/root.bash_profile $HOME/.bash_profile
 	ln -sf $CURRENT_FOLDER/root.tmux.conf $XDG_CONFIG_HOME/tmux/tmux.conf
+	ln -sf $CURRENT_FOLDER/nvim/root_init.lua $XDG_CONFIG_HOME/nvim/init.lua
 
 	if [[ $1 != 'server' && $1 != 's' ]]; then
 		PACKAGES='dmenu st'

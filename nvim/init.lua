@@ -249,8 +249,6 @@ end)
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General settings config
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-wo.t_Co					= "256"								-- Support 256 colours
-wo.t_ut					= ""								-- Reset the value to apply colorscheme
 cmd("colorscheme			codedark")							-- Set the colour scheme to codedark (VSCode's dark+)
 o.termguicolors				= true								-- Enable 24-bit RGB colours in the terminal
 o.syntax				= true								-- Enables syntax highlighting
