@@ -210,10 +210,10 @@ mode "Resize" {
 	bindsym Shift+0 gaps outer all set 0
 	bindsym parenright gaps inner all set $inner_gaps
 	bindsym Shift+parenright gaps outer all set $outer_gaps
-	bindsym minus gaps inner all minus 5
-	bindsym plus gaps inner all plus 5
-	bindsym Shift+minus gaps outer all minus 5
-	bindsym Shift+plus gaps outer all plus 5
+	bindsym minus gaps inner all minus 1
+	bindsym plus gaps inner all plus 1
+	bindsym Shift+minus gaps outer all minus 1
+	bindsym Shift+plus gaps outer all plus 1
 
 	bindsym Escape mode "default"
 }
