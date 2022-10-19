@@ -25,6 +25,9 @@ USAGE="Kernel/Local packages update helper\nImplemented by @saundersp\n\nDocumen
 \t$0 p, packages, -p, --packages
 \tUpdate the localy installed packages.
 
+\t$0 ck, change-kernel, -ck, --change-kernel
+\tChange the current selected kernel to specified one.
+
 \t$0 h, help, -h, --help
 \tWhich display this help message."
 
@@ -43,7 +46,7 @@ case "$1" in
 			&& make modules_install -j$NPROC \
 			&& make install && genkernel --luks initramfs \
 			&& grub-mkconfig -o /boot/grub/grub.cfg \
-			&& emerge -q nvidia-drivers 
+			&& emerge -q nvidia-drivers
 		cd
 	;;
 	p|packages|-p|--packages)
@@ -68,16 +71,27 @@ case "$1" in
 		__updatepackages__ 'arduino-cli glow lazydocker lazygit' 'go install'
 		__updatepackages__ 'dmenu st' 'make clean install'
 		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh  /usr/bin/xdg-ninja'
-		__updatepackages__ 'grub-holdshift' 'ln -sf /usr/local/src/grub-holdshift/31_hold_shift /etc/grub.d/'
 		__update_anki(){
 			./tools/bundle && cd .bazel/out/dist && tar xf anki*qt6.* && cd anki*qt6
-			./install.sh &&	cd .. && rm -r * && cd ../../..
+			./install.sh &&	cd .. && rm -r * && cd ../../.. && bazel shutdown
 		}
 		__updatepackages__ 'anki' '__update_anki'
 
 		cd ~
 		test "$(ls -A go/bin)" != "" && mv go/bin/* /usr/bin/
 		exit 0
+	;;
+	ck|change-kernel|-ck|--change-kernel)
+		if [ -z "$2" ]; then
+			echo "You have to specify a kernel index !"
+			exit 1
+		fi
+		mv /usr/src/linux/.config /tmp/kernel.__tmp__
+		eselect kernel set $2
+		mv /tmp/kernel.__tmp__ /usr/src/linux/.config
+		cd /usr/src/linux
+		make oldconfig
+		cd
 	;;
 	M|make|-M|--make)
 		cd /usr/src/linux
