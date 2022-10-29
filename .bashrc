@@ -223,15 +223,6 @@ __command_requirer_pkg__(){
 	fi
 }
 
-__command_requirer__(){
-	if command -v $2 >> /dev/null; then
-			bash -c "$1 $3"
-		else
-			echo "This command requires $2 installed" && return 1
-	fi
-}
-
-
 if command -v pacman >> /dev/null; then
 	pac(){
 		local USAGE="Pacman helper\nImplemented by @saundersp\n\nDocumentation:\n
@@ -243,11 +234,12 @@ if command -v pacman >> /dev/null; then
 			u|update|upgrade) sudo pacman -Syu ;;
 			m|mirrors)
 				__update_mirrors__(){
-						local MIRRORFILE=/etc/pacman.d/mirrorlist
-						test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
-						sudo reflector -a 48 -c $(curl -s ifconfig.io/country_code) -f 5 -l 20 --sort rate --save $MIRRORFILE
+					local MIRRORFILE=/etc/pacman.d/mirrorlist
+					test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
+					sudo reflector -a 48 -c $(curl -s ifconfig.io/country_code) -f 5 -l 20 --sort rate --save $MIRRORFILE
 				}
-				__command_requirer__ __update_mirrors__ reflector
+				export -f __update_mirrors__
+				__command_requirer_pkg__ __update_mirrors__ reflector reflector
 				;;
 			p|prune) pacman -Qtdq | sudo pacman -Rns - ;;
 			h|--help|help) echo -e $USAGE && return 0 ;;
@@ -345,7 +337,7 @@ if command -v emerge >> /dev/null; then
 			u|update|upgrade) sudo emerge -UNDuq @world ;;
 			l|list) cat /var/lib/portage/world ;;
 			q|query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
-			c|clean) __command_requirer_pkg__ 'sudo eclean -d packages && sudo eclean -d distfiles' eclean app-portage/gentoolkit ;;
+			c|clean) __command_requirer_pkg__ 'sudo sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && rm -r /var/tmp/portage/*"' eclean app-portage/gentoolkit ;;
 			p|prune) sudo emerge -acD ;;
 			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
 			U|use) __command_requirer_pkg__ 'portageq envvar USE | xargs -n1 | less' portageq sys-apps/portage ;;
