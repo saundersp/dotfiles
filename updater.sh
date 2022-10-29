@@ -46,7 +46,7 @@ case "$1" in
 			&& make modules_install -j$NPROC \
 			&& make install && genkernel --luks initramfs \
 			&& grub-mkconfig -o /boot/grub/grub.cfg \
-			&& emerge -q nvidia-drivers
+			&& emerge -q @module-rebuild
 		cd
 	;;
 	p|packages|-p|--packages)
