@@ -29,7 +29,7 @@ mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME $XDG_STATE_HOME
 CURRENT_FOLDER=$(pwd)
 if [[ $1 == 'uninstall' || $1 == 'remove' || $1 == 'r' ]]; then
 	rm -rf $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $XDG_CONFIG_HOME/git/config $HOME/.bash_profile \
-		$XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/coc-settings.json $HOME/.Xresources \
+		$XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/coc-settings.json $XDG_CONFIG_HOME/X11/Xresources \
 		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config.ini $XDG_CONFIG_HOME/polybar/scripts \
 		$XDG_CONFIG_HOME/ranger/rc.conf $XDG_CONFIG_HOME/ranger/plugins $XDG_CONFIG_HOME/tmux/tmux.conf
 
@@ -51,7 +51,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 	if [[ $1 == 'server' || $1 == 's' ]]; then
 		ln -sf $CURRENT_FOLDER/.bash_profile_server $HOME/.bash_profile
 	else
-		mkdir -p $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks $XDG_CONFIG_HOME/polybar
+		mkdir -p $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks $XDG_CONFIG_HOME/polybar $XDG_CONFIG_HOME/X11
 
 		ln -sf $CURRENT_FOLDER/polybar/launch.sh $XDG_CONFIG_HOME/polybar/launch.sh
 		ln -sf $CURRENT_FOLDER/polybar/config.ini $XDG_CONFIG_HOME/polybar/config.ini
@@ -62,7 +62,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 		ln -sf $CURRENT_FOLDER/nvim/coc-settings.json $XDG_CONFIG_HOME/nvim/coc-settings.json
 		ln -sf $CURRENT_FOLDER/.xinitrc $HOME/.xinitrc
 		ln -sf $CURRENT_FOLDER/.bash_profile $HOME/.bash_profile
-		ln -sf $CURRENT_FOLDER/.Xresources $HOME/.Xresources
+		ln -sf $CURRENT_FOLDER/.Xresources $XDG_CONFIG_HOME/X11/Xresources
 	fi
 else
 	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/tmux $XDG_CONFIG_HOME/nvim
