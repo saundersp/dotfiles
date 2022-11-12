@@ -28,6 +28,9 @@ USAGE="Kernel/Local packages update helper\nImplemented by @saundersp\n\nDocumen
 \t$0 ck, change-kernel, -ck, --change-kernel
 \tChange the current selected kernel to specified one.
 
+\t$0 s, sign, -s, --sign
+\tSign the specified module path
+
 \t$0 h, help, -h, --help
 \tWhich display this help message."
 
@@ -101,6 +104,24 @@ case "$1" in
 			make menuconfig
 		fi
 		cd
+	;;
+	# Mandatory to use NVIDIA and VirtualBox modules
+	# misc/vboxdrv misc/vboxnetadp miisc/vboxnetflt
+	# video/nvidia video/nvidia-uvm video/nvidia-modeset
+	s|sign|-s|--sign)
+		if [ -z "$2" ]; then
+			echo "You have to specify at least one relative module path !"
+			exit 1
+		elif [ "$2" = 'all' ]; then
+			exec ./updater.sh s misc/vboxdrv misc/vboxnetadp misc/vboxnetflt video/nvidia video/nvidia-uvm video/nvidia-modeset
+		fi
+		NAME=$(grep CONFIG_LOCALVERSION=\" /usr/src/linux/.config | cut -d \" -f 2)
+		VERSION=$(grep 'Kernel Configuration' /usr/src/linux/.config | cut -d ' ' -f 3)
+		while [ ! -z "$2" ]; do
+			echo Signing $2 ...
+			/usr/src/linux/scripts/sign-file sha256 /usr/src/linux/certs/signing_key.pem /usr/src/linux/certs/signing_key.x509 /lib/modules/$VERSION$NAME/$2.ko
+			shift
+		done
 	;;
 	h|help|-h|--help) echo -e "$USAGE" && exit 0 ;;
 	*) echo -e "$USAGE" && exit 1 ;;
