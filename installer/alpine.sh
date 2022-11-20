@@ -164,8 +164,6 @@ EOF
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
 	./auto.sh server
-	nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
-	nvim --headless -c CocUpdateSync +q
 
 	\" > /home/$USERNAME/install.sh
 	chmod +x /home/$USERNAME/install.sh

@@ -87,8 +87,6 @@ install_dotfiles(){
 	cd ~/git/dotfiles
 	./auto.sh $1
 	sudo bash auto.sh $1
-	nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
-	nvim --headless -c CocUpdateSync +q
 
 	# Getting the wallpaper
 	mkdir ~/Images

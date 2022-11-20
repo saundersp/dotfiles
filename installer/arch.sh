@@ -266,8 +266,6 @@ case $PACKAGES in
 		cd ~/git/dotfiles
 		./auto.sh server
 		sudo bash auto.sh server
-		nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
-		nvim --headless -c CocUpdateSync +q
 
 		aur_install lazydocker
 	;;
@@ -276,8 +274,6 @@ case $PACKAGES in
 		cd ~/git/dotfiles
 		./auto.sh install
 		sudo bash auto.sh install
-		nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
-		nvim --headless -c CocUpdateSync +q
 
 		# Getting the wallpaper
 		mkdir ~/Images

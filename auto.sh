@@ -64,6 +64,8 @@ elif [ "$(id -u)" -ne 0 ]; then
 		ln -sf $CURRENT_FOLDER/.bash_profile $HOME/.bash_profile
 		ln -sf $CURRENT_FOLDER/.Xresources $XDG_CONFIG_HOME/X11/Xresources
 	fi
+	nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+	nvim --headless -c CocUpdateSync +q
 else
 	mkdir -p $XDG_CONFIG_HOME/neofetch $XDG_CONFIG_HOME/tmux $XDG_CONFIG_HOME/nvim
 
