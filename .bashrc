@@ -333,8 +333,8 @@ if command -v emerge >> /dev/null; then
 			\t$FUNCNAME m|mirrors\n\tUpdate the mirrorlist.\n\n
 			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
-			s|sync) sudo emerge --sync ;;
-			u|update|upgrade) sudo emerge -UNDuq @world ;;
+			s|sync) sudo sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
+			u|update|upgrade) sudo sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDuq @world' ;;
 			l|list) cat /var/lib/portage/world ;;
 			q|query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
 			c|clean) __command_requirer_pkg__ 'sudo sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && rm -r /var/tmp/portage/*"' eclean app-portage/gentoolkit ;;

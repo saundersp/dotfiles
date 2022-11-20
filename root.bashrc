@@ -257,8 +257,8 @@ if command -v emerge >> /dev/null; then
 			\t$FUNCNAME m|mirrors\n\tUpdate the mirrorlist.\n\n
 			\t$FUNCNAME h|help|--help\n\tShow this help message"
 		case "$1" in
-			s|sync) emerge --sync ;;
-			u|update|upgrade) emerge -UNDuq @world ;;
+			s|sync) emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update ;;
+			u|update|upgrade) command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDuq @world ;;
 			l|list) cat /var/lib/portage/world ;;
 			q|query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
 			c|clean) __command_requirer_pkg__ 'eclean -d packages && eclean -d distfiles && echo "Deleting portage temporary files" && rm -r /var/tmp/portage/*' eclean app-portage/gentoolkit ;;
