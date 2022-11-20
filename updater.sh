@@ -113,7 +113,7 @@ case "$1" in
 			echo "You have to specify at least one relative module path !"
 			exit 1
 		elif [ "$2" = 'all' ]; then
-			exec ./updater.sh s misc/vboxdrv misc/vboxnetadp misc/vboxnetflt video/nvidia video/nvidia-uvm video/nvidia-modeset
+			exec ./updater.sh s video/nvidia video/nvidia-uvm video/nvidia-modeset misc/vboxdrv misc/vboxnetadp misc/vboxnetflt
 		fi
 		NAME=$(grep CONFIG_LOCALVERSION=\" /usr/src/linux/.config | cut -d \" -f 2)
 		VERSION=$(grep 'Kernel Configuration' /usr/src/linux/.config | cut -d ' ' -f 3)
