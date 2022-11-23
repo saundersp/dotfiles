@@ -1,4 +1,4 @@
-From d7cf50a6e601f80ebee8203fada0f4e222cd2398 Mon Sep 17 00:00:00 2001
+From 7eb76a75bc360a3560126a643a5898408ccdcd0c Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:13:47 +0200
 Subject: [PATCH 01/10] Changed font to Hasklug Nerd Font Mono
@@ -21,10 +21,10 @@ index 91ab8ca..e894fa8 100644
  
  /*
 -- 
-2.36.1
+2.38.1
 
 
-From ff27dfe9d236af36403d9708a1cc5e6f8778b9ee Mon Sep 17 00:00:00 2001
+From 482668f71390cc80f30f46241aa6cb3965e58e61 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:14:12 +0200
 Subject: [PATCH 02/10] Added boxdraw patch
@@ -506,7 +506,7 @@ index e894fa8..7d83cb7 100644
   * bell volume. It must be a value between -100 and 100. Use 0 for disabling
   * it
 diff --git a/st.c b/st.c
-index 6ba467d..670599d 100644
+index 62def59..41d5ace 100644
 --- a/st.c
 +++ b/st.c
 @@ -1215,6 +1215,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
@@ -552,7 +552,7 @@ index fd3b0d8..808f5f7 100644
  extern unsigned int defaultcs;
 +extern const int boxdraw, boxdraw_bold, boxdraw_braille;
 diff --git a/x.c b/x.c
-index 2a3bd38..bf6bbf9 100644
+index aa09997..f79ea58 100644
 --- a/x.c
 +++ b/x.c
 @@ -1237,6 +1237,8 @@ xinit(int cols, int rows)
@@ -605,10 +605,10 @@ index 2a3bd38..bf6bbf9 100644
  	if (IS_SET(MODE_REVERSE)) {
  		g.mode |= ATTR_REVERSE;
 -- 
-2.36.1
+2.38.1
 
 
-From 1c3017f72366882f3feecd84fefe7f55db2e9097 Mon Sep 17 00:00:00 2001
+From 47818679931eab7488ada8a49f06e10705d76ec4 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:14:36 +0200
 Subject: [PATCH 03/10] Added ligatures patch
@@ -650,7 +650,7 @@ index 6dfa212..2ffd3c8 100644
  
  $(OBJ): config.h config.mk
 diff --git a/config.mk b/config.mk
-index ddf278a..49ede7e 100644
+index 1e306f8..3e13e53 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -15,10 +15,12 @@ PKG_CONFIG = pkg-config
@@ -835,7 +835,7 @@ index 0000000..07888df
 +void hbunloadfonts();
 +void hbtransform(XftGlyphFontSpec *, const Glyph *, size_t, int, int);
 diff --git a/st.c b/st.c
-index 670599d..9159779 100644
+index 41d5ace..1c2edd6 100644
 --- a/st.c
 +++ b/st.c
 @@ -2643,7 +2643,8 @@ draw(void)
@@ -884,7 +884,7 @@ index 6de960d..94679e4 100644
  void xfinishdraw(void);
  void xloadcols(void);
 diff --git a/x.c b/x.c
-index bf6bbf9..b64748f 100644
+index f79ea58..33d2764 100644
 --- a/x.c
 +++ b/x.c
 @@ -19,6 +19,7 @@ char *argv0;
@@ -945,10 +945,10 @@ index bf6bbf9..b64748f 100644
  	if (IS_SET(MODE_HIDE))
  		return;
 -- 
-2.36.1
+2.38.1
 
 
-From 86fee9dd904ae34810b087529a2fc34d7b97a71c Mon Sep 17 00:00:00 2001
+From 44ef22acf1fc5fb3e00c148e57e3e569b8ffaa3a Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:15:00 +0200
 Subject: [PATCH 04/10] Added scrollback patch
@@ -973,7 +973,7 @@ index 7d83cb7..2044cbb 100644
  
  /*
 diff --git a/st.c b/st.c
-index 9159779..c7a1c69 100644
+index 1c2edd6..376ab6c 100644
 --- a/st.c
 +++ b/st.c
 @@ -35,6 +35,7 @@
@@ -1312,10 +1312,10 @@ index b889a88..0cfab7b 100644
  void printsel(const Arg *);
  void sendbreak(const Arg *);
 -- 
-2.36.1
+2.38.1
 
 
-From be9797e14932b4a6f09d31037e749fcd1ce5ed20 Mon Sep 17 00:00:00 2001
+From 89589221ee8f68a16a19982839d254160450a19c Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:15:35 +0200
 Subject: [PATCH 05/10] Added delkey patch
@@ -1347,10 +1347,10 @@ index 2044cbb..2d80310 100644
  	{ XK_BackSpace,     XK_NO_MOD,      "\177",          0,    0},
  	{ XK_BackSpace,     Mod1Mask,       "\033\177",      0,    0},
 -- 
-2.36.1
+2.38.1
 
 
-From 14015b4706556e29e3c0c81b2cc7a042bd4dc874 Mon Sep 17 00:00:00 2001
+From 58b19fbe73e25f6901a94eee9e2c31af1782ce4e Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:16:01 +0200
 Subject: [PATCH 06/10] Added visualbell patch
@@ -1380,7 +1380,7 @@ index 2d80310..3b4fa66 100644
  char *termname = "st-256color";
  
 diff --git a/x.c b/x.c
-index b64748f..56571ed 100644
+index 33d2764..f63eeb8 100644
 --- a/x.c
 +++ b/x.c
 @@ -1660,6 +1660,27 @@ xsettitle(char *p)
@@ -1429,7 +1429,7 @@ index b64748f..56571ed 100644
  }
  
  void
-@@ -2026,6 +2051,16 @@ run(void)
+@@ -2029,6 +2054,16 @@ run(void)
  			}
  		}
  
@@ -1447,10 +1447,10 @@ index b64748f..56571ed 100644
  		XFlush(xw.dpy);
  		drawing = 0;
 -- 
-2.36.1
+2.38.1
 
 
-From 44a4f435882a1c4bffa484a604a870a104022a63 Mon Sep 17 00:00:00 2001
+From 518bd41b32deda2cdcd61525277769dd02af598e Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:16:24 +0200
 Subject: [PATCH 07/10] Added mousescroll patch
@@ -1476,10 +1476,10 @@ index 3b4fa66..4795309 100644
  
  /* Internal keyboard shortcuts. */
 -- 
-2.36.1
+2.38.1
 
 
-From 37bdc27e7bac3516256dd4bf0267e2bd5edff8ba Mon Sep 17 00:00:00 2001
+From 4f94b7de89f43c4d0f5f7258d6b85f97bfa7599e Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:17:00 +0200
 Subject: [PATCH 08/10] Added xresources patch
@@ -1489,7 +1489,7 @@ Subject: [PATCH 08/10] Added xresources patch
  1 file changed, 115 insertions(+)
 
 diff --git a/x.c b/x.c
-index 56571ed..a91be48 100644
+index f63eeb8..1555948 100644
 --- a/x.c
 +++ b/x.c
 @@ -14,6 +14,7 @@
@@ -1500,7 +1500,7 @@ index 56571ed..a91be48 100644
  
  char *argv0;
  #include "arg.h"
-@@ -2067,6 +2068,118 @@ run(void)
+@@ -2070,6 +2071,118 @@ run(void)
  	}
  }
  
@@ -1619,7 +1619,7 @@ index 56571ed..a91be48 100644
  void
  usage(void)
  {
-@@ -2140,6 +2253,8 @@ run:
+@@ -2143,6 +2256,8 @@ run:
  
  	setlocale(LC_CTYPE, "");
  	XSetLocaleModifiers("");
@@ -1629,10 +1629,10 @@ index 56571ed..a91be48 100644
  	rows = MAX(rows, 1);
  	tnew(cols, rows);
 -- 
-2.36.1
+2.38.1
 
 
-From 5ba0c420ecba673ac97ba950572b933b648dd74b Mon Sep 17 00:00:00 2001
+From 8bebc14ef802b24927392990159edccf77fd4686 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:19:17 +0200
 Subject: [PATCH 09/10] Added font2 patch
@@ -1662,7 +1662,7 @@ index 4795309..d391ce1 100644
  /*
   * What program is execed by st depends of these precedence rules:
 diff --git a/x.c b/x.c
-index a91be48..73af117 100644
+index 1555948..16241bf 100644
 --- a/x.c
 +++ b/x.c
 @@ -159,6 +159,8 @@ static void xhints(void);
@@ -1795,10 +1795,10 @@ index a91be48..73af117 100644
  	xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
  	xloadcols();
 -- 
-2.36.1
+2.38.1
 
 
-From a9d30394e3bdfa456352e672881e60ecff027396 Mon Sep 17 00:00:00 2001
+From f097e6a25965cf4400a8064f019062ca68106169 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:20:00 +0200
 Subject: [PATCH 10/10] Added support for keypad prior and next
@@ -1821,5 +1821,5 @@ index d391ce1..9c4fa37 100644
  	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
  	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
 -- 
-2.36.1
+2.38.1
 

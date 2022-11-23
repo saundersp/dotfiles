@@ -1,4 +1,4 @@
-From 92e6ed0437c46a84920b0338252413df0f8f069a Mon Sep 17 00:00:00 2001
+From 198ee418aa79fe6e192d7e2c66e7fddb65604e25 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:24:33 +0200
 Subject: [PATCH 1/7] Added center
@@ -37,7 +37,7 @@ index 323f93c..c036baa 100644
  dmenu grabs the keyboard before reading stdin if not reading from a tty. This
  is faster, but will lock up X until stdin reaches end\-of\-file.
 diff --git a/dmenu.c b/dmenu.c
-index 571bc35..46f7e08 100644
+index 27b7a30..b2f1533 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -96,6 +96,15 @@ calcoffsets(void)
@@ -56,7 +56,7 @@ index 571bc35..46f7e08 100644
  static void
  cleanup(void)
  {
-@@ -632,6 +641,7 @@ setup(void)
+@@ -636,6 +645,7 @@ setup(void)
  	bh = drw->fonts->h + 2;
  	lines = MAX(lines, 0);
  	mh = (lines + 1) * bh;
@@ -64,7 +64,7 @@ index 571bc35..46f7e08 100644
  #ifdef XINERAMA
  	i = 0;
  	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
-@@ -658,9 +668,16 @@ setup(void)
+@@ -662,9 +672,16 @@ setup(void)
  				if (INTERSECT(x, y, 1, 1, info[i]) != 0)
  					break;
  
@@ -84,7 +84,7 @@ index 571bc35..46f7e08 100644
  		XFree(info);
  	} else
  #endif
-@@ -668,11 +685,17 @@ setup(void)
+@@ -672,11 +689,17 @@ setup(void)
  		if (!XGetWindowAttributes(dpy, parentwin, &wa))
  			die("could not get embedding window attributes: 0x%lx",
  			    parentwin);
@@ -106,16 +106,16 @@ index 571bc35..46f7e08 100644
  	inputw = mw / 3; /* input width: ~33% of monitor width */
  	match();
  
-@@ -710,7 +733,7 @@ setup(void)
+@@ -714,7 +737,7 @@ setup(void)
  static void
  usage(void)
  {
--	fputs("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
-+	fputs("usage: dmenu [-bcfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
- 	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
- 	exit(1);
+-	die("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
++	die("usage: dmenu [-bcfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
+ 	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
-@@ -730,6 +753,8 @@ main(int argc, char *argv[])
+ 
+@@ -733,6 +756,8 @@ main(int argc, char *argv[])
  			topbar = 0;
  		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
  			fast = 1;
@@ -125,10 +125,10 @@ index 571bc35..46f7e08 100644
  			fstrncmp = strncasecmp;
  			fstrstr = cistrstr;
 -- 
-2.36.1
+2.38.1
 
 
-From ae16ed5beaf21216fbfaa42257ca5834323b5096 Mon Sep 17 00:00:00 2001
+From bd34c4a8248afbd12bc46f85e3fc6c72dc076f1e Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:25:50 +0200
 Subject: [PATCH 2/7] Added instant
@@ -175,7 +175,7 @@ index c036baa..2a9fca0 100644
  dmenu lists items vertically, with the given number of lines.
  .TP
 diff --git a/dmenu.c b/dmenu.c
-index 46f7e08..618cc58 100644
+index b2f1533..2f593e2 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -287,6 +287,13 @@ match(void)
@@ -192,16 +192,16 @@ index 46f7e08..618cc58 100644
  	calcoffsets();
  }
  
-@@ -733,7 +740,7 @@ setup(void)
+@@ -737,7 +744,7 @@ setup(void)
  static void
  usage(void)
  {
--	fputs("usage: dmenu [-bcfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
-+	fputs("usage: dmenu [-bcfinv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
- 	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
- 	exit(1);
+-	die("usage: dmenu [-bcfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
++	die("usage: dmenu [-bcfinv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
+ 	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
-@@ -758,7 +765,9 @@ main(int argc, char *argv[])
+ 
+@@ -761,7 +768,9 @@ main(int argc, char *argv[])
  		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
  			fstrncmp = strncasecmp;
  			fstrstr = cistrstr;
@@ -213,10 +213,10 @@ index 46f7e08..618cc58 100644
  		/* these options take one argument */
  		else if (!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
 -- 
-2.36.1
+2.38.1
 
 
-From b57e2604877bfa96fdd8096141636f4ad8724de6 Mon Sep 17 00:00:00 2001
+From fd2f4be227ba22b8173663ebbdc72054b04aee9b Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:27:32 +0200
 Subject: [PATCH 3/7] Added numbers
@@ -226,7 +226,7 @@ Subject: [PATCH 3/7] Added numbers
  1 file changed, 23 insertions(+), 2 deletions(-)
 
 diff --git a/dmenu.c b/dmenu.c
-index 618cc58..af631da 100644
+index 2f593e2..d73de81 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -24,6 +24,8 @@
@@ -295,10 +295,10 @@ index 618cc58..af631da 100644
  }
  
 -- 
-2.36.1
+2.38.1
 
 
-From da534d380966726da2af51e7b9f7ba15c14367bd Mon Sep 17 00:00:00 2001
+From 7a8892c93baf3af4e0bec92d78cb3ce5be87d022 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:28:38 +0200
 Subject: [PATCH 4/7] Added highlight
@@ -322,7 +322,7 @@ index 52dc14a..6758acf 100644
  };
  /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
 diff --git a/dmenu.c b/dmenu.c
-index af631da..6b24769 100644
+index d73de81..80212c6 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -28,7 +28,7 @@
@@ -390,10 +390,10 @@ index af631da..6b24769 100644
  
  static void
 -- 
-2.36.1
+2.38.1
 
 
-From da6d503fc1ea646bdc77e755c09190fefa413bdf Mon Sep 17 00:00:00 2001
+From b124df218c74f2192fdabf0ef9feff599d18bd64 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:30:05 +0200
 Subject: [PATCH 5/7] Added caseinsensitive
@@ -428,7 +428,7 @@ index 2a9fca0..eeed8d6 100644
  .B \-n
  dmenu instantly selects if only one match.
 diff --git a/dmenu.c b/dmenu.c
-index 6b24769..1126695 100644
+index 80212c6..8e44a2a 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -58,8 +58,9 @@ static Clr *scheme[SchemeLast];
@@ -443,16 +443,16 @@ index 6b24769..1126695 100644
  
  static unsigned int
  textw_clamp(const char *str, unsigned int n)
-@@ -800,7 +801,7 @@ setup(void)
+@@ -804,7 +805,7 @@ setup(void)
  static void
  usage(void)
  {
--	fputs("usage: dmenu [-bcfinv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
-+	fputs("usage: dmenu [-bcfsnv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
- 	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
- 	exit(1);
+-	die("usage: dmenu [-bcfinv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
++	die("usage: dmenu [-bcfsnv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
+ 	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
-@@ -822,9 +823,9 @@ main(int argc, char *argv[])
+ 
+@@ -825,9 +826,9 @@ main(int argc, char *argv[])
  			fast = 1;
  		else if (!strcmp(argv[i], "-c"))   /* centers dmenu on screen */
  			centered = 1;
@@ -466,10 +466,10 @@ index 6b24769..1126695 100644
  			instant = 1;
  		else if (i + 1 == argc)
 -- 
-2.36.1
+2.38.1
 
 
-From 36ec3245af9bad5abe4290b005b1281b82a4d0c3 Mon Sep 17 00:00:00 2001
+From 1e9f8e0fa6083345f3aead4f4360831179c7d10f Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:36:31 +0200
 Subject: [PATCH 6/7] Added borders
@@ -491,10 +491,10 @@ index 6758acf..8332ffc 100644
 +/* Size of the window border */
 +static unsigned int border_width = 1;
 diff --git a/dmenu.c b/dmenu.c
-index 1126695..8c82342 100644
+index 8e44a2a..3102e6c 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -771,9 +771,11 @@ setup(void)
+@@ -775,9 +775,11 @@ setup(void)
  	swa.override_redirect = True;
  	swa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
  	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
@@ -507,7 +507,7 @@ index 1126695..8c82342 100644
  	XSetClassHint(dpy, win, &ch);
  
  
-@@ -849,6 +851,8 @@ main(int argc, char *argv[])
+@@ -852,6 +854,8 @@ main(int argc, char *argv[])
  			colors[SchemeSel][ColFg] = argv[++i];
  		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
  			embed = argv[++i];
@@ -517,20 +517,20 @@ index 1126695..8c82342 100644
  			usage();
  
 -- 
-2.36.1
+2.38.1
 
 
-From 5f66e2ffa7930b64aaa45769c49eed49cae271d4 Mon Sep 17 00:00:00 2001
+From f769f2548cc72511a54f4efefe6cb69b4f84f0ad Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:37:44 +0200
 Subject: [PATCH 7/7] Added xresources
 
 ---
- dmenu.c | 76 +++++++++++++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 68 insertions(+), 8 deletions(-)
+ dmenu.c | 80 +++++++++++++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 72 insertions(+), 8 deletions(-)
 
 diff --git a/dmenu.c b/dmenu.c
-index 8c82342..5f423b3 100644
+index 3102e6c..b2a5763 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -15,6 +15,7 @@
@@ -552,7 +552,7 @@ index 8c82342..5f423b3 100644
  #include "config.h"
  
  static char * cistrstr(const char *s, const char *sub);
-@@ -699,8 +704,13 @@ setup(void)
+@@ -703,8 +708,13 @@ setup(void)
  	int a, di, n, area = 0;
  #endif
  	/* init appearance */
@@ -568,8 +568,8 @@ index 8c82342..5f423b3 100644
  
  	clip = XInternAtom(dpy, "CLIPBOARD",   False);
  	utf8 = XInternAtom(dpy, "UTF8_STRING", False);
-@@ -808,6 +818,45 @@ usage(void)
- 	exit(1);
+@@ -811,6 +821,45 @@ usage(void)
+ 	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
  
 +void
@@ -614,7 +614,7 @@ index 8c82342..5f423b3 100644
  int
  main(int argc, char *argv[])
  {
-@@ -840,15 +885,15 @@ main(int argc, char *argv[])
+@@ -843,15 +892,15 @@ main(int argc, char *argv[])
  		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
  			prompt = argv[++i];
  		else if (!strcmp(argv[i], "-fn"))  /* font or font set */
@@ -635,7 +635,7 @@ index 8c82342..5f423b3 100644
  		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
  			embed = argv[++i];
  		else if (!strcmp(argv[i], "-bw"))
-@@ -868,8 +913,23 @@ main(int argc, char *argv[])
+@@ -871,8 +920,23 @@ main(int argc, char *argv[])
  		die("could not get embedding window attributes: 0x%lx",
  		    parentwin);
  	drw = drw_create(dpy, screen, root, wa.width, wa.height);
@@ -661,5 +661,5 @@ index 8c82342..5f423b3 100644
  
  #ifdef __OpenBSD__
 -- 
-2.36.1
+2.38.1
 

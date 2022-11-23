@@ -1,4 +1,9 @@
 #/usr/bin/env bash
+#
+# Debug changes to repository
+# git am patch_file.diff
+# Update the patch file
+# git format-patch --stdout HEAD~10 > patch_file.diff
 
 __apply_patch__(){
 	if [ "$(id -u)" -ne 0 ]; then
