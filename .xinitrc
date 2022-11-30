@@ -12,5 +12,6 @@ $HOME/.fehbg &
 xset r rate 150 80 &
 # Set the keyboard layout to french
 setxkbmap fr &
+# Load colour ressources
 xrdb -load "$XDG_CONFIG_HOME/X11/Xresources"
 exec i3
