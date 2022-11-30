@@ -73,15 +73,16 @@ case "$1" in
 
 		__updatepackages__ 'arduino-cli glow lazydocker lazygit' 'go install'
 		__updatepackages__ 'dmenu st' 'make clean install'
-		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh  /usr/bin/xdg-ninja'
+		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh  /usr/local/bin/xdg-ninja'
 		__update_anki(){
 			./tools/bundle && cd .bazel/out/dist && tar xf anki*qt6.* && cd anki*qt6
 			./install.sh &&	cd .. && rm -r * && cd ../../.. && bazel shutdown
 		}
 		__updatepackages__ 'anki' '__update_anki'
+		__updatepackages__ 'espanso' 'cargo install --force cargo-make && mv target/release/espanso /usr/local/bin/espanso'
 
 		cd ~
-		test "$(ls -A go/bin)" != "" && mv go/bin/* /usr/bin/
+		test "$(ls -A go/bin)" != "" && mv go/bin/* /usr/local/bin/
 		exit 0
 	;;
 	ck|change-kernel|-ck|--change-kernel)
