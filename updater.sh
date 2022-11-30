@@ -54,14 +54,14 @@ case "$1" in
 	;;
 	p|packages|-p|--packages)
 		__updatepackages__(){
-			for PACKAGE_NAME in $1; do
-				if [ ! -d /usr/local/src/$PACKAGE_NAME ]; then
-					echo Package $PACKAGE_NAME not installed, skipping...
+			for PACKAGE_NAME in "$1"; do
+				if [ ! -d /usr/local/src/"$PACKAGE_NAME" ]; then
+					echo "Package $PACKAGE_NAME not installed, skipping..."
 					continue
 				fi
-				cd $PACKAGE_NAME
+				cd "$PACKAGE_NAME"
 				if [[ $(git pull) == 'Already up to date.' ]]; then
-					echo Package $PACKAGE_NAME already up to date
+					echo "Package $PACKAGE_NAME already up to date"
 				else
 					$2
 				fi
@@ -106,21 +106,24 @@ case "$1" in
 		fi
 		cd
 	;;
-	# Mandatory to use NVIDIA and VirtualBox modules
-	# misc/vboxdrv misc/vboxnetadp miisc/vboxnetflt
-	# video/nvidia video/nvidia-uvm video/nvidia-modeset
 	s|sign|-s|--sign)
 		if [ -z "$2" ]; then
 			echo "You have to specify at least one relative module path !"
 			exit 1
 		elif [ "$2" = 'all' ]; then
-			exec ./updater.sh s video/nvidia video/nvidia-uvm video/nvidia-modeset misc/vboxdrv misc/vboxnetadp misc/vboxnetflt
+			./updater.sh s video/nvidia-drm video/nvidia-modeset video/nvidia-peermem video/nvidia-uvm
+			./updater.sh s misc/vboxdrv misc/vboxnetadp misc/vboxnetflt
+			exit 0
 		fi
-		NAME=$(grep CONFIG_LOCALVERSION=\" /usr/src/linux/.config | cut -d \" -f 2)
+		NAME=$(grep 'CONFIG_LOCALVERSION'=\" /usr/src/linux/.config | cut -d \" -f 2)
 		VERSION=$(grep 'Kernel Configuration' /usr/src/linux/.config | cut -d ' ' -f 3)
 		while [ ! -z "$2" ]; do
-			echo Signing $2 ...
-			/usr/src/linux/scripts/sign-file sha256 /usr/src/linux/certs/signing_key.pem /usr/src/linux/certs/signing_key.x509 /lib/modules/$VERSION$NAME/$2.ko
+			if [ -f /lib/modules/"$VERSION$NAME"/"$2".ko ]; then
+				echo "Signing $2 ..."
+				/usr/src/linux/scripts/sign-file sha256 /usr/src/linux/certs/signing_key.pem /usr/src/linux/certs/signing_key.x509 /lib/modules/$VERSION$NAME/"$2".ko
+			else
+				echo "Module $2 not found in $VERSION$NAME"
+			fi
 			shift
 		done
 	;;
