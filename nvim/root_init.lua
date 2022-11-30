@@ -15,7 +15,7 @@ end
 -- General settings config
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --
-cmd("colorscheme			delek")							-- Set the colour scheme to codedark (VSCode's dark+)
+cmd("colorscheme			desert")							-- Set the colour scheme to a more readable one
 o.syntax				= true								-- Enables syntax highlighting
 o.listchars				= 'eol:﬋,tab:→ ,trail:•,extends:>,precedes:<,space:·,nbsp:ﴔ'	-- List of whitespace characters replacement (see :h listchars)
 o.list					= true								-- Enable replacement of listchars
