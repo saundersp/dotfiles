@@ -407,11 +407,11 @@ fi
 
 alias cb='clear && exec bash'
 if command -v pactl >> /dev/null; then
-	__rpoff__(){
+	__moff__(){
 		pactl unload-module module-native-protocol-tcp 2>>/dev/null
 	}
 
-	__rsoff__(){
+	__soff__(){
 		pactl unload-module module-tunnel-sink-new 2>>/dev/null
 		pactl unload-module module-tunnel-source 2>>/dev/null
 	}
@@ -422,22 +422,22 @@ if command -v pactl >> /dev/null; then
 
 	pa(){
 		local USAGE="Pulseaudio modules helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t$FUNCNAME poff\n\tDisable master audio modules.\n\n
-			\t$FUNCNAME p\n\tEnable master audio modules.\n\n
-			\t$FUNCNAME roff\n\tDisable slave audio modules.\n\n
-			\t$FUNCNAME r\n\tEnable slave audio modules.\n\n
+			\t$FUNCNAME moff\n\tDisable master audio modules.\n\n
+			\t$FUNCNAME m\n\tEnable master audio modules.\n\n
+			\t$FUNCNAME soff\n\tDisable slave audio modules.\n\n
+			\t$FUNCNAME s\n\tEnable slave audio modules.\n\n
 			\t$FUNCNAME loopoff\n\tDisable audio loopback.\n\n
 			\t$FUNCNAME loop [ms]\n\tEnable audio loopback.\n\n
 			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
 		case "$1" in
-			poff) __rpoff__ ;;
-			p)
-				__rpoff__
+			moff) __moff__ ;;
+			m)
+				__moff__
 				pactl load-module module-native-protocol-tcp listen=192.168.137.1 auth-ip-acl=192.168.137.0/24
 			;;
-			roff) __rsoff__ ;;
-			r)
-				__rsoff__
+			soff) __soff__ ;;
+			s)
+				__soff__
 				pactl load-module module-tunnel-sink-new server=192.168.137.1
 				pactl load-module module-tunnel-source server=192.168.137.1
 			;;
