@@ -175,7 +175,7 @@ colours() {
 
 # Simple command to preview csv files
 preview_csv(){
-	if [[ -z "$1" || "$1" == 'help' || "$1" == '--help' ]]; then
+	if [[ -z "$1" || "$1" == 'h' || "$1" == '-h' || "$1" == 'help' || "$1" == '--help' ]]; then
 		echo "Usage : $FUNCNAME filename.csv"
 		return 0
 	elif [[ ! -r $1 ]]; then
@@ -198,7 +198,7 @@ fi
 if command -v python >> /dev/null; then
 	# Activate the python virtual environment in the current folder
 	activate(){
-		if [[ "$1" == 'help' || "$1" == '--help' ]]; then
+		if [[ "$1" == 'h' || "$1" == '-h' || "$1" == 'help' || "$1" == '--help' ]]; then
 			echo "Use $FUNCNAME to enable the current folder's python virtual environment"
 			return 0
 		fi
@@ -229,7 +229,7 @@ if command -v pacman >> /dev/null; then
 			\t$FUNCNAME u|update|upgrade\n\tUpdate every packages.\n\n
 			\t$FUNCNAME m|mirrors\n\tUpdate the mirrorlist.\n\n
 			\t$FUNCNAME p|prune\n\tRemove unused packages (orphans).\n\n
-			\t$FUNCNAME h|help|--help\n\tShow this help message"
+			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
 		case "$1" in
 			u|update|upgrade) sudo pacman -Syu ;;
 			m|mirrors)
@@ -242,7 +242,7 @@ if command -v pacman >> /dev/null; then
 				__command_requirer_pkg__ __update_mirrors__ reflector reflector
 				;;
 			p|prune) pacman -Qtdq | sudo pacman -Rns - ;;
-			h|--help|help) echo -e $USAGE && return 0 ;;
+			h|-h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
@@ -254,10 +254,10 @@ if command -v pacman >> /dev/null; then
 			\t$FUNCNAME r|remove|uninstall <aur-package-name>\n\tUninstall the specified AUR package.\n\n
 			\t$FUNCNAME l|list\n\tList all the AUR packages.\n\n
 			\t$FUNCNAME u|update|upgrade\n\tUpdate all the AUR packages.\n\n
-			\t$FUNCNAME h|help|--help\n\tShow this help message"
+			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
 		case "$1" in
 			i|install)
-				if [[ -z "$2" || "$2" == 'help' || "$2" == '--help' ]]; then
+				if [[ -z "$2" || "$2" == 'h' || "$2" == '-h' || "$2" == 'help' || "$2" == '--help' ]]; then
 					echo "Usage : $0 $1 install <aur-package-name>"
 					return 0
 				fi
@@ -286,7 +286,7 @@ if command -v pacman >> /dev/null; then
 			;;
 
 			r|remove|uninstall)
-				if [[ -z "$2"  || "$2" == 'help' || "$2" == '--help' ]]; then
+				if [[ -z "$2" || "$2" == 'h' || "$2" == '-h' || "$2" == 'help' || "$2" == '--help' ]]; then
 					echo "Usage : $0 $1 <aur-package-name"
 					return 0
 				fi
@@ -312,7 +312,7 @@ if command -v pacman >> /dev/null; then
 				done
 			;;
 
-			h|--help|help) echo -e $USAGE && return 0 ;;
+			h|-h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
@@ -331,7 +331,7 @@ if command -v emerge >> /dev/null; then
 			\t$FUNCNAME d|desc\n\tList all possible USE variable.\n\n
 			\t$FUNCNAME U|use\n\tList all set USE variable.\n\n
 			\t$FUNCNAME m|mirrors\n\tUpdate the mirrorlist.\n\n
-			\t$FUNCNAME h|help|--help\n\tShow this help message"
+			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
 		case "$1" in
 			s|sync) sudo sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
 			u|update|upgrade) sudo sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDuq @world' ;;
@@ -342,7 +342,7 @@ if command -v emerge >> /dev/null; then
 			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
 			U|use) __command_requirer_pkg__ 'portageq envvar USE | xargs -n1 | less' portageq sys-apps/portage ;;
 			m|mirrors) sudo sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
-			h|--help|help) echo -e $USAGE && return 0 ;;
+			h|-h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
@@ -374,7 +374,7 @@ if command -v xrandr >> /dev/null; then
 			\t$FUNCNAME e|extend\n\tExtend the primary display to the secondary.\n\n
 			\t$FUNCNAME m|mirror\n\tMirror the primary display to the secondary.\n\n
 			\t$FUNCNAME o|off\n\tTurn off a display.\n\n
-			\t$FUNCNAME h|help|--help\n\tShow this help message"
+			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
 		__get_display__(){
 			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
 		}
@@ -399,7 +399,7 @@ if command -v xrandr >> /dev/null; then
 				test -z $Primary && return 0
 				xrandr --output $Primary --off
 			;;
-			h|--help|help) echo -e $USAGE && return 0 ;;
+			h|-h|--help|help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
@@ -428,7 +428,7 @@ if command -v pactl >> /dev/null; then
 			\t$FUNCNAME r\n\tEnable slave audio modules.\n\n
 			\t$FUNCNAME loopoff\n\tDisable audio loopback.\n\n
 			\t$FUNCNAME loop [ms]\n\tEnable audio loopback.\n\n
-			\t$FUNCNAME h|help|--help\n\tShow this help message"
+			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
 		case "$1" in
 			poff) __rpoff__ ;;
 			p)
@@ -454,7 +454,7 @@ if command -v pactl >> /dev/null; then
 					pactl load-module module-loopback sink="$sink" source="$source" latency_msec=$2
 				fi
 			;;
-			h---help|help) echo -e $USAGE && return 0 ;;
+			h|-h|help|--help) echo -e $USAGE && return 0 ;;
 			*) echo -e $USAGE && return 1 ;;
 		esac
 	}
