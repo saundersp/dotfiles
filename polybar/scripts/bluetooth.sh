@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 bluetooth_print() {
 	if $(bluetoothctl show | grep -q 'Powered: yes'); then

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 print_formatted_fs(){
 	local i=1
