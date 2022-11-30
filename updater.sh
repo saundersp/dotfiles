@@ -71,14 +71,23 @@ case "$1" in
 
 		cd /usr/local/src
 
+		# https://github.com/arduino/arduino-cli.git
+		# https://github.com/charmbracelet/glow.git
+		# https://github.com/jesseduffield/lazydocker.git
+		# https://github.com/jesseduffield/lazygit.git
 		__updatepackages__ 'arduino-cli glow lazydocker lazygit' 'go install'
+		# https://git.suckless.org/dmenu
+		# https://git.suckless.org/st
 		__updatepackages__ 'dmenu st' 'make clean install'
+		# https://github.com/b3nj5m1n/xdg-ninja.git
 		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh  /usr/local/bin/xdg-ninja'
 		__update_anki(){
 			./tools/bundle && cd .bazel/out/dist && tar xf anki*qt6.* && cd anki*qt6
 			./install.sh &&	cd .. && rm -r * && cd ../../.. && bazel shutdown
 		}
+		# https://github.com/ankitects/anki.git
 		__updatepackages__ 'anki' '__update_anki'
+		# https://github.com/espanso/espanso.git
 		__updatepackages__ 'espanso' 'cargo install --force cargo-make && mv target/release/espanso /usr/local/bin/espanso'
 
 		cd ~
