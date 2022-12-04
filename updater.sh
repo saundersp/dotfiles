@@ -54,7 +54,7 @@ case "$1" in
 	;;
 	p|packages|-p|--packages)
 		__updatepackages__(){
-			for PACKAGE_NAME in "$1"; do
+			for PACKAGE_NAME in $1; do
 				if [ ! -d /usr/local/src/"$PACKAGE_NAME" ]; then
 					echo "Package $PACKAGE_NAME not installed, skipping..."
 					continue
@@ -120,7 +120,7 @@ case "$1" in
 			echo "You have to specify at least one relative module path !"
 			exit 1
 		elif [ "$2" = 'all' ]; then
-			./updater.sh s video/nvidia-drm video/nvidia-modeset video/nvidia-peermem video/nvidia-uvm
+			./updater.sh s video/nvidia video/nvidia-drm video/nvidia-modeset video/nvidia-peermem video/nvidia-uvm
 			./updater.sh s misc/vboxdrv misc/vboxnetadp misc/vboxnetflt
 			exit 0
 		fi
@@ -129,7 +129,7 @@ case "$1" in
 		while [ ! -z "$2" ]; do
 			if [ -f /lib/modules/"$VERSION$NAME"/"$2".ko ]; then
 				echo "Signing $2 ..."
-				/usr/src/linux/scripts/sign-file sha256 /usr/src/linux/certs/signing_key.pem /usr/src/linux/certs/signing_key.x509 /lib/modules/$VERSION$NAME/"$2".ko
+				/usr/src/linux/scripts/sign-file sha512 /usr/src/linux/certs/signing_key.pem /usr/src/linux/certs/signing_key.x509 /lib/modules/$VERSION$NAME/"$2".ko
 			else
 				echo "Module $2 not found in $VERSION$NAME"
 			fi
