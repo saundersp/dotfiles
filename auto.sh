@@ -81,7 +81,7 @@ else
 			if [ ! -d /usr/local/src/$package ]; then
 				git clone git://git.suckless.org/$package /usr/local/src/$package
 				cd patches
-				./$package.sh
+				./patch.sh $package
 				cd ..
 			fi
 		done
