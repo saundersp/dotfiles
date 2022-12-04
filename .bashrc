@@ -462,7 +462,7 @@ if command -v pactl >> /dev/null; then
 fi
 
 command -v curl >> /dev/null && alias weather='curl de.wttr.in/valbonne'
-test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && alias sync_books='rsync -aP ~/"Calibre Library"/* linode:~/"Calibre Library"/*'
+test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && alias sync_books='rsync -uvrP --delete-after ~/"Calibre Library"/* linode:~/"Calibre Library"/*'
 
 pow(){
 	# The script assumes that all availables cpus has the same governor
