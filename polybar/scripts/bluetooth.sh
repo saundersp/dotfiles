@@ -1,7 +1,7 @@
 #!/bin/sh
 
 bluetooth_print() {
-	if $(bluetoothctl show | grep -q 'Powered: yes'); then
+	if bluetoothctl show | grep -q 'Powered: yes'; then
 		printf ''
 
 		devices_paired=$(bluetoothctl devices | grep Device | cut -d ' ' -f 2)

@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 
 set -e
 
@@ -45,8 +45,8 @@ case "$1" in
 	u|update|-u|--update)
 		cd /usr/src/linux
 		NPROC=$(nproc)
-		make -j$NPROC \
-			&& make modules_install -j$NPROC \
+		make -j"$NPROC" \
+			&& make modules_install -j"$NPROC" \
 			&& make install && genkernel --luks initramfs \
 			&& grub-mkconfig -o /boot/grub/grub.cfg \
 			&& emerge -q @module-rebuild
@@ -60,9 +60,10 @@ case "$1" in
 					continue
 				fi
 				cd "$PACKAGE_NAME"
-				if [[ $(git pull) == 'Already up to date.' ]]; then
+				if [ "$(git pull)" = 'Already up to date.' ]; then
 					echo "Package $PACKAGE_NAME already up to date"
 				else
+					echo "Updating package $PACKAGE_NAME"
 					$2
 				fi
 				cd ..
@@ -100,7 +101,7 @@ case "$1" in
 			exit 1
 		fi
 		mv /usr/src/linux/.config /tmp/kernel.__tmp__
-		eselect kernel set $2
+		eselect kernel set "$2"
 		mv /tmp/kernel.__tmp__ /usr/src/linux/.config
 		cd /usr/src/linux
 		make oldconfig
@@ -108,7 +109,7 @@ case "$1" in
 	;;
 	M|make|-M|--make)
 		cd /usr/src/linux
-		if [ ! -z "$2" ]; then
+		if [ -n "$2" ]; then
 			make $2
 		else
 			make menuconfig
@@ -126,16 +127,16 @@ case "$1" in
 		fi
 		NAME=$(grep 'CONFIG_LOCALVERSION'=\" /usr/src/linux/.config | cut -d \" -f 2)
 		VERSION=$(grep 'Kernel Configuration' /usr/src/linux/.config | cut -d ' ' -f 3)
-		while [ ! -z "$2" ]; do
+		while [ -n "$2" ]; do
 			if [ -f /lib/modules/"$VERSION$NAME"/"$2".ko ]; then
 				echo "Signing $2 ..."
-				/usr/src/linux/scripts/sign-file sha512 /usr/src/linux/certs/signing_key.pem /usr/src/linux/certs/signing_key.x509 /lib/modules/$VERSION$NAME/"$2".ko
+				/usr/src/linux/scripts/sign-file sha512 /usr/src/linux/certs/signing_key.pem /usr/src/linux/certs/signing_key.x509 /lib/modules/"$VERSION$NAME"/"$2".ko
 			else
 				echo "Module $2 not found in $VERSION$NAME"
 			fi
 			shift
 		done
 	;;
-	h|help|-h|--help) echo -e "$USAGE" && exit 0 ;;
-	*) echo -e "$USAGE" && exit 1 ;;
+	h|help|-h|--help) echo "$USAGE" && exit 0 ;;
+	*) echo "$USAGE" && exit 1 ;;
 esac

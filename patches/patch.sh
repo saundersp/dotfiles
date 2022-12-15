@@ -14,37 +14,36 @@ __apply_patch__(){
 		echo You have to enter a program name to patch !
 		exit 1
 	fi
-	local prog=$1
+	prog=$1
 	shift
 
-	local prog_path=/usr/local/src/$prog
-	local patches_dir=$(pwd)
+	prog_path=/usr/local/src/$prog
 
-	if [ ! -f ./$prog-patches.diff ]; then
+	if [ ! -f ./"$prog"-patches.diff ]; then
 		echo Missing patch file !
 		exit 1
 	fi
 
 	if [ "$1" = 'clean' ]; then
-		cd $prog_path
+		cd "$prog_path"
 		make uninstall
 		make clean
 		rm *.orig *.rej
 
 		cd -
-		patch -p1 -R -t -d $prog_path < ./$prog-patches.diff
+		patch -p1 -R -t -d "$prog_path" < ./"$prog"-patches.diff
 
-		cd $prog_path
+		cd "$prog_path"
 		rm *.orig *.rej config.h
 		git checkout *
 		cd -
 		exit 0
 	fi
 
-	patch -p1 -d $prog_path < ./$prog-patches.diff
-	cd $prog_path
+	patch -p1 -d "$prog_path" < ./"$prog"-patches.diff
+	cd "$prog_path"
 	make install
 	cd -
 }
-__apply_patch__ $*
+__apply_patch__ "$@"
 unset __apply_patch__

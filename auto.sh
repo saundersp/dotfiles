@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-if [[ -z $1 || $1 == 'help' || $1 == 'h' || $1 == '--help' ]]; then
-	echo -e "Auto-installation of my dotfiles script helper
+if [ -z "$1" ] || [ "$1" = 'help' ] || [ "$1" = 'h' ] || [ "$1" = '--help' ]; then
+	echo "Auto-installation of my dotfiles script helper
 Implemented by @saundersp
 
 Command(s) should be formatted like:
@@ -27,7 +27,7 @@ export XDG_STATE_HOME=$HOME/.XDG/state
 mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME $XDG_STATE_HOME
 
 CURRENT_FOLDER=$(pwd)
-if [[ $1 == 'uninstall' || $1 == 'remove' || $1 == 'r' ]]; then
+if [ "$1" = 'uninstall' ] || [ "$1" = 'remove' ] || [ "$1" = 'r' ]; then
 	rm -rf $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/neofetch/config.conf $HOME/.bashrc $XDG_CONFIG_HOME/git/config $HOME/.bash_profile \
 		$XDG_CONFIG_HOME/i3/config $HOME/.xinitrc $XDG_CONFIG_HOME/nvim/coc-settings.json $XDG_CONFIG_HOME/X11/Xresources \
 		$XDG_CONFIG_HOME/polybar/launch.sh $XDG_CONFIG_HOME/polybar/config.ini $XDG_CONFIG_HOME/polybar/scripts \
@@ -48,7 +48,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 	ln -sf $CURRENT_FOLDER/.gitconfig $XDG_CONFIG_HOME/git/config
 	ln -sf $CURRENT_FOLDER/.tmux.conf $XDG_CONFIG_HOME/tmux/tmux.conf
 
-	if [[ $1 == 'server' || $1 == 's' ]]; then
+	if [ "$1" = 'server' ] || [ "$1" = 's' ]; then
 		ln -sf $CURRENT_FOLDER/.bash_profile_server $HOME/.bash_profile
 	else
 		mkdir -p $XDG_CONFIG_HOME/i3 $XDG_CONFIG_HOME/i3blocks $XDG_CONFIG_HOME/polybar $XDG_CONFIG_HOME/X11
@@ -75,7 +75,7 @@ else
 	ln -sf $CURRENT_FOLDER/root.tmux.conf $XDG_CONFIG_HOME/tmux/tmux.conf
 	ln -sf $CURRENT_FOLDER/nvim/root_init.lua $XDG_CONFIG_HOME/nvim/init.lua
 
-	if [[ $1 != 'server' && $1 != 's' ]]; then
+	if [ "$1" != 'server' ] && [ "$1" != 's' ]; then
 		PACKAGES='dmenu st'
 		for package in $PACKAGES; do
 			if [ ! -d /usr/local/src/$package ]; then

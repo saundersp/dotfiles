@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # Disable screensaver
 xset s off &
@@ -7,7 +7,7 @@ xset -dpms &
 # Starting the compositor
 picom -b -f -i 0.9 &
 # Set the wallpaper
-$HOME/.fehbg &
+"$HOME"/.fehbg &
 # Set the keyboard repeat delay to 150ms and rate to 80 repeat/s
 xset r rate 150 80 &
 # Set the keyboard layout to french
