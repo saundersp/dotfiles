@@ -73,23 +73,42 @@ case "$1" in
 		cd /usr/local/src
 
 		# https://github.com/arduino/arduino-cli.git
+		# Dependencies : dev-lang/go
 		# https://github.com/charmbracelet/glow.git
+		# Dependencies : dev-lang/go
 		# https://github.com/jesseduffield/lazydocker.git
+		# Dependencies : dev-lang/go app-containers/docker
 		# https://github.com/jesseduffield/lazygit.git
+		# Dependencies : dev-lang/go dev-vcs/git
 		__updatepackages__ 'arduino-cli glow lazydocker lazygit' 'go install'
 		# https://git.suckless.org/dmenu
+		# Dependencies : media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-libs/libXinerama x11-base/xorg-proto virtual/pkgconfig
 		# https://git.suckless.org/st
+		# Dependencies : sys-libs/ncurses media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-terms/st-terminfo x11-base/xorg-proto virtual/pkgconfig
 		__updatepackages__ 'dmenu st' 'make clean install'
 		# https://github.com/b3nj5m1n/xdg-ninja.git
+		# Dependencies : app-shells/bash
 		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh  /usr/local/bin/xdg-ninja'
+		# https://github.com/ankitects/anki.git
+		# Dependencies : dev-util/bazel dev-python/PyQt5 dev-python/PyQtWebEngine dev-python/httplib2 dev-python/beautifulsoup4 dev-python/decorator dev-python/jsonschema dev-python/markdown dev-python/requests dev-python/send2trash dev-python/nose dev-python/mock
 		__update_anki(){
 			./tools/bundle && cd .bazel/out/dist && tar xf anki*qt6.* && cd anki*qt6
 			./install.sh &&	cd .. && rm -r * && cd ../../.. && bazel shutdown
 		}
-		# https://github.com/ankitects/anki.git
 		__updatepackages__ 'anki' '__update_anki'
 		# https://github.com/espanso/espanso.git
-		__updatepackages__ 'espanso' 'cargo install --force cargo-make && mv target/release/espanso /usr/local/bin/espanso'
+		# Dependencies : cargo-make
+		__updatepackages__ 'espanso' 'cargo make --profile release build-binary && mv target/release/espanso /usr/local/bin/espanso'
+		# https://github.com/logisim-evolution/logisim-evolution.git
+		# Dependencies : dev-java/openjdk
+		__update_gradle_app__(){
+			APP_NAME=$(pwd | cut -d / -f 5)
+			./gradlew clean && ./gradlew shadowJar
+			VERSION=$(grep 'version =' gradle.properties | cut -d = -f 2 | sed s/' '//)
+			printf "#!/bin/sh\njava -jar $(pwd)/build/libs/%s-%s-all.jar" "$APP_NAME" "$VERSION" > /usr/local/bin/"$APP_NAME"
+			chmod +x /usr/local/bin/"$APP_NAME"
+		}
+		__updatepackages__ 'logisim-evolution' '__update_gradle_app__'
 
 		cd ~
 		test "$(ls -A go/bin)" != "" && mv go/bin/* /usr/local/bin/
