@@ -111,7 +111,7 @@ case "$1" in
 		__updatepackages__ 'logisim-evolution' '__update_gradle_app__'
 
 		cd ~
-		test "$(ls -A go/bin)" != "" && mv go/bin/* /usr/local/bin/
+		test "$(ls -A go/bin)" && mv go/bin/* /usr/local/bin/
 		exit 0
 	;;
 	ck|change-kernel|-ck|--change-kernel)
@@ -156,6 +156,6 @@ case "$1" in
 			shift
 		done
 	;;
-	h|help|-h|--help) echo "$USAGE" && exit 0 ;;
-	*) echo "$USAGE" && exit 1 ;;
+	h|help|-h|--help) echo -e "$USAGE" && exit 0 ;;
+	*) echo -e "$USAGE" && exit 1 ;;
 esac
