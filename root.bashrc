@@ -11,11 +11,14 @@ export XDG_STATE_HOME=$HOME/.XDG/state
 export XDG_RUNTIME_DIR=$HOME/.XDG/runtime
 
 # Set extras dotfiles location to clean home (xdg-ninja)
-command -v nvidia-settings >> /dev/null && alias nvidia-settings="nvidia-settings --config=\"$XDG_CONFIG_HOME/nvidia/settings\""
+command -v nvidia-settings >> /dev/null && alias nvidia-settings="nvidia-settings --config=\$XDG_CONFIG_HOME/nvidia/settings"
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 export XAUTHORITY="$XDG_RUNTIME_DIR"/Xauthority
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
+export GNUPGHOME="$XDG_DATA_HOME"/gnupg
+export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
+export PYTHONSTARTUP="/etc/python/pythonrc"
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
@@ -44,6 +47,19 @@ ITALIC='\033[3m'
 #UNDERLINED='\033[4m'
 #BLINKING='\033[5m'
 
+command -v "$1" >> /dev/null && echo "Command checker has replaced __cmd_checker__ !"
+__cmd_checker__(){
+	while [ -n "$1" ]; do
+		if command -v "$1" >> /dev/null; then
+			echo "Command $1 has been replaced !"
+		#else
+		#	echo "Command $1 has not been replaced !"
+		fi
+		shift
+	done
+}
+
+__cmd_checker__ __setprompt
 __setprompt() {
 	local LAST_COMMAND=$? # Must come first!
 
@@ -83,7 +99,7 @@ __setprompt() {
 PROMPT_COMMAND='__setprompt' # Will run function every time a command is entered
 
 HISTCONTROL=ignoreboth                       # Don't put duplicate lines or lines starting with space in the history
-HISTSIZE= HISTFILESIZE=                      # Infinite history
+HISTSIZE='' HISTFILESIZE=''                  # Infinite history
 export HISTFILE=$XDG_STATE_HOME/bash/history # Change the default history file location
 stty -ixon                                   # Disable ctrl-s and ctrl-q.
 shopt -s histappend                          # Append to the history file, don't overwrite it
@@ -103,14 +119,11 @@ fi
 command -v xhost >> /dev/null && xhost +local:root >> /dev/null 2>&1
 
 # Add interactivity to common commands
-alias	cp='cp -i' \
-	mv='mv -i' \
-	mkdir='mkdir -p' \
-	df='df -h' \
-	free='free -h'
-
-# Coloured GCC warnings and errors
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+command -v cp >> /dev/null && alias cp='cp -i'
+command -v mv >> /dev/null && alias mv='mv -i'
+command -v mkdir >> /dev/null && alias mkdir='mkdir -p'
+command -v df >> /dev/null && alias df='df -h'
+command -v free >> /dev/null && alias free='free -h'
 
 # Colourful man page
 export LESS_TERMCAP_mb=$'\E[1;31m'  # begin blink
@@ -121,17 +134,21 @@ export LESS_TERMCAP_se=$'\E[0m'     # reset reverse video
 export LESS_TERMCAP_us=$'\E[1;32m'  # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'     # reset underline
 
-alias	ls='ls -h --color=auto --group-directories-first' \
-	grep='grep --color=auto' \
-	fgrep='fgrep --color=auto' \
-	egrep='egrep --color=auto' \
-	diff='diff --color=auto' \
-	ip='ip --color=auto' \
-	ll='ls -hClas --color=auto --group-directories-first'
-
-command -v wget >> /dev/null && alias wget="wget --hsts-file=\"$XDG_DATA_HOME=wget-hsts\""
+if command -v ls >> /dev/null; then
+	alias ls='ls -h --color=auto --group-directories-first'
+	__cmd_checker__ ll
+	alias ll='ls -hClas --color=auto --group-directories-first'
+fi
+command -v gdb >> /dev/null && alias gdb='gdb -q'
+command -v grep >> /dev/null && alias grep='grep --color=auto'
+command -v fgrep >> /dev/null && alias fgrep='fgrep --color=auto'
+command -v egrep >> /dev/null && alias egrep='egrep --color=auto'
+command -v diff >> /dev/null && alias diff='diff --color=auto'
+command -v ip >> /dev/null && alias ip='ip --color=auto'
+command -v wget >> /dev/null && alias wget="wget --hsts-file=\$XDG_DATA_HOME/wget-hsts"
 
 # Print out escape sequences usable for coloured text on tty.
+__cmd_checker__ colours
 colours() {
 	local fgc bgc vals seq0
 
@@ -168,32 +185,35 @@ colours() {
 }
 
 # Simple command to preview csv files
+__cmd_checker__ preview_csv
 preview_csv(){
 	if [[ -z "$1" || "$1" == 'h' || "$1" == '-h' || "$1" == 'help' || "$1" == '--help' ]]; then
-		echo "Usage : $FUNCNAME filename.csv"
+		echo "Usage : ${FUNCNAME[0]} filename.csv"
 		return 0
 	elif [[ ! -r $1 ]]; then
 		echo "Can't read file $1"
 		return 1
 	fi
-	cat "$1" | sed 's/,/ ,/g' | column -t -s, | less -S -n
+	(sed 's/,/ ,/g' | column -t -s, | less -S -n) < "$1"
 }
 
 if command -v neofetch >> /dev/null; then
+	__cmd_checker__ nfu
 	nfu(){
-		neofetch --config $XDG_CONFIG_HOME/neofetch/config.conf > $XDG_CACHE_HOME/.neofetch
+		neofetch --config "$XDG_CONFIG_HOME"/neofetch/config.conf > "$XDG_CACHE_HOME"/.neofetch
 	}
-	test ! -r $XDG_CACHE_HOME/.neofetch && nfu
-	echo -e -n "\n$(cat $XDG_CACHE_HOME/.neofetch)"
+	test ! -r "$XDG_CACHE_HOME"/.neofetch && nfu
+	echo -e -n "\n$(cat "$XDG_CACHE_HOME"/.neofetch)"
 else
 	echo -e "${BOLD}Available commands :${NOCOLOUR}"
 fi
 
 if command -v python >> /dev/null; then
 	# Activate the python virtual environment in the current folder
+	__cmd_checker__ activate
 	activate(){
 		if [[ "$1" == 'h' || "$1" == '-h' || "$1" == 'help' || "$1" == '--help' ]]; then
-			echo "Use $FUNCNAME to enable the current folder's python virtual environment"
+			echo "Use ${FUNCNAME[0]} to enable the current folder's python virtual environment"
 			return 0
 		fi
 		if [ -f venv/Scripts/activate ]; then source venv/Scripts/activate
@@ -205,12 +225,14 @@ fi
 
 if command -v nvim >> /dev/null; then
 	export EDITOR=nvim
-	command -v nvim >> /dev/null && alias vi='nvim' vim='nvim' vid='nvim -d' vimdiff='nvim -d'
+	__cmd_checker__ vid
+	command -v nvim >> /dev/null && alias vid='nvim -d'
 fi
 
 # Little helper for missing packages
+__cmd_checker__ __command_requirer_pkg__
 __command_requirer_pkg__(){
-	if command -v $2 >> /dev/null; then
+	if command -v "$2" >> /dev/null; then
 			bash -c "$1 $4"
 		else
 			echo "This command requires $2 from \"$3\" installed" && return 1
@@ -218,56 +240,59 @@ __command_requirer_pkg__(){
 }
 
 if command -v pacman >> /dev/null; then
+	__cmd_checker__ pac
 	pac(){
 		local USAGE="Pacman helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t$FUNCNAME u|update|upgrade\n\tUpdate every packages.\n\n
-			\t$FUNCNAME m|mirrors\n\tUpdate the mirrorlist.\n\n
-			\t$FUNCNAME p|prune\n\tRemove unused packages (orphans).\n\n
-			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
+			\t${FUNCNAME[0]} u|update|upgrade\n\tUpdate every packages.\n\n
+			\t${FUNCNAME[0]} m|mirrors\n\tUpdate the mirrorlist.\n\n
+			\t${FUNCNAME[0]} p|prune\n\tRemove unused packages (orphans).\n\n
+			\t${FUNCNAME[0]} h|-h|help|--help\n\tShow this help message"
 		case "$1" in
 			u|update|upgrade) pacman -Syu ;;
 			m|mirrors)
+				__cmd_checker__ __update_mirrors__
 				__update_mirrors__(){
 					local MIRRORFILE=/etc/pacman.d/mirrorlist
-					test $(cat /etc/os-release | grep '^ID') = 'ID=artix' && MIRRORFILE+='-arch'
-					reflector -a 48 -c $(curl -s ifconfig.io/country_code) -f 5 -l 20 --sort rate --save $MIRRORFILE
+					test "$(grep '^ID' /etc/os-release)" = 'ID=artix' && MIRRORFILE+='-arch'
+					reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
 				}
 				export -f __update_mirrors__
 				__command_requirer_pkg__ __update_mirrors__ reflector reflector
 				;;
 			p|prune) pacman -Qtdq | pacman -Rns - ;;
-			h|-h|--help|help) echo -e $USAGE && return 0 ;;
-			*) echo -e $USAGE && return 1 ;;
+			h|-h|--help|help) echo -e "$USAGE" && return 0 ;;
+			*) echo -e "$USAGE" && return 1 ;;
 		esac
 	}
 
 fi
 
 if command -v emerge >> /dev/null; then
+	__cmd_checker__ em
 	em(){
 		local USAGE="Portage's emerge helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t$FUNCNAME s|sync\n\tSync the packages repository.\n\n
-			\t$FUNCNAME u|update|upgrade\n\tUpdate every packages.\n\n
-			\t$FUNCNAME l|list\n\tList every packages in the @world set.\n\n
-			\t$FUNCNAME q|query\n\tSearch packages that contains a given file.\n\n
-			\t$FUNCNAME c|clean\n\tClean the unused distfiles and packages remainders.\n\n
-			\t$FUNCNAME p|prune\n\tRemove unused packages (orphans).\n\n
-			\t$FUNCNAME d|desc\n\tList all possible USE variable.\n\n
-			\t$FUNCNAME U|use\n\tList all set USE variable.\n\n
-			\t$FUNCNAME m|mirrors\n\tUpdate the mirrorlist.\n\n
-			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
+	${FUNCNAME[0]} s|sync\n\tSync the packages repository.\n\n
+	${FUNCNAME[0]} u|update|upgrade\n\tUpdate every packages.\n\n
+	${FUNCNAME[0]} l|list\n\tList every packages in the @world set.\n\n
+	${FUNCNAME[0]} q|query\n\tSearch packages that contains a given file.\n\n
+	${FUNCNAME[0]} c|clean\n\tClean the unused distfiles and packages remainders.\n\n
+	${FUNCNAME[0]} p|prune\n\tRemove unused packages (orphans).\n\n
+	${FUNCNAME[0]} d|desc\n\tList all possible USE variable.\n\n
+	${FUNCNAME[0]} U|use\n\tList all set USE variable.\n\n
+	${FUNCNAME[0]} m|mirrors\n\tUpdate the mirrorlist.\n\n
+	${FUNCNAME[0]} h|-h|help|--help\n\tShow this help message"
 		case "$1" in
-			s|sync) emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update ;;
-			u|update|upgrade) command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDuq @world ;;
+			s|sync) sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
+			u|update|upgrade) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDuq @world' ;;
 			l|list) cat /var/lib/portage/world ;;
 			q|query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
-			c|clean) __command_requirer_pkg__ 'eclean -d packages && eclean -d distfiles && echo "Deleting portage temporary files" && rm -r /var/tmp/portage/*' eclean app-portage/gentoolkit ;;
+			c|clean) __command_requirer_pkg__ 'sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && rm -rf /var/tmp/portage/{,.[!.],..?}*"' eclean app-portage/gentoolkit ;;
 			p|prune) emerge -acD ;;
 			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
 			U|use) __command_requirer_pkg__ 'portageq envvar USE | xargs -n1 | less' portageq sys-apps/portage ;;
 			m|mirrors) sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
-			h|-h|--help|help) echo -e $USAGE && return 0 ;;
-			*) echo -e $USAGE && return 1 ;;
+			h|-h|--help|help) echo -e "$USAGE" && return 0 ;;
+			*) echo -e "$USAGE" && return 1 ;;
 		esac
 	}
 fi
@@ -278,14 +303,16 @@ command -v lazygit >> /dev/null && alias lg='lazygit'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker'
 
 if command -v ranger >> /dev/null; then
+	__cmd_checker__ ranger-cd
 	ranger-cd() {
-		local tmp="$(mktemp)"
-		ranger --choosedir=$tmp
+		local tmp dir
+		tmp="$(mktemp)"
+		ranger --choosedir="$tmp"
 		if [ -f "$tmp" ]; then
-			local dir="$(cat "$tmp")"
+			dir="$(cat "$tmp")"
 			rm -f "$tmp" >> /dev/null
 			if [ "$dir" ] && [ "$dir" != "$(pwd)" ]; then
-				cd "$dir"
+				cd "$dir" || true
 			fi
 		fi
 	}
@@ -293,44 +320,52 @@ if command -v ranger >> /dev/null; then
 fi
 
 if command -v xrandr >> /dev/null; then
+	__cmd_checker__ hdmi
 	hdmi(){
 		local USAGE="HDMI connection helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t$FUNCNAME e|extend\n\tExtend the primary display to the secondary.\n\n
-			\t$FUNCNAME m|mirror\n\tMirror the primary display to the secondary.\n\n
-			\t$FUNCNAME o|off\n\tTurn off a display.\n\n
-			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
+			\t${FUNCNAME[0]} e|extend\n\tExtend the primary display to the secondary.\n\n
+			\t${FUNCNAME[0]} m|mirror\n\tMirror the primary display to the secondary.\n\n
+			\t${FUNCNAME[0]} o|off\n\tTurn off a display.\n\n
+			\t${FUNCNAME[0]} h|-h|help|--help\n\tShow this help message"
+		__cmd_checker__ __get_display__
 		__get_display__(){
 			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
 		}
 		case "$1" in
 			e|extend)
-				local Primary=$(__get_display__ Primary)
-				test -z $Primary&& return 0
-				local Secondary=$(__get_display__ Secondary)
-				test -z $Secondary && return 0
-				local mode=$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)
-				xrandr --output $Secondary --auto --$mode $Primary
+				local Primary Secondary mode
+				Primary=$(__get_display__ Primary)
+				test -z "$Primary" && return 0
+				Secondary=$(__get_display__ Secondary)
+				test -z "$Secondary" && return 0
+				mode=$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)
+				xrandr --output "$Secondary" --auto --"$mode" "$Primary"
 			;;
 			m|mirror)
-				local Primary=$(__get_display__ Primary)
-				test -z $Primary&& return 0
-				local Secondary=$(__get_display__ Secondary)
-				test -z $Secondary && return 0
-				xrandr --output $Secondary --auto --same-as $Primary
+				local Primary Secondary
+				Primary=$(__get_display__ Primary)
+				test -z "$Primary" && return 0
+				Secondary=$(__get_display__ Secondary)
+				test -z "$Secondary" && return 0
+				xrandr --output "$Secondary" --auto --same-as "$Primary"
 			;;
 			o|off)
-				local Primary=$(__get_display__ Primary)
-				test -z $Primary && return 0
-				xrandr --output $Primary --off
+				local Primary
+				Primary=$(__get_display__ Primary)
+				test -z "$Primary" && return 0
+				xrandr --output "$Primary" --off
 			;;
-			h|-h|--help|help) echo -e $USAGE && return 0 ;;
-			*) echo -e $USAGE && return 1 ;;
+			h|-h|--help|help) echo -e "$USAGE" && return 0 ;;
+			*) echo -e "$USAGE" && return 1 ;;
 		esac
 	}
 fi
 
-alias cb='clear && exec bash'
+__cmd_checker__ cb && alias cb='clear && exec bash'
+
 if command -v pactl >> /dev/null; then
+	__cmd_checker__ __moff__ __soff__ __paloopoff__ pa
+
 	__moff__(){
 		pactl unload-module module-native-protocol-tcp 2>>/dev/null
 	}
@@ -346,13 +381,13 @@ if command -v pactl >> /dev/null; then
 
 	pa(){
 		local USAGE="Pulseaudio modules helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t$FUNCNAME moff\n\tDisable master audio modules.\n\n
-			\t$FUNCNAME m\n\tEnable master audio modules.\n\n
-			\t$FUNCNAME soff\n\tDisable slave audio modules.\n\n
-			\t$FUNCNAME s\n\tEnable slave audio modules.\n\n
-			\t$FUNCNAME loopoff\n\tDisable audio loopback.\n\n
-			\t$FUNCNAME loop [ms]\n\tEnable audio loopback.\n\n
-			\t$FUNCNAME h|-h|help|--help\n\tShow this help message"
+			\t${FUNCNAME[0]} moff\n\tDisable master audio modules.\n\n
+			\t${FUNCNAME[0]} m\n\tEnable master audio modules.\n\n
+			\t${FUNCNAME[0]} soff\n\tDisable slave audio modules.\n\n
+			\t${FUNCNAME[0]} s\n\tEnable slave audio modules.\n\n
+			\t${FUNCNAME[0]} loopoff\n\tDisable audio loopback.\n\n
+			\t${FUNCNAME[0]} loop [ms]\n\tEnable audio loopback.\n\n
+			\t${FUNCNAME[0]} h|-h|help|--help\n\tShow this help message"
 		case "$1" in
 			moff) __moff__ ;;
 			m)
@@ -367,42 +402,46 @@ if command -v pactl >> /dev/null; then
 			;;
 			loopoff) __paloopoff__ ;;
 			loop)
+				local source sink
 				__paloopoff__
-				local source=$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )
-				test -z $source && return 0
-				local sink=$(pactl list sinks | grep Na |  awk '{ print $2 }' | dmenu -p 'Sink:' -c -l 10 )
-				test -z $sink && return 0
-				if [ -z $2 ]; then
+				source=$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )
+				test -z "$source" && return 0
+				sink=$(pactl list sinks | grep Na |  awk '{ print $2 }' | dmenu -p 'Sink:' -c -l 10 )
+				test -z "$sink" && return 0
+				if [ -z "$2" ]; then
 					pactl load-module module-loopback sink="$sink" source="$source"
 				else
-					pactl load-module module-loopback sink="$sink" source="$source" latency_msec=$2
+					pactl load-module module-loopback sink="$sink" source="$source" latency_msec="$2"
 				fi
 			;;
-			h|-h|help|--help) echo -e $USAGE && return 0 ;;
-			*) echo -e $USAGE && return 1 ;;
+			h|-h|help|--help) echo -e "$USAGE" && return 0 ;;
+			*) echo -e "$USAGE" && return 1 ;;
 		esac
 	}
+	__cmd_checker__ pm
 	command -v pulsemixer >> /dev/null && alias pm='pulsemixer'
 fi
 
-command -v curl >> /dev/null && alias weather='curl de.wttr.in/valbonne'
+command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
 
+__cmd_checker__ pow
 pow(){
+	local MODES
 	# The script assumes that all availables cpus has the same governor
-	local MODES=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors)
+	MODES=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors)
 
 	local USAGE="CPU scaling governor helper\nImplemented by @saundersp\n\nDocumentation:
-	$FUNCNAME l|list|-l|--list\n\tList all the availables scaling governors.\n\n
-	$FUNCNAME c|current|-c|--current\n\tDisplay the current selected scaling governor.\n\n
-	$FUNCNAME $(echo "$MODES" | sed 's/ /|/')\n\tSet the scaling governor to argument name.\n\n
-	$FUNCNAME h|help|-h|--help\n\tShow this help message"
+	${FUNCNAME[0]} l|list|-l|--list\n\tList all the availables scaling governors.\n\n
+	${FUNCNAME[0]} c|current|-c|--current\n\tDisplay the current selected scaling governor.\n\n
+	${FUNCNAME[0]} ${MODES/ /|}\n\tSet the scaling governor to argument name.\n\n
+	${FUNCNAME[0]} h|help|-h|--help\n\tShow this help message"
 
 	case "$1" in
 		l|list|-l|--list) echo "$MODES" ;;
 		c|current|-c|--current) cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ;;
 		h|help|-h|--help) echo -e "$USAGE" && return 0 ;;
 		*)
-			if $(echo "$MODES" | grep -wq "$1"); then
+			if echo "$MODES" | grep -wq "$1"; then
 				echo "$1" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >> /dev/null
 			else
 				echo -e "$USAGE"
@@ -412,16 +451,27 @@ pow(){
 	esac
 }
 
+__cmd_checker__ update
+update(){
+	command -v em >> /dev/null && em s && em u && em p && em c
+	command -v pac >> /dev/null && pac u && pac p && aur u
+	cd && ./updater.sh p && cd -
+	nfu
+}
+
+__cmd_checker__ __helpme__
 __helpme__(){
+	__cmd_checker__ print_cmd
 	print_cmd(){
 		printf "\055 \e[${ITALIC}%-32s\e[${NOCOLOUR} : $2\n" "$1"
 	}
 
+	__cmd_checker__ tprint_cmd
 	tprint_cmd(){
-		if command -v $1 >> /dev/null; then
-			print_cmd "$1" "$2"
+		if command -v "$1" >> /dev/null; then
+			print_cmd "$1 $3" "$2"
 		#else
-		#	echo The command $1 doesn\'t exists !
+		#	printf "\055 \e[${ITALIC}%-32s\e[${NOCOLOUR} : ${BOLD}This command isn't enabled${NOCOLOUR}\n" "$1"
 		fi
 	}
 
@@ -429,10 +479,9 @@ __helpme__(){
 	tprint_cmd 'nfu' 'Update the cached neofetch informations'
 	tprint_cmd 'activate' 'Activate the python virtual environment'
 	tprint_cmd 'colours' 'Show the colours palette of the current terminal'
-	tprint_cmd 'preview_csv <file>' 'Preview a csv file'
-	tprint_cmd 'vi or vim <file/directory/?>' 'Shortcut to nvim'
-	tprint_cmd 'vid or vimdiff <file1> <file2>' 'Shortcut to nvim diff mode'
-	tprint_cmd 'll <directory/?>' 'Detailed ls'
+	tprint_cmd 'preview_csv' 'Preview a csv file' '<file>'
+	tprint_cmd 'vid' 'Shortcut to nvim diff mode' '<file1> <file2>'
+	tprint_cmd 'll' 'Detailed ls' '<directory>'
 	tprint_cmd 'pac' 'Pacman helper'
 	tprint_cmd 'em' "Portage's emerge helper"
 	tprint_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
@@ -440,9 +489,9 @@ __helpme__(){
 	tprint_cmd 'vpn_off' 'Easily disable a VPN connection'
 	tprint_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 	tprint_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
-	tprint_cmd 'ranger-cd / C-o' 'Modded ranger to changed pwd on exit'
+	tprint_cmd 'ranger-cd' 'Modded ranger to changed pwd on exit' '/ C-o'
 	tprint_cmd 'hdmi' 'HDMI connection helper script'
-	tprint_cmd 'cb' 'Shortcut to clear && exec bash'
+	print_cmd 'cb' 'Shortcut to clear && exec bash'
 	tprint_cmd 'pa' 'Pulseaudio modules helper script'
 	tprint_cmd 'pm' 'Pulsemixer shortcut'
 	tprint_cmd 'weather' 'Get current weather status'
@@ -455,4 +504,5 @@ __helpme__(){
 	print_cmd '!^' 'First item ran'
 	print_cmd '!*' 'All items ran'
 }
-alias ?='__helpme__'
+__cmd_checker__ '?'
+alias '?'='__helpme__'
