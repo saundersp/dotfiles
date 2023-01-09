@@ -538,8 +538,8 @@ update(){
 	cd && ./updater.sh p'
 	command -v arduino-cli >> /dev/null && arduino-cli update && arduino-cli upgrade
 	command -v nvim >> /dev/null && nvim --headless -c 'autocmd User PackerComplete quitall' -c 'lua if vim.fn.exists(":PackerSync") == 0 then vim.cmd("quit") end vim.cmd("PackerSync")'
-	command -v nvim >> /dev/null && nvim --headless -c -c 'lua if vim.fn.exists(":TSUpdateSync") != 0 then vim.cmd("TSUpdateSync") end' +q
-	command -v nvim >> /dev/null && nvim --headless -c -c 'lua if vim.fn.exists(":CocUpdateSync") != 0 then vim.cmd("CocUpdateSync") end' +q
+	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":TSUpdateSync") ~= 0 then vim.cmd("TSUpdateSync") end' +q
+	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":CocUpdateSync") ~= 0 then vim.cmd("CocUpdateSync") end' +q
 	nfu
 }
 
