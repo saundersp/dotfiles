@@ -58,8 +58,9 @@ i3wm*text: myforeground
 i3wm.cf.backgr: mybackgroundalt
 i3wm.cf.text: myforegroundalt
 i3wm.font: myfontmono 9
-i3wm.inner-gaps: 10
-i3wm.outer-gaps: 5
+i3wm.inner-gaps: 5
+i3wm.outer-gaps: 2
+i3wm.smart-gaps: off
 
 ! ================================= Polybar ======================================
 polybar.height: 17pt

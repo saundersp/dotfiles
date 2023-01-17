@@ -162,8 +162,10 @@ bindsym $mod+w split h
 # Gaps
 set_from_resource $inner_gaps i3wm.inner-gaps 0
 set_from_resource $outer_gaps i3wm.outer-gaps 0
+set_from_resource $smart_gaps i3wm.smart-gaps off
 gaps inner $inner_gaps
 gaps outer $outer_gaps
+smart_gaps $smart_gaps
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
