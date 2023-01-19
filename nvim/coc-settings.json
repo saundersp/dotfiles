@@ -23,8 +23,9 @@
 	"java.project.referencedLibraries": ["lib/**/*.jar"],
 	"markdownlint.config": { "line_length": false, "MD010": false },
 	"cSpellExt.enableDictionaries": ["medical-terms", "french", "german"],
-	"cSpell.language": "en-GB,fr,de",
+	"cSpell.language": "en-GB,fr,de,it,es,ru",
 	"cSpell.userWords": [
+		"Artix",
 		"Bpedia",
 		"Codium",
 		"Corese",
@@ -88,6 +89,7 @@
 		"pulsemixer",
 		"pyplot",
 		"qcow",
+		"saundersp",
 		"scikit",
 		"shellui",
 		"sklearn",
@@ -105,22 +107,5 @@
 	],
 	"prettier.tabWidth": 8,
 	"prettier.useTabs": true,
-	"prettier.printWidth": 150,
-	"languageserver": {
-		"ccls": {
-			"command": "ccls",
-			"filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
-			"rootPatterns": [".ccls-root", "compile_commands.json"],
-			"initializationOptions": {
-				"cache": { "directory": ".ccls-cache" },
-				"client": { "snippetSupport": true }
-			}
-		},
-		"haskell": {
-			"command": "haskell-language-server-wrapper",
-			"args": ["--lsp"],
-			"rootPatterns": ["*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml"],
-			"filetypes": ["haskell", "lhaskell"]
-		}
-	}
+	"prettier.printWidth": 150
 }

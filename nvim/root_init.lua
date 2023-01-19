@@ -1,69 +1,84 @@
---------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Global shortcuts/helper
---------------------------------------------------------------------------------------------------------------------------------------------------------
-cmd = vim.cmd
-o = vim.o
-b = vim.b
-wo = vim.wo
-g = vim.g
-
-function Map(mode, shortcut, command)
-	vim.api.nvim_set_keymap(mode, shortcut, command, { noremap = false, silent = true })
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+function map(mode, key, action, desc, buffer)
+	if type(key) == 'table' then
+		for _,e in ipairs(key) do
+			map(mode, e, action, desc, buffer)
+		end
+	else
+		vim.keymap.set(mode, key, action, { silent = true, buffer = buffer, desc = desc })
+	end
+end
+function nmap(key, action, desc, buffer) map('n', key, action, desc, buffer) end
+function vmap(key, action, desc, buffer) map('v', key, action, desc, buffer) end
+function Autocmd(events, pattern, callback)
+	vim.api.nvim_create_autocmd(events, { pattern = pattern, callback = callback })
 end
 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General settings config
---------------------------------------------------------------------------------------------------------------------------------------------------------
---
-cmd("colorscheme			desert")							-- Set the colour scheme to a more readable one
-o.syntax				= true								-- Enables syntax highlighting
-o.listchars				= 'eol:﬋,tab:→ ,trail:•,extends:>,precedes:<,space:·,nbsp:ﴔ'	-- List of whitespace characters replacement (see :h listchars)
-o.list					= true								-- Enable replacement of listchars
-o.hidden				= true								-- Required to keep multiple buffers open multiple buffers
-o.wrap					= false								-- Display long lines as just one line
-o.encoding				= 'UTF-8'							-- The encoding displayed
-o.fileencoding				= 'UTF-8'							-- The encoding written to file
-o.ruler					= true								-- Show the cursor position all the time
-cmd("set iskeyword			+=-")								-- treat dash separated words as a word text object
-o.tabstop				= 8								-- Set the width of a tab
-o.shiftwidth				= 8								-- Change the number of space characters inserted for indentation
-o.smartindent				= true								-- Does smart autoindenting when starting a new line
-o.expandtab				= false								-- Disable the tab expansion of spaces
-o.number				= true								-- Line numbers
-o.relativenumber			= true								-- Relative number (enabled after number for hybrid mode)
-o.cursorline				= true								-- Enable highlighting of the current line
-o.showtabline				= 2								-- Always show top files tabs
-o.showmode				= false								-- We don't need to see things like -- INSERT -- any more
-o.foldmethod				= 'syntax'							-- Change the folding method to fold from { [ ...
-o.foldlevel				= 99								-- Fold are open when you first open a file
-o.visualbell				= true								-- Disable bell noise
-o.splitbelow				= true								-- Horizontal splits will automatically be below
-o.splitright				= true								-- Vertical splits will automatically be to the right
-o.completeopt				= "menu,menuone,noselect"					-- Add LSP complete popup menu
-o.signcolumn				= "yes"								-- Always draw the signcolumn with 1 fixed space width
-o.swapfile				= false								-- Disable swapfile usage
-cmd("set formatoptions			+=r")								-- Add asterisks in block comments
-cmd("set wildignore			+=*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json")	-- Ignore files in fuzzy finder
-cmd("autocmd FileType python set	noexpandtab")							-- Force disable expandtab on python's files
-cmd("autocmd FileType tex set		wrap")								-- Enable wraping only for LaTeX files
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+vim.cmd.colorscheme				('desert')									-- Set the colour scheme to a more readable one
+vim.o.syntax					= true										-- Enables syntax highlighting
+vim.o.listchars					= 'eol:﬋,tab:→ ,trail:•,extends:>,precedes:<,space:·,nbsp:ﴔ'			-- List of whitespace characters replacement (see :h listchars)
+vim.o.list					= true										-- Enable replacement of listchars
+vim.o.hidden					= true										-- Required to keep multiple buffers open multiple buffers
+vim.o.wrap					= false										-- Display long lines as just one line
+vim.o.encoding					= 'UTF-8'									-- The encoding displayed
+vim.o.fileencoding				= 'UTF-8'									-- The encoding written to file
+vim.o.ruler					= true										-- Show the cursor position all the time
+vim.o.iskeyword					= vim.o.iskeyword .. ',-'							-- treat dash separated words as a word text object
+vim.o.tabstop					= 8										-- Set the width of a tab
+vim.o.shiftwidth				= 8										-- Change the number of space characters inserted for indentation
+vim.o.softtabstop				= 8										-- Change the number of space characters inserted for indentation
+vim.o.smartindent				= true										-- Does smart autoindenting when starting a new line
+vim.o.expandtab					= false										-- Disable the tab expansion of spaces
+vim.o.number					= true										-- Line numbers
+vim.o.relativenumber				= true										-- Relative number (enabled after number for hybrid mode)
+vim.o.cursorline				= true										-- Enable highlighting of the current line
+vim.o.cursorcolumn				= true										-- Enable highlighting of the current column
+vim.o.showtabline				= 2										-- Always show top files tabs
+vim.o.showmode					= false										-- We don't need to see things like -- INSERT -- any more
+vim.o.foldmethod				= 'syntax'									-- Change the folding method to fold from { [ ...
+vim.o.foldlevel					= 99										-- Fold are open when you first open a file
+vim.o.visualbell				= true										-- Disable bell noise
+vim.o.splitbelow				= true										-- Horizontal splits will automatically be below
+vim.o.splitright				= true										-- Vertical splits will automatically be to the right
+vim.o.completeopt				= 'menuone,noselect'								-- Add LSP complete popup menu
+vim.o.signcolumn				= 'yes'										-- Always draw the signcolumn with 1 fixed space width
+vim.o.title					= true										-- Change the window's title to the opened file name and directory
+vim.o.updatetime				= 200										-- Time before CursorHold triggers
+vim.o.swapfile					= false										-- Disable swapfile usage
+vim.o.wildmode					= 'longest,list,full'								-- Enable autocompletion in COMMAND mode
+vim.o.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
+vim.o.wildignore				= vim.o.wildignore .. '*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'	-- Ignore files in fuzzy finder
+vim.o.undofile					= true										-- Enable undofile to save undos after exit
+Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end)						-- Enable wraping only for LaTeX files
+Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end)						-- Disable the tab expansion of spaces
+Autocmd({ 'BufRead', 'BufNewFile' }, '*.tex',	function() vim.o.filetype = 'tex' end)						-- Sometimes LaTeX isn't properly recognized
 
---------------------------------------------------------------------------------------------------------------------------------------------------------
--- Key mapping config
---------------------------------------------------------------------------------------------------------------------------------------------------------
-Map('n', '<C-s>', ':w<CR>') 			-- Save buffer shortcut
-Map('n', '<C-F4>', ':q!<CR>') 			-- Close window shortcut (keeps buffer open)
-Map('n', '<F28>', '<C-F4>') 			-- F28 Is CTRL F4 in Linux : LPT You can type key code in insert mode !
-Map('n', '<S-F4>', ':bd<CR>') 			-- Close buffer shortcut
-Map('n', '<F16>', '<S-F4>') 			-- F16 Is Shift F4 in Linux
-Map('n', '<M-j>', ':resize -1<CR>') 		-- Buffer resize shortcuts
-Map('n', '<M-k>', ':resize +1<CR>') 		-- M is the ALT modifier key
-Map('n', '<M-h>', ':vertical resize -1<CR>')
-Map('n', '<M-l>', ':vertical resize +1<CR>')
-Map('t', '<Esc>', '<C-\\><C-n>') 		-- Fix terminal exit button
-Map('n', '<C-m>', ':noh<CR>') 			-- Clear the highlighting of :set hlsearch
-Map('n', '<CR>', ':noh<CR>') 			-- <C-M> == <CR> in st
-Map('n', '<C-z>', '<Nop>') 			-- Disable the suspend signal
-Map('v', '<', '<gv') 				-- Better tabbing
-Map('v', '>', '>gv')
-Map('n', '<F2>', ':set invpaste paste?<CR>')	-- Toggle clipboard pasting
-
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Key mapping configuration
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+nmap('<C-s>', ':w<CR>',														   'Save buffer shortcut')
+nmap({ '<C-F4>', '<F28>' }, ':q!<CR>',												   'Close window shortcut (keeps buffer open)')
+nmap({ '<S-F4>', 'F16' }, ':bd<CR>',												   'Close buffer shortcut')
+nmap('<M-j>', ':resize -1<CR>',													   'Decrease buffer window horizontal size (M is the ALT modifier key)')
+nmap('<M-k>', ':resize +1<CR>',													   'Increase buffer window horizontal size (M is the ALT modifier key)')
+nmap('<M-h>', ':vertical resize -1<CR>',											   'Decrease buffer window vertical size (M is the ALT modifier key)')
+nmap('<M-l>', ':vertical resize +1<CR>',											   'Increase buffer window vertical size (M is the ALT modifier key)')
+map('t', '<Esc>', '<C-\\><C-n>',												   'Fix terminal exit button')
+nmap({'<C-m>', '<CR>'}, ':noh<CR>',												   'Clear the highlighting of :set hlsearch (<C-M> == <CR> in st)')
+nmap('<C-z>', '<Nop>',														   'Disable the suspend signal')
+vmap('<', '<gv',														   'Shift the selection one indent to the right')
+vmap('>', '>gv',														   'Shift the selection one indent to the left')
+nmap('<F2>',															   ':set invpaste paste?<CR>', 'Toggle clipboard pasting')
+nmap('<C-J>',															   'ddp', 'Move the current line down')
+nmap('<C-K>',															   'ddkkp', 'Move the current line up')
+vim.api.nvim_create_user_command('EditConfig', 'e ' .. vim.fn.stdpath 'config' .. '/init.lua', { desc =				   'Edit Neovim config file' })
+vim.api.nvim_create_autocmd('BufWritePost', {
+	command = 'source <afile>',
+	group = vim.api.nvim_create_augroup('Packer', { clear = true }),
+	pattern = vim.fn.expand '$MYVIMRC'
+})
