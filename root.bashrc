@@ -15,10 +15,13 @@ command -v nvidia-settings >> /dev/null && alias nvidia-settings="nvidia-setting
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 export XAUTHORITY="$XDG_RUNTIME_DIR"/Xauthority
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 export GNUPGHOME="$XDG_DATA_HOME"/gnupg
 export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
 export PYTHONSTARTUP="/etc/python/pythonrc"
+export GOPATH="$XDG_DATA_HOME"/go
+export KERAS_HOME="$XDG_STATE_HOME"/keras
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
@@ -47,7 +50,7 @@ ITALIC='\033[3m'
 #UNDERLINED='\033[4m'
 #BLINKING='\033[5m'
 
-command -v "$1" >> /dev/null && echo "Command checker has replaced __cmd_checker__ !"
+command -v "$1" >> /dev/null && echo 'Command checker has replaced __cmd_checker__ !'
 __cmd_checker__(){
 	while [ -n "$1" ]; do
 		if command -v "$1" >> /dev/null; then
@@ -188,7 +191,7 @@ colours() {
 __cmd_checker__ preview_csv
 preview_csv(){
 	if [[ -z "$1" || "$1" == 'h' || "$1" == '-h' || "$1" == 'help' || "$1" == '--help' ]]; then
-		echo "Usage : ${FUNCNAME[0]} filename.csv"
+		echo "Usage: ${FUNCNAME[0]} filename.csv"
 		return 0
 	elif [[ ! -r $1 ]]; then
 		echo "Can't read file $1"
@@ -213,12 +216,10 @@ if command -v python >> /dev/null; then
 	__cmd_checker__ activate
 	activate(){
 		if [[ "$1" == 'h' || "$1" == '-h' || "$1" == 'help' || "$1" == '--help' ]]; then
-			echo "Use ${FUNCNAME[0]} to enable the current folder's python virtual environment"
-			return 0
-		fi
-		if [ -f venv/Scripts/activate ]; then source venv/Scripts/activate
+			echo "Usage: ${FUNCNAME[0]} to enable the current folder's python virtual environment"
+		elif [ -f venv/Scripts/activate ]; then source venv/Scripts/activate
 		elif [ -f venv/bin/activate ]; then source venv/bin/activate
-		else echo 'Python virtual environment not detected !'
+		else echo 'Python virtual environment not detected !'; return 1
 		fi
 	}
 fi
@@ -242,14 +243,14 @@ __command_requirer_pkg__(){
 if command -v pacman >> /dev/null; then
 	__cmd_checker__ pac
 	pac(){
-		local USAGE="Pacman helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t${FUNCNAME[0]} u|update|upgrade\n\tUpdate every packages.\n\n
-			\t${FUNCNAME[0]} m|mirrors\n\tUpdate the mirrorlist.\n\n
-			\t${FUNCNAME[0]} p|prune\n\tRemove unused packages (orphans).\n\n
-			\t${FUNCNAME[0]} h|-h|help|--help\n\tShow this help message"
+		local USAGE="Pacman helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAG\nAvailable flags:
+	-u, u, update, --update		Update every packages.
+	-m, m, mirrors, --mirrors	Update the mirrorlist.
+	-p, p, prune, --prune		Remove unused packages (orphans).
+	-h, h, help, --help		Show this help message"
 		case "$1" in
-			u|update|upgrade) pacman -Syu ;;
-			m|mirrors)
+			-u|u|update|--update) pacman -Syu ;;
+			-m|m|mirrors|--mirrors)
 				__cmd_checker__ __update_mirrors__
 				__update_mirrors__(){
 					local MIRRORFILE=/etc/pacman.d/mirrorlist
@@ -259,9 +260,9 @@ if command -v pacman >> /dev/null; then
 				export -f __update_mirrors__
 				__command_requirer_pkg__ __update_mirrors__ reflector reflector
 				;;
-			p|prune) pacman -Qtdq | pacman -Rns - ;;
-			h|-h|--help|help) echo -e "$USAGE" && return 0 ;;
-			*) echo -e "$USAGE" && return 1 ;;
+			-p|p|prune|--prune) pacman -Qtdq | pacman -Rns - ;;
+			-h|h|help|--help) echo "$USAGE" ;;
+			*) echo "$USAGE" && return 1 ;;
 		esac
 	}
 
@@ -270,29 +271,29 @@ fi
 if command -v emerge >> /dev/null; then
 	__cmd_checker__ em
 	em(){
-		local USAGE="Portage's emerge helper\nImplemented by @saundersp\n\nDocumentation:\n
-	${FUNCNAME[0]} s|sync\n\tSync the packages repository.\n\n
-	${FUNCNAME[0]} u|update|upgrade\n\tUpdate every packages.\n\n
-	${FUNCNAME[0]} l|list\n\tList every packages in the @world set.\n\n
-	${FUNCNAME[0]} q|query\n\tSearch packages that contains a given file.\n\n
-	${FUNCNAME[0]} c|clean\n\tClean the unused distfiles and packages remainders.\n\n
-	${FUNCNAME[0]} p|prune\n\tRemove unused packages (orphans).\n\n
-	${FUNCNAME[0]} d|desc\n\tList all possible USE variable.\n\n
-	${FUNCNAME[0]} U|use\n\tList all set USE variable.\n\n
-	${FUNCNAME[0]} m|mirrors\n\tUpdate the mirrorlist.\n\n
-	${FUNCNAME[0]} h|-h|help|--help\n\tShow this help message"
+		local USAGE="Portage's emerge helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAG\nAvailable flags:
+	-s, s, sync, --sync		Sync the packages repository.
+	-u, u, update, --update		Update every packages.
+	-l, l, list, --list		List every packages in the @world set.
+	-q, q, query, --query		Search packages that contains a given file.
+	-c, c, clean, --clean		Clean the unused distfiles and packages remainders.
+	-p, p, prune, --prune		Remove unused packages (orphans).
+	-d, d, desc, --desc		List all possible USE variable.
+	-U, U, use, --use		List all set USE variable.
+	-m, m, mirrors, --mirrors	Update the mirrorlist.
+	-h, h, help, --help		Show this help message"
 		case "$1" in
-			s|sync) sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
-			u|update|upgrade) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDuq @world' ;;
-			l|list) cat /var/lib/portage/world ;;
-			q|query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
-			c|clean) __command_requirer_pkg__ 'sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && rm -rf /var/tmp/portage/{,.[!.],..?}*"' eclean app-portage/gentoolkit ;;
-			p|prune) emerge -acD ;;
-			d|desc) less /var/db/repos/gentoo/profiles/use.desc ;;
-			U|use) __command_requirer_pkg__ 'portageq envvar USE | xargs -n1 | less' portageq sys-apps/portage ;;
-			m|mirrors) sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
-			h|-h|--help|help) echo -e "$USAGE" && return 0 ;;
-			*) echo -e "$USAGE" && return 1 ;;
+			-s|s|sync|--sync) sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
+			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDuq @world' ;;
+			-l|l|list|--list) cat /var/lib/portage/world ;;
+			-q|q|query|--query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
+			-c|c|clean|--clean) __command_requirer_pkg__ 'sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && rm -rf /var/tmp/portage/{,.[!.],..?}*"' eclean app-portage/gentoolkit ;;
+			-p|p|prune|--prune) emerge -acD ;;
+			-d|d|desc|--desc) less /var/db/repos/gentoo/profiles/use.desc ;;
+			-U|U|use|--use) __command_requirer_pkg__ 'portageq envvar USE | xargs -n1 | less' portageq sys-apps/portage ;;
+			-m|m|mirrors|--mirrors) sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
+			-h|h|help|--help) echo "$USAGE" ;;
+			*) echo "$USAGE" && return 1 ;;
 		esac
 	}
 fi
@@ -322,17 +323,17 @@ fi
 if command -v xrandr >> /dev/null; then
 	__cmd_checker__ hdmi
 	hdmi(){
-		local USAGE="HDMI connection helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t${FUNCNAME[0]} e|extend\n\tExtend the primary display to the secondary.\n\n
-			\t${FUNCNAME[0]} m|mirror\n\tMirror the primary display to the secondary.\n\n
-			\t${FUNCNAME[0]} o|off\n\tTurn off a display.\n\n
-			\t${FUNCNAME[0]} h|-h|help|--help\n\tShow this help message"
+		local USAGE="HDMI connection helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAG\nAvailable flags:
+	-e, e, extend, --extend		Extend the primary display to the secondary.
+	-m, m, mirror, --mirror		Mirror the primary display to the secondary.
+	-o, o, off, --off		Turn off a display.
+	-h, h, help, --help		Show this help message"
 		__cmd_checker__ __get_display__
 		__get_display__(){
 			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
 		}
 		case "$1" in
-			e|extend)
+			-e|e|extend|--extend)
 				local Primary Secondary mode
 				Primary=$(__get_display__ Primary)
 				test -z "$Primary" && return 0
@@ -341,7 +342,7 @@ if command -v xrandr >> /dev/null; then
 				mode=$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)
 				xrandr --output "$Secondary" --auto --"$mode" "$Primary"
 			;;
-			m|mirror)
+			-m|m|mirror|--mirror)
 				local Primary Secondary
 				Primary=$(__get_display__ Primary)
 				test -z "$Primary" && return 0
@@ -349,14 +350,14 @@ if command -v xrandr >> /dev/null; then
 				test -z "$Secondary" && return 0
 				xrandr --output "$Secondary" --auto --same-as "$Primary"
 			;;
-			o|off)
+			-o|o|off|--off)
 				local Primary
 				Primary=$(__get_display__ Primary)
 				test -z "$Primary" && return 0
 				xrandr --output "$Primary" --off
 			;;
-			h|-h|--help|help) echo -e "$USAGE" && return 0 ;;
-			*) echo -e "$USAGE" && return 1 ;;
+			-h|h|help|--help) echo "$USAGE" && return 0 ;;
+			*) echo "$USAGE" && return 1 ;;
 		esac
 	}
 fi
@@ -380,14 +381,14 @@ if command -v pactl >> /dev/null; then
 	}
 
 	pa(){
-		local USAGE="Pulseaudio modules helper\nImplemented by @saundersp\n\nDocumentation:\n
-			\t${FUNCNAME[0]} moff\n\tDisable master audio modules.\n\n
-			\t${FUNCNAME[0]} m\n\tEnable master audio modules.\n\n
-			\t${FUNCNAME[0]} soff\n\tDisable slave audio modules.\n\n
-			\t${FUNCNAME[0]} s\n\tEnable slave audio modules.\n\n
-			\t${FUNCNAME[0]} loopoff\n\tDisable audio loopback.\n\n
-			\t${FUNCNAME[0]} loop [ms]\n\tEnable audio loopback.\n\n
-			\t${FUNCNAME[0]} h|-h|help|--help\n\tShow this help message"
+		local USAGE="Pulseaudio modules helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FALGS\nAvailable flags:
+	moff			Disable master audio modules.
+	m			Enable master audio modules.
+	soff			Disable slave audio modules.
+	s			Enable slave audio modules.
+	loopoff			Disable audio loopback.
+	loop [ms]		Enable audio loopback.
+	-h|h|help|--help	Show this help message"
 		case "$1" in
 			moff) __moff__ ;;
 			m)
@@ -414,8 +415,8 @@ if command -v pactl >> /dev/null; then
 					pactl load-module module-loopback sink="$sink" source="$source" latency_msec="$2"
 				fi
 			;;
-			h|-h|help|--help) echo -e "$USAGE" && return 0 ;;
-			*) echo -e "$USAGE" && return 1 ;;
+			-h|h|help|--help) echo "$USAGE" ;;
+			*) echo "$USAGE" && return 1 ;;
 		esac
 	}
 	__cmd_checker__ pm
@@ -426,25 +427,27 @@ command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl d
 
 __cmd_checker__ pow
 pow(){
-	local MODES
 	# The script assumes that all availables cpus has the same governor
-	MODES=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors)
+	local GOVERNORS_PATH=/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+	test ! -f "$GOVERNORS_PATH" && echo 'CPU governors file unavailable' && return 1
+	local MODES
+	MODES=$(cat "$GOVERNORS_PATH")
 
-	local USAGE="CPU scaling governor helper\nImplemented by @saundersp\n\nDocumentation:
-	${FUNCNAME[0]} l|list|-l|--list\n\tList all the availables scaling governors.\n\n
-	${FUNCNAME[0]} c|current|-c|--current\n\tDisplay the current selected scaling governor.\n\n
-	${FUNCNAME[0]} ${MODES/ /|}\n\tSet the scaling governor to argument name.\n\n
-	${FUNCNAME[0]} h|help|-h|--help\n\tShow this help message"
+	local USAGE="CPU scaling governor helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAGS\nAvailable flags:
+	-l, l, list, --list		List all the availables scaling governors.
+	-c, c, current, --current	Display the current selected scaling governor.
+	${MODES/ /, }		Set the scaling governor to argument name.
+	-h, h, help, --help		Show this help message"
 
 	case "$1" in
-		l|list|-l|--list) echo "$MODES" ;;
-		c|current|-c|--current) cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ;;
-		h|help|-h|--help) echo -e "$USAGE" && return 0 ;;
+		-l|l|list|--list) echo "$MODES" ;;
+		-c|c|current|--current) cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ;;
+		-ħ|h|help|--help) echo "$USAGE" ;;
 		*)
 			if echo "$MODES" | grep -wq "$1"; then
 				echo "$1" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >> /dev/null
 			else
-				echo -e "$USAGE"
+				echo "$USAGE"
 				return 1
 			fi
 		;;
