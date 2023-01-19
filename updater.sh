@@ -2,37 +2,19 @@
 
 set -e
 
-USAGE="Kernel/Local packages update helper\nImplemented by @saundersp\n\nDocumentation:\n
-\t$0 m, mod, -m, --mod
-\tShow the options that can be modularized.
-
-\t$0 M, make, -M, --make
-\tTransfer arguments to Makefile in the current selected kernel, open the current kernel setup menu by default.
-
-\t$0 f, fill, -f, --fill
-\tShow the options that are not enabled.
-\t/!\ Intended for the MAXIMUM profile.
-
-\t$0 e, empty, -e, --empty
-\tShow the options that are enabled/modularized.
-
-\t$0 c, compare, -c, --compare
-\tCompare the current profile with the saved one.
-
-\t$0 u, update, -u, --update
-\tUpdate the kernel.
-
-\t$0 p, packages, -p, --packages
-\tUpdate the localy installed packages.
-
-\t$0 ck, change-kernel, -ck, --change-kernel
-\tChange the current selected kernel to specified one.
-
-\t$0 s, sign, -s, --sign
-\tSign the specified module path
-
-\t$0 h, help, -h, --help
-\tWhich display this help message."
+USAGE="Kernel/Local packages update helper\nImplemented by @saundersp\n
+Usage: $0 FLAG
+Available flags:
+	m, mod, -m, --mod			Show the options that can be modularized.
+	M, make, -M, --make			Transfer arguments to Makefile in the current selected kernel, open the current kernel setup menu by default.
+	f, fill, -f, --fill			Show the options that are not enabled. /!\ Intended for the MAXIMUM profile.
+	e, empty, -e, --empty			Show the options that are enabled/modularized.
+	c, compare, -c, --compare		Compare the current profile with the saved one.
+	u, update, -u, --update			Update the kernel.
+	p, packages, -p, --packages		Update the localy installed packages.
+	ck, change-kernel, -ck, --change-kernel	Change the current selected kernel to specified one.
+	s, sign, -s, --sign			Sign the specified module path
+	h, help, -h, --help			Which display this help message."
 
 CURRENT=DEFAULT.config
 #CURRENT=MAXIMUM.config
@@ -111,7 +93,8 @@ case "$1" in
 		__updatepackages__ 'logisim-evolution' '__update_gradle_app__'
 
 		cd ~
-		test "$(ls -A go/bin)" && mv go/bin/* /usr/local/bin/
+		GO_BIN_PATH="${GOPATH:-$HOME/go}/bin"
+		test "$(ls -A "$GO_BIN_PATH")" && mv "$GO_BIN_PATH"/* /usr/local/bin/
 		exit 0
 	;;
 	ck|change-kernel|-ck|--change-kernel)
@@ -156,6 +139,6 @@ case "$1" in
 			shift
 		done
 	;;
-	h|help|-h|--help) echo -e "$USAGE" && exit 0 ;;
-	*) echo -e "$USAGE" && exit 1 ;;
+	h|help|-h|--help) echo "$USAGE" ;;
+	*) echo "$USAGE" && exit 1 ;;
 esac
