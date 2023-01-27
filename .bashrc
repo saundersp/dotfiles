@@ -4,11 +4,11 @@
 [[ $- != *i* ]] && return
 
 # Set config and data folder for nvim, alacritty etc...
-export XDG_CONFIG_HOME=$HOME/.XDG/config
-export XDG_CACHE_HOME=$HOME/.XDG/cache
-export XDG_DATA_HOME=$HOME/.XDG/data
-export XDG_STATE_HOME=$HOME/.XDG/state
-export XDG_RUNTIME_DIR=$HOME/.XDG/runtime
+export XDG_CONFIG_HOME="$HOME"/.XDG/config
+export XDG_CACHE_HOME="$HOME"/.XDG/cache
+export XDG_DATA_HOME="$HOME"/.XDG/data
+export XDG_STATE_HOME="$HOME"/.XDG/state
+export XDG_RUNTIME_DIR="$HOME"/.XDG/runtime
 
 # Set extras dotfiles location to clean home (xdg-ninja)
 command -v nvidia-settings >> /dev/null && alias nvidia-settings="nvidia-settings --config=\$XDG_CONFIG_HOME/nvidia/settings"
@@ -115,9 +115,9 @@ shopt -s expand_aliases                      # Enable the alias keyword
 # Enable programmable completion features script by GNU (https://github.com/scop/bash-completion)
 if ! shopt -oq posix; then
 	if [ -f /usr/share/bash-completion/bash_completion ]; then
-		source /usr/share/bash-completion/bash_completion
+		. /usr/share/bash-completion/bash_completion
 	elif [ -f /etc/bash_completion ]; then
-		source /etc/bash_completion
+		. /etc/bash_completion
 	fi
 fi
 
@@ -149,6 +149,7 @@ if command -v ls >> /dev/null; then
 	alias ll='ls -hClas --color=auto --group-directories-first'
 fi
 command -v gdb >> /dev/null && alias gdb='gdb -q'
+command -v cuda-gdb >> /dev/null && alias cuda-gdb='cuda-gdb -q'
 command -v grep >> /dev/null && alias grep='grep --color=auto'
 command -v fgrep >> /dev/null && alias fgrep='fgrep --color=auto'
 command -v egrep >> /dev/null && alias egrep='egrep --color=auto'
@@ -232,8 +233,8 @@ fi
 
 if command -v nvim >> /dev/null; then
 	export EDITOR=nvim
-	__cmd_checker__ vid
-	command -v nvim >> /dev/null && alias vid='nvim -d'
+	__cmd_checker__ vid vi
+	command -v nvim >> /dev/null && alias vid='nvim -d' && alias vi='nvim'
 fi
 
 # Little helper for missing packages
@@ -282,10 +283,11 @@ if command -v pacman >> /dev/null; then
 	-h, h, help, --help				Show this help message"
 		case "$1" in
 			-i|i|install|-install)
-				local PACKAGE_NAME=$2 GPG_KEY
+				local PACKAGE_NAME="$2"
+				local GPG_KEY
 				echo "Package name : $PACKAGE_NAME"
-				test ! -d "$AUR_PATH/$PACKAGE_NAME" && git clone https://aur.archlinux.org/"$PACKAGE_NAME".git "$AUR_PATH/$PACKAGE_NAME"
-				cd "$AUR_PATH/$PACKAGE_NAME"
+				test ! -d "$AUR_PATH/$PACKAGE_NAME" && git clone https://aur.archlinux.org/"$PACKAGE_NAME".git "$AUR_PATH"/"$PACKAGE_NAME"
+				cd "$AUR_PATH"/"$PACKAGE_NAME"
 				GPG_KEY=$(grep validpgpkeys PKGBUILD | cut -d "'" -f 2)
 				test ! -z "$GPG_KEY" && gpg --recv-keys "$GPG_KEY"
 				makepkg -sri
@@ -295,14 +297,12 @@ if command -v pacman >> /dev/null; then
 			-u|u|update|--update)
 				local PACKAGE_NAME
 				for PACKAGE_NAME in "$AUR_PATH"/*; do
-					PACKAGE_NAME=${PACKAGE_NAME/$AUR_PATH\//}
-					if [[ $(git -C "$AUR_PATH/$PACKAGE_NAME" pull) == 'Already up to date.' ]]; then
+					PACKAGE_NAME="${PACKAGE_NAME/$AUR_PATH\//}"
+					if [[ $(git -C "$AUR_PATH"/"$PACKAGE_NAME" pull) == 'Already up to date.' ]]; then
 						echo "Package $PACKAGE_NAME already up to date"
 					else
 						echo "Updating $PACKAGE_NAME"
-						cd "$AUR_PATH/$PACKAGE_NAME"
-						makepkg -sri
-						cd -
+						(cd "$AUR_PATH"/"$PACKAGE_NAME" && makepkg -sri)
 					fi
 				done
 			;;
@@ -312,21 +312,21 @@ if command -v pacman >> /dev/null; then
 					echo "Usage : $0 $1 <aur-package-name"
 					return 0
 				fi
-				local PACKAGE_NAME=$2
-				if [[ ! -d "$AUR_PATH/$PACKAGE_NAME" ]]; then
+				local PACKAGE_NAME="$2"
+				if [[ ! -d "$AUR_PATH"/"$PACKAGE_NAME" ]]; then
 					echo "No such package : $PACKAGE_NAME"
 					return 1
 				fi
 				sudo pacman -Rns "$PACKAGE_NAME"
-				rm -rf "$AUR_PATH/$PACKAGE_NAME"
+				rm -rf "${AUR_PATH:?}"/"$PACKAGE_NAME"
 				echo "Uninstalled $PACKAGE_NAME successfully"
 				;;
 
 			-l|l|list|--list)
 				local PACKAGE_NAME PACMAN_INFO
 				for PACKAGE_NAME in "$AUR_PATH"/*; do
-					PACKAGE_NAME=${PACKAGE_NAME/$AUR_PATH\//}
-					PACMAN_INFO=$(pacman -Q "$PACKAGE_NAME" 2>>/dev/null)
+					PACKAGE_NAME="${PACKAGE_NAME/$AUR_PATH\//}"
+					PACMAN_INFO="$(pacman -Q "$PACKAGE_NAME" 2>>/dev/null)"
 					if [ -n "$PACMAN_INFO" ]; then
 						echo "- [x] $PACMAN_INFO"
 					else
@@ -378,8 +378,8 @@ command -v lazygit >> /dev/null && alias lg='lazygit'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker'
 
 if command -v ranger >> /dev/null; then
-	__cmd_checker__ ranger-cd
-	ranger-cd() {
+	__cmd_checker__ ranger_cd
+	ranger_cd() {
 		local tmp dir
 		tmp="$(mktemp)"
 		ranger --choosedir="$tmp"
@@ -391,7 +391,7 @@ if command -v ranger >> /dev/null; then
 			fi
 		fi
 	}
-	bind '"\C-o":"ranger-cd\C-m"'
+	bind '"\C-o":"ranger_cd\C-m"'
 fi
 
 if command -v xrandr >> /dev/null; then
@@ -409,28 +409,28 @@ if command -v xrandr >> /dev/null; then
 		case "$1" in
 			-e|e|extend|--extend)
 				local Primary Secondary mode
-				Primary=$(__get_display__ Primary)
+				Primary="$(__get_display__ Primary)"
 				test -z "$Primary" && return 0
-				Secondary=$(__get_display__ Secondary)
+				Secondary="$(__get_display__ Secondary)"
 				test -z "$Secondary" && return 0
-				mode=$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)
+				mode="$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)"
 				xrandr --output "$Secondary" --auto --"$mode" "$Primary"
 			;;
 			-m|m|mirror|--mirror)
 				local Primary Secondary
-				Primary=$(__get_display__ Primary)
+				Primary="$(__get_display__ Primary)"
 				test -z "$Primary" && return 0
-				Secondary=$(__get_display__ Secondary)
+				Secondary="$(__get_display__ Secondary)"
 				test -z "$Secondary" && return 0
 				xrandr --output "$Secondary" --auto --same-as "$Primary"
 			;;
 			-o|o|off|--off)
 				local Primary
-				Primary=$(__get_display__ Primary)
+				Primary="$(__get_display__ Primary)"
 				test -z "$Primary" && return 0
 				xrandr --output "$Primary" --off
 			;;
-			-h|h|help|--help) echo "$USAGE" && return 0 ;;
+			-h|h|help|--help) echo "$USAGE" ;;
 			*) echo "$USAGE" && return 1 ;;
 		esac
 	}
@@ -479,9 +479,9 @@ if command -v pactl >> /dev/null; then
 			loop)
 				local source sink
 				__paloopoff__
-				source=$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )
+				source="$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )"
 				test -z "$source" && return 0
-				sink=$(pactl list sinks | grep Na |  awk '{ print $2 }' | dmenu -p 'Sink:' -c -l 10 )
+				sink="$(pactl list sinks | grep Na |  awk '{ print $2 }' | dmenu -p 'Sink:' -c -l 10 )"
 				test -z "$sink" && return 0
 				if [ -z "$2" ]; then
 					pactl load-module module-loopback sink="$sink" source="$source"
@@ -506,7 +506,7 @@ pow(){
 	local GOVERNORS_PATH=/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 	test ! -f "$GOVERNORS_PATH" && echo 'CPU governors file unavailable' && return 1
 	local MODES
-	MODES=$(cat "$GOVERNORS_PATH")
+	MODES="$(cat "$GOVERNORS_PATH")"
 
 	local USAGE="CPU scaling governor helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAGS\nAvailable flags:
 	-l, l, list, --list		List all the availables scaling governors.
