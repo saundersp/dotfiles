@@ -55,7 +55,7 @@ require('lazy').setup({
 	},
 	-- Add a fancy bottom bar with details
 	{ 'nvim-lualine/lualine.nvim',
-		config = {
+		opts = {
 			options = {
 				theme = 'codedark',
 				disabled_filetypes = { 'NvimTree' }
@@ -97,7 +97,7 @@ require('lazy').setup({
 	{ 'uga-rosa/ccc.nvim',
 		lazy = false,
 		keys = { {'<leader>cp', '<cmd>CccPick<CR>', desc = 'open [C]olour [P]icker'} },
-		config = { highlighter = { auto_enable = true } }
+		opts = { highlighter = { auto_enable = true } }
 	},
 	-- Quickly surround word with given symbol
 	{ 'kylechui/nvim-surround', config = true },
@@ -126,7 +126,7 @@ require('lazy').setup({
 			{ '<C-n>', '<cmd>NvimTreeToggle<CR>', desc = 'Open [N]erd tree explorer' },
 			{ '<leader>no', '<cmd>NvimTreeToggle<CR>', desc = '[N]erd tree [O]pen explorer' }
 		},
-		config = {
+		opts = {
 			filters = {
 				custom = {
 					'.git',
@@ -176,6 +176,7 @@ require('lazy').setup({
 			{ '[s',		'<Plug>(coc-diagnostic-prev)',			desc = 'Jump to the previous [S]pelling mistakes' },
 			{ ']s',		'<Plug>(coc-diagnostic-next)',			desc = 'Jump to the next [S]pelling mistakes' }
 		},
+		cmd = { 'CocUpdate', 'CocUpdateSync' },
 		branch = 'release',
 		config = function() vim.g.coc_global_extensions = { 'coc-cspell-dicts', 'coc-spell-checker' } end
 	},
