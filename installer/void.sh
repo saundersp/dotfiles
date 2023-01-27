@@ -1,9 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Pre-setup steps :
 # login as root:voidlinux
 # loadkeys fr
 # If WiFi : wpa_supplicant https://docs.voidlinux.org/config/network/wpa_supplicant.html
+# xbps-install -u xbps
 # xbps-install -Sy curl
 
 # Configuration (tweak to your liking)
@@ -31,9 +32,9 @@ ARCH=x86_64
 # Other options : x86_64 x86_64-musl i686
 
 # Configuration checker
-test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
-test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
-test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -s USER_PASSWORD
+test -z "$DISK_PASSWORD" && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
+test -z "$ROOT_PASSWORD" && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
+test -z "$USER_PASSWORD" && echo 'Enter USER password : ' && read -s USER_PASSWORD
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
@@ -46,7 +47,7 @@ ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
 ### GPT partition table
 ### Disk 1 - +256M - Bootable - UEFI Boot partition
 ### Disk 2 - Root partition
-fdisk $DISK << EOF
+fdisk "$DISK" << EOF
 g
 n
 $BOOT_PARTITION_INDEX
@@ -63,20 +64,20 @@ w
 EOF
 
 # Encrypting the root partition
-echo -n $DISK_PASSWORD | cryptsetup luksFormat -v $ROOT_PARTITION
-echo -n $DISK_PASSWORD | cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
+echo -n "$DISK_PASSWORD" | cryptsetup luksFormat -v "$ROOT_PARTITION"
+echo -n "$DISK_PASSWORD" | cryptsetup open "$ROOT_PARTITION" "$CRYPTED_DISK_NAME"
 
 # Formatting the partitions
-mkfs.vfat -n 'UEFI Boot' -F 32 $BOOT_PARTITION
-mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
+mkfs.vfat -n 'UEFI Boot' -F 32 "$BOOT_PARTITION"
+mkfs.ext4 -L Root /dev/mapper/"$CRYPTED_DISK_NAME"
 
 # Mounting the file systems
-mount /dev/mapper/$CRYPTED_DISK_NAME /mnt
+mount /dev/mapper/"$CRYPTED_DISK_NAME" /mnt
 mkdir -p /mnt/boot
-mount $BOOT_PARTITION /mnt/boot
+mount "$BOOT_PARTITION" /mnt/boot
 
 # Creating and mounting the swap file
-fallocate -l $SWAP_SIZE /mnt/swap
+fallocate -l "$SWAP_SIZE" /mnt/swap
 chmod 0600 /mnt/swap
 chown root /mnt/swap
 mkswap /mnt/swap
@@ -84,7 +85,7 @@ swapon /mnt/swap
 
 # install shortcut
 install_pkg(){
-	env XBPS_ARCH=$ARCH xbps-install -Sy -R $MIRROR -r /mnt $@
+	env XBPS_ARCH=$ARCH xbps-install -Sy -R "$MIRROR" -r /mnt $@
 }
 
 install_pkg base-system opendoas grub-x86_64-efi efibootmgr cryptsetup which man-db sed connman dash << EOF
@@ -96,7 +97,7 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg dmenu picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar ueberzug calibre filezilla zathura zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch wireguard imagemagick
+	install_pkg picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar ueberzug calibre filezilla zathura zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch wireguard ImageMagick
 }
 
 # Installing the platform specific packages
@@ -104,13 +105,13 @@ case $PACKAGES in
 	virtual)
 		install_ihm
 		install_pkg xf86-video-vmware virtualbox-ose-guest
-	;&
-	server)	install_server ;&
+	;;
+	server)	install_server ;;
 	minimal) ;;
 	laptop)
 		install_ihm
 		install_pkg os-prober xf86-video-intel ntfs-3g pulseaudio pulsemixer wpa_supplicant xbacklight
-		env XBPS_ARCH=$ARCH xbps-install -Sy -R $MIRROR/nonfree -r /mnt nvidia intel-ucode
+		env XBPS_ARCH=$ARCH xbps-install -Sy -R "$MIRROR"/nonfree -r /mnt nvidia intel-ucode
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;
@@ -145,7 +146,7 @@ fi
 
 if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
 	# Getting the Hasklig font
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
+	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.2.2/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
@@ -265,12 +266,12 @@ esac
 # Removing the nopass option in doas
 sudo sed -i '1s/nopass/persist/g' /etc/doas.conf
 
-" >> /mnt/home/$USERNAME/install.sh
-chmod +x /mnt/home/$USERNAME/install.sh
-chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
+" >> /mnt/home/"$USERNAME"/install.sh
+chmod +x /mnt/home/"$USERNAME"/install.sh
+chroot /mnt /usr/bin/runuser -u "$USERNAME" /home/"$USERNAME"/install.sh
 
 # Cleaning leftovers
-rm /mnt/install.sh /mnt/home/$USERNAME/install.sh $0
+rm /mnt/install.sh /mnt/home/"$USERNAME"/install.sh "$0"
 
 reboot
 

@@ -22,8 +22,8 @@ PACKAGES=virtual
 set -e
 
 # Removing unused programs
-rm -rf $(find / -name *sudo*)
-dnf uninstall -y sudo vi
+rm -rf $(find / -name *sudo*) | true
+dnf remove -y sudo vi
 
 # Install helpers
 install_pkg(){
@@ -38,10 +38,9 @@ install_server(){
 	# Installing lazydocker
 	dnf copr enable atim/lazydocker -y
 
-	install_pkg neofetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep \
-		htop opendoas git ranger tmux dash dnf-plugins-core docker-ce docker-ce-cli containerd.io\
-		docker-compose-plugin dos2unix fd-find gcc gdb make highlight lazygit lazydocker man-db wireguard-tools \
-		patch pkgconf progress python-flake8 python3-autopep8 python2-neovim
+	install_pkg neofetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep htop opendoas git ranger tmux dash \
+		dnf-plugins-core docker-ce docker-ce-cli containerd.io docker-compose-plugin dos2unix fd-find gcc gcc-c++ gdb make highlight lazygit \
+		lazydocker man-db wireguard-tools patch pkgconf progress python-flake8 python3-autopep8 python3-neovim
 	# ccls is temporally not available
 
 	# Use dash instead of bash as default shell
@@ -62,19 +61,23 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg i3-gaps xorg-x11-xinit xset polybar dmenu picom feh alacritty xclip firefox \
-		xorg-x11-server-Xorg python-xlib autokey-qt calibre i3lock torbrowser-launcher \
-		zathura zathura-pdf-mupdf python-devel libX11-devel libXext-devel libXft-devel \
-		libXinerama-devel imagemagick
+	install_pkg i3-gaps xorg-x11-xinit xset polybar picom feh alacritty xclip xorg-x11-server-Xorg python-xlib autokey-qt calibre i3lock \
+		torbrowser-launcher zathura zathura-pdf-mupdf python-devel libX11-devel libXext-devel libXft-devel libXinerama-devel ImageMagick
 
-	pip install ueberzug
+	#TODO Unmaintained and removed from mosts repositories, find alternative
+	#pip install ueberzug
+
+	# Installing librewolf
+	rpm --import https://keys.openpgp.org/vks/v1/by-fingerprint/034F7776EF5E0C613D2F7934D29FBD5F93C0CFC3
+	dnf config-manager --add-repo https://rpm.librewolf.net
+	install_pkg librewolf
 
 	# Installing vlc
-	install_pkg https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+	install_pkg https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm
 	install_pkg vlc
 
 	# Getting the Hasklig font
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
+	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.2.2/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
@@ -109,10 +112,9 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober xbacklight ntfs-3g wpa_supplicant pulseaudio bluez-tools \
-					pulseaudio-module-bluetooth xorg-x11-drv-intel xorg-x11-drv-nvidia \
-					xorg-x11-drv-nvidia-cuda akmod-nvidia
-		# bumblebee-status-module-nvidia-prime ucode-intel nvidia-utils pulsemixer
+		install_pkg os-prober xbacklight ntfs-3g wpa_supplicant pulseaudio bluez-tools pulseaudio-module-bluetooth xorg-x11-drv-intel \
+			xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda akmod-nvidia
+			# bumblebee-status-module-nvidia-prime ucode-intel nvidia-utils pulsemixer
 
 		# Allow vlc to use nvidia gpu
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc
@@ -127,5 +129,5 @@ su $USERNAME -c "install_dotfiles $PACKAGES"
 sed -i '1s/nopass/persist/g' /etc/doas.conf
 
 # Cleaning leftovers
-rm $0
+rm "$0"
 

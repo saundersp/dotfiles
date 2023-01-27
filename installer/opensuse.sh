@@ -40,11 +40,11 @@ install_server(){
 	# Adding missings mirrors
 	zypper addrepo -G https://download.opensuse.org/repositories/security/openSUSE_Tumbleweed/security.repo               # For opendoas
 	zypper addrepo -G https://download.opensuse.org/repositories/home:Dead_Mozay/openSUSE_Tumbleweed/home:Dead_Mozay.repo # For lazygit
-	zypper addrepo -G https://download.opensuse.org/repositories/home:jayvdb:soe/openSUSE_Tumbleweed/home:jayvdb:soe.repo # For docker-compose
 	zypper addrepo -G https://download.opensuse.org/repositories/home:lemmy04/openSUSE_Tumbleweed/home:lemmy04.repo       # For lazydocker
-	zypper addrepo -G https://download.opensuse.org/repositories/home:pandom79/openSUSE_Tumbleweed/home:pandom79.repo     # For ueberzug
 	zypper refresh
-	install_pkg git neofetch neovim unzip bash-completion nodejs npm python3 python3-pip ripgrep htop lazygit opendoas ranger lazydocker patch gcc make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python-neovim python-flake8 python-autopep8
+	install_pkg git neofetch neovim unzip bash-completion nodejs-default npm-default python310 python310-pip ripgrep htop lazygit \
+		opendoas ranger lazydocker patch gcc gcc-c++ make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python310-neovim \
+		python310-flake8 python310-autopep8
 
 	# Use dash instead of bash as default shell
 	ln -sf /bin/dash /bin/sh
@@ -64,16 +64,19 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	zypper addrepo -G https://download.opensuse.org/repositories/home:ecsos/openSUSE_Tumbleweed/home:ecsos.repo # For librewolf
+	zypper addrepo -G https://download.opensuse.org/repositories/home:zzndb001/openSUSE_Tumbleweed/home:zzndb001.repo # For librewolf
+	zypper addrepo -G https://download.opensuse.org/repositories/home:pandom79/openSUSE_Tumbleweed/home:pandom79.repo # For ueberzug
 	zypper refresh
-	install_pkg xinit xorg-x11-server xset polybar i3-gaps dmenu picom feh xclip vlc xrandr xf86-input-libinput libX11-devel libXinerama-devel libXft-devel harfbuzz-devel ncurses-devel ueberzug python3-xlib calibre pkg-config filezilla i3lock zathura zathura-plugin-pdf-mupdf librewolf imagemagick
+	install_pkg xinit xorg-x11-server xset polybar i3 picom feh xclip vlc xrandr xf86-input-libinput libX11-devel libXinerama-devel \
+		libXft-devel harfbuzz-devel ncurses-devel ueberzug python310-python-xlib calibre pkgconf filezilla i3lock zathura \
+		zathura-plugin-pdf-mupdf LibreWolf ImageMagick
 
 	# Adding missing c99 executable
 	printf '#!/bin/sh\n\nfl="-std=c99"\nfor opt; do\n  case "$opt" in\n\t-std=c99|-std=iso9899:1999) fl="";;\n\t-std=*) echo "`basename $0` called with non ISO C99 option $opt" >&2\texit 1;;\n\tesac\ndone\nexec gcc $fl ${1+"$@"}' > /usr/bin/c99
 	chmod +x /usr/bin/c99
 
 	# Getting the Hasklig font
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
+	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.2.2/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
@@ -112,7 +115,7 @@ case $PACKAGES in
 					xf86-video-intel pulseaudio-module-bluetooth bluez wireguard-tools  #nvidia nvidia-utils pulsemixer
 
 		# Allow vlc to use nvidia gpu
-		printf '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc
+		printf '#\!/bin/sh\nprime-run vlc' > /usr/bin/pvlc
 		chmod +x /usr/bin/pvlc
 	;;
 esac
@@ -124,6 +127,6 @@ su $USERNAME -c "install_dotfiles $PACKAGES"
 sed -i '1s/nopass/persist/g' /etc/doas.conf
 
 # Cleaning leftovers
-rm $0
+rm "$0"
 reboot
 

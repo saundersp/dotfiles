@@ -65,8 +65,8 @@ w
 EOF
 
 # Encrypting the root partition
-echo -n $DISK_PASSWORD | cryptsetup luksFormat -v $ROOT_PARTITION
-echo -n $DISK_PASSWORD | cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
+echo -n "$DISK_PASSWORD" | cryptsetup luksFormat -v $ROOT_PARTITION
+echo -n "$DISK_PASSWORD" | cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
 
 # Formatting the partitions
 mkfs.vfat -n 'UEFI Boot' -F 32 $BOOT_PARTITION
@@ -74,8 +74,7 @@ mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
 
 # Mounting the file systems
 mount /dev/mapper/$CRYPTED_DISK_NAME /mnt
-mkdir -p /mnt/boot
-mount $BOOT_PARTITION /mnt/boot
+mount --mkdir $BOOT_PARTITION /mnt/boot
 
 # Creating and mounting the swap file
 fallocate -l $SWAP_SIZE /mnt/swap
@@ -88,8 +87,7 @@ swapon /mnt/swap
 sed -i 's/^#Color/Color/g;s/^#Para/Para/g' /etc/pacman.conf
 
 # Settings faster pacman mirrors
-pacman -Sy --noconfirm --needed reflector rsync python
-reflector -a 48 -c $(curl -q ifconfig.io/country_code) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+reflector -a 48 -c "$(curl -q ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 
 # Install helpers
 install_pkg(){
@@ -99,7 +97,8 @@ install_server(){
 	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress python-pynvim flake8 autopep8
 }
 install_ihm(){
-	install_pkg picom i3-gaps xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura zathura-pdf-mupdf imagemagick
+	install_server
+	install_pkg picom i3-wm xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura zathura-pdf-mupdf imagemagick
 }
 
 # Installing the minimal packages
@@ -110,11 +109,10 @@ case $PACKAGES in
 	virtual)
 		install_ihm
 		install_pkg virtualbox-guest-utils
-	;&
-	server) install_server ;&
+	;;
+	server) install_server ;;
 	minimal) ;;
 	laptop)
-		install_server
 		install_ihm
 		install_pkg os-prober xf86-video-intel nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth \
 			patch bluez-utils intel-ucode wpa_supplicant xorg-xbacklight bluez wireguard-tools
@@ -124,7 +122,7 @@ case $PACKAGES in
 			*) install_pkg nvidia-dkms $KERNEL-headers ;;
 		esac
 
-		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
+		echo -e '#\!/bin/sh\nprime-run vlc' >> /mnt/usr/bin/pvlc
 		chmod +x /mnt/usr/bin/pvlc
 	;;
 esac
@@ -154,7 +152,7 @@ fi
 
 if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
 	# Getting the Hasklig font
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
+	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.2.2/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
@@ -208,7 +206,7 @@ echo 'permit nopass :wheel' > /etc/doas.conf
 ln -s /usr/bin/doas /usr/bin/sudo
 
 # Initialize Initiramfs
-sed -i 's/modconf block filesystems /keyboard keymap modconf block encrypt filesystems /g' /etc/mkinitcpio.conf
+sed -i 's/block filesystems fsck/block encrypt filesystems fsck/g' /etc/mkinitcpio.conf
 mkinitcpio -p $KERNEL
 
 # Prepare boot loader for LUKS
@@ -287,6 +285,7 @@ case $PACKAGES in
 		aur_install lazydocker
 		aur_install tor-browser
 		aur_install librewolf-bin
+		curl -sS https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg | gpg --import -
 		aur_install spotify
 	;;
 esac
@@ -299,7 +298,7 @@ chmod +x /mnt/home/$USERNAME/install.sh
 arch-chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
 
 # Cleaning leftovers
-rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh $0
+rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh "$0"
 
 reboot
 
