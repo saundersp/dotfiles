@@ -79,22 +79,25 @@ case "$1" in
 		}
 		__updatepackages__ 'anki' '__update_anki'
 		# https://github.com/espanso/espanso.git
-		# Dependencies : cargo-make
-		__updatepackages__ 'espanso' 'cargo make --profile release build-binary && mv target/release/espanso /usr/local/bin/espanso'
+		# Dependencies : cargo-make x11-libs/wxGTK:3.0-gtk3
+		__update_espanso(){
+			cargo make --profile release build-binary && mv -f target/release/espanso /usr/local/bin/espanso
+		}
+		__updatepackages__ 'espanso' '__update_espanso'
 		# https://github.com/logisim-evolution/logisim-evolution.git
 		# Dependencies : dev-java/openjdk
 		__update_gradle_app__(){
 			APP_NAME=$(pwd | cut -d / -f 5)
 			./gradlew clean && ./gradlew shadowJar
 			VERSION=$(grep 'version =' gradle.properties | cut -d = -f 2 | sed s/' '//)
-			printf "#!/bin/sh\njava -jar $(pwd)/build/libs/%s-%s-all.jar" "$APP_NAME" "$VERSION" > /usr/local/bin/"$APP_NAME"
+			printf '#!/bin/sh\njava -jar %s/build/libs/%s-%s-all.jar' "$(pwd)" "$APP_NAME" "$VERSION" > /usr/local/bin/"$APP_NAME"
 			chmod +x /usr/local/bin/"$APP_NAME"
 		}
 		__updatepackages__ 'logisim-evolution' '__update_gradle_app__'
 
 		cd ~
 		GO_BIN_PATH="${GOPATH:-$HOME/go}/bin"
-		test "$(ls -A "$GO_BIN_PATH")" && mv "$GO_BIN_PATH"/* /usr/local/bin/
+		test "$(ls -A "$GO_BIN_PATH")" && mv -f "$GO_BIN_PATH"/* /usr/local/bin/
 		exit 0
 	;;
 	ck|change-kernel|-ck|--change-kernel)
