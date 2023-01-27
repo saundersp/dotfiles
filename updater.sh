@@ -102,9 +102,10 @@ case "$1" in
 			echo "You have to specify a kernel index !"
 			exit 1
 		fi
-		mv /usr/src/linux/.config /tmp/kernel.__tmp__
+		TMP_FILE="$(mktemp)"
+		mv /usr/src/linux/.config "$TMP_FILE"
 		eselect kernel set "$2"
-		mv /tmp/kernel.__tmp__ /usr/src/linux/.config
+		mv "$TMP_FILE" /usr/src/linux/.config
 		cd /usr/src/linux
 		make oldconfig
 		cd
