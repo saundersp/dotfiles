@@ -17,7 +17,8 @@ export XDG_CONFIG_HOME="$HOME"/.XDG/config
 export XDG_CACHE_HOME="$HOME"/.XDG/cache
 export XDG_DATA_HOME="$HOME"/.XDG/data
 export XDG_STATE_HOME="$HOME"/.XDG/state
-mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME" "$XDG_DATA_HOME" "$XDG_STATE_HOME"
+export XDG_RUNTIME_DIR="$HOME"/.XDG/runtime
+mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME" "$XDG_DATA_HOME" "$XDG_STATE_HOME" "$XDG_RUNTIME_DIR"
 
 CURRENT_FOLDER=$(pwd)
 if [ "$1" = '-r' ] || [ "$1" = 'r' ] || [ "$1" = 'remove' ] || [ "$1" = '--remove' ]; then
