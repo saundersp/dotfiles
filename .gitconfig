@@ -5,3 +5,5 @@
 	directory = ~/git/**
 	directory = ~/.aur/**
 	directory = /usr/local/src/**
+[pull]
+	rebase = false
