@@ -2,7 +2,8 @@
 
 set -e
 
-USAGE="Kernel/Local packages update helper\nImplemented by @saundersp\n
+USAGE="Kernel/Local packages update helper\nImplemented by @saundersp
+
 Usage: $0 FLAG
 Available flags:
 	m, mod, -m, --mod			Show the options that can be modularized.
@@ -70,22 +71,24 @@ case "$1" in
 		__updatepackages__ 'dmenu st' 'make clean install'
 		# https://github.com/b3nj5m1n/xdg-ninja.git
 		# Dependencies : app-shells/bash
-		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh  /usr/local/bin/xdg-ninja'
+		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh /usr/local/bin/xdg-ninja'
 		# https://github.com/ankitects/anki.git
-		# Dependencies : dev-util/bazel dev-python/PyQt5 dev-python/PyQtWebEngine dev-python/httplib2 dev-python/beautifulsoup4 dev-python/decorator dev-python/jsonschema dev-python/markdown dev-python/requests dev-python/send2trash dev-python/nose dev-python/mock
-		__update_anki(){
-			./tools/bundle && cd .bazel/out/dist && tar xf anki*qt6.* && cd anki*qt6
-			./install.sh &&	cd .. && rm -r * && cd ../../.. && bazel shutdown
+		# Dependencies : app-crypt/mit-krb5 dev-python/PyQt5 dev-python/PyQtWebEngine dev-python/httplib2 dev-python/beautifulsoup4 dev-python/decorator dev-python/jsonschema dev-python/markdown dev-python/requests dev-python/send2trash dev-python/nose dev-python/mock
+		__update_anki__(){
+			export RELEASE=1
+			./ninja bundle
+			test -f /usr/local/share/anki/uninstall.sh && sh /usr/local/share/anki/uninstall.sh
+			cd out/bundle/std/ && ./install.sh && cd ../../.. && rm -r out
 		}
-		__updatepackages__ 'anki' '__update_anki'
+		__updatepackages__ 'anki' '__update_anki__'
 		# https://github.com/espanso/espanso.git
 		# Dependencies : cargo-make x11-libs/wxGTK:3.0-gtk3
-		__update_espanso(){
-			cargo make --profile release build-binary && mv -f target/release/espanso /usr/local/bin/espanso
+		__update_espanso__(){
+			cargo make --profile release build-binary && mv -f target/release/espanso /usr/local/bin/espanso && rm -r target
 		}
-		__updatepackages__ 'espanso' '__update_espanso'
+		__updatepackages__ 'espanso' '__update_espanso__'
 		# https://github.com/logisim-evolution/logisim-evolution.git
-		# Dependencies : dev-java/openjdk
+		# Dependencies : dev-java/openjdk:1.8
 		__update_gradle_app__(){
 			APP_NAME=$(pwd | cut -d / -f 5)
 			./gradlew clean && ./gradlew shadowJar
