@@ -6,6 +6,6 @@ command -v calibre >> /dev/null && export CALIBRE_USE_DARK_PALETTE=1
 test -d /opt/cuda && export CUDA_HOME=/opt/cuda
 [[ -f ~/.bashrc ]] && . ~/.bashrc >> /dev/null
 
-if [[ ! ${DISPLAY} || ( ${XDG_VTNR} == 8 || ( -t 0 && $(tty) == /dev/tty1 ) ) ]]; then
-	exec startx
+if [[ -z "$SSH_CONNECTION" && (! ${DISPLAY} || ( ${XDG_VTNR} == 8 || ( -t 0 && $(tty) == /dev/tty1 ) ) ) ]]; then
+	startx
 fi
