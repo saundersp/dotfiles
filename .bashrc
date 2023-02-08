@@ -43,7 +43,7 @@ MAGENTA='\033[0;35m'
 #CYAN='\033[0;36m'
 #LIGHTCYAN='\033[1;36m'
 NOCOLOUR='\033[0m'
-USER_COLOUR=$DARKGRAY
+USER_COLOUR="$DARKGRAY"
 
 # Define text styles
 BOLD='\033[1m'
@@ -66,34 +66,34 @@ __cmd_checker__(){
 
 __cmd_checker__ __setprompt
 __setprompt() {
-	local LAST_COMMAND=$? # Must come first!
+	LAST_COMMAND="$?" # Must come first!
 
 	PS1="\[${USER_COLOUR}\]┌──"
 	# Show error exit code if there is one
-	if [[ $LAST_COMMAND != 0 ]]; then
-		PS1+="(\[${LIGHTRED}\]ERROR\[${USER_COLOUR}\])-(\[${RED}\]Exit Code \[${LIGHTRED}\]${LAST_COMMAND}\[${USER_COLOUR}\])\n├──"
+	if [ $LAST_COMMAND != 0 ]; then
+		PS1="$PS1(\[${LIGHTRED}\]ERROR\[${USER_COLOUR}\])-(\[${RED}\]Exit Code \[${LIGHTRED}\]${LAST_COMMAND}\[${USER_COLOUR}\])\n├──"
 	fi
 
 	# Time
-	PS1+="(\[${DARKGRAY}\]\[${LIGHTBLUE}\]$(date +%I:%M:%S•%p)\[${USER_COLOUR}\])-"
+	PS1="$PS1(\[${DARKGRAY}\]\[${LIGHTBLUE}\]$(date +%I:%M:%S•%p)\[${USER_COLOUR}\])-"
 
 	# User and hostname
-	PS1+="(\[${MAGENTA}\]\u@\h"
+	PS1="$PS1(\[${MAGENTA}\]\u@\h"
 
 	# Current directory
-	PS1+="\[${DARKGRAY}\])-(\[${BROWN}\]\w\[${USER_COLOUR}\])"
+	PS1="$PS1\[${DARKGRAY}\])-(\[${BROWN}\]\w\[${USER_COLOUR}\])"
 
 	# Git branch
-	PS1+="\[${BLUE}\]$(git branch 2>>/dev/null | sed -n 's/\* \(.*\)/ ( \1)/p')"
+	PS1="$PS1\[${BLUE}\]$(git branch 2>>/dev/null | sed -n 's/\* \(.*\)/ ( \1)/p')"
 
 	# Python virtual environment
-	PS1+="\[${YELLOW}\]$(command -v deactivate >> /dev/null && echo ' ( env)')"
+	PS1="$PS1\[${YELLOW}\]$(command -v deactivate >> /dev/null && echo ' ( env)')"
 
 	# Skip to the next line
-	PS1+="\r\n\[${USER_COLOUR}\]└─>\[${NOCOLOUR}\] "
+	PS1="$PS1\r\n\[${USER_COLOUR}\]└─>\[${NOCOLOUR}\] "
 
 	# Window title
-	PS1+="\[\033]0;st (\w)\007\]"
+	PS1="$PS1\[\033]0;st (\w)\007\]"
 
 	# PS2 is used to continue a command using the \ character
 	PS2="\[${DARKGRAY}\]>\[${NOCOLOUR}\] "
@@ -116,10 +116,8 @@ shopt -s expand_aliases                        # Enable the alias keyword
 
 # Enable programmable completion features script by GNU (https://github.com/scop/bash-completion)
 if ! shopt -oq posix; then
-	if [ -f /usr/share/bash-completion/bash_completion ]; then
-		. /usr/share/bash-completion/bash_completion
-	elif [ -f /etc/bash_completion ]; then
-		. /etc/bash_completion
+	if [ -f /usr/share/bash-completion/bash_completion ]; then . /usr/share/bash-completion/bash_completion
+	elif [ -f /etc/bash_completion ]; then . /etc/bash_completion
 	fi
 fi
 
@@ -159,8 +157,6 @@ command -v wget >> /dev/null && alias wget='wget --hsts-file=$XDG_DATA_HOME/wget
 # Print out escape sequences usable for coloured text on tty.
 __cmd_checker__ colours
 colours() {
-	local fgc bgc vals seq0
-
 	printf 'Colour escapes are %s\n' '\e[${value};...;${value}m'
 	printf 'Values 30..37 are \e[33mforeground colours\e[m\n'
 	printf 'Values 40..47 are \e[43mbackground colours\e[m\n'
@@ -182,12 +178,12 @@ colours() {
 
 			seq0="${vals:+\e[${vals}m}"
 			printf " %-9s" "${seq0:-(default)}"
-			printf " ${seq0}TEXT\e[m"
-			printf " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
-			printf " \e[${vals:+${vals+$vals;}}2mDIM\e[m"
-			printf " \e[${vals:+${vals+$vals;}}3mITA\e[m"
-			printf " \e[${vals:+${vals+$vals;}}4mUND\e[m"
-			printf " \e[${vals:+${vals+$vals;}}5mBLI\e[m"
+			echo -e -n " ${seq0}TEXT\e[m"
+			echo -e -n " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
+			echo -e -n " \e[${vals:+${vals+$vals;}}2mDIM\e[m"
+			echo -e -n " \e[${vals:+${vals+$vals;}}3mITA\e[m"
+			echo -e -n " \e[${vals:+${vals+$vals;}}4mUND\e[m"
+			echo -e -n " \e[${vals:+${vals+$vals;}}5mBLI\e[m"
 		done
 		echo; echo
 	done
@@ -196,14 +192,15 @@ colours() {
 # Simple command to preview csv files
 __cmd_checker__ preview_csv
 preview_csv(){
-	if [[ -z "$1" || "$1" == 'h' || "$1" == '-h' || "$1" == 'help' || "$1" == '--help' ]]; then
-		echo "Usage: ${FUNCNAME[0]} filename.csv"
+	DEL=','
+	if [ -z "$1" ]|| [ "$1" = 'h' ]|| [ "$1" = '-h' ]|| [ "$1" = 'help' ]|| [ "$1" = '--help' ]; then
+		echo 'Usage: preview_csv filename.csv'
 		return 0
-	elif [[ ! -r $1 ]]; then
+	elif [ ! -r "$1" ]; then
 		echo "Can't read file $1"
 		return 1
 	fi
-	(sed 's/,/ ,/g' | column -t -s, | less -S -n) < "$1"
+	(sed 's/,/ ,/g' | column -t -s "$DEL" | less -S -n) < "$1"
 }
 
 if command -v neofetch >> /dev/null; then
@@ -219,10 +216,10 @@ if command -v python >> /dev/null; then
 	# Activate the python virtual environment in the current folder
 	__cmd_checker__ activate
 	activate(){
-		if [[ "$1" == 'h' || "$1" == '-h' || "$1" == 'help' || "$1" == '--help' ]]; then
-			echo "Usage: ${FUNCNAME[0]} to enable the current folder's python virtual environment"
-		elif [ -f venv/Scripts/activate ]; then source venv/Scripts/activate
-		elif [ -f venv/bin/activate ]; then source venv/bin/activate
+		if [ "$1" = 'h' ]|| [ "$1" = '-h' ]|| [ "$1" = 'help' ]|| [ "$1" = '--help' ]; then
+			echo "Usage: activate [h|-h|help|--help] to enable the current folder's python virtual environment"
+		elif [ -f venv/Scripts/activate ]; then . venv/Scripts/activate
+		elif [ -f venv/bin/activate ]; then . venv/bin/activate
 		else echo 'Python virtual environment not detected !'; return 1
 		fi
 	}
@@ -247,23 +244,24 @@ __command_requirer_pkg__(){
 if command -v pacman >> /dev/null; then
 	__cmd_checker__ pac
 	pac(){
-		local USAGE="Pacman helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAG\nAvailable flags:
+		USAGE='Pacman helper
+Implemented by @saundersp
+
+USAGE: pac FLAG
+Available flags:
 	-u, u, update, --update		Update every packages.
 	-m, m, mirrors, --mirrors	Update the mirrorlist.
 	-p, p, prune, --prune		Remove unused packages (orphans).
-	-h, h, help, --help		Show this help message"
+	-h, h, help, --help		Show this help message'
+		__cmd_checker__ __update_arch_mirrors__
+		__update_arch_mirrors__(){
+			MIRRORFILE=/etc/pacman.d/mirrorlist
+			test "$(grep '^ID' /etc/os-release)" = 'ID=artix' && MIRRORFILE="$MIRRORFILE-arch"
+			sudo reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
+		}
 		case "$1" in
 			-u|u|update|--update) sudo pacman -Syu ;;
-			-m|m|mirrors|--mirrors)
-				__cmd_checker__ __update_mirrors__
-				__update_mirrors__(){
-					local MIRRORFILE=/etc/pacman.d/mirrorlist
-					test "$(grep '^ID' /etc/os-release)" = 'ID=artix' && MIRRORFILE+='-arch'
-					sudo reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
-				}
-				export -f __update_mirrors__
-				__command_requirer_pkg__ __update_mirrors__ reflector reflector
-				;;
+			-m|m|mirrors|--mirrors) __command_requirer_pkg__ __update_arch_mirrors__ reflector reflector ;;
 			-p|p|prune|--prune) pacman -Qtdq | sudo pacman -Rns - ;;
 			-h|h|help|--help) echo "$USAGE" ;;
 			*) echo "$USAGE" && return 1 ;;
@@ -272,16 +270,20 @@ if command -v pacman >> /dev/null; then
 
 	__cmd_checker__ aur
 	aur(){
-		local AUR_PATH=$HOME/.aur USAGE="AUR Install helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAG\nAvailable flags:
+		AUR_PATH="$HOME"/.aur
+		USAGE='AUR Install helper
+Implemented by @saundersp
+
+USAGE: aur FLAG
+Available flags:
 	-i, i, install, --install <aur-package-name>	Install the specified AUR package.
 	-r, r, remove, --remove <aur-package-name>	Uninstall the specified AUR package.
 	-l, l, list, --list				List all the AUR packages.
 	-u, u, update, --update				Update all the AUR packages.
-	-h, h, help, --help				Show this help message"
+	-h, h, help, --help				Show this help message'
 		case "$1" in
 			-i|i|install|-install)
-				local PACKAGE_NAME="$2"
-				local GPG_KEY
+				PACKAGE_NAME="$2"
 				echo "Package name : $PACKAGE_NAME"
 				test ! -d "$AUR_PATH/$PACKAGE_NAME" && git clone https://aur.archlinux.org/"$PACKAGE_NAME".git "$AUR_PATH"/"$PACKAGE_NAME"
 				cd "$AUR_PATH"/"$PACKAGE_NAME"
@@ -292,10 +294,9 @@ if command -v pacman >> /dev/null; then
 				;;
 
 			-u|u|update|--update)
-				local PACKAGE_NAME
 				for PACKAGE_NAME in "$AUR_PATH"/*; do
 					PACKAGE_NAME="${PACKAGE_NAME/$AUR_PATH\//}"
-					if [[ $(git -C "$AUR_PATH"/"$PACKAGE_NAME" pull) == 'Already up to date.' ]]; then
+					if [ "$(git -C "$AUR_PATH"/"$PACKAGE_NAME" pull)" = 'Already up to date.' ]; then
 						echo "Package $PACKAGE_NAME already up to date"
 					else
 						echo "Updating $PACKAGE_NAME"
@@ -305,12 +306,12 @@ if command -v pacman >> /dev/null; then
 			;;
 
 			-r|r|remove|--remove)
-				if [[ -z "$2" || "$2" == 'h' || "$2" == '-h' || "$2" == 'help' || "$2" == '--help' ]]; then
+				if [ -z "$2" ] || [ "$2" = 'h' ] || [ "$2" = '-h' ] || [ "$2" = 'help' ]|| [ "$2" = '--help' ]; then
 					echo "Usage : $0 $1 <aur-package-name"
 					return 0
 				fi
-				local PACKAGE_NAME="$2"
-				if [[ ! -d "$AUR_PATH"/"$PACKAGE_NAME" ]]; then
+				PACKAGE_NAME="$2"
+				if [ ! -d "$AUR_PATH"/"$PACKAGE_NAME" ]; then
 					echo "No such package : $PACKAGE_NAME"
 					return 1
 				fi
@@ -320,7 +321,6 @@ if command -v pacman >> /dev/null; then
 				;;
 
 			-l|l|list|--list)
-				local PACKAGE_NAME PACMAN_INFO
 				for PACKAGE_NAME in "$AUR_PATH"/*; do
 					PACKAGE_NAME="${PACKAGE_NAME/$AUR_PATH\//}"
 					PACMAN_INFO="$(pacman -Q "$PACKAGE_NAME" 2>>/dev/null)"
@@ -342,7 +342,11 @@ fi
 if command -v emerge >> /dev/null; then
 	__cmd_checker__ em
 	em(){
-		local USAGE="Portage's emerge helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAG\nAvailable flags:
+		USAGE="Portage's emerge helper
+Implemented by @saundersp
+
+USAGE: em FLAG
+Available flags:
 	-s, s, sync, --sync		Sync the packages repository.
 	-u, u, update, --update		Update every packages.
 	-l, l, list, --list		List every packages in the @world set.
@@ -358,7 +362,7 @@ if command -v emerge >> /dev/null; then
 			-u|u|update|--update) sudo sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDuq @world' ;;
 			-l|l|list|--list) cat /var/lib/portage/world ;;
 			-q|q|query|--query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
-			-c|c|clean|--clean) __command_requirer_pkg__ 'sudo sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && rm -rf /var/tmp/portage/{,.[!.],..?}*"' eclean app-portage/gentoolkit ;;
+			-c|c|clean|--clean) __command_requirer_pkg__ 'sudo sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && find /var/tmp/portage -mindepth 1 -delete"' eclean app-portage/gentoolkit ;;
 			-p|p|prune|--prune) sudo emerge -acD ;;
 			-d|d|desc|--desc) less /var/db/repos/gentoo/profiles/use.desc ;;
 			-U|U|use|--use) __command_requirer_pkg__ 'portageq envvar USE | xargs -n1 | less' portageq sys-apps/portage ;;
@@ -399,7 +403,6 @@ command -v lazydocker >> /dev/null && alias ldo='lazydocker'
 if command -v ranger >> /dev/null; then
 	__cmd_checker__ ranger_cd
 	ranger_cd() {
-		local tmp dir
 		tmp="$(mktemp)"
 		ranger --choosedir="$tmp"
 		if [ -f "$tmp" ]; then
@@ -416,27 +419,30 @@ fi
 if command -v xrandr >> /dev/null; then
 	__cmd_checker__ hdmi
 	hdmi(){
-		local USAGE="HDMI connection helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAG\nAvailable flags:
+		USAGE='HDMI connection helper
+Implemented by @saundersp
+
+USAGE: hdmi FLAG
+Available flags:
 	-e, e, extend, --extend		Extend the primary display to the secondary.
 	-m, m, mirror, --mirror		Mirror the primary display to the secondary.
 	-o, o, off, --off		Turn off a display.
-	-h, h, help, --help		Show this help message"
+	-h, h, help, --help		Show this help message'
 		__cmd_checker__ __get_display__
 		__get_display__(){
 			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
 		}
 		case "$1" in
 			-e|e|extend|--extend)
-				local Primary Secondary mode
 				Primary="$(__get_display__ Primary)"
 				test -z "$Primary" && return 0
 				Secondary="$(__get_display__ Secondary)"
 				test -z "$Secondary" && return 0
 				mode="$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)"
+				test -z "$mode" && return 0
 				xrandr --output "$Secondary" --auto --"$mode" "$Primary"
 			;;
 			-m|m|mirror|--mirror)
-				local Primary Secondary
 				Primary="$(__get_display__ Primary)"
 				test -z "$Primary" && return 0
 				Secondary="$(__get_display__ Secondary)"
@@ -444,7 +450,6 @@ if command -v xrandr >> /dev/null; then
 				xrandr --output "$Secondary" --auto --same-as "$Primary"
 			;;
 			-o|o|off|--off)
-				local Primary
 				Primary="$(__get_display__ Primary)"
 				test -z "$Primary" && return 0
 				xrandr --output "$Primary" --off
@@ -474,14 +479,18 @@ if command -v pactl >> /dev/null; then
 	}
 
 	pa(){
-		local USAGE="Pulseaudio modules helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FALGS\nAvailable flags:
+		USAGE='Pulseaudio modules helper
+Implemented by @saundersp
+
+USAGE: pa FLAG
+Available flags:
 	moff			Disable master audio modules.
 	m			Enable master audio modules.
 	soff			Disable slave audio modules.
 	s			Enable slave audio modules.
 	loopoff			Disable audio loopback.
 	loop [ms]		Enable audio loopback.
-	-h|h|help|--help	Show this help message"
+	-h, h, help, --help	Show this help message'
 		case "$1" in
 			moff) __moff__ ;;
 			m)
@@ -496,7 +505,6 @@ if command -v pactl >> /dev/null; then
 			;;
 			loopoff) __paloopoff__ ;;
 			loop)
-				local source sink
 				__paloopoff__
 				source="$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )"
 				test -z "$source" && return 0
@@ -517,18 +525,21 @@ if command -v pactl >> /dev/null; then
 fi
 
 command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
-test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after ~/"Calibre Library"/ linode:~/"Calibre Library"/'
+test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after $HOME/"Calibre Library"/ linode:~/"Calibre Library"/'
 command -v dmenu_run >> /dev/null && __cmd_checker__ dm && alias dm='dmenu_run -n -c -l 20'
 
 __cmd_checker__ pow
 pow(){
 	# The script assumes that all availables cpus has the same governor
-	local GOVERNORS_PATH=/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+	GOVERNORS_PATH=/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 	test ! -f "$GOVERNORS_PATH" && echo 'CPU governors file unavailable' && return 1
-	local MODES
 	MODES="$(cat "$GOVERNORS_PATH")"
 
-	local USAGE="CPU scaling governor helper\nImplemented by @saundersp\n\nUSAGE: ${FUNCNAME[0]} FLAGS\nAvailable flags:
+	USAGE="CPU scaling governor helper
+Implemented by @saundersp
+
+USAGE: pow FLAG
+Available flags:
 	-l, l, list, --list		List all the availables scaling governors.
 	-c, c, current, --current	Display the current selected scaling governor.
 	${MODES/ /, }		Set the scaling governor to argument name.
@@ -542,8 +553,7 @@ pow(){
 			if echo "$MODES" | grep -wq "$1"; then
 				echo "$1" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >> /dev/null
 			else
-				echo "$USAGE"
-				return 1
+				echo "$USAGE" && return 1
 			fi
 		;;
 	esac
