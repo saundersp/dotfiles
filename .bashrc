@@ -11,17 +11,19 @@ export XDG_STATE_HOME="$HOME"/.XDG/state
 export XDG_RUNTIME_DIR="$HOME"/.XDG/runtime
 
 # Set extras dotfiles location to clean home (xdg-ninja)
-command -v nvidia-settings >> /dev/null && alias nvidia-settings="nvidia-settings --config=\$XDG_CONFIG_HOME/nvidia/settings"
+command -v nvidia-settings >> /dev/null && alias nvidia-settings='nvidia-settings --config=$XDG_CONFIG_HOME/nvidia/settings'
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
-export XAUTHORITY="$XDG_RUNTIME_DIR"/Xauthority
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 export GNUPGHOME="$XDG_DATA_HOME"/gnupg
 export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
-export PYTHONSTARTUP="/etc/python/pythonrc"
+export PYTHONSTARTUP=/etc/python/pythonrc
 export GOPATH="$XDG_DATA_HOME"/go
 export KERAS_HOME="$XDG_STATE_HOME"/keras
+export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
+export MATHEMATICA_USERBASE="$XDG_CONFIG_HOME"/mathematica
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
@@ -104,13 +106,13 @@ __setprompt() {
 }
 PROMPT_COMMAND='__setprompt' # Will run function every time a command is entered
 
-HISTCONTROL=ignoreboth                       # Don't put duplicate lines or lines starting with space in the history
-HISTSIZE='' HISTFILESIZE=''                  # Infinite history
-export HISTFILE=$XDG_STATE_HOME/bash/history # Change the default history file location
-stty -ixon                                   # Disable ctrl-s and ctrl-q.
-shopt -s histappend                          # Append to the history file, don't overwrite it
-shopt -s cdspell dirspell                    # Minor error corrections on directories/files names
-shopt -s expand_aliases                      # Enable the alias keyword
+HISTCONTROL=ignoreboth                         # Don't put duplicate lines or lines starting with space in the history
+HISTSIZE='' HISTFILESIZE=''                    # Infinite history
+export HISTFILE="$XDG_STATE_HOME"/bash/history # Change the default history file location
+stty -ixon                                     # Disable ctrl-s and ctrl-q.
+shopt -s histappend                            # Append to the history file, don't overwrite it
+shopt -s cdspell dirspell                      # Minor error corrections on directories/files names
+shopt -s expand_aliases                        # Enable the alias keyword
 
 # Enable programmable completion features script by GNU (https://github.com/scop/bash-completion)
 if ! shopt -oq posix; then
@@ -123,9 +125,6 @@ fi
 
 # Enable autocompletion as superuser
 complete -cf sudo
-
-# Allow the local root to make connections to the X server
-command -v xhost >> /dev/null && xhost +local:root >> /dev/null 2>&1
 
 # Add interactivity to common commands
 command -v cp >> /dev/null && alias cp='cp -i'
@@ -155,7 +154,7 @@ command -v fgrep >> /dev/null && alias fgrep='fgrep --color=auto'
 command -v egrep >> /dev/null && alias egrep='egrep --color=auto'
 command -v diff >> /dev/null && alias diff='diff --color=auto'
 command -v ip >> /dev/null && alias ip='ip --color=auto'
-command -v wget >> /dev/null && alias wget="wget --hsts-file=\$XDG_DATA_HOME/wget-hsts"
+command -v wget >> /dev/null && alias wget='wget --hsts-file=$XDG_DATA_HOME/wget-hsts'
 
 # Print out escape sequences usable for coloured text on tty.
 __cmd_checker__ colours
@@ -214,8 +213,6 @@ if command -v neofetch >> /dev/null; then
 	}
 	test ! -r "$XDG_CACHE_HOME"/.neofetch && nfu
 	echo -e -n "\n$(cat "$XDG_CACHE_HOME"/.neofetch)"
-else
-	echo -e "${BOLD}Available commands :${NOCOLOUR}"
 fi
 
 if command -v python >> /dev/null; then
@@ -372,6 +369,28 @@ if command -v emerge >> /dev/null; then
 	}
 fi
 
+if command -v apt >> /dev/null; then
+	__cmd_checker__ ap
+	ap(){
+		USAGE="APT's helper
+Implemented by @saundersp
+
+USAGE: ap FLAG
+Available flags:
+	-u, u, update, --update		Update every packages.
+	-l, l, list, --list		List every packages in the @world set.
+	-p, p, prune, --prune		Remove unused packages (orphans).
+	-h, h, help, --help		Show this help message"
+		case "$1" in
+			-u|u|update|--update) sudo sh -c 'apt update && apt upgrade -y' ;;
+			-l|l|list|--list) apt list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
+			-p|p|prune|--prune) sudo apt autoremove -y ;;
+			-h|h|help|--help) echo "$USAGE" ;;
+			*) echo "$USAGE" && return 1 ;;
+		esac
+	}
+fi
+
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard'
 command -v wg-quick >> /dev/null && alias vpn='sudo wg-quick up wg0' && alias vpn_off='sudo wg-quick down wg0'
 command -v lazygit >> /dev/null && alias lg='lazygit'
@@ -499,6 +518,7 @@ fi
 
 command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
 test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after ~/"Calibre Library"/ linode:~/"Calibre Library"/'
+command -v dmenu_run >> /dev/null && __cmd_checker__ dm && alias dm='dmenu_run -n -c -l 20'
 
 __cmd_checker__ pow
 pow(){
@@ -533,8 +553,10 @@ __cmd_checker__ update
 update(){
 	sudo bash -i -c '
 	command -v em >> /dev/null && em s && em u && em p && em c
-	command -v pac >> /dev/null && pac u && pac p && aur u
+	command -v pac >> /dev/null && pac u && pac p
+	command -v ap >> /dev/null && ap u && ap p
 	cd && ./updater.sh p'
+	command -v aur >> /dev/null && aur u
 	command -v arduino-cli >> /dev/null && arduino-cli update && arduino-cli upgrade
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":Lazy") ~= 0 then vim.cmd("Lazy sync") end' +q
 	command -v nvim >> /dev/null && nvim --headless -c 'autocmd User PackerComplete quitall' -c 'lua if vim.fn.exists(":PackerSync") == 0 then vim.cmd("quit") end vim.cmd("PackerSync")'
@@ -568,6 +590,7 @@ __helpme__(){
 	tprint_cmd 'll' 'Detailed ls' '<directory>'
 	tprint_cmd 'pac' 'Pacman helper'
 	tprint_cmd 'em' "Portage's emerge helper"
+	tprint_cmd 'ap' "APT's helper"
 	tprint_cmd 'aur' 'AUR Install helper script'
 	tprint_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
 	tprint_cmd 'vpn' 'Easily enable a secure VPN connection'
@@ -582,6 +605,7 @@ __helpme__(){
 	tprint_cmd 'weather' 'Get current weather status'
 	print_cmd 'pow' 'CPU scaling governor helper'
 	tprint_cmd 'sync_books' "Sync calibre's books to the linode's VPS"
+	tprint_cmd 'dm' 'Shortcut to dmenu'
 	print_cmd '?' 'Print this reminder'
 
 	echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"

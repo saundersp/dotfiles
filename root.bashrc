@@ -11,17 +11,19 @@ export XDG_STATE_HOME="$HOME"/.XDG/state
 export XDG_RUNTIME_DIR="$HOME"/.XDG/runtime
 
 # Set extras dotfiles location to clean home (xdg-ninja)
-command -v nvidia-settings >> /dev/null && alias nvidia-settings="nvidia-settings --config=\$XDG_CONFIG_HOME/nvidia/settings"
+command -v nvidia-settings >> /dev/null && alias nvidia-settings='nvidia-settings --config=$XDG_CONFIG_HOME/nvidia/settings'
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
-export XAUTHORITY="$XDG_RUNTIME_DIR"/Xauthority
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 export GNUPGHOME="$XDG_DATA_HOME"/gnupg
 export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
-export PYTHONSTARTUP="/etc/python/pythonrc"
+export PYTHONSTARTUP=/etc/python/pythonrc
 export GOPATH="$XDG_DATA_HOME"/go
 export KERAS_HOME="$XDG_STATE_HOME"/keras
+export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
+export MATHEMATICA_USERBASE="$XDG_CONFIG_HOME"/mathematica
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
@@ -101,13 +103,13 @@ __setprompt() {
 }
 PROMPT_COMMAND='__setprompt' # Will run function every time a command is entered
 
-HISTCONTROL=ignoreboth                       # Don't put duplicate lines or lines starting with space in the history
-HISTSIZE='' HISTFILESIZE=''                  # Infinite history
-export HISTFILE=$XDG_STATE_HOME/bash/history # Change the default history file location
-stty -ixon                                   # Disable ctrl-s and ctrl-q.
-shopt -s histappend                          # Append to the history file, don't overwrite it
-shopt -s cdspell dirspell                    # Minor error corrections on directories/files names
-shopt -s expand_aliases                      # Enable the alias keyword
+HISTCONTROL=ignoreboth                         # Don't put duplicate lines or lines starting with space in the history
+HISTSIZE='' HISTFILESIZE=''                    # Infinite history
+export HISTFILE="$XDG_STATE_HOME"/bash/history # Change the default history file location
+stty -ixon                                     # Disable ctrl-s and ctrl-q.
+shopt -s histappend                            # Append to the history file, don't overwrite it
+shopt -s cdspell dirspell                      # Minor error corrections on directories/files names
+shopt -s expand_aliases                        # Enable the alias keyword
 
 # Enable programmable completion features script by GNU (https://github.com/scop/bash-completion)
 if ! shopt -oq posix; then
@@ -117,9 +119,6 @@ if ! shopt -oq posix; then
 		. /etc/bash_completion
 	fi
 fi
-
-# Allow the local root to make connections to the X server
-command -v xhost >> /dev/null && xhost +local:root >> /dev/null 2>&1
 
 # Add interactivity to common commands
 command -v cp >> /dev/null && alias cp='cp -i'
@@ -149,7 +148,7 @@ command -v fgrep >> /dev/null && alias fgrep='fgrep --color=auto'
 command -v egrep >> /dev/null && alias egrep='egrep --color=auto'
 command -v diff >> /dev/null && alias diff='diff --color=auto'
 command -v ip >> /dev/null && alias ip='ip --color=auto'
-command -v wget >> /dev/null && alias wget="wget --hsts-file=\$XDG_DATA_HOME/wget-hsts"
+command -v wget >> /dev/null && alias wget='wget --hsts-file=$XDG_DATA_HOME/wget-hsts'
 
 # Print out escape sequences usable for coloured text on tty.
 __cmd_checker__ colours
@@ -208,8 +207,6 @@ if command -v neofetch >> /dev/null; then
 	}
 	test ! -r "$XDG_CACHE_HOME"/.neofetch && nfu
 	echo -e -n "\n$(cat "$XDG_CACHE_HOME"/.neofetch)"
-else
-	echo -e "${BOLD}Available commands :${NOCOLOUR}"
 fi
 
 if command -v python >> /dev/null; then
@@ -458,7 +455,7 @@ pow(){
 __cmd_checker__ update
 update(){
 	command -v em >> /dev/null && em s && em u && em p && em c
-	command -v pac >> /dev/null && pac u && pac p && aur u
+	command -v pac >> /dev/null && pac u && pac p
 	cd && ./updater.sh p && cd -
 	nfu
 }
