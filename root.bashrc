@@ -298,6 +298,28 @@ Available flags:
 	}
 fi
 
+if command -v apt >> /dev/null; then
+	__cmd_checker__ ap
+	ap(){
+		USAGE="APT's helper
+Implemented by @saundersp
+
+USAGE: ap FLAG
+Available flags:
+	-u, u, update, --update		Update every packages.
+	-l, l, list, --list		List every packages in the @world set.
+	-p, p, prune, --prune		Remove unused packages (orphans).
+	-h, h, help, --help		Show this help message"
+		case "$1" in
+			-u|u|update|--update) apt update && apt upgrade -y ;;
+			-l|l|list|--list) apt list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
+			-p|p|prune|--prune) apt autoremove -y ;;
+			-h|h|help|--help) echo "$USAGE" ;;
+			*) echo "$USAGE" && return 1 ;;
+		esac
+	}
+fi
+
 command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard'
 command -v wg-quick >> /dev/null && alias vpn='wg-quick up wg0' && alias vpn_off='wg-quick down wg0'
 command -v lazygit >> /dev/null && alias lg='lazygit'
@@ -464,6 +486,7 @@ __cmd_checker__ update
 update(){
 	command -v em >> /dev/null && em s && em u && em p && em c
 	command -v pac >> /dev/null && pac u && pac p
+	command -v ap >> /dev/null && ap u && ap p
 	cd && ./updater.sh p && cd -
 	nfu
 }
@@ -493,6 +516,7 @@ __helpme__(){
 	tprint_cmd 'll' 'Detailed ls' '<directory>'
 	tprint_cmd 'pac' 'Pacman helper'
 	tprint_cmd 'em' "Portage's emerge helper"
+	tprint_cmd 'ap' "APT's helper"
 	tprint_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
 	tprint_cmd 'vpn' 'Easily enable a secure VPN connection'
 	tprint_cmd 'vpn_off' 'Easily disable a VPN connection'
