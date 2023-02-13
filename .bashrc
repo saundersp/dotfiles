@@ -24,6 +24,7 @@ export KERAS_HOME="$XDG_STATE_HOME"/keras
 export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
 export MATHEMATICA_USERBASE="$XDG_CONFIG_HOME"/mathematica
+export CARGO_HOME="$XDG_DATA_HOME"/cargo
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
