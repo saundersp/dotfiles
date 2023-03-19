@@ -96,7 +96,14 @@ require('lazy').setup({
 	-- Colourize RGB codes to it designated colour and add a colour picker
 	{ 'uga-rosa/ccc.nvim',
 		lazy = false,
-		keys = { {'<leader>cp', '<cmd>CccPick<CR>', desc = 'open [C]olour [P]icker'} },
+		cmd = { 'CccPick', 'CccConvert', 'CccHighlighterEnable', 'CccHighlighterDisable', 'CccHighlighterToggle' },
+		keys = {
+			{'<leader>cp', '<cmd>CccPick<CR>',			desc = 'open [C]olour [P]icker'},
+			{'<leader>cc', '<cmd>CccConvert<CR>',			desc = '[C]olour [C]onvert'},
+			{'<leader>ct', '<cmd>CccHighlighterToggle<CR>',		desc = '[C]olour highlight [T]oggle'},
+			{'<leader>ce', '<cmd>CccHighlighterEnable<CR>',		desc = '[C]olour highlight [E]nable'},
+			{'<leader>cd', '<cmd>CccHighlighterDisable<CR>',	desc = '[C]olour highlight [D]isable'}
+		},
 		opts = { highlighter = { auto_enable = true } }
 	},
 	-- Quickly surround word with given symbol
@@ -123,8 +130,8 @@ require('lazy').setup({
 	-- Add a fancy file explorer
 	{ 'nvim-tree/nvim-tree.lua',
 		keys = {
-			{ '<C-n>', '<cmd>NvimTreeToggle<CR>', desc = 'Open [N]erd tree explorer' },
-			{ '<leader>no', '<cmd>NvimTreeToggle<CR>', desc = '[N]erd tree [O]pen explorer' }
+			{ '<C-n>', '<cmd>NvimTreeToggle<CR>',		desc = 'Open [N]erd tree explorer' },
+			{ '<leader>no', '<cmd>NvimTreeToggle<CR>',	desc = '[N]erd tree [O]pen explorer' }
 		},
 		opts = {
 			filters = {
@@ -372,8 +379,9 @@ require('lazy').setup({
 			{'<leader>$d', ':Start lazydocker<CR>', desc = 'Open Lazy[D]ocker'}
 		},
 		config = function()
-			Autocmd('BufWritePost', '*.tex', function() vim.cmd('Spawn! make') end)		-- Auto compile LaTeX document on save
-		end
+			Autocmd('BufWritePost', '*.tex', function() vim.cmd('Spawn! make -j $NPROC') end)		-- Auto compile LaTeX document on save
+		end,
+		cmd = { 'Dispatch', 'Make', 'Focus', 'Start', 'Spawn' }
 	},
 	-- Highlight, edit, and navigate code
 	{ 'nvim-treesitter/nvim-treesitter',
@@ -454,13 +462,20 @@ require('lazy').setup({
 	-- Arduino commands
 	{ 'stevearc/vim-arduino',
 		keys = {
-			{'<leader>aa', ':ArduinoAttach<CR>',		desc = '[A]rduino [A]ttach'},
-			{'<leader>av', ':ArduinoVerify<CR>',		desc = '[A]rduino [V]erify'},
-			{'<leader>au', ':ArduinoUpload<CR>',		desc = '[A]rduino [U]pload'},
-			{'<leader>ad', ':ArduinoUploadAndSerial<CR>',	desc = '[A]rduino upload an[D] serial'},
-			{'<leader>ab', ':ArduinoChooseBoard<CR>',	desc = '[A]rduino choose [B]oard'},
-			{'<leader>ap', ':ArduinoChooseProgrammer<CR>',	desc = '[A]rduino choose [P]rogrammer'},
-			{'<leader>as', ':ArduinoSerial<CR>',		desc = '[A]rduino [S]erial'}
+			{'<leader>aa', '<cmd>ArduinoAttach<CR>',		desc = '[A]rduino [A]ttach'},
+			{'<leader>av', '<cmd>ArduinoVerify<CR>',		desc = '[A]rduino [V]erify'},
+			{'<leader>au', '<cmd>ArduinoUpload<CR>',		desc = '[A]rduino [U]pload'},
+			{'<leader>ad', '<cmd>ArduinoUploadAndSerial<CR>',	desc = '[A]rduino upload an[D] serial'},
+			{'<leader>ab', '<cmd>ArduinoChooseBoard<CR>',		desc = '[A]rduino choose [B]oard'},
+			{'<leader>ap', '<cmd>ArduinoChooseProgrammer<CR>',	desc = '[A]rduino choose [P]rogrammer'},
+			{'<leader>aP', '<cmd>ArduinoChoosePort<CR>',		desc = '[A]rduino choose [P]ort'},
+			{'<leader>as', '<cmd>ArduinoSerial<CR>',		desc = '[A]rduino [S]erial'},
+			{'<leader>ai', '<cmd>ArduinoInfo<CR>',			desc = '[A]rduino [I]nfo'}
+		},
+		cmd = {
+			'ArduinoAttach', 'ArduinoVerify', 'ArduinoUpload', 'ArduinoUploadAndSerial',
+			'ArduinoChooseBoard', 'ArduinoChooseProgrammer', 'ArduinoSerial', 'ArduinoChoosePort',
+			'ArduinoInfo'
 		}
 	},
 	-- Show a toggable undotree
