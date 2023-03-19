@@ -58,7 +58,12 @@ require('lazy').setup({
 		opts = {
 			options = {
 				theme = 'codedark',
-				disabled_filetypes = { 'NvimTree' }
+				disabled_filetypes = { 'NvimTree' },
+				ignore_focus = {
+					'dapui_watches', 'dapui_breakpoints',
+					'dapui_scopes', 'dapui_console',
+					'dapui_stacks', 'dap-repl'
+				}
 			},
 			sections = {
 				lualine_x = {
@@ -198,7 +203,7 @@ require('lazy').setup({
 
 			-- Enable the following language servers with overriding configuration
 			local servers = {
-				sumneko_lua = {
+				lua_ls = {
 					Lua = {
 						workspace = { checkThirdParty = false },
 						telemetry = { enable = false }
@@ -249,14 +254,39 @@ require('lazy').setup({
 				}
 				dap.configurations.cpp = {
 					{
-						name = "Launch file",
-						type = "cppdbg",
-						request = "launch",
+						name = 'Launch file',
+						type = 'cppdbg',
+						request = 'launch',
 						program = function()
 							return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
 						end,
 						cwd = '${workspaceFolder}',
 						stopAtEntry = true
+					}
+				}
+				dap.adapters.debugpy = {
+					id = 'debugpy',
+					type = 'executable',
+					command = vim.fn.stdpath 'data' .. '/mason/bin/debugpy-adapter'
+				}
+				dap.configurations.python = {
+					{
+						type = 'debugpy',
+						request = 'launch',
+						name = 'Launch file',
+						program = '${file}',
+						pythonPath = function()
+							return '/usr/bin/python'
+						end
+					},
+					{
+						type = 'debugpy',
+						request = 'launch',
+						name = 'Launch file (venv)',
+						program = '${file}',
+						pythonPath = function()
+							return '${workspaceFolder}/venv/bin/python'
+						end
 					}
 				}
 			end
@@ -284,7 +314,6 @@ require('lazy').setup({
 				cmd = { 'ccls' },
 				filetypes = { 'c', 'cpp', 'cuda', 'objc', 'objcpp' },
 				init_options = { clang = { extraArgs = { '-std=c++17' }} },
-				--root_dir = root_pattern('compile_commands.json', '.ccls-root'),
 				capabilities = capabilities,
 				on_attach = on_attach
 			})
