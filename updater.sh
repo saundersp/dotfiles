@@ -39,15 +39,17 @@ case "$1" in
 		__updatepackages__(){
 			for PACKAGE_NAME in $1; do
 				if [ ! -d /usr/local/src/"$PACKAGE_NAME" ]; then
-					echo "Package $PACKAGE_NAME not installed, skipping..."
+					#echo "Package $PACKAGE_NAME not installed, skipping..."
 					continue
 				fi
 				cd "$PACKAGE_NAME"
-				if [ "$(git pull)" = 'Already up to date.' ]; then
-					echo "Package $PACKAGE_NAME already up to date"
-				else
-					echo "Updating package $PACKAGE_NAME"
+				#if [ "$(git pull)" = 'Already up to date.' ]; then
+				#	echo "Package $PACKAGE_NAME already up to date"
+				#else
+				if [ "$(git pull)" != 'Already up to date.' ]; then
+					echo "\nUpdating package $PACKAGE_NAME"
 					$2
+					echo "\nUpdated package $PACKAGE_NAME"
 				fi
 				cd ..
 			done
