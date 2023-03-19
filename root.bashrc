@@ -25,6 +25,7 @@ export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
 export MATHEMATICA_USERBASE="$XDG_CONFIG_HOME"/mathematica
 export CARGO_HOME="$XDG_DATA_HOME"/cargo
+export W3M_DIR="$XDG_DATA_HOME"/w3m
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
@@ -237,6 +238,13 @@ __command_requirer_pkg__(){
 }
 
 if command -v pacman >> /dev/null; then
+	__cmd_checker__ __update_arch_mirrors__
+	__update_arch_mirrors__(){
+		MIRRORFILE=/etc/pacman.d/mirrorlist
+		test "$(grep '^ID' /etc/os-release)" = 'ID=artix' && MIRRORFILE="$MIRRORFILE-arch"
+		reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
+	}
+
 	__cmd_checker__ pac
 	pac(){
 		USAGE='Pacman helper
@@ -245,17 +253,13 @@ Implemented by @saundersp
 USAGE: pac FLAG
 Available flags:
 	-u, u, update, --update		Update every packages.
+	-l, l, list, --list		List every packages.
 	-m, m, mirrors, --mirrors	Update the mirrorlist.
 	-p, p, prune, --prune		Remove unused packages (orphans).
 	-h, h, help, --help		Show this help message'
-		__cmd_checker__ __update_arch_mirrors__
-		__update_arch_mirrors__(){
-			MIRRORFILE=/etc/pacman.d/mirrorlist
-			test "$(grep '^ID' /etc/os-release)" = 'ID=artix' && MIRRORFILE="$MIRRORFILE-arch"
-			reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
-		}
 		case "$1" in
 			-u|u|update|--update) pacman -Syu ;;
+			-l|l|list|--list) pacman -Qe ;;
 			-m|m|mirrors|--mirrors) __command_requirer_pkg__ __update_arch_mirrors__ reflector reflector ;;
 			-p|p|prune|--prune) pacman -Qtdq | pacman -Rns - ;;
 			-h|h|help|--help) echo "$USAGE" ;;
@@ -312,7 +316,7 @@ Available flags:
 	-p, p, prune, --prune		Remove unused packages (orphans).
 	-h, h, help, --help		Show this help message"
 		case "$1" in
-			-u|u|update|--update) apt update && apt upgrade -y ;;
+			-u|u|update|--update) sh -c 'apt update && apt upgrade -y' ;;
 			-l|l|list|--list) apt list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
 			-p|p|prune|--prune) apt autoremove -y ;;
 			-h|h|help|--help) echo "$USAGE" ;;
