@@ -419,7 +419,7 @@ if command -v ranger >> /dev/null; then
 			fi
 		fi
 	}
-	bind '"\C-o":"ranger_cd\C-m"'
+	bind '"\C-o":"\C-wranger_cd\C-m"'
 fi
 
 if command -v xrandr >> /dev/null; then
@@ -533,6 +533,7 @@ fi
 command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
 test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after $HOME/"Calibre Library"/ linode:~/"Calibre Library"/'
 command -v dmenu_run >> /dev/null && __cmd_checker__ dm && alias dm='dmenu_run -n -c -l 20'
+command -v xdg-ninja >> /dev/null && alias xdg-ninja='xdg-ninja --skip-unsupported'
 
 __cmd_checker__ pow
 pow(){
@@ -573,8 +574,9 @@ update(){
 	command -v ap >> /dev/null && ap u && ap p
 	cd && ./updater.sh p'
 	command -v aur >> /dev/null && aur u
+	command -v nix-env >> /dev/null && nix-env -u
 	command -v arduino-cli >> /dev/null && arduino-cli update && arduino-cli upgrade
-	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":Lazy") ~= 0 then vim.cmd("Lazy sync") end' +q
+	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":Lazy") ~= 0 then vim.cmd("Lazy! update") end' +qa
 	command -v nvim >> /dev/null && nvim --headless -c 'autocmd User PackerComplete quitall' -c 'lua if vim.fn.exists(":PackerSync") == 0 then vim.cmd("quit") end vim.cmd("PackerSync")'
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":TSUpdateSync") ~= 0 then vim.cmd("TSUpdateSync") end' +q
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":CocUpdateSync") ~= 0 then vim.cmd("CocUpdateSync") end' +q

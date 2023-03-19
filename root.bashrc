@@ -343,7 +343,7 @@ if command -v ranger >> /dev/null; then
 			fi
 		fi
 	}
-	bind '"\C-o":"ranger_cd\C-m"'
+	bind '"\C-o":"\C-wranger_cd\C-m"'
 fi
 
 if command -v xrandr >> /dev/null; then
@@ -455,6 +455,7 @@ Available flags:
 fi
 
 command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
+command -v xdg-ninja >> /dev/null && alias xdg-ninja='xdg-ninja --skip-unsupported'
 
 __cmd_checker__ pow
 pow(){
@@ -493,6 +494,7 @@ update(){
 	command -v pac >> /dev/null && pac u && pac p
 	command -v ap >> /dev/null && ap u && ap p
 	cd && ./updater.sh p && cd -
+	command -v nix-env >> /dev/null && nix-env -u
 	nfu
 }
 
