@@ -65,12 +65,23 @@ case "$1" in
 		# Dependencies : dev-lang/go app-containers/docker
 		# https://github.com/jesseduffield/lazygit.git
 		# Dependencies : dev-lang/go dev-vcs/git
-		__updatepackages__ 'arduino-cli glow lazydocker lazygit' 'go install'
+		# https://github.com/jesseduffield/lazynpm.git
+		# Dependencies : dev-lang/go
+		__updatepackages__ 'arduino-cli glow lazydocker lazygit lazynpm' 'go install'
 		# https://git.suckless.org/dmenu
 		# Dependencies : media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-libs/libXinerama x11-base/xorg-proto virtual/pkgconfig
 		# https://git.suckless.org/st
 		# Dependencies : sys-libs/ncurses media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-terms/st-terminfo x11-base/xorg-proto virtual/pkgconfig
-		__updatepackages__ 'dmenu st' 'make clean install'
+		__update_suckless__(){
+			PATCH_PATH="$(dirname $(realpath /root/updater.sh))/patches"
+			echo $PATCH_PATH
+			PACKAGE_NAME="$(basename $(pwd))"
+			echo $PACKAGE_NAME
+			(cd "$PATCH_PATH" && ./patch.sh "$PACKAGE_NAME" clean)
+			git pull
+			(cd $PATCH_PATH && ./patch.sh $PACKAGE_NAME)
+		}
+		__updatepackages__ 'dmenu st' '__update_suckless__'
 		# https://github.com/b3nj5m1n/xdg-ninja.git
 		# Dependencies : app-shells/bash
 		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh /usr/local/bin/xdg-ninja'
