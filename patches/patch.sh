@@ -2,7 +2,7 @@
 
 # Debug changes to repository
 # git am patch_file.diff
-# Update the patch file (LENGTH = dmenu:7 st:10)
+# Update the patch file (LENGTH = dmenu:7 st:12)
 # git format-patch --stdout HEAD~$LENGTH > patch_file.diff
 
 __apply_patch__(){
@@ -26,8 +26,7 @@ __apply_patch__(){
 
 	if [ "$1" = 'clean' ]; then
 		cd "$prog_path"
-		make uninstall
-		make clean
+		make clean uninstall
 		rm *.orig *.rej
 
 		cd -
