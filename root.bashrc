@@ -253,7 +253,7 @@ Implemented by @saundersp
 USAGE: pac FLAG
 Available flags:
 	-u, u, update, --update		Update every packages.
-	-l, l, list, --list		List every packages.
+	-l, l, list, --list		List every installed packages.
 	-m, m, mirrors, --mirrors	Update the mirrorlist.
 	-p, p, prune, --prune		Remove unused packages (orphans).
 	-h, h, help, --help		Show this help message'
@@ -312,12 +312,14 @@ Implemented by @saundersp
 USAGE: ap FLAG
 Available flags:
 	-u, u, update, --update		Update every packages.
-	-l, l, list, --list		List every packages in the @world set.
+	-l, l, list, --list		List every installed packages.
+	-q, q, query, --query		Search packages that contains a given file.
 	-p, p, prune, --prune		Remove unused packages (orphans).
 	-h, h, help, --help		Show this help message"
 		case "$1" in
 			-u|u|update|--update) sh -c 'apt update && apt upgrade -y' ;;
 			-l|l|list|--list) apt list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
+			-q|q|query|--query) __command_requirer_pkg__ apt-file apt-file apt-file "$2" ;;
 			-p|p|prune|--prune) apt autoremove -y ;;
 			-h|h|help|--help) echo "$USAGE" ;;
 			*) echo "$USAGE" && return 1 ;;
@@ -493,7 +495,7 @@ update(){
 	command -v em >> /dev/null && em s && em u && em p && em c
 	command -v pac >> /dev/null && pac u && pac p
 	command -v ap >> /dev/null && ap u && ap p
-	cd && ./updater.sh p && cd -
+	(cd && ./updater.sh p)
 	command -v nix-env >> /dev/null && nix-env -u
 	nfu
 }
