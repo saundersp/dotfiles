@@ -34,6 +34,8 @@
 USERNAME=saundersp
 PACKAGES=virtual
 # Other options : virtual laptop server
+ARCH=amd64
+# Other options : amd64 arm64 386
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
@@ -41,21 +43,30 @@ set -e
 # Increasing the timeout of packages download
 echo -e 'Acquire::http::Timeout "9999";\nAcquire::https::Timeout "9999";\nAcquire::ftp::Timeout "9999";' > /etc/apt/apt.conf
 
+# Make apt installs non-interactive
+export DEBIAN_FRONTEND=noninteractive
+
 # Add non-free repositories to debian mirrors
-sed -i 's/main/main non-free/g' /etc/apt/sources.list
-apt update
+sed -i 's/main/main non-free/g;s/bullseye /sid /g' /etc/apt/sources.list
+apt update && apt upgrade -y
 
 # Install helpers
 install_pkg(){
-	apt install -y $@
+	apt install -y --no-install-recommends $@
 }
 install_server(){
-	install_pkg doas neovim neofetch git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep htop man ranger tmux \
+	install_pkg doas neofetch git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep htop man ranger tmux \
 		fd-find ccls dash docker docker-compose dos2unix gcc gdb highlight make man-db pkgconf progress flake8 python3-autopep8 \
-		python3-pynvim
+		python3-pynvim apt-file g++
 	ln -s /usr/bin/fdfind /usr/bin/fd
 	ln -s /usr/bin/python3 /usr/bin/python
 	ln -sf /bin/dash /bin/sh
+
+	# Installing neovim
+	wget -q --show-progress https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.deb -O /tmp/nvim-linux64.deb
+	install_pkg /tmp/nvim-linux64.deb
+	rm /tmp/nvim-linux64.deb
+	apt remove -y vim-common vim-tiny
 
 	# Enable the wheel group to use doas and allow users to poweroff and reboot
 	echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.conf
@@ -66,67 +77,58 @@ install_server(){
 	# Add root and user to the wheel group
 	addgroup wheel
 	usermod -aG wheel root
-	usermod -aG wheel $USERNAME
+	usermod -aG wheel "$USERNAME"
 
 	# Installing go
 	local GO_LINK=https://go.dev/dl/
-	local LATEST_GO_VERSION=$(curl $GO_LINK?mode=json | grep version | sed 2,100000d | cut -d \" -f 4)
-	local GO_FILE=$LATEST_GO_VERSION.linux-amd64.tar.gz
-	wget $GO_LINK$GO_FILE
-	tar -C /usr/local -xzf $GO_FILE
+	local LATEST_GO_VERSION
+	LATEST_GO_VERSION=$(curl $GO_LINK?mode=json | grep version | sed 2,202000d | cut -d \" -f 4)
+	local GO_FILE=$LATEST_GO_VERSION.linux-$ARCH.tar.gz
+	wget "$GO_LINK$GO_FILE"
+	tar -C /usr/local -xzf "$GO_FILE"
 	ln -s /usr/local/go/bin/go /usr/bin/go
-	rm $GO_FILE
+	rm "$GO_FILE"
 
 	# Compiling lazygit
 	cd /usr/local/src
 	git clone https://github.com/jesseduffield/lazygit.git
 	cd lazygit
-	su $USERNAME -c 'go install'
-	mv /home/$USERNAME/go/bin/lazygit /usr/bin/lazygit
+	install_pkg libstdc++-11-dev
+	go install -buildvcs=false
+	mv /root/go/bin/lazygit /usr/bin/lazygit
 
 	# Compiling lazydocker
 	cd /usr/local/src
 	git clone https://github.com/jesseduffield/lazydocker.git
 	cd lazydocker
-	su $USERNAME -c 'go install'
-	mv /home/$USERNAME/go/bin/lazydocker /usr/bin/lazydocker
+	go install -buildvcs=false
+	mv /root/go/bin/lazydocker /usr/bin/lazydocker
 
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
 }
 install_ihm(){
 	install_server
-	install_pkg dmenu picom xinit xserver-xorg-core x11-xserver-utils feh xclip firefox-esr vlc polybar xserver-xorg-input-kbd \
+	install_pkg picom xinit xserver-xorg-core x11-xserver-utils feh xclip vlc polybar xserver-xorg-input-kbd \
 		xserver-xorg-input-mouse xserver-xorg-input-libinput libxinerama-dev autokey-qt calibre filezilla wireguard-tools zathura \
-		imagemagick
+		imagemagick i3-wm patch libxft-dev libharfbuzz-dev ueberzug gnupg
 
-	pip install ueberzug
+	wget -O- https://deb.librewolf.net/keyring.gpg | gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
 
-	# Compiling i3-gaps
-	install_pkg dh-autoreconf libxcb-keysyms1-dev libpango1.0-dev libxcb-util0-dev xcb libxcb1-dev libxcb-icccm4-dev libyajl-dev \
-		libev-dev libxcb-xkb-dev libxcb-cursor-dev libxkbcommon-dev libxcb-xinerama0-dev libxkbcommon-x11-dev \
-		libstartup-notification0-dev libxcb-randr0-dev libxcb-xrm0 libxcb-xrm-dev libxcb-shape0 libxcb-shape0-dev meson ninja-build
-	cd /usr/local/src
-	git clone https://www.github.com/Airblader/i3 i3-gaps
-	cd i3-gaps
-	mkdir -p build
-	cd build
-	meson ..
-	ninja
-	ln -s /usr/local/src/i3-gaps/build/i3 /usr/bin/i3
-
-	# Compiling zathura-pdf-mupdf
-	install_pkg zathura-dev libgirara-dev libmupdf-dev libjpeg-dev libjbig2dec-dev libopenjp2-7-dev libgumbo-dev libtesseract-dev libmujs-dev
-	cd /usr/local/src
-	git clone https://gitlab.com/paretje/zathura-pdf-mupdf.git
-	cd zathura-pdf-mupdf
-	meson build
-	cd build
-	ninja
-	ninja install
+	tee /etc/apt/sources.list.d/librewolf.sources << EOF > /dev/null
+Types: deb
+URIs: https://deb.librewolf.net
+Suites: focal
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/librewolf.gpg
+EOF
+	apt update
+	install_pkg librewolf
 
 	# Getting the Hasklig font
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
+	LATEST_TAG=$(curl https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \" -f 4)
+	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/"$LATEST_TAG"/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
@@ -138,8 +140,8 @@ install_dotfiles(){
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
-	./auto.sh $1
-	sudo bash auto.sh $1
+	./auto.sh "$1"
+	sudo bash auto.sh "$1"
 
 	# Getting the wallpaper
 	mkdir ~/Images
@@ -172,12 +174,12 @@ case $PACKAGES in
 esac
 
 # Installing the dotfiles
-su $USERNAME -c "install_dotfiles $PACKAGES"
+su "$USERNAME" -c "install_dotfiles $PACKAGES"
 
 # Removing the nopass option in doas
 sed -i '1s/nopass/persist/g' /etc/doas.conf
 
 # Cleaning leftovers
-cd /root && rm $0
+cd /root && rm "$0"
 reboot
 

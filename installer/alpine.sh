@@ -2,7 +2,7 @@
 
 # Pre-setup steps :
 # login as root
-# setup-keymap fr fr
+# setup-keymap LAYOUT [VARIANT]
 # setup-interfaces -a
 # rc-service networking start
 
@@ -18,9 +18,6 @@ PACKAGES=virtual
 # Other options : virtual laptop server minimal
 SWAP_SIZE=4096
 CRYPTED_DISK_NAME=luks_root
-GRUB_ID=GRUB
-KEYMAP=fr
-LOCALE=en_US
 TIMEZONE=Europe/London
 DISK_PASSWORD=
 ROOT_PASSWORD=
@@ -34,9 +31,9 @@ NTP=chrony
 test ! -d /sys/firmware/efi/efivars && echo 'Missing UEFI vars, exiting...' && exit 1
 
 # Configuration checker
-test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
-test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
-test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
+test -z "$DISK_PASSWORD" && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
+test -z "$ROOT_PASSWORD" && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
+test -z "$USER_PASSWORD" && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
@@ -46,10 +43,10 @@ BOOT_PARTITION=$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX
 ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
 
 # Setting the timezone
-setup-timezone -z $TIMEZONE
+setup-timezone -z "$TIMEZONE"
 
 # Setting the hostname
-setup-hostname $HOSTNAME
+setup-hostname "$HOSTNAME"
 
 # Getting the fastest mirrors
 setup-apkrepos -f
@@ -61,57 +58,53 @@ $ROOT_PASSWORD
 EOF
 
 # Setting the NTP time synchronization
-setup-ntp -c $NTP
+setup-ntp "$NTP"
 
 # Partitioning the disks
 apk add sfdisk
-sfdisk $DISK << EOF
+sfdisk "$DISK" << EOF
 ,256M,ef
 ,$DISK_LAST_SECTOR
 EOF
 
 # Encrypting the root partition
 apk add cryptsetup
-echo -n $DISK_PASSWORD | cryptsetup luksFormat -v $ROOT_PARTITION
-echo -n $DISK_PASSWORD | cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
+echo -n "$DISK_PASSWORD" | cryptsetup luksFormat -v "$ROOT_PARTITION"
+echo -n "$DISK_PASSWORD" | cryptsetup open "$ROOT_PARTITION" "$CRYPTED_DISK_NAME"
 
 # Formatting the partitions
-mkfs.vfat -n 'UEFI Boot' $BOOT_PARTITION
+mkfs.vfat -n 'UEFI Boot' "$BOOT_PARTITION"
 apk add e2fsprogs
-mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
+mkfs.ext4 -L Root /dev/mapper/"$CRYPTED_DISK_NAME"
 
 # Mounting the file systems
 echo "
 $BOOT_PARTITION /mnt/boot vfat defaults,noatime 0 2
-/dev/mapper/$CRYPTED_DISK_NAME /mnt ext4 noatime 0 1
+/dev/mapper/$CRYPTED_DISK_NAME /mnt ext4 defaults,noatime 0 1
 " >> /etc/fstab
 mount /dev/mapper/$CRYPTED_DISK_NAME
 mkdir /mnt/boot
-mount $BOOT_PARTITION
+mount "$BOOT_PARTITION"
 
 # Installing running systems
 apk add grub-efi efibootmgr
-BOOTLOADER=grub
-USE_EFI=1
-setup-disk -s $SWAP_SIZE -e -k $KERNEL -m sys /mnt
+setup-disk -s "$SWAP_SIZE" -e -k "$KERNEL" -m sys /mnt
 
 # Fix git bug
 mount /dev /mnt/dev
+mount /proc /mnt/proc
 
-echo "#!/usr/bin/env ash
-
-# Exit immediately if a command exits with a non-zero exit status
-set -e
+echo "#!/bin/sh
 
 # Enable faster startup times
-sed 's/#rc_parallel=\\\"NO\\\"/rc_parallel=\"YES\\\"/' -i /etc/rc.conf
+sed 's/#rc_parallel=\"NO\"/rc_parallel=\"YES\"/' -i /etc/rc.conf
 
 # Configuration of initramfs
-sed -i 's/\"\$/ keymap cryptsetup\"/g' /etc/mkinitfs/mkinitfs.conf
+sed -i 's/\"$/ keymap cryptsetup\"/g' /etc/mkinitfs/mkinitfs.conf
 mkinitfs \$(ls /lib/modules)
 
 # Configuration of grub
-sed -i 's;GRUB_CMDLINE_LINUX_DEFAULT=\"\\(.*\\)\";GRUB_CMDLINE_LINUX_DEFAULT=\"\\1 cryptroot=$ROOT_PARTITION cryptdm=root\";g' /etc/default/grub
+sed -i \"s;GRUB_CMDLINE_LINUX_DEFAULT=\\\"\\(.*\\)\\\";GRUB_CMDLINE_LINUX_DEFAULT=\\\"\\1 cryptroot=UUID=\$(blkid $ROOT_PARTITION | cut -d \\\" -f 2) cryptdm=$CRYPTED_DISK_NAME\\\";g\" /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enabling all repositories mirrors
@@ -125,16 +118,12 @@ install_pkg(){
 }
 install_server(){
 	install_pkg neovim doas lazygit neofetch git wget unzip openssh bash-completion nodejs npm python3 \
-			py3-pip ripgrep mandoc htop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc \
-			man-pages mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev \
-			tmux lazydocker dash docker docker-compose dos2unix gdb highlight progress py3-flake8 \
-			py3-autopep8 py3-pynvim
+		py3-pip ripgrep htop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc man-pages \
+		mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev tmux lazydocker \
+		docker docker-compose dos2unix gdb highlight progress py3-flake8 py3-autopep8 py3-pynvim ncdu
 
 	# Replace sudo
 	ln -s /usr/bin/doas /usr/bin/sudo
-
-	# Replace default shell
-	ln -sf /bin/dash /bin/sh
 
 	# Enable the wheel group to use doas
 	echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.d/doas.conf
@@ -152,10 +141,7 @@ EOF
 	adduser $USERNAME wheel
 
 	# Installing the dotfiles
-	echo \"#!/usr/bin/env bash
-
-	# Exit immediately if a command exits with a non-zero exit status
-	set -e
+	echo \"#!/bin/sh
 
 	# Getting the dotfiles
 	mkdir ~/git
@@ -167,7 +153,7 @@ EOF
 
 	\" > /home/$USERNAME/install.sh
 	chmod +x /home/$USERNAME/install.sh
-	su -c \"/home/$USERNAME/install.sh $PACKAGES \" $USERNAME
+	su -c \"/home/$USERNAME/install.sh $PACKAGES\" $USERNAME
 	rm /home/$USERNAME/install.sh
 
 	# Installing the dotfiles as root
@@ -179,31 +165,29 @@ EOF
 }
 install_ihm(){
 	install_server
-	install_pkg dmenu picom xinit xset feh xclip firefox vlc setxkbmap mesa-dri-swrast patch \
-			i3wm-gaps polybar make harfbuzz-dev libxinerama-dev xorg-server \
-			filezilla i3lock wireguard-tools pkgconf zathura zathura-pdf-mupdf xf86-input-libinput \
-			eudev udev-init-scripts udev-init-scripts-openrc imagemagick
+	install_pkg picom xinit xset feh xclip firefox vlc setxkbmap patch i3wm polybar make harfbuzz-dev \
+		libxinerama-dev xorg-server filezilla i3lock wireguard-tools pkgconf zathura zathura-pdf-mupdf \
+		xf86-input-libinput eudev udev-init-scripts udev-init-scripts-openrc imagemagick libxres-dev
 
-	pip install ueberzug
+	# ueberzug is unmaintained and removed from repositories, installing from source
+	git clone https://github.com/seebye/ueberzug.git /usr/local/src/ueberzug
+	cd /usr/local/src/ueberzug
+	git checkout 0745998c0d0dff321ececd3994895c0875fc25aa
+	pip install -e .
+	cd -
 
 	# Add pkg-config as alias of pkgconf
 	ln -sf /usr/bin/pkgconf /usr/bin/pkg-config
 
-	# Added udev services
-	rc-update add udev sysinit
-	rc-update add udev-trigger sysinit
-	rc-update add udev-settle sysinit
-	rc-update add udev-postmount default
+	# Setup xorg server
+	setup-xorg-base
 
 	# Add the user to the necessary groups
 	adduser $USERNAME input
 	adduser $USERNAME video
 
 	# Installing the dotfiles
-	echo \"#!/usr/bin/env bash
-
-	# Exit immediately if a command exits with a non-zero exit status
-	set -e
+	echo \"#!/bin/sh
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
@@ -228,7 +212,8 @@ install_ihm(){
 	./auto.sh install
 
 	# Getting the Hasklig font
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hasklig.zip
+	LATEST_TAG=\$(curl https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \\\" -f 4)
+	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/\"\$LATEST_TAG\"/Hasklig.zip
 	mkdir /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
@@ -261,7 +246,7 @@ chmod +x /mnt/root/install.sh
 chroot /mnt /root/install.sh
 
 # Cleaning leftovers
-rm /mnt/root/install.sh $1
+rm /mnt/root/install.sh "$0"
 
 reboot
 

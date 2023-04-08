@@ -22,7 +22,7 @@ PACKAGES=virtual
 set -e
 
 # Removing unused programs
-rm -rf $(find / -name *sudo*) | true
+find -- / -name "*sudo*" -delete | true
 dnf remove -y sudo vi
 
 # Install helpers
@@ -61,11 +61,16 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg i3-gaps xorg-x11-xinit xset polybar picom feh alacritty xclip xorg-x11-server-Xorg python-xlib autokey-qt calibre i3lock \
-		torbrowser-launcher zathura zathura-pdf-mupdf python-devel libX11-devel libXext-devel libXft-devel libXinerama-devel ImageMagick
+	install_pkg i3 xorg-x11-xinit xset polybar picom feh alacritty xclip xorg-x11-server-Xorg python-xlib autokey-qt calibre i3lock \
+		torbrowser-launcher zathura zathura-pdf-mupdf python-devel libX11-devel libXext-devel libXft-devel libXinerama-devel ImageMagick \
+		libXres-devel
 
-	#TODO Unmaintained and removed from mosts repositories, find alternative
-	#pip install ueberzug
+	# ueberzug is unmaintained and removed from repositories, installing from source
+	git clone https://github.com/seebye/ueberzug.git /usr/local/src/ueberzug
+	cd /usr/local/src/ueberzug
+	git checkout 0745998c0d0dff321ececd3994895c0875fc25aa
+	pip install -e .
+	cd -
 
 	# Installing librewolf
 	rpm --import https://keys.openpgp.org/vks/v1/by-fingerprint/034F7776EF5E0C613D2F7934D29FBD5F93C0CFC3
@@ -77,7 +82,8 @@ install_ihm(){
 	install_pkg vlc
 
 	# Getting the Hasklig font
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.2.2/Hasklig.zip
+	LATEST_TAG=$(curl https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \" -f 4)
+	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/"$LATEST_TAG"/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
@@ -89,8 +95,8 @@ install_dotfiles(){
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
-	./auto.sh $1
-	sudo bash auto.sh $1
+	./auto.sh "$1"
+	sudo bash auto.sh "$1"
 
 	# Getting the wallpaper
 	mkdir ~/Images
@@ -130,4 +136,6 @@ sed -i '1s/nopass/persist/g' /etc/doas.conf
 
 # Cleaning leftovers
 rm "$0"
+
+reboot
 

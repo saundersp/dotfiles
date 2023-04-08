@@ -32,9 +32,9 @@ ARCH=x86_64
 # Other options : x86_64 x86_64-musl i686
 
 # Configuration checker
-test -z "$DISK_PASSWORD" && echo 'Enter DISK password : ' && read -s DISK_PASSWORD
-test -z "$ROOT_PASSWORD" && echo 'Enter ROOT password : ' && read -s ROOT_PASSWORD
-test -z "$USER_PASSWORD" && echo 'Enter USER password : ' && read -s USER_PASSWORD
+test -z "$DISK_PASSWORD" && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
+test -z "$ROOT_PASSWORD" && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
+test -z "$USER_PASSWORD" && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
@@ -93,11 +93,13 @@ install_pkg base-system opendoas grub-x86_64-efi efibootmgr cryptsetup which man
 EOF
 
 install_server(){
-	install_pkg neovim lazygit lazydocker neofetch git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep htop ranger tmux docker dos2unix fd highlight ccls gcc gdb xtools docker-compose progress python3-neovim flake8 autopep8
+	install_pkg neovim lazygit lazydocker neofetch git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep htop ranger tmux \
+		docker dos2unix fd highlight ccls gcc gdb xtools docker-compose progress python3-neovim flake8 autopep8
 }
 install_ihm(){
 	install_server
-	install_pkg picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar ueberzug calibre filezilla zathura zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch wireguard ImageMagick
+	install_pkg picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar ueberzug calibre filezilla zathura \
+		zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch wireguard ImageMagick
 }
 
 # Installing the platform specific packages
@@ -146,7 +148,8 @@ fi
 
 if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
 	# Getting the Hasklig font
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v2.2.2/Hasklig.zip
+	LATEST_TAG=\$(curl https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \\\" -f 4)
+	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/\"\$LATEST_TAG\"/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	rm Hasklig.zip
