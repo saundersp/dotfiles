@@ -24,7 +24,7 @@ case "$1" in
 	m|mod|-m|--mod) rg "=y" /usr/src/linux/.config | sed "s/=y/=m/" | xargs -I{} rg "{}" MAXIMUM.config | less ;;
 	f|fill|-f|--fill) rg 'is not set' /usr/src/linux/.config | sed 's/# CONFIG_//;s/ is not set//' | less ;;
 	e|empty|-e|--empty) rg '=y|=m' /usr/src/linux/.config | sed 's/CONFIG_//' | less ;;
-	c|compare|-c|--compare) nvim -d /usr/src/linux/.config $CURRENT ;;
+	c|compare|-c|--compare) nvim -d /usr/src/linux/.config "$CURRENT" ;;
 	u|update|-u|--update)
 		cd /usr/src/linux
 		NPROC=$(nproc)
@@ -47,9 +47,9 @@ case "$1" in
 				#	echo "Package $PACKAGE_NAME already up to date"
 				#else
 				if [ "$(git pull)" != 'Already up to date.' ]; then
-					echo "\nUpdating package $PACKAGE_NAME"
+					printf '\nUpdating package %s\n' "$PACKAGE_NAME"
 					$2
-					echo "\nUpdated package $PACKAGE_NAME"
+					printf '\nUpdated package %s\n' "$PACKAGE_NAME"
 				fi
 				cd ..
 			done
@@ -73,13 +73,11 @@ case "$1" in
 		# https://git.suckless.org/st
 		# Dependencies : sys-libs/ncurses media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-terms/st-terminfo x11-base/xorg-proto virtual/pkgconfig
 		__update_suckless__(){
-			PATCH_PATH="$(dirname $(realpath /root/updater.sh))/patches"
-			echo $PATCH_PATH
-			PACKAGE_NAME="$(basename $(pwd))"
-			echo $PACKAGE_NAME
+			PATCH_PATH=$(dirname "$(realpath /root/updater.sh)")/patches
+			PACKAGE_NAME=$(basename "$(pwd)")
 			(cd "$PATCH_PATH" && ./patch.sh "$PACKAGE_NAME" clean)
 			git pull
-			(cd $PATCH_PATH && ./patch.sh $PACKAGE_NAME)
+			(cd "$PATCH_PATH" && ./patch.sh "$PACKAGE_NAME")
 		}
 		__updatepackages__ 'dmenu st' '__update_suckless__'
 		# https://github.com/b3nj5m1n/xdg-ninja.git
@@ -91,7 +89,7 @@ case "$1" in
 			export RELEASE=1
 			./ninja bundle
 			test -f /usr/local/share/anki/uninstall.sh && sh /usr/local/share/anki/uninstall.sh
-			cd out/bundle/std/ && ./install.sh && cd ../../.. && rm -r out
+			(cd out/bundle/std/ && ./install.sh) && rm -r out
 		}
 		__updatepackages__ 'anki' '__update_anki__'
 		# https://github.com/espanso/espanso.git
@@ -110,6 +108,21 @@ case "$1" in
 			chmod +x /usr/local/bin/"$APP_NAME"
 		}
 		__updatepackages__ 'logisim-evolution' '__update_gradle_app__'
+
+		FONT_DIR=/usr/share/fonts/Hasklig
+		if [ -d "$FONT_DIR" ]; then
+			LATEST_TAG=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \" -f 4)
+			if [ ! -f "$FONT_DIR"/VERSION ] || [ ! "$(cat $FONT_DIR/VERSION)" = "$LATEST_TAG" ]; then
+				printf '\nUpdating font Hasklig\n'
+				wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/"$LATEST_TAG"/Hasklig.zip
+				rm -rf "$FONT_DIR"
+				mkdir "$FONT_DIR"
+				unzip -q Hasklig.zip -d "$FONT_DIR"
+				rm Hasklig.zip
+				echo "$LATEST_TAG" > "$FONT_DIR"/VERSION
+				printf '\nUpdated font Hasklig\n'
+			fi
+		fi
 
 		cd ~
 		GO_BIN_PATH="${GOPATH:-$HOME/go}/bin"
