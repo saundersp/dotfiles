@@ -39,7 +39,7 @@
 #define pink            #c586c0
 #define violet          #646695
 #define mybackground    #222324
-#define mybackgroundalt #444
+#define mybackgroundalt #444444
 #define myforeground    #bababa
 #define myforegroundalt #dfdfdf
 #define myprimary       #ddb52a
@@ -52,6 +52,9 @@
 Xcursor.size: 16
 
 ! ================================= i3 ==========================================
+i3wm.title-align: center
+i3wm.default-border: none
+i3wm.force-xinerama: no
 i3wm*border: black
 i3wm*backgr: mybackground
 i3wm*text: myforeground
@@ -132,7 +135,7 @@ st.cwscale: 1.0
 ! default: 1.0
 st.chscale: 1.0
 ! Terminal normal colours (default: black red3 green3 yellow3 blue2 magenta3 cyan3 gray90)
-st.color0: #000
+st.color0: #000000
 st.color1: #e8341c
 st.color2: #68c256
 st.color3: #f2d42c
@@ -141,7 +144,7 @@ st.color5: #8e69c9
 st.color6: #1c98e8
 st.color7: #bababa
 ! Terminal bright colours (default: gray50 red green yellow #5c5cff magenta cyan white)
-st.color8:  #666
+st.color8:  #666666
 st.color9:  #e05a4f
 st.color10: #77b869
 st.color11: #efd64b

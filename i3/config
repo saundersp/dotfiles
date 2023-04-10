@@ -9,44 +9,53 @@ set $alt Mod1
 set_from_resource $font i3wm.font 'DejaVu Sans Mono 10'
 font pango:$font
 
-# Center the title of windows
-title_align center
+# Where to align the title of windows
+# title_align left|center|right
+set_from_resource $title-align i3wm.title-align left
+title_align $title-align
 
-# Remove windows borders
-default_border none
+# Display of the windows borders
+# default_border normal|none|pixel
+set_from_resource $default-border i3wm.default-border normal
+default_border $default-border
+
+# Force the use of xinerama for multiple monitor setup on nVidia
+# force_xinerama yes|no
+set_from_resource $font i3wm.force-xinerama no
+force_xinerama $force_xinerama
 
 # Loading from .Xresources, otherwise fallback to default values
 set_from_resource $cf-border        i3wm.cf.border        #4c7899
 set_from_resource $cf-backgr        i3wm.cf.backgr        #285577
-set_from_resource $cf-text          i3wm.cf.text          #fff
+set_from_resource $cf-text          i3wm.cf.text          #ffffff
 set_from_resource $cf-indicator     i3wm.cf.indicator     #2e9ef4
 set_from_resource $cf-child_border  i3wm.cf.child_border  #285577
 
-set_from_resource $cfi-border       i3wm.cfi.border       #333
+set_from_resource $cfi-border       i3wm.cfi.border       #333333
 set_from_resource $cfi-backgr       i3wm.cfi.backgr       #5f676a
-set_from_resource $cfi-text         i3wm.cfi.text         #fff
-set_from_resource $cfi-indicator    i3wm.cfi.indicator    #48450
+set_from_resource $cfi-text         i3wm.cfi.text         #ffffff
+set_from_resource $cfi-indicator    i3wm.cfi.indicator    #484e50
 set_from_resource $cfi-child_border i3wm.cfi.child_border #5f676a
 
-set_from_resource $cun-border       i3wm.cun.border       #333
-set_from_resource $cun-backgr       i3wm.cun.backgr       #222
-set_from_resource $cun-text         i3wm.cun.text         #888
+set_from_resource $cun-border       i3wm.cun.border       #333333
+set_from_resource $cun-backgr       i3wm.cun.backgr       #222222
+set_from_resource $cun-text         i3wm.cun.text         #888888
 set_from_resource $cun-indicator    i3wm.cun.indicator    #292d2e
-set_from_resource $cun-child_border i3wm.cun.child_border #222
+set_from_resource $cun-child_border i3wm.cun.child_border #222222
 
 set_from_resource $cur-border       i3wm.cur.border       #2f343a
-set_from_resource $cur-backgr       i3wm.cur.backgr       #900
-set_from_resource $cur-text         i3wm.cur.text         #fff
-set_from_resource $cur-indicator    i3wm.cur.indicator    #900
-set_from_resource $cur-child_border i3wm.cur.child_border #900
+set_from_resource $cur-backgr       i3wm.cur.backgr       #990000
+set_from_resource $cur-text         i3wm.cur.text         #ffffff
+set_from_resource $cur-indicator    i3wm.cur.indicator    #990000
+set_from_resource $cur-child_border i3wm.cur.child_border #990000
 
-set_from_resource $cp-border        i3wm.cp.border        #000
+set_from_resource $cp-border        i3wm.cp.border        #000000
 set_from_resource $cp-backgr        i3wm.cp.backgr        #0c0c0c
-set_from_resource $cp-text          i3wm.cp.text          #fff
-set_from_resource $cp-indicator     i3wm.cp.indicator     #000
+set_from_resource $cp-text          i3wm.cp.text          #ffffff
+set_from_resource $cp-indicator     i3wm.cp.indicator     #000000
 set_from_resource $cp-child_border  i3wm.cp.child_border  #0c0c0c
 
-set_from_resource $background       i3wm.background       #fff
+set_from_resource $background       i3wm.background       #ffffff
 
 # Windows colours
 client.focused          $cf-border  $cf-backgr  $cf-text  $cf-indicator  $cf-child_border
@@ -98,7 +107,7 @@ set $ws10 10: 
 #assign [class="Synergy"] workspace $ws10
 #assign [class="pulsemixer"] workspace $ws10
 #assign [class="term_annex"] workspace $ws10
-#exec --no-startup-id synergy
+#exec --no-startup-id qsynergy
 #exec --no-startup-id st -c pulsemixer -e pulsemixer
 #exec --no-startup-id st -c term_annex
 
@@ -114,7 +123,7 @@ set $ws10 10: 
 #assign [class="qBittorrent"] workspace $ws10
 #assign [class="Synergy"] workspace $ws10
 #assign [class="Nextcloud"] workspace $ws10
-#exec --no-startup-id synergy
+#exec --no-startup-id qsynergy
 #exec --no-startup-id st -c pulsemixer -e pulsemixer
 #exec --no-startup-id st -c term_annex
 #exec --no-startup-id nextcloud
