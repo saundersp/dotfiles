@@ -2,7 +2,8 @@
 
 print_formatted_fs(){
 	i=1
-	placeholder=' %name% %used%'
+	# nf-md-harddisk
+	placeholder='󰋊 %name% %used%'
 	sep=:
 	for option in "$@"; do
 

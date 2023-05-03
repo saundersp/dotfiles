@@ -2,7 +2,8 @@
 
 bluetooth_print() {
 	if bluetoothctl show | grep -q 'Powered: yes'; then
-		printf ''
+		# nf-md-bluetooth
+		printf '󰂯'
 
 		devices_paired=$(bluetoothctl devices | grep Device | cut -d ' ' -f 2)
 		counter=0
@@ -25,7 +26,8 @@ bluetooth_print() {
 
 		printf '\n'
 	else
-		echo '%{F#444}'
+		# nf-md-bluetooth_off
+		echo '%{F#444}󰂲'
 	fi
 }
 

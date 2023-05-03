@@ -21,7 +21,7 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 vim.cmd.colorscheme				('desert')									-- Set the colour scheme to a more readable one
 vim.o.syntax					= true										-- Enables syntax highlighting
-vim.o.listchars					= 'eol:﬋,tab:→ ,trail:•,extends:>,precedes:<,space:·,nbsp:ﴔ'			-- List of whitespace characters replacement (see :h listchars)
+vim.o.listchars					= 'eol:󰌑,tab:󰌒 ,trail:•,extends:,precedes:,space:·,nbsp:󱁐'			-- List of whitespace characters replacement (see :h listchars) (using: nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
 vim.o.list					= true										-- Enable replacement of listchars
 vim.o.hidden					= true										-- Required to keep multiple buffers open multiple buffers
 vim.o.wrap					= false										-- Display long lines as just one line
