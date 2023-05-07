@@ -289,7 +289,7 @@ Available flags:
 	-h, h, help, --help		Show this help message"
 		case "$1" in
 			-s|s|sync|--sync) sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
-			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDujq @world' ;;
+			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDujq --with-bdeps=y @world && dispatch-conf' ;;
 			-l|l|list|--list) cat /var/lib/portage/world ;;
 			-q|q|query|--query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
 			-c|c|clean|--clean) __command_requirer_pkg__ 'sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && find /var/tmp/portage -mindepth 1 -delete"' eclean app-portage/gentoolkit ;;
@@ -331,6 +331,7 @@ command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard'
 command -v wg-quick >> /dev/null && alias vpn='wg-quick up wg0' && alias vpn_off='wg-quick down wg0'
 command -v lazygit >> /dev/null && alias lg='lazygit'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker'
+command -v lazynpm >> /dev/null && alias lpm='lazynpm'
 
 if command -v ranger >> /dev/null; then
 	__cmd_checker__ ranger_cd
@@ -531,6 +532,7 @@ __helpme__(){
 	tprint_cmd 'vpn_off' 'Easily disable a VPN connection'
 	tprint_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 	tprint_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
+	tprint_cmd 'lpm' 'Shortcut to lazynpm, a fancy CLI npm interface'
 	tprint_cmd 'ranger-cd' 'Modded ranger to changed pwd on exit' '/ C-o'
 	tprint_cmd 'hdmi' 'HDMI connection helper script'
 	print_cmd 'cb' 'Shortcut to clear && exec bash'
