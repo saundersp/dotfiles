@@ -66,23 +66,25 @@ case "$1" in
 		# https://github.com/jesseduffield/lazygit.git
 		# Dependencies : dev-lang/go dev-vcs/git
 		# https://github.com/jesseduffield/lazynpm.git
-		# Dependencies : dev-lang/go
+		# Dependencies : dev-lang/go net-libs/nodejs
 		__updatepackages__ 'arduino-cli glow lazydocker lazygit lazynpm' 'go install'
+
 		# https://git.suckless.org/dmenu
 		# Dependencies : media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-libs/libXinerama x11-base/xorg-proto virtual/pkgconfig
 		# https://git.suckless.org/st
 		# Dependencies : sys-libs/ncurses media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-terms/st-terminfo x11-base/xorg-proto virtual/pkgconfig
 		__update_suckless__(){
 			PATCH_PATH=$(dirname "$(realpath /root/updater.sh)")/patches
-			PACKAGE_NAME=$(basename "$(pwd)")
 			(cd "$PATCH_PATH" && ./patch.sh "$PACKAGE_NAME" clean)
 			git pull
 			(cd "$PATCH_PATH" && ./patch.sh "$PACKAGE_NAME")
 		}
 		__updatepackages__ 'dmenu st' '__update_suckless__'
+
 		# https://github.com/b3nj5m1n/xdg-ninja.git
 		# Dependencies : app-shells/bash
 		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh /usr/local/bin/xdg-ninja'
+
 		# https://github.com/ankitects/anki.git
 		# Dependencies : app-crypt/mit-krb5 dev-python/PyQt5 dev-python/PyQtWebEngine dev-python/httplib2 dev-python/beautifulsoup4 dev-python/decorator dev-python/jsonschema dev-python/markdown dev-python/requests dev-python/send2trash dev-python/nose dev-python/mock
 		__update_anki__(){
@@ -92,12 +94,18 @@ case "$1" in
 			(cd out/bundle/std/ && ./install.sh) && rm -r out
 		}
 		__updatepackages__ 'anki' '__update_anki__'
+
 		# https://github.com/espanso/espanso.git
 		# Dependencies : cargo-make x11-libs/wxGTK:3.0-gtk3
-		__update_espanso__(){
-			cargo make --profile release build-binary && mv -f target/release/espanso /usr/local/bin/espanso && rm -r target
+		# https://github.com/veeso/termscp.git
+		# Dependencies : pkgconf openssl libopenssl
+		__update_rust__(){
+			cargo build --profile release
+			mv -f target/release/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME"
+			rm -r target
 		}
-		__updatepackages__ 'espanso' '__update_espanso__'
+		__updatepackages__ 'espanso termscp' '__update_rust__'
+
 		# https://github.com/logisim-evolution/logisim-evolution.git
 		# Dependencies : dev-java/openjdk:1.8
 		__update_gradle_app__(){
