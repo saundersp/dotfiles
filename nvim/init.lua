@@ -417,7 +417,7 @@ require('lazy').setup({
 		config = function()
 			require('nvim-treesitter.configs').setup({
 				-- Add languages to be installed here that you want installed for treesitter
-				ensure_installed = { 'c', 'cpp', 'cuda', 'lua', 'python', 'help', 'haskell', 'javascript', 'typescript' },
+				ensure_installed = { 'c', 'cpp', 'cuda', 'lua', 'python', 'haskell', 'javascript', 'typescript' },
 				highlight = { enable = true },
 				rainbow = { enable = true },
 				indent = { enable = false },
