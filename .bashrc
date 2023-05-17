@@ -395,7 +395,7 @@ Available flags:
 		case "$1" in
 			-u|u|update|--update) sudo sh -c 'apt update && apt upgrade -y' ;;
 			-l|l|list|--list) apt list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
-			-q|q|query|--query) __command_requirer_pkg__ apt-file apt-file apt-file "$2" ;;
+			-q|q|query|--query) __command_requirer_pkg__ apt-file apt-file apt-file "search $2" ;;
 			-p|p|prune|--prune) sudo apt autoremove -y ;;
 			-h|h|help|--help) echo "$USAGE" ;;
 			*) echo "$USAGE" && return 1 ;;
