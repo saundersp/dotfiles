@@ -117,6 +117,15 @@ case "$1" in
 		}
 		__updatepackages__ 'logisim-evolution' '__update_gradle_app__'
 
+		__update_cmake__(){
+			make CMAKE_BUILD_TYPE=Release -j $(nproc) -l $(nproc)
+			make install
+			make clean
+			rm -rf .deps
+		}
+		__updatepackages__ 'neovim' '__update_cmake__'
+
+
 		FONT_DIR=/usr/share/fonts/Hasklig
 		if [ -d "$FONT_DIR" ]; then
 			LATEST_TAG=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \" -f 4)
