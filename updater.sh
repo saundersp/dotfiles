@@ -32,7 +32,7 @@ case "$1" in
 			&& make modules_install -j"$NPROC" \
 			&& make install && genkernel --luks initramfs \
 			&& grub-mkconfig -o /boot/grub/grub.cfg \
-			&& emerge -q @module-rebuild
+			&& emerge -v @module-rebuild
 		cd
 	;;
 	p|packages|-p|--packages)
@@ -96,7 +96,7 @@ case "$1" in
 		__updatepackages__ 'anki' '__update_anki__'
 
 		# https://github.com/espanso/espanso.git
-		# Dependencies : cargo-make x11-libs/wxGTK:3.0-gtk3
+		# Dependencies : cargo-make x11-libs/wxGTK:3.0-gtk3 net-fs/samba
 		# https://github.com/veeso/termscp.git
 		# Dependencies : pkgconf openssl libopenssl
 		__update_rust__(){
@@ -125,6 +125,7 @@ case "$1" in
 		}
 		__updatepackages__ 'neovim' '__update_cmake__'
 
+		__updatepackages__ 'Ventoy' 'echo Ventoy updated, Please build then plug USB'
 
 		FONT_DIR=/usr/share/fonts/Hasklig
 		if [ -d "$FONT_DIR" ]; then
