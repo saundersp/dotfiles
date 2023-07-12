@@ -390,6 +390,7 @@ require('lazy').setup({
 	-- Allow the use of formatter managed by Mason
 	{ 'mhartington/formatter.nvim',
 		keys = { { '<leader>f', '<cmd>Format<CR>', desc = '[F]ormat the current document' } },
+		cmd = { 'Mason', 'MasonUpdate' },
 		-- TODO Add Formater usage
 		-- TODO Add linter usage
 		--config = function()
@@ -516,7 +517,12 @@ require('lazy').setup({
 			vim.o.timeoutlen = 200
 			require('which-key').setup({})
 		end
-	}
+	},
+	{ 'akinsho/bufferline.nvim',
+		dependencies = 'kyazdani42/nvim-web-devicons',
+		config = true
+	},
+	{ 'tiagovla/scope.nvim', config = true }
 })
 local lazy = require('lazy')
 nmap('<leader>lo', lazy.home,		'[L]azy [O]pen home')
@@ -583,8 +589,8 @@ Autocmd({ 'BufRead', 'BufNewFile' }, '*.tex',	function() vim.o.filetype = 'tex' 
 -- Key mapping configuration
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 nmap('<C-s>', ':w<CR>',														   'Save buffer shortcut')
-nmap({ '<C-F4>', '<F28>' }, ':q!<CR>',												   'Close window shortcut (keeps buffer open)')
-nmap({ '<S-F4>', 'F16' }, ':bd<CR>',												   'Close buffer shortcut')
+nmap({ '<C-F4>', '<F28>' }, ':tabclose!<CR>',											   'Close tab shortcut (keeps buffer open)')
+nmap({ '<S-F4>', '<F16>' }, ':bd<CR>',												   'Close buffer shortcut')
 nmap('<M-j>', ':resize -1<CR>',													   'Decrease buffer window horizontal size (M is the ALT modifier key)')
 nmap('<M-k>', ':resize +1<CR>',													   'Increase buffer window horizontal size (M is the ALT modifier key)')
 nmap('<M-h>', ':vertical resize -1<CR>',											   'Decrease buffer window vertical size (M is the ALT modifier key)')
@@ -594,9 +600,11 @@ nmap({'<C-m>', '<CR>'}, ':noh<CR>',												   'Clear the highlighting of :se
 nmap('<C-z>', '<Nop>',														   'Disable the suspend signal')
 vmap('<', '<gv',														   'Shift the selection one indent to the right')
 vmap('>', '>gv',														   'Shift the selection one indent to the left')
-nmap('<F2>',															   ':set invpaste paste?<CR>', 'Toggle clipboard pasting')
-nmap('<C-J>',															   'ddp', 'Move the current line down')
-nmap('<C-K>',															   'ddkkp', 'Move the current line up')
+nmap('<F2>', ':set invpaste paste?<CR>',											   'Toggle clipboard pasting')
+nmap('<C-J>', 'ddp',														   'Move the current line down')
+nmap('<C-K>', 'ddkkp',														   'Move the current line up')
+nmap('gb', ':bnext<CR>',													   'Go to the next buffer in buffer list')
+nmap('gB', ':bprevious<CR>',													   'Go to the previous buffer in buffer list')
 vim.api.nvim_create_user_command('EditConfig', 'e ' .. vim.fn.stdpath 'config' .. '/init.lua', { desc =				   'Edit Neovim config file' })
 vim.api.nvim_create_user_command('EspansoEdit', 'e ' .. vim.fn.stdpath 'config' .. '../espanso/match/base.yml', { desc =	   'Edit Espanso config file' })
 
