@@ -1,2 +1,2 @@
-#!/usr/bin/env bash
-[[ -f ~/.bashrc ]] && . ~/.bashrc
+#!/bin/sh
+test -f ~/.bashrc && . ~/.bashrc
