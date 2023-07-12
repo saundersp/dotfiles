@@ -120,12 +120,10 @@ if ! shopt -oq posix; then
 	fi
 fi
 
-# Add interactivity to common commands
-command -v cp >> /dev/null && alias cp='cp -i'
-command -v mv >> /dev/null && alias mv='mv -i'
-command -v mkdir >> /dev/null && alias mkdir='mkdir -p'
+# Add better human readness by default to common commands
 command -v df >> /dev/null && alias df='df -h'
 command -v free >> /dev/null && alias free='free -h'
+command -v mkdir >> /dev/null && alias mkdir='mkdir -p'
 
 # Colourful man page
 export LESS_TERMCAP_mb=$'\E[1;31m'  # begin blink
@@ -289,7 +287,7 @@ Available flags:
 	-h, h, help, --help		Show this help message"
 		case "$1" in
 			-s|s|sync|--sync) sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
-			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -UNDujq --with-bdeps=y @world && dispatch-conf' ;;
+			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uUNDv --with-bdeps=y @world && emerge @preserved-rebuild && dispatch-conf' ;;
 			-l|l|list|--list) cat /var/lib/portage/world ;;
 			-q|q|query|--query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
 			-c|c|clean|--clean) __command_requirer_pkg__ 'sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && find /var/tmp/portage -mindepth 1 -delete"' eclean app-portage/gentoolkit ;;
