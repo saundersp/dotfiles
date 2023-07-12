@@ -74,7 +74,9 @@ case "$1" in
 		# https://git.suckless.org/st
 		# Dependencies : sys-libs/ncurses media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-terms/st-terminfo x11-base/xorg-proto virtual/pkgconfig
 		__update_suckless__(){
-			PATCH_PATH=$(dirname "$(realpath /root/updater.sh)")/patches
+			cd --
+			PATCH_PATH=$(dirname "$(realpath $0)")/patches
+			cd -
 			(cd "$PATCH_PATH" && ./patch.sh "$PACKAGE_NAME" clean)
 			git pull
 			(cd "$PATCH_PATH" && ./patch.sh "$PACKAGE_NAME")
@@ -174,8 +176,8 @@ case "$1" in
 			echo "You have to specify at least one relative module path !"
 			exit 1
 		elif [ "$2" = 'all' ]; then
-			./updater.sh s video/nvidia video/nvidia-drm video/nvidia-modeset video/nvidia-peermem video/nvidia-uvm
-			./updater.sh s misc/vboxdrv misc/vboxnetadp misc/vboxnetflt
+			./$0 s video/nvidia video/nvidia-drm video/nvidia-modeset video/nvidia-peermem video/nvidia-uvm
+			./$0 s misc/vboxdrv misc/vboxnetadp misc/vboxnetflt
 			exit 0
 		fi
 		NAME=$(grep 'CONFIG_LOCALVERSION'=\" /usr/src/linux/.config | cut -d \" -f 2)
