@@ -204,13 +204,8 @@ preview_csv(){
 	(sed 's/,/ ,/g' | column -t -s "$DEL" | less -S -n) < "$1"
 }
 
-if command -v neofetch >> /dev/null; then
-	__cmd_checker__ nfu
-	nfu(){
-		neofetch --config "$XDG_CONFIG_HOME"/neofetch/config.conf > "$XDG_CACHE_HOME"/.neofetch
-	}
-	test ! -r "$XDG_CACHE_HOME"/.neofetch && nfu
-	echo -e -n "\n$(cat "$XDG_CACHE_HOME"/.neofetch)"
+if command -v fastfetch >> /dev/null; then
+	fastfetch
 fi
 
 if command -v python >> /dev/null; then
@@ -582,7 +577,6 @@ update(){
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":MasonUpdate") ~= 0 then vim.cmd("MasonUpdate") end' +q
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":TSUpdateSync") ~= 0 then vim.cmd("TSUpdateSync") end' +q
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":CocUpdateSync") ~= 0 then vim.cmd("CocUpdateSync") end' +q
-	nfu
 }
 
 __cmd_checker__ __helpme__
@@ -602,7 +596,6 @@ __helpme__(){
 	}
 
 	echo -e "${BOLD}Available commands :${NOCOLOUR}"
-	tprint_cmd 'nfu' 'Update the cached neofetch informations'
 	tprint_cmd 'activate' 'Activate the python virtual environment'
 	tprint_cmd 'colours' 'Show the colours palette of the current terminal'
 	tprint_cmd 'preview_csv' 'Preview a csv file' '<file>'

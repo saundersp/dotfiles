@@ -22,7 +22,7 @@ mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME" "$XDG_DATA_HOME" "$XDG_STATE_HOME"
 
 CURRENT_FOLDER=$(pwd)
 if [ "$1" = '-r' ] || [ "$1" = 'r' ] || [ "$1" = 'remove' ] || [ "$1" = '--remove' ]; then
-	rm -rf "$XDG_CONFIG_HOME"/nvim/init.lua "$XDG_CONFIG_HOME"/neofetch/config.conf "$HOME"/.bashrc "$XDG_CONFIG_HOME"/git/config "$HOME"/.bash_profile \
+	rm -rf "$XDG_CONFIG_HOME"/nvim/init.lua "$XDG_CONFIG_HOME"/fastfetch "$HOME"/.bashrc "$XDG_CONFIG_HOME"/git/config "$HOME"/.bash_profile \
 		"$XDG_CONFIG_HOME"/i3/config "$HOME"/.xinitrc "$XDG_CONFIG_HOME"/nvim/coc-settings.json "$XDG_CONFIG_HOME"/X11/Xresources \
 		"$XDG_CONFIG_HOME"/polybar/launch.sh "$XDG_CONFIG_HOME"/polybar/config.ini "$XDG_CONFIG_HOME"/polybar/scripts \
 		"$XDG_CONFIG_HOME"/ranger/rc.conf "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux/tmux.conf
@@ -32,8 +32,7 @@ if [ "$1" = '-r' ] || [ "$1" = 'r' ] || [ "$1" = 'remove' ] || [ "$1" = '--remov
 	FILENAME="$XDG_CONFIG_HOME"/ranger/plugins/ranger_devicons
 	test -d "$FILENAME" && rm -rf "$FILENAME"
 elif [ "$(id -u)" -ne 0 ]; then
-	test ! -r "$XDG_CACHE_HOME"/.neofetch && neofetch --config neofetch/config.conf > "$XDG_CACHE_HOME"/.neofetch
-	mkdir -p "$XDG_CONFIG_HOME"/neofetch "$XDG_CONFIG_HOME"/nvim/autoload "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/git
+	mkdir -p "$XDG_CONFIG_HOME"/nvim/autoload "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/git
 
 	FILENAME="$XDG_DATA_HOME"/nvim/lazy/lazy.nvim
 	test ! -d "$FILENAME" && git clone --filter blob:none https://github.com/folke/lazy.nvim.git --branch stable "$FILENAME"
@@ -42,7 +41,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 
 	ln -sf "$CURRENT_FOLDER"/nvim/init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
 	ln -sf "$CURRENT_FOLDER"/nvim/coc-settings.json "$XDG_CONFIG_HOME"/nvim/coc-settings.json
-	ln -sf "$CURRENT_FOLDER"/neofetch/config.conf "$XDG_CONFIG_HOME"/neofetch/config.conf
+	ln -sf "$CURRENT_FOLDER"/fastfetch "$XDG_CONFIG_HOME"/fastfetch
 	ln -sf "$CURRENT_FOLDER"/ranger/rc.conf "$XDG_CONFIG_HOME"/ranger/rc.conf
 	ln -sf "$CURRENT_FOLDER"/.bashrc "$HOME"/.bashrc
 	ln -sf "$CURRENT_FOLDER"/.gitconfig "$XDG_CONFIG_HOME"/git/config
@@ -66,9 +65,9 @@ elif [ "$(id -u)" -ne 0 ]; then
 	nvim --headless -c CocUpdateSync +q
 	nvim --headless -c TSUpdateSync +q
 else
-	mkdir -p "$XDG_CONFIG_HOME"/neofetch "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/nvim
+	mkdir -p "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/nvim
 
-	ln -sf "$CURRENT_FOLDER"/neofetch/config.conf "$XDG_CONFIG_HOME"/neofetch/config.conf
+	ln -sf "$CURRENT_FOLDER"/fastfetch "$XDG_CONFIG_HOME"/fastfetch
 	ln -sf "$CURRENT_FOLDER"/root.bashrc "$HOME"/.bashrc
 	ln -sf "$CURRENT_FOLDER"/root.bash_profile "$HOME"/.bash_profile
 	ln -sf "$CURRENT_FOLDER"/root.tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf

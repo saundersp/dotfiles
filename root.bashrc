@@ -197,13 +197,8 @@ preview_csv(){
 	(sed 's/,/ ,/g' | column -t -s "$DEL" | less -S -n) < "$1"
 }
 
-if command -v neofetch >> /dev/null; then
-	__cmd_checker__ nfu
-	nfu(){
-		neofetch --config "$XDG_CONFIG_HOME"/neofetch/config.conf > "$XDG_CACHE_HOME"/.neofetch
-	}
-	test ! -r "$XDG_CACHE_HOME"/.neofetch && nfu
-	echo -e -n "\n$(cat "$XDG_CACHE_HOME"/.neofetch)"
+if command -v fastfetch >> /dev/null; then
+	fastfetch
 fi
 
 if command -v python >> /dev/null; then
@@ -496,7 +491,6 @@ update(){
 	command -v ap >> /dev/null && ap u && ap p
 	(cd && ./updater.sh p)
 	command -v nix-env >> /dev/null && nix-env -u
-	nfu
 }
 
 __cmd_checker__ __helpme__
@@ -516,7 +510,6 @@ __helpme__(){
 	}
 
 	echo -e "${BOLD}Available commands :${NOCOLOUR}"
-	tprint_cmd 'nfu' 'Update the cached neofetch informations'
 	tprint_cmd 'activate' 'Activate the python virtual environment'
 	tprint_cmd 'colours' 'Show the colours palette of the current terminal'
 	tprint_cmd 'preview_csv' 'Preview a csv file' '<file>'
