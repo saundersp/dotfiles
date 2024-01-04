@@ -84,3 +84,5 @@ else
 		done
 	fi
 fi
+
+exit 0
