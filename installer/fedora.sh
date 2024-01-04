@@ -38,10 +38,18 @@ install_server(){
 	# Installing lazydocker
 	dnf copr enable atim/lazydocker -y
 
-	install_pkg neofetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep htop opendoas git ranger tmux dash \
+	install_pkg fastfetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep htop opendoas git ranger tmux dash \
 		dnf-plugins-core docker-ce docker-ce-cli containerd.io docker-compose-plugin dos2unix fd-find gcc gcc-c++ gdb make highlight lazygit \
-		lazydocker man-db wireguard-tools patch pkgconf progress python-flake8 python3-autopep8 python3-neovim
+		lazydocker man-db wireguard-tools patch pkgconf progress python3-neovim ncdu
 	# ccls is temporally not available
+
+	# Compiling lazynpm
+	cd /usr/local/src
+	git clone https://github.com/jesseduffield/lazynpm.git
+	cd lazynpm
+	go install -buildvcs=false
+	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
+	cd
 
 	# Use dash instead of bash as default shell
 	ln -sf /bin/dash /bin/sh
@@ -63,14 +71,11 @@ install_ihm(){
 	install_server
 	install_pkg i3 xorg-x11-xinit xset polybar picom feh alacritty xclip xorg-x11-server-Xorg python-xlib autokey-qt calibre i3lock \
 		torbrowser-launcher zathura zathura-pdf-mupdf python-devel libX11-devel libXext-devel libXft-devel libXinerama-devel ImageMagick \
-		libXres-devel
+		libXres-devel tor
 
-	# ueberzug is unmaintained and removed from repositories, installing from source
-	git clone https://github.com/seebye/ueberzug.git /usr/local/src/ueberzug
-	cd /usr/local/src/ueberzug
-	git checkout 0745998c0d0dff321ececd3994895c0875fc25aa
-	pip install -e .
-	cd -
+	# Installing ueberzugpp (fedora version pedantic ?)
+	dnf config-manager --add-repo https://download.opensuse.org/repositories/home:justkidding/Fedora_39/home:justkidding.repo
+	install_pkg ueberzugpp
 
 	# Installing librewolf
 	rpm --import https://keys.openpgp.org/vks/v1/by-fingerprint/034F7776EF5E0C613D2F7934D29FBD5F93C0CFC3
@@ -120,7 +125,8 @@ case $PACKAGES in
 		install_ihm
 		install_pkg os-prober xbacklight ntfs-3g wpa_supplicant pulseaudio bluez-tools pulseaudio-module-bluetooth xorg-x11-drv-intel \
 			xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda akmod-nvidia
-			# bumblebee-status-module-nvidia-prime ucode-intel nvidia-utils pulsemixer
+			# bumblebee-status-module-nvidia-prime ucode-intel nvidia-utils
+			curl https://raw.githubusercontent.com/GeorgeFilipkin/pulsemixer/master/pulsemixer > /usr/local/bin/pulsemixer && chmod +x /usr/local/bin/pulsemixer
 
 		# Allow vlc to use nvidia gpu
 		echo -e '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc

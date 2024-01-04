@@ -87,34 +87,26 @@ swapon /mnt/swap
 # Enable pacman's parallels downloads and colours
 sed -i 's/^#Color/Color/g;s/^#Para/Para/g' /etc/pacman.conf
 
-# Adding "Universe" repository
-echo -e '\n[universe]
-Server = https://universe.artixlinux.org/$arch
-Server = https://mirror1.artixlinux.org/universe/$arch
-Server = https://mirror.pascalpuffke.de/artix-universe/$arch
-Server = https://artixlinux.qontinuum.space/artixlinux/universe/os/$arch
-Server = https://mirror1.cl.netactuate.com/artix/universe/$arch
-Server = https://ftp.crifo.org/artix-universe/
-' >> /etc/pacman.conf
-
-# Adding arch linux mirrors
+# Adding Arch linux mirrors
 pacman -Sy --noconfirm --needed artix-archlinux-support
 echo -e '\n# Arch\n[extra]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[community]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[multilib]\nInclude = /etc/pacman.d/mirrorlist-arch' >> /etc/pacman.conf
 
 # Settings faster pacman arch mirrors
 pacman -Sy --noconfirm --needed reflector
-reflector -a 48 -c $(curl -q ifconfig.io/country_code) -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist-arch
+reflector -a 48 -c "$(curl -q ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist-arch
 
 # Install helpers
 install_pkg(){
 	basestrap /mnt --needed $@
 }
 install_server(){
-	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress python-pynvim flake8 autopep8
+	install_pkg neovim lazygit fastfetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep \
+		btop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress python-pynvim
 }
 install_ihm(){
 	install_server
-	install_pkg picom i3-wm xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura zathura-pdf-mupdf imagemagick tor-browser librewolf
+	install_pkg picom i3-wm xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura \
+		zathura-pdf-mupdf imagemagick tor
 }
 
 # Installing the init system
@@ -364,6 +356,7 @@ case $PACKAGES in
 		chmod +x ~/.fehbg
 
 		aur_install lazydocker
+		aur_install librewolf-bin
 		curl -sS https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg | gpg --import -
 		aur_install spotify
 	;;

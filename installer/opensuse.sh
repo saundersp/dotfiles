@@ -42,9 +42,9 @@ install_server(){
 	zypper addrepo -G https://download.opensuse.org/repositories/home:Dead_Mozay/openSUSE_Tumbleweed/home:Dead_Mozay.repo # For lazygit
 	zypper addrepo -G https://download.opensuse.org/repositories/home:lemmy04/openSUSE_Tumbleweed/home:lemmy04.repo       # For lazydocker
 	zypper refresh
-	install_pkg git neofetch neovim unzip bash-completion nodejs-default npm-default python310 python310-pip ripgrep htop lazygit \
+	install_pkg git fastfetch neovim unzip bash-completion nodejs-default npm-default python310 python310-pip ripgrep htop lazygit \
 		opendoas ranger lazydocker patch gcc gcc-c++ make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python310-neovim \
-		python310-flake8 python310-autopep8
+		go ncdu
 
 	# Use dash instead of bash as default shell
 	ln -sf /bin/dash /bin/sh
@@ -58,6 +58,14 @@ install_server(){
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
 
+	# Compiling lazynpm
+	cd /usr/local/src
+	git clone https://github.com/jesseduffield/lazynpm.git
+	cd lazynpm
+	go install -buildvcs=false
+	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
+	cd
+
 	# Adding user to wheel groups
 	usermod -aG wheel $USERNAME
 	usermod -aG wheel root
@@ -65,10 +73,9 @@ install_server(){
 install_ihm(){
 	install_server
 	zypper addrepo -G https://download.opensuse.org/repositories/home:zzndb001/openSUSE_Tumbleweed/home:zzndb001.repo # For librewolf
-	zypper addrepo -G https://download.opensuse.org/repositories/home:pandom79/openSUSE_Tumbleweed/home:pandom79.repo # For ueberzug
 	zypper refresh
 	install_pkg xinit xorg-x11-server xset polybar i3 picom feh xclip vlc xrandr xf86-input-libinput libX11-devel libXinerama-devel \
-		libXft-devel harfbuzz-devel ncurses-devel ueberzug python310-python-xlib calibre pkgconf filezilla i3lock zathura \
+		libXft-devel harfbuzz-devel ncurses-devel ueberzugpp python310-python-xlib calibre pkgconf filezilla i3lock zathura \
 		zathura-plugin-pdf-mupdf LibreWolf ImageMagick
 
 	# Adding missing c99 executable

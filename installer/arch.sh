@@ -94,11 +94,13 @@ install_pkg(){
 	pacstrap /mnt --needed $@
 }
 install_server(){
-	install_pkg neovim lazygit neofetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep htop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress python-pynvim flake8 autopep8
+	install_pkg neovim lazygit fastfetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep \
+		btop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress python-pynvim
 }
 install_ihm(){
 	install_server
-	install_pkg picom i3-wm xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura zathura-pdf-mupdf imagemagick
+	install_pkg picom i3-wm xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura \
+		zathura-pdf-mupdf imagemagick tor
 }
 
 # Installing the minimal packages
@@ -284,7 +286,6 @@ case $PACKAGES in
 		chmod +x ~/.fehbg
 
 		aur_install lazydocker
-		aur_install tor-browser
 		aur_install librewolf-bin
 		curl -sS https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg | gpg --import -
 		aur_install spotify

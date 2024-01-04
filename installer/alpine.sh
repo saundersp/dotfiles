@@ -22,7 +22,7 @@ TIMEZONE=Europe/London
 DISK_PASSWORD=
 ROOT_PASSWORD=
 USER_PASSWORD=
-KERNEL=lts
+KERNEL=edge
 # Other options : lts virt edge hardened
 NTP=chrony
 # other options busybox openntpd chrony none
@@ -96,6 +96,9 @@ mount /proc /mnt/proc
 
 echo "#!/bin/sh
 
+# Exit immediately if a command exits with a non-zero exit status
+set -e
+
 # Enable faster startup times
 sed 's/#rc_parallel=\"NO\"/rc_parallel=\"YES\"/' -i /etc/rc.conf
 
@@ -107,8 +110,10 @@ mkinitfs \$(ls /lib/modules)
 sed -i \"s;GRUB_CMDLINE_LINUX_DEFAULT=\\\"\\(.*\\)\\\";GRUB_CMDLINE_LINUX_DEFAULT=\\\"\\1 cryptroot=UUID=\$(blkid $ROOT_PARTITION | cut -d \\\" -f 2) cryptdm=$CRYPTED_DISK_NAME\\\";g\" /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# Enabling all repositories mirrors
-sed -i 's/^# \\?http/http/g' /etc/apk/repositories
+# Switching to edge repositories mirrors
+echo 'http://dl-cdn.alpinelinux.org/alpine/edge/main
+http://dl-cdn.alpinelinux.org/alpine/edge/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing' > /etc/apk/repositories
 apk update
 apk upgrade
 
@@ -117,10 +122,10 @@ install_pkg(){
 	apk add \$@
 }
 install_server(){
-	install_pkg neovim doas lazygit neofetch git wget unzip openssh bash-completion nodejs npm python3 \
+	install_pkg neovim doas lazygit git wget unzip openssh bash-completion nodejs npm python3 \
 		py3-pip ripgrep htop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc man-pages \
 		mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev tmux lazydocker \
-		docker docker-compose dos2unix gdb highlight progress py3-flake8 py3-autopep8 py3-pynvim ncdu
+		docker docker-compose dos2unix gdb highlight progress py3-pynvim ncdu cmake make
 
 	# Replace sudo
 	ln -s /usr/bin/doas /usr/bin/sudo
@@ -139,6 +144,19 @@ EOF
 
 	# Add the user to the wheel group
 	adduser $USERNAME wheel
+
+	# Creating custom packages source directory
+	mkdir /usr/local/src
+
+	# Installing fastfetch from source
+	cd /usr/local/src
+	git clone https://github.com/fastfetch-cli/fastfetch.git
+	cd fastfetch
+	mkdir build
+	cd build
+	cmake ..
+	cmake --build . --target fastfetch --target flashfetch
+	mv /usr/local/src/fastfetch/build/fastfetch /usr/local/bin/fastfetch
 
 	# Installing the dotfiles
 	echo \"#!/bin/sh
@@ -165,16 +183,20 @@ EOF
 }
 install_ihm(){
 	install_server
-	install_pkg picom xinit xset feh xclip firefox vlc setxkbmap patch i3wm polybar make harfbuzz-dev \
+	install_pkg picom xinit xset feh xclip librewolf vlc setxkbmap patch i3wm polybar harfbuzz-dev \
 		libxinerama-dev xorg-server filezilla i3lock wireguard-tools pkgconf zathura zathura-pdf-mupdf \
-		xf86-input-libinput eudev udev-init-scripts udev-init-scripts-openrc imagemagick libxres-dev
+		xf86-input-libinput eudev udev-init-scripts udev-init-scripts-openrc imagemagick libxres-dev \
+		xrandr openssl-dev onetbb-dev xcb-util-image-dev opencv-dev libsixel-dev chafa-dev vips-dev
 
-	# ueberzug is unmaintained and removed from repositories, installing from source
-	git clone https://github.com/seebye/ueberzug.git /usr/local/src/ueberzug
-	cd /usr/local/src/ueberzug
-	git checkout 0745998c0d0dff321ececd3994895c0875fc25aa
-	pip install -e .
-	cd -
+	# Installing ueberzugpp from source
+	cd /usr/local/src
+	git clone https://github.com/jstkdng/ueberzugpp.git
+	cd ueberzugpp
+	mkdir build
+	cd build
+	cmake -DCMAKE_BUILD_TYPE=Release ..
+	cmake --build .
+	mv /usr/local/src/ueberzugpp/build/ueberzugpp /usr/local/bin/ueberzugpp
 
 	# Add pkg-config as alias of pkgconf
 	ln -sf /usr/bin/pkgconf /usr/bin/pkg-config
@@ -225,7 +247,8 @@ case $PACKAGES in
 	server) install_server ;;
 	virtual)
 		install_ihm
-		install_pkg virtualbox-guest-additions xf86-video-vboxvideo
+		install_pkg virtualbox-guest-additions virtualbox-guest-additions-x11 xf86-video-vboxvideo
+		rc-update add virtualbox-guest-additions default
 	;;
 	laptop)
 		install_ihm
