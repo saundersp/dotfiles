@@ -129,6 +129,10 @@ case "$1" in
 
 		__updatepackages__ 'Ventoy' 'echo Ventoy updated, Please build then plug USB'
 
+		# https://github.com/arp242/find-cursor.git
+		# Dependencies : dev-build/make
+		__updatepackages__ 'find-cursor' 'make && mv find-cursor /usr/local/bin && make clean'
+
 		FONT_DIR=/usr/share/fonts/Hasklig
 		if [ -d "$FONT_DIR" ]; then
 			LATEST_TAG=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \" -f 4)
