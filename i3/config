@@ -213,6 +213,9 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 
+# Find cursor (note : keycode 105 = Control_R)
+bindcode 105 --release exec --no-startup-id find-cursor -s 200 -t -g -c "$cf-backgr"
+
 mode "Resize" {
 	bindsym l resize shrink width 1 px or 1 ppt
 	bindsym j resize grow height 1 px or 1 ppt
