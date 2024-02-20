@@ -12,6 +12,8 @@ picom -b &
 xset r rate 150 80 &
 # Set the keyboard layout to french
 setxkbmap fr &
+# Disable mouse acceleration
+xset m 0 0
 # Load colour ressources
 xrdb -load "$XDG_CONFIG_HOME/X11/Xresources"
-exec i3
+exec dbus-run-session i3
