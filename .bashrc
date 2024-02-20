@@ -1,43 +1,45 @@
 #!/usr/bin/env bash
 
 # If not running interactively, don't do anything
-[[ $- != *i* ]] && return
+#[[ $- != *i* ]] && return
 
-# Set config and data folder for nvim, alacritty etc...
+# Set config and data folder for nvim, etc...
 export XDG_CONFIG_HOME="$HOME"/.XDG/config
 export XDG_CACHE_HOME="$HOME"/.XDG/cache
 export XDG_DATA_HOME="$HOME"/.XDG/data
 export XDG_STATE_HOME="$HOME"/.XDG/state
 export XDG_RUNTIME_DIR="$HOME"/.XDG/runtime
 
+# Some global XDG variables
+command -v librewolf >> /dev/null && export BROWSER=librewolf
+command -v calibre >> /dev/null && export CALIBRE_USE_DARK_PALETTE=1
+if [ -d /opt/cuda ]; then
+	export CUDA_HOME=/opt/cuda
+	export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+fi
+
 # Set extras dotfiles location to clean home (xdg-ninja)
-command -v nvidia-settings >> /dev/null && alias nvidia-settings='nvidia-settings --config=$XDG_CONFIG_HOME/nvidia/settings'
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
-export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
-export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
-export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
-export GNUPGHOME="$XDG_DATA_HOME"/gnupg
-export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
-export PYTHONSTARTUP=/etc/python/pythonrc
-export GOPATH="$XDG_DATA_HOME"/go
-export KERAS_HOME="$XDG_STATE_HOME"/keras
-export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
-export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
-export MATHEMATICA_USERBASE="$XDG_CONFIG_HOME"/mathematica
-export CARGO_HOME="$XDG_DATA_HOME"/cargo
-export W3M_DIR="$XDG_DATA_HOME"/w3m
-export JUPYTER_CONFIG_DIR="$XDG_CONFIG_HOME"/jupyter
+command -v gradle >> /dev/null && export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
+command -v java >> /dev/null && export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
+command -v gpg >> /dev/null && export GNUPGHOME="$XDG_DATA_HOME"/gnupg
+command -v qt5ct >> /dev/null && export QT_QPA_PLATFORMTHEME='qt5ct'
+command -v wine >> /dev/null && export WINEPREFIX="$XDG_DATA_HOME"/wine
+command -v ipython >> /dev/null && export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
+command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
+command -v docker >> /dev/null && export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
 
 # Define colours
-#LIGHTGRAY='\033[0;37m'
+LIGHTGRAY='\033[0;37m'
 #WHITE='\033[1;37m'
 #BLACK='\033[0;30m'
-DARKGRAY='\033[1;30m'
+#DARKGRAY='\033[1;30m'
 RED='\033[0;31m'
 LIGHTRED='\033[1;31m'
 #GREEN='\033[0;32m'
 #LIGHTGREEN='\033[1;32m'
-#BROWN='\033[0;33m'
+BROWN='\033[0;33m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 LIGHTBLUE='\033[1;34m'
@@ -46,7 +48,7 @@ MAGENTA='\033[0;35m'
 #CYAN='\033[0;36m'
 #LIGHTCYAN='\033[1;36m'
 NOCOLOUR='\033[0m'
-USER_COLOUR="$DARKGRAY"
+USER_COLOUR="$LIGHTGRAY"
 
 # Define text styles
 BOLD='\033[1m'
@@ -78,19 +80,19 @@ __setprompt() {
 	fi
 
 	# Time
-	PS1="$PS1(\[${DARKGRAY}\]\[${LIGHTBLUE}\]$(date +%I:%M:%S•%p)\[${USER_COLOUR}\])-"
+	PS1="$PS1(\[${LIGHTBLUE}\]$(date +%I:%M:%S•%p)\[${USER_COLOUR}\])-"
 
 	# User and hostname
 	PS1="$PS1(\[${MAGENTA}\]\u@\h"
 
 	# Current directory
-	PS1="$PS1\[${DARKGRAY}\])-(\[${BROWN}\]\w\[${USER_COLOUR}\])"
+	PS1="$PS1\[${USER_COLOUR}\])-(\[${BROWN}\]\w\[${USER_COLOUR}\])"
 
 	# Git branch
 	PS1="$PS1\[${BLUE}\]$(git branch 2>>/dev/null | sed -n 's/\* \(.*\)/ ( \1)/p')"
 
 	# Python virtual environment
-	PS1="$PS1\[${YELLOW}\]$(command -v deactivate >> /dev/null && echo ' ( env)')"
+	PS1="$PS1\[${YELLOW}\]$(test -n "$VIRTUAL_ENV" >> /dev/null && echo " ( $(basename "$VIRTUAL_ENV"))")"
 
 	# Skip to the next line
 	PS1="$PS1\r\n\[${USER_COLOUR}\]└─>\[${NOCOLOUR}\] "
@@ -99,13 +101,13 @@ __setprompt() {
 	PS1="$PS1\[\033]0;st (\w)\007\]"
 
 	# PS2 is used to continue a command using the \ character
-	PS2="\[${DARKGRAY}\]>\[${NOCOLOUR}\] "
+	PS2="\[${USER_COLOUR}\]>\[${NOCOLOUR}\] "
 
 	# PS3 is used to enter a number choice in a script
 	PS3='Please enter a number from above list: '
 
 	# PS4 is used for tracing a script in debug mode
-	PS4="\[${DARKGRAY}\]+\[${NOCOLOUR}\] "
+	PS4="\[${USER_COLOUR}\]+\[${NOCOLOUR}\] "
 }
 PROMPT_COMMAND='__setprompt' # Will run function every time a command is entered
 
@@ -118,10 +120,8 @@ shopt -s cdspell dirspell                      # Minor error corrections on dire
 shopt -s expand_aliases                        # Enable the alias keyword
 
 # Enable programmable completion features script by GNU (https://github.com/scop/bash-completion)
-if ! shopt -oq posix; then
-	if [ -f /usr/share/bash-completion/bash_completion ]; then . /usr/share/bash-completion/bash_completion
-	elif [ -f /etc/bash_completion ]; then . /etc/bash_completion
-	fi
+if [ -f /usr/share/bash-completion/bash_completion ]; then . /usr/share/bash-completion/bash_completion
+elif [ -f /etc/bash_completion ]; then . /etc/bash_completion
 fi
 
 # Enable autocompletion as superuser
@@ -204,9 +204,7 @@ preview_csv(){
 	(sed 's/,/ ,/g' | column -t -s "$DEL" | less -S -n) < "$1"
 }
 
-if command -v fastfetch >> /dev/null; then
-	fastfetch
-fi
+command -v fastfetch >> /dev/null && [[ $- == *i* ]] && fastfetch
 
 if command -v python >> /dev/null; then
 	# Activate the python virtual environment in the current folder
@@ -349,16 +347,17 @@ Available flags:
 	-s, s, sync, --sync		Sync the packages repository.
 	-u, u, update, --update		Update every packages.
 	-l, l, list, --list		List every packages in the @world set.
-	-q, q, query, --query		Search packages that contains a given file.
-	-c, c, clean, --clean		Clean the unused distfiles and packages remainders.
+	-q, q, query, --query		Search packages that contains a given file (requires app-portage/pfl).
+	-c, c, clean, --clean		Clean the unused distfiles and packages remainders (requires app-portage/gentoolkit).
 	-p, p, prune, --prune		Remove unused packages (orphans).
 	-d, d, desc, --desc		List all possible USE variable.
 	-U, U, use, --use		List all set USE variable.
 	-m, m, mirrors, --mirrors	Update the mirrorlist.
-	-h, h, help, --help		Show this help message"
+	-b, b, board, --board		Show the latest sync timestamp of the repositories.
+	-h, h, help, --help		Show this help message."
 		case "$1" in
 			-s|s|sync|--sync) sudo sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
-			-u|u|update|--update) sudo sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uUNDv --with-bdeps=y @world && emerge @preserved-rebuild && dispatch-conf' ;;
+			-u|u|update|--update) sudo sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uUDv @world && emerge -v @preserved-rebuild && dispatch-conf' ;;
 			-l|l|list|--list) cat /var/lib/portage/world ;;
 			-q|q|query|--query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
 			-c|c|clean|--clean) __command_requirer_pkg__ 'sudo sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && find /var/tmp/portage -mindepth 1 -delete"' eclean app-portage/gentoolkit ;;
@@ -366,13 +365,67 @@ Available flags:
 			-d|d|desc|--desc) less /var/db/repos/gentoo/profiles/use.desc ;;
 			-U|U|use|--use) __command_requirer_pkg__ 'portageq envvar USE | xargs -n1 | less' portageq sys-apps/portage ;;
 			-m|m|mirrors|--mirrors) sudo sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
+			-b|b|board|--board)
+				if ! __command_requirer_pkg__ '' format_time saundersp/format_time; then
+					return 1
+				fi
+				declare -a repos commits
+				repo_len=15
+				commit_len=16
+
+				for repo in /var/db/repos/*; do
+					repo_name=$(echo "$repo" | cut -d / -f 5)
+					if [ -f "$repo"/metadata/timestamp ]; then
+						repo_date=$(date --date="$(cat "$repo"/metadata/timestamp)" +%s)
+					elif [ -f "$repo"/metadata/timestamp.x ]; then
+						repo_date=$(cut "$repo"/metadata/timestamp.x -d ' ' -f 1)
+					elif [ -f "$repo"/metadata/timestamp.chk ]; then
+						repo_date=$(date --date="$(cat "$repo"/metadata/timestamp.chk)" +%s)
+					else
+						repo_date=$(git -C "$repo" log -1 --format=%ct)
+					fi
+					commit=$(format_time $(($(date +%s) - repo_date)))
+					commits+=("$commit")
+					if [ ${#commit} -gt "$commit_len" ]; then
+						commit_len=${#commit}
+					fi
+					repos+=("$repo_name")
+					if [ ${#repo_name} -gt "$repo_len" ]; then
+						repo_len=${#repo_name}
+					fi
+				done
+
+				# Surely there is a better way to do this inline
+				__cmd_checker__ __r__
+				__r__(){
+					end="$1"
+					for _ in $(seq 1 "$end") ; do
+						printf '%s' "$2";
+					done
+				}
+
+				# ┌ <=> \u250C		─ <=> \u2500		┐ <=> \u2510
+				# ┬ <=> \u252C		│ <=> \u2502		└ <=> \u2514
+				# ┘ <=> \u2518		┴ <=> \u2534		├ <=> \u251C
+				# ┼ <=> \u253C		┤ <=> \u2524
+
+				env printf "┌$(__r__ $((repo_len + 2)) ─)┬$(__r__ $((commit_len + 2)) ─)┐\n"
+				env printf "│ %-${repo_len}s │ %-${commit_len}s │\n" 'Repository name' 'Last commit time'
+				env printf "├$(__r__ $((repo_len + 2)) ─)┼$(__r__ $((commit_len + 2)) ─)┤\n"
+				for ((i=0; i<${#repos[@]}; i++)); do
+					env printf "│ %-${repo_len}s │ %-${commit_len}s │\n" "${repos[i]}" "${commits[i]}"
+				done
+				env printf "└$(__r__ $((repo_len + 2)) '─')┴$(__r__ $((commit_len + 2)) ─)┘\n"
+
+				unset __r__
+			;;
 			-h|h|help|--help) echo "$USAGE" ;;
 			*) echo "$USAGE" && return 1 ;;
 		esac
 	}
 fi
 
-if command -v apt >> /dev/null; then
+if command -v apt-get >> /dev/null; then
 	__cmd_checker__ ap
 	ap(){
 		USAGE="APT's helper
@@ -386,10 +439,10 @@ Available flags:
 	-p, p, prune, --prune		Remove unused packages (orphans).
 	-h, h, help, --help		Show this help message"
 		case "$1" in
-			-u|u|update|--update) sudo sh -c 'apt update && apt upgrade -y' ;;
-			-l|l|list|--list) apt list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
+			-u|u|update|--update) sudo sh -c 'apt-get update && apt-get upgrade -y' ;;
+			-l|l|list|--list) apt-get list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
 			-q|q|query|--query) __command_requirer_pkg__ apt-file apt-file apt-file "search $2" ;;
-			-p|p|prune|--prune) sudo apt autoremove -y ;;
+			-p|p|prune|--prune) sudo apt-get autoremove -y ;;
 			-h|h|help|--help) echo "$USAGE" ;;
 			*) echo "$USAGE" && return 1 ;;
 		esac
@@ -529,7 +582,6 @@ fi
 command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
 test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after $HOME/"Calibre Library"/ linode:~/"Calibre Library"/'
 command -v dmenu_run >> /dev/null && __cmd_checker__ dm && alias dm='dmenu_run -n -c -l 20'
-command -v xdg-ninja >> /dev/null && alias xdg-ninja='xdg-ninja --skip-unsupported'
 
 __cmd_checker__ pow
 pow(){
@@ -575,6 +627,7 @@ update(){
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":Lazy") ~= 0 then vim.cmd("Lazy! update") end' +qa
 	command -v nvim >> /dev/null && nvim --headless -c 'autocmd User PackerComplete quitall' -c 'lua if vim.fn.exists(":PackerSync") == 0 then vim.cmd("quit") end vim.cmd("PackerSync")'
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":MasonUpdate") ~= 0 then vim.cmd("MasonUpdate") end' +q
+	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":MasonUpdateAll") ~= 0 then vim.cmd("MasonUpdateAll") end' -c 'autocmd User MasonUpdateAllComplete quitall'
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":TSUpdateSync") ~= 0 then vim.cmd("TSUpdateSync") end' +q
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":CocUpdateSync") ~= 0 then vim.cmd("CocUpdateSync") end' +q
 }
