@@ -237,8 +237,8 @@ mode "$mode_system" {
 	# Sometimes i3lock doesn't work properly, just chmod 4755 $(whereis i3lock)
 	bindsym l exec --no-startup-id i3lock -i $(cat ~/.fehbg | sed 1d | cut -d "'" -f 2) -e -f, mode "default"
 	bindsym e exec --no-startup-id i3-msg exit
-	bindsym r exec --no-startup-id sudo reboot, mode "default"
-	bindsym p exec --no-startup-id sudo poweroff, mode "default"
+	bindsym r exec --no-startup-id loginctl reboot, mode "default"
+	bindsym p exec --no-startup-id loginctl poweroff, mode "default"
 	bindsym b exec --no-startup-id $XDG_CONFIG_HOME/polybar/scripts/bluetooth.sh --toggle, mode "default"
 
 	bindsym Escape mode "default"
