@@ -32,19 +32,19 @@ STAGE_TYPE=openrc
 # - hardened-selinux-openrc
 # - nomultilib-openrc
 
-test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
-test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
-test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
+test -z "$DISK_PASSWORD" && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
+test -z "$ROOT_PASSWORD" && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
+test -z "$USER_PASSWORD" && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
 
 # List of disks
-BOOT_PARTITION=$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX
-ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
+BOOT_PARTITION="$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX"
+ROOT_PARTITION="$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX"
 
 # Partition the disks
-fdisk $DISK << EOF
+fdisk "$DISK" << EOF
 g
 n
 $BOOT_PARTITION_INDEX
@@ -60,20 +60,19 @@ w
 EOF
 
 # Encrypting the root partition
-echo -n $DISK_PASSWORD | cryptsetup luksFormat -v $ROOT_PARTITION
-echo -n $DISK_PASSWORD | cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
+echo -n "$DISK_PASSWORD" | cryptsetup luksFormat -v "$ROOT_PARTITION"
+echo -n "$DISK_PASSWORD" | cryptsetup open "$ROOT_PARTITION" "$CRYPTED_DISK_NAME"
 
 # Formatting the partitions
-mkfs.vfat -n 'UEFI Boot' -F 32 $BOOT_PARTITION
-mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
+mkfs.vfat -n 'UEFI Boot' -F 32 "$BOOT_PARTITION"
+mkfs.ext4 -L Root /dev/mapper/"$CRYPTED_DISK_NAME"
 
 # Mounting the file systems
-mount /dev/mapper/$CRYPTED_DISK_NAME /mnt/gentoo
-mkdir -p /mnt/gentoo/boot
-mount $BOOT_PARTITION /mnt/gentoo/boot
+mount /dev/mapper/"$CRYPTED_DISK_NAME" /mnt/gentoo
+mount --mkdir "$BOOT_PARTITION" /mnt/gentoo/boot
 
 # Creating and mounting the swap file
-fallocate -l $SWAP_SIZE /mnt/gentoo/swap
+fallocate -l "$SWAP_SIZE" /mnt/gentoo/swap
 chmod 0600 /mnt/gentoo/swap
 chown root /mnt/gentoo/swap
 mkswap /mnt/gentoo/swap
@@ -357,7 +356,7 @@ chmod +x /mnt/gentoo/install.sh
 chroot /mnt/gentoo /bin/bash /install.sh
 
 # Cleaning leftovers
-rm -f /mnt/gentoo/install.sh /mnt/gentoo/$STAGE_FILENAME $0
+rm -f /mnt/gentoo/install.sh /mnt/gentoo/"$STAGE_FILENAME" "$0"
 
 reboot
 
