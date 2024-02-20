@@ -185,7 +185,7 @@ case "$1" in
 		while [ -n "$2" ]; do
 			if [ -f /lib/modules/"$VERSION$NAME"/"$2".ko ]; then
 				echo "Signing $2 ..."
-				/usr/src/linux/scripts/sign-file sha512 /usr/src/linux/certs/signing_key.pem /usr/src/linux/certs/signing_key.x509 /lib/modules/"$VERSION$NAME"/"$2".ko
+				/usr/src/linux/scripts/sign-file sha3-512 /usr/src/linux/certs/signing_key.pem /usr/src/linux/certs/signing_key.x509 /lib/modules/"$VERSION$NAME"/"$2".ko
 			else
 				echo "Module $2 not found in $VERSION$NAME"
 			fi
