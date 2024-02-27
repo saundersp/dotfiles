@@ -19,7 +19,7 @@ if [ -d /opt/cuda ]; then
 fi
 
 # Set extras dotfiles location to clean home (xdg-ninja)
-export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
+export LESSHISTFILE="$XDG_STATE_HOME"/less_history
 command -v gradle >> /dev/null && export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
 command -v java >> /dev/null && export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 command -v gpg >> /dev/null && export GNUPGHOME="$XDG_DATA_HOME"/gnupg
@@ -113,7 +113,7 @@ PROMPT_COMMAND='__setprompt' # Will run function every time a command is entered
 
 HISTCONTROL=ignoreboth                         # Don't put duplicate lines or lines starting with space in the history
 HISTSIZE='' HISTFILESIZE=''                    # Infinite history
-export HISTFILE="$XDG_STATE_HOME"/bash/history # Change the default history file location
+export HISTFILE="$XDG_STATE_HOME"/bash_history # Change the default history file location
 stty -ixon                                     # Disable ctrl-s and ctrl-q.
 shopt -s histappend                            # Append to the history file, don't overwrite it
 shopt -s cdspell dirspell                      # Minor error corrections on directories/files names
@@ -148,10 +148,14 @@ export LESS_TERMCAP_se=$'\E[0m'     # reset reverse video
 export LESS_TERMCAP_us=$'\E[1;32m'  # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'     # reset underline
 
-if command -v ls >> /dev/null; then
+if command -v eza >> /dev/null; then
+	alias ls='eza -h --color=auto --group-directories-first'
+	__cmd_checker__ ll
+	alias ll='eza -hlas size --git --color=auto --group-directories-first'
+elif command -v ls >> /dev/null; then
 	alias ls='ls -h --color=auto --group-directories-first'
 	__cmd_checker__ ll
-	alias ll='ls -hClas --color=auto --group-directories-first'
+	alias ll='ls -hlas --color=auto --group-directories-first'
 fi
 command -v gdb >> /dev/null && alias gdb='gdb -q'
 command -v cuda-gdb >> /dev/null && alias cuda-gdb='cuda-gdb -q'
@@ -588,7 +592,6 @@ fi
 
 command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
 test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after $HOME/"Calibre Library"/ linode:~/"Calibre Library"/'
-command -v dmenu_run >> /dev/null && __cmd_checker__ dm && alias dm='dmenu_run -n -c -l 20'
 
 __cmd_checker__ pow
 pow(){
@@ -632,18 +635,16 @@ update(){
 	command -v nix-env >> /dev/null && nix-env -u
 	command -v arduino-cli >> /dev/null && arduino-cli update && arduino-cli upgrade
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":Lazy") ~= 0 then vim.cmd("Lazy! update") end' +qa
-	command -v nvim >> /dev/null && nvim --headless -c 'autocmd User PackerComplete quitall' -c 'lua if vim.fn.exists(":PackerSync") == 0 then vim.cmd("quit") end vim.cmd("PackerSync")'
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":MasonUpdate") ~= 0 then vim.cmd("MasonUpdate") end' +q
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":MasonUpdateAll") ~= 0 then vim.cmd("MasonUpdateAll") end' -c 'autocmd User MasonUpdateAllComplete quitall'
 	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":TSUpdateSync") ~= 0 then vim.cmd("TSUpdateSync") end' +q
-	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":CocUpdateSync") ~= 0 then vim.cmd("CocUpdateSync") end' +q
 }
 
 __cmd_checker__ __helpme__
 __helpme__(){
 	__cmd_checker__ print_cmd
 	print_cmd(){
-		printf "\055 \e[${ITALIC}%-32s\e[${NOCOLOUR} : $2\n" "$1"
+		printf "\055 ${ITALIC}%-32s${NOCOLOUR} : $2\n" "$1"
 	}
 
 	__cmd_checker__ tprint_cmd
@@ -651,7 +652,7 @@ __helpme__(){
 		if command -v "$1" >> /dev/null; then
 			print_cmd "$1 $3" "$2"
 		#else
-		#	printf "\055 \e[${ITALIC}%-32s\e[${NOCOLOUR} : ${BOLD}This command isn't enabled${NOCOLOUR}\n" "$1"
+		#	printf "\055 ${ITALIC}%-32s${NOCOLOUR} : ${BOLD}This command isn't enabled${NOCOLOUR}\n" "$1"
 		fi
 	}
 
@@ -679,7 +680,6 @@ __helpme__(){
 	tprint_cmd 'weather' 'Get current weather status'
 	print_cmd 'pow' 'CPU scaling governor helper'
 	tprint_cmd 'sync_books' "Sync calibre's books to the linode's VPS"
-	tprint_cmd 'dm' 'Shortcut to dmenu'
 	print_cmd '?' 'Print this reminder'
 
 	echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"
@@ -687,6 +687,8 @@ __helpme__(){
 	print_cmd '!$' 'Last item ran'
 	print_cmd '!^' 'First item ran'
 	print_cmd '!*' 'All items ran'
+
+	unset print_cmd tprint_cmd
 }
 __cmd_checker__ '?'
 alias '?'='__helpme__'
