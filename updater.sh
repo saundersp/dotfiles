@@ -28,7 +28,8 @@ case "$1" in
 	u|update|-u|--update)
 		cd /usr/src/linux
 		NPROC=$(nproc)
-		make -j"$NPROC" \
+		make modules_prepare \
+			&& make -j"$NPROC" -l"$NPROC" \
 			&& make modules_install -j"$NPROC" \
 			&& make install && genkernel --luks initramfs \
 			&& grub-mkconfig -o /boot/grub/grub.cfg \
