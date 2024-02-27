@@ -85,6 +85,7 @@ case "$1" in
 
 		# https://github.com/b3nj5m1n/xdg-ninja.git
 		# Dependencies : app-shells/bash
+		# Optional dependencies : app-misc/glow
 		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh /usr/local/bin/xdg-ninja'
 
 		# https://github.com/ankitects/anki.git
@@ -100,7 +101,7 @@ case "$1" in
 		# https://github.com/espanso/espanso.git
 		# Dependencies : cargo-make x11-libs/wxGTK:3.0-gtk3 net-fs/samba
 		# https://github.com/veeso/termscp.git
-		# Dependencies : pkgconf openssl libopenssl
+		# Dependencies : dev-util/pkgconf dev-libs/openssl
 		__update_rust__(){
 			cargo build --profile release
 			mv -f target/release/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME"
@@ -119,6 +120,8 @@ case "$1" in
 		}
 		__updatepackages__ 'logisim-evolution' '__update_gradle_app__'
 
+		# https://github.com/neovim/neovim.git
+		# Dependencies : dev-build/cmake dev-build/ninja app-arch/unzip net-misc/curl sys-devel/gettext sys-devel/gcc
 		__update_cmake__(){
 			make CMAKE_BUILD_TYPE=Release -j $(nproc) -l $(nproc)
 			make install
@@ -127,6 +130,7 @@ case "$1" in
 		}
 		__updatepackages__ 'neovim' '__update_cmake__'
 
+		# https://github.com/ventoy/Ventoy
 		__updatepackages__ 'Ventoy' 'echo Ventoy updated, Please build then plug USB'
 
 		# https://github.com/arp242/find-cursor.git
