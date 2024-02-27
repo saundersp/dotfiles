@@ -124,6 +124,13 @@ if [ -f /usr/share/bash-completion/bash_completion ]; then . /usr/share/bash-com
 elif [ -f /etc/bash_completion ]; then . /etc/bash_completion
 fi
 
+# Enable fzf functionnalities
+if command -v fzf >> /dev/null; then
+	test -f /usr/share/bash-completion/completions/fzf && . /usr/share/bash-completion/completions/fzf
+	# CTRL-T, CTRL-R, and ALT-C
+	test -f /usr/share/fzf/key-bindings.bash && . /usr/share/fzf/key-bindings.bash
+fi
+
 # Enable autocompletion as superuser
 complete -cf sudo
 
