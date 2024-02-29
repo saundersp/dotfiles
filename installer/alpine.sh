@@ -48,6 +48,13 @@ setup-timezone -z "$TIMEZONE"
 # Setting the hostname
 setup-hostname "$HOSTNAME"
 
+# Switching to edge repositories mirrors
+echo 'http://dl-cdn.alpinelinux.org/alpine/edge/main
+http://dl-cdn.alpinelinux.org/alpine/edge/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing' > /etc/apk/repositories
+apk update
+apk upgrade
+
 # Getting the fastest mirrors
 setup-apkrepos -f
 
@@ -110,13 +117,6 @@ mkinitfs \$(ls /lib/modules)
 sed -i \"s;GRUB_CMDLINE_LINUX_DEFAULT=\\\"\\(.*\\)\\\";GRUB_CMDLINE_LINUX_DEFAULT=\\\"\\1 cryptroot=UUID=\$(blkid $ROOT_PARTITION | cut -d \\\" -f 2) cryptdm=$CRYPTED_DISK_NAME\\\";g\" /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# Switching to edge repositories mirrors
-echo 'http://dl-cdn.alpinelinux.org/alpine/edge/main
-http://dl-cdn.alpinelinux.org/alpine/edge/community
-http://dl-cdn.alpinelinux.org/alpine/edge/testing' > /etc/apk/repositories
-apk update
-apk upgrade
-
 # Install helpers
 install_pkg(){
 	apk add \$@
@@ -134,7 +134,7 @@ install_server(){
 	echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.d/doas.conf
 
 	# Replace default root shell
-	sed -i 's,root:/root:/bin/ash,root:/root:/bin/bash,g' /etc/passwd
+	sed -i 's,root:/root:/bin/sh,root:/root:/bin/bash,g' /etc/passwd
 
 	# Adding user and setting password
 	adduser -s /bin/bash $USERNAME << EOF
@@ -152,11 +152,10 @@ EOF
 	cd /usr/local/src
 	git clone https://github.com/fastfetch-cli/fastfetch.git
 	cd fastfetch
-	mkdir build
-	cd build
-	cmake ..
-	cmake --build . --target fastfetch --target flashfetch
+	cmake -B build
+	cmake --build build --target fastfetch --target flashfetch -j \"\$(nproc)\"
 	mv /usr/local/src/fastfetch/build/fastfetch /usr/local/bin/fastfetch
+	rm -r build
 
 	# Installing the dotfiles
 	echo \"#!/bin/sh
@@ -192,17 +191,17 @@ install_ihm(){
 	cd /usr/local/src
 	git clone https://github.com/jstkdng/ueberzugpp.git
 	cd ueberzugpp
-	mkdir build
-	cd build
-	cmake -DCMAKE_BUILD_TYPE=Release ..
-	cmake --build .
+	cmake -DCMAKE_BUILD_TYPE=Release -B build
+	cmake --build build -j \"\$(nproc)\"
 	mv /usr/local/src/ueberzugpp/build/ueberzugpp /usr/local/bin/ueberzugpp
+	mv /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug
+	rm -r build
 
 	# Add pkg-config as alias of pkgconf
 	ln -sf /usr/bin/pkgconf /usr/bin/pkg-config
 
 	# Setup xorg server
-	setup-xorg-base
+	setup-xorg-base | true
 
 	# Add the user to the necessary groups
 	adduser $USERNAME input
