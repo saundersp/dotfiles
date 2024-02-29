@@ -4,6 +4,7 @@
 # git am patch_file.diff
 # Update the patch file (LENGTH = dmenu:7 st:12)
 # git format-patch --stdout HEAD~$LENGTH > patch_file.diff
+# diff -u FILE.bak FILE > patch_file.diff
 
 __apply_patch__(){
 	if [ "$(id -u)" -ne 0 ]; then
