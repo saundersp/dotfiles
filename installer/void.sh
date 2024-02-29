@@ -4,8 +4,7 @@
 # login as root:voidlinux
 # loadkeys fr
 # If WiFi : wpa_supplicant https://docs.voidlinux.org/config/network/wpa_supplicant.html
-# xbps-install -u xbps
-# xbps-install -Sy curl
+# xbps-install -Syu xbps curl
 
 # Configuration (tweak to your liking)
 USERNAME=saundersp
@@ -26,7 +25,7 @@ TIMEZONE=Europe/London
 DISK_PASSWORD=
 ROOT_PASSWORD=
 USER_PASSWORD=
-MIRROR=https://alpha.de.repo.voidlinux.org/current
+MIRROR=https://repo-default.voidlinux.org/current
 # Other options at https://docs.voidlinux.org/xbps/repositories/mirrors/index.html
 ARCH=x86_64
 # Other options : x86_64 x86_64-musl i686
@@ -93,13 +92,14 @@ install_pkg base-system opendoas grub-x86_64-efi efibootmgr cryptsetup which man
 EOF
 
 install_server(){
-	install_pkg neovim lazygit lazydocker neofetch git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep htop ranger tmux \
-		docker dos2unix fd highlight ccls gcc gdb xtools docker-compose progress python3-neovim flake8 autopep8
+	install_pkg neovim lazygit lazydocker git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep htop ranger tmux \
+		docker dos2unix fd highlight ccls gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers
 }
 install_ihm(){
 	install_server
-	install_pkg picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar ueberzug calibre filezilla zathura \
-		zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch wireguard ImageMagick
+	install_pkg picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar calibre filezilla zathura \
+		zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch wireguard ImageMagick \
+		openssl-devel tbb-devel libxcb-devel xcb-util-image-devel libopencv-devel libvips-devel libsixel-devel chafa-devel
 }
 
 # Installing the platform specific packages
@@ -226,7 +226,39 @@ xbps-reconfigure -fa \$(xbps-query -s 'linux\d*' | cut -f 2 -d ' ' | cut -f 1 -d
 ln -s /etc/sv/connmand /etc/runit/runsvdir/default/
 ln -s /etc/sv/dhcpcd /etc/runit/runsvdir/default/
 
-" >> /mnt/install.sh
+# Creating custom packages source directory
+mkdir /usr/local/src
+
+if [ '$PACKAGES' == 'laptop' ] || [ '$PACKAGES' == 'virtual' ] || [ '$PACKAGES' == 'server' ]; then
+	# Installing lazynpm from source
+	cd /usr/local/src
+	git clone https://github.com/jesseduffield/lazynpm.git
+	cd lazynpm
+	go install -buildvcs=false
+	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
+
+	# Installing fastfetch from source
+	cd /usr/local/src
+	git clone https://github.com/fastfetch-cli/fastfetch.git
+	cd fastfetch
+	cmake -B build
+	cmake --build build --target fastfetch --target flashfetch -j \$(nproc)
+	mv /usr/local/src/fastfetch/build/fastfetch /usr/local/bin/fastfetch
+	rm -r build
+fi
+
+if [ '$PACKAGES' == 'laptop' ] || [ '$PACKAGES' == 'virtual' ]; then
+	# Installing ueberzugpp from source
+	cd /usr/local/src
+	git clone https://github.com/jstkdng/ueberzugpp.git
+	cd ueberzugpp
+	cmake -DCMAKE_BUILD_TYPE=Release build
+	cmake --build build -j \$(nproc)
+	mv /usr/local/src/ueberzugpp/build/ueberzugpp /usr/local/bin/ueberzugpp
+	mv /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug
+	rm -r build
+fi
+" > /mnt/install.sh
 chmod +x /mnt/install.sh
 chroot /mnt /install.sh
 
@@ -269,12 +301,12 @@ esac
 # Removing the nopass option in doas
 sudo sed -i '1s/nopass/persist/g' /etc/doas.conf
 
-" >> /mnt/home/"$USERNAME"/install.sh
+" > /mnt/home/"$USERNAME"/install.sh
 chmod +x /mnt/home/"$USERNAME"/install.sh
 chroot /mnt /usr/bin/runuser -u "$USERNAME" /home/"$USERNAME"/install.sh
 
 # Cleaning leftovers
-rm /mnt/install.sh /mnt/home/"$USERNAME"/install.sh "$0"
+rm /mnt/install.sh /mnt/home/"$USERNAME"/install.sh /root/"$0"
 
 reboot
 
