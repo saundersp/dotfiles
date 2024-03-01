@@ -590,7 +590,7 @@ require('lazy').setup({
 		require = { 'nvim-lua/plenary.nvim' }
 	},
 	-- Bring automated annotation
-	{	'danymat/neogen',
+	{ 'danymat/neogen',
 		config = function()
 			local neogen = require('neogen')
 			neogen.setup({})
@@ -603,10 +603,22 @@ require('lazy').setup({
 		dependencies = 'nvim-treesitter/nvim-treesitter'
 	},
 	-- Hex editing done right
-	{	'RaafatTurki/hex.nvim',
-			keys = {
-				{ '<leader>x', ":lua require('hex').toggle()<CR>", 'Toggle between hex view and normal view' }
-			}
+	{ 'RaafatTurki/hex.nvim',
+		keys = {
+			{ '<leader>x', ":lua require('hex').toggle()<CR>", 'Toggle between hex view and normal view' }
+		}
+	},
+	-- Better navigation inside tmux
+	{ 'alexghergh/nvim-tmux-navigation',
+		event = 'VimEnter',
+		config = function()
+			local nvim_tmux_nav = require('nvim-tmux-navigation')
+			nvim_tmux_nav.setup({ disable_when_zoomed = true })
+			nmap('<C-b>h', nvim_tmux_nav.NvimTmuxNavigateLeft,	'Navigate to the left tmux pane if existant')
+			nmap('<C-b>j', nvim_tmux_nav.NvimTmuxNavigateDown,	'Navigate to the down tmux pane if existant')
+			nmap('<C-b>k', nvim_tmux_nav.NvimTmuxNavigateUp,	'Navigate to the up tmux pane if existant')
+			nmap('<C-b>l', nvim_tmux_nav.NvimTmuxNavigateRight,	'Navigate to the right tmux pane if existant')
+		end
 	}
 })
 local lazy = require('lazy')
