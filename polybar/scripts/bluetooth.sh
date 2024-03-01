@@ -16,8 +16,14 @@ bluetooth_print() {
 				device_power=$(echo "$device_info" | grep -Po 'Battery Percentage: 0x\w{0,2} \(\K\d{1,3}')
 
 				if [ $counter -gt 0 ]; then
-					printf '\- %s 󰥉 %s%%' "$device_alias" "$device_power"
+					printf ' \-'
+				fi
+
+				if [ -z "$device_power" ]; then
+					# nf-md-battery_alert
+					printf ' %s 󰂃' "$device_alias"
 				else
+					# nf-md-battery_bluetooth_variant
 					printf ' %s 󰥉 %s%%' "$device_alias" "$device_power"
 				fi
 
