@@ -117,6 +117,11 @@ require('lazy').setup({
 			nmap('<leader>sm', tbi.marks,		'[S]earch [M]arks')
 			nmap('<leader>sr', tbi.registers,	'[S]earch [R]egisters')
 			telescope.load_extension('ui-select')
+
+			local todo = require('todo-comments')
+			nmap('<leader>st', ':TodoTelescope<CR>', '[S]earch [T]odo elements')
+			nmap(']t', todo.jump_next,		 'Next todo comment')
+			nmap('[t', todo.jump_prev,		 'Previous todo comment')
 		end,
 		dependencies = {
 			-- Bind vim.ui.select to telescope
@@ -124,7 +129,9 @@ require('lazy').setup({
 			-- Lua library functions
 			'nvim-lua/plenary.nvim',
 			-- Provides nerd fonts icons
-			'nvim-tree/nvim-web-devicons'
+			'nvim-tree/nvim-web-devicons',
+			-- Highlight todo, notes, etc in comments
+			'folke/todo-comments.nvim'
 		}
 	},
 	-- Automatic pairs of ( [ { insertion
@@ -218,6 +225,8 @@ require('lazy').setup({
 				nmap('<leader>du', dapui.toggle,							'[D]ebug toggle [U]I', bufnr)
 				nmap('[d',	   vim.diagnostic.goto_prev,						'LSP: Jump to previous [D]iagnostics', bufnr)
 				nmap(']d',	   vim.diagnostic.goto_next,						'LSP: Jump to next [D]iagnostics', bufnr)
+				nmap('<leader>e',  vim.diagnostic.open_float,						'LSP: Show diagnostic [E]rror message', bufnr)
+				nmap('<leader>q',  vim.diagnostic.setloclist,						'LSP: Open diagmostic [Q]uickfix', bufnr)
 
 				dap.adapters.cppdbg = {
 					id = 'cppdbg',
@@ -285,7 +294,12 @@ require('lazy').setup({
 			local servers = {
 				lua_ls = {
 					Lua = {
-						workspace = { checkThirdParty = false },
+						runtime = { version = 'LuaJIT' },
+						workspace = {
+							checkThirdParty = false,
+							library = { '${3rd}/luv/library', unpack(vim.api.nvim_get_runtime_file('', true)) }
+						},
+						completion = { callSnippet = 'Replace' },
 						telemetry = { enable = false }
 					}
 				},
@@ -352,15 +366,15 @@ require('lazy').setup({
 		event = 'InsertEnter',
 		config = function()
 			local cmp = require('cmp')
-			--require('luasnip.loaders.from_vscode').lazy_load()
-			--local luasnip = require('luasnip')
+			require('luasnip.loaders.from_vscode').lazy_load()
+			local luasnip = require('luasnip')
 
 			cmp.setup({
-				--snippet = {
-				--	expand = function(args)
-				--		luasnip.lsp_expand(args.body)
-				--	end
-				--},
+				snippet = {
+					expand = function(args)
+						luasnip.lsp_expand(args.body)
+					end
+				},
 				window = {
 					completion = cmp.config.window.bordered(),
 					documention = cmp.config.window.bordered()
@@ -377,8 +391,8 @@ require('lazy').setup({
 					['<Tab>'] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.select_next_item()
-						--elseif luasnip.expand_or_jumpable() then
-						--	luasnip.expand_or_jump()
+						elseif luasnip.expand_or_jumpable() then
+							luasnip.expand_or_jump()
 						else
 							fallback()
 						end
@@ -386,8 +400,8 @@ require('lazy').setup({
 					['<S-Tab>'] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.select_prev_item()
-						--elseif luasnip.jumpable(-1) then
-						--	luasnip.jump(-1)
+						elseif luasnip.jumpable(-1) then
+							luasnip.jump(-1)
 						else
 							fallback()
 						end
@@ -395,7 +409,7 @@ require('lazy').setup({
 				}),
 				sources = cmp.config.sources({
 					{ name = 'nvim_lsp' },
-					--{ name = 'luasnip' }
+					{ name = 'luasnip' }
 				}, {
 					{ name = 'buffer' }
 				})
@@ -403,8 +417,8 @@ require('lazy').setup({
 		end,
 		dependencies = {
 			'hrsh7th/cmp-nvim-lsp',
-			--'L3MON4D3/LuaSnip',
-			--'saadparwaiz1/cmp_luasnip'
+			'L3MON4D3/LuaSnip',
+			'saadparwaiz1/cmp_luasnip'
 		}
 	},
 	-- Allow use of background jobs
@@ -627,7 +641,9 @@ require('lazy').setup({
 			nmap('<C-b>k', nvim_tmux_nav.NvimTmuxNavigateUp,	'Navigate to the up tmux pane if existant')
 			nmap('<C-b>l', nvim_tmux_nav.NvimTmuxNavigateRight,	'Navigate to the right tmux pane if existant')
 		end
-	}
+	},
+	-- Highlight todo, notes, etc in comments
+	{ 'folke/todo-comments.nvim', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } }
 })
 local lazy = require('lazy')
 nmap('<leader>lo', lazy.home,		'[L]azy [O]pen home')
@@ -715,5 +731,5 @@ nmap('<C-u>', '<C-u>zz',													   'Scroll window upwards in the buffer whi
 nmap('<C-d>', '<C-d>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
 xmap('<leader>p', '\"_dP',													   'Use he system clipboard')
 nmap('<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file executable')
-vim.api.nvim_create_user_command('EditConfig', 'e ' .. vim.fn.stdpath 'config' .. '/init.lua', { desc =				   'Edit Neovim config file' })
+vim.api.nvim_create_user_command('EditConfig', 'e $MYVIMRC', { desc =								   'Edit Neovim config file' })
 vim.api.nvim_create_user_command('EspansoEdit', 'e ' .. vim.fn.stdpath 'config' .. '/../espanso/match/base.yml', { desc =	   'Edit Espanso config file' })
