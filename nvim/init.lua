@@ -281,6 +281,7 @@ require('lazy').setup({
 			capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 			-- Enable the following language servers with overriding configuration
+			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 			local servers = {
 				lua_ls = {
 					Lua = {
@@ -317,7 +318,6 @@ require('lazy').setup({
 				},
 				cmake = {},
 				bashls = {},
-				--shellcheck = {},
 				pyright = {},
 			}
 
@@ -536,25 +536,29 @@ require('lazy').setup({
 	-- Add formatters and linters
 	-- See available configs at : https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md
 	{ 'nvimtools/none-ls.nvim',
-		--event = 'VeryLazy',
-		lazy = false,
+		event = 'VeryLazy',
 		config = function()
 			local null_ls = require('null-ls')
+			local cspell = require('cspell')
+
 			null_ls.setup({
 				sources = {
-					null_ls.builtins.formatting.autopep8.with({
+					-- TODO Deprecated
+					require('none-ls.formatting.autopep8').with({
 						extra_args = {
 							'--max-line-length=150',
 							'--ignore=E101,E11,E111,E121,E127,E128,E129,E301,E302,E402,E704,E265,E251,E305,E731,E122,E123,W191'
 						}
 					}),
-					null_ls.builtins.diagnostics.flake8.with({
+					-- TODO Deprecated
+					require('none-ls.diagnostics.flake8').with({
 						extra_args = {
 							'--max-line-length=150',
 							'--ignore=W191,E302,E704,E101,E128,E265,E251,E301,E305,E731'
 						}
 					}),
-					null_ls.builtins.diagnostics.shellcheck,
+					cspell.diagnostics,
+					cspell.code_actions,
 					--null_ls.builtins.diagnostics.cspell.with({
 						--language = 'en-GB,fr,de,it,es,ru',
 						--enableDictionaries = { 'medical-terms', 'french', 'german' },
@@ -585,9 +589,13 @@ require('lazy').setup({
 			})
 		end,
 		keys = {
-			{ '<leader>gf', vim.lsp.buf.format, 'Format the document' }
+			{ '<leader>gf', vim.lsp.buf.format, desc = 'Format the document' }
 		},
-		require = { 'nvim-lua/plenary.nvim' }
+		dependencies = {
+			'nvim-lua/plenary.nvim',
+			'nvimtools/none-ls-extras.nvim',
+			'davidmh/cspell.nvim'
+		}
 	},
 	-- Bring automated annotation
 	{ 'danymat/neogen',
