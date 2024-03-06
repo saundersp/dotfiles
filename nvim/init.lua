@@ -13,7 +13,6 @@ end
 local function nmap(key, action, desc, buffer) map('n', key, action, desc, buffer) end
 local function imap(key, action, desc, buffer) map('i', key, action, desc, buffer) end
 local function vmap(key, action, desc, buffer) map('v', key, action, desc, buffer) end
-local function xmap(key, action, desc, buffer) map('v', key, action, desc, buffer) end
 local function Autocmd(events, pattern, callback)
 	vim.api.nvim_create_autocmd(events, { pattern = pattern, callback = callback })
 end
@@ -471,14 +470,14 @@ require('lazy').setup({
 	{ 'mbbill/undotree', keys = { { '<leader>ut', '<Cmd>UndotreeToggle<CR>', desc = 'Open [U]ndo [T]ree' } } },
 	-- Display a popup with possible key bindings of the command you started typing
 	{ 'folke/which-key.nvim',
-		config = function()
+		event = 'VeryLazy',
+		init = function()
 			vim.o.timeout = true
 			vim.o.timeoutlen = 200
-			require('which-key').setup({})
 		end
 	},
 	-- Stylize the bufferline
-	{ 'akinsho/bufferline.nvim', event = 'VeryLazy', config = { options = { mode = 'tabs' } }, dependencies = 'nvim-tree/nvim-web-devicons' },
+	{ 'akinsho/bufferline.nvim', event = 'VeryLazy', opts = { options = { mode = 'tabs' } }, dependencies = 'nvim-tree/nvim-web-devicons' },
 	-- Scope buffers for each tab
 	-- { 'tiagovla/scope.nvim', event = 'VeryLazy', config = true },
 	-- Easily update all Mason packages with one command
@@ -538,13 +537,7 @@ require('lazy').setup({
 	-- Make folding look modern
 	{ 'kevinhwang91/nvim-ufo',
 		event = 'VeryLazy',
-		config = function()
-			require('ufo').setup({
-				provider_selector = function()
-					return { 'treesitter', 'indent' }
-				end
-			})
-		end,
+		opts = { provider_selector = function() return { 'treesitter', 'indent' } end },
 		dependencies = 'kevinhwang91/promise-async'
 	},
 	-- Add formatters and linters
@@ -729,7 +722,12 @@ vmap('<C-J>', ":m '>+1<CR>gv=gv",												   'Move the selected block downwar
 vmap('<C-K>', ":m '<0<CR>gv=gv",												   'Move the selected block upwards while keeping target indentation')
 nmap('<C-u>', '<C-u>zz',													   'Scroll window upwards in the buffer while keeping cursor at the middle of the window')
 nmap('<C-d>', '<C-d>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
-xmap('<leader>p', '\"_dP',													   'Use he system clipboard')
+nmap('<C-f>', '<C-f>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
+nmap('<leader>p', '"+p',													   'Paste the system clipboard after the cursor')
+nmap('<leader>P', '"+P',													   'Paste the system clipboard before the cursor')
+vmap('<leader>y', '"+y',													   'Yank into the system clipboard')
+nmap('<leader>y', '"+Y',													   'Yank the entire buffer into the system clipboard')
 nmap('<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file executable')
+nmap('<leader>fX', '<cmd>!chmod -x %<CR>',											   'Make the current file non executable')
 vim.api.nvim_create_user_command('EditConfig', 'e $MYVIMRC', { desc =								   'Edit Neovim config file' })
 vim.api.nvim_create_user_command('EspansoEdit', 'e ' .. vim.fn.stdpath 'config' .. '/../espanso/match/base.yml', { desc =	   'Edit Espanso config file' })
