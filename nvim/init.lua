@@ -119,8 +119,6 @@ require('lazy').setup({
 
 			local todo = require('todo-comments')
 			nmap('<leader>st', ':TodoTelescope<CR>', '[S]earch [T]odo elements')
-			nmap(']t', todo.jump_next,		 'Next todo comment')
-			nmap('[t', todo.jump_prev,		 'Previous todo comment')
 		end,
 		dependencies = {
 			-- Bind vim.ui.select to telescope
@@ -636,7 +634,19 @@ require('lazy').setup({
 		end
 	},
 	-- Highlight todo, notes, etc in comments
-	{ 'folke/todo-comments.nvim', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } }
+	{ 'folke/todo-comments.nvim',
+	dependencies = { 'nvim-lua/plenary.nvim' },
+	config = function()
+			local todo = require('todo-comments')
+			todo.setup({
+				signs = false,
+				highlight = { pattern = '.*<(KEYWORDS)\\s*[: ]' },
+				search = { pattern = '\\b(KEYWORDS)[: ]' }
+			})
+			nmap(']t', todo.jump_next,		 'Next todo comment')
+			nmap('[t', todo.jump_prev,		 'Previous todo comment')
+		end
+	}
 })
 local lazy = require('lazy')
 nmap('<leader>lo', lazy.home,		'[L]azy [O]pen home')
@@ -662,17 +672,13 @@ vim.o.termguicolors				= true										-- Enable 24-bit RGB colours in the termi
 vim.o.syntax					= true										-- Enables syntax highlighting
 vim.o.listchars					= 'eol:󰌑,tab:󰌒 ,trail:•,extends:,precedes:,space:·,nbsp:󱁐'			-- List of whitespace characters replacement (see :h listchars) (using: nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
 vim.o.list					= true										-- Enable replacement of listchars
-vim.o.hidden					= true										-- Required to keep multiple buffers open multiple buffers
 vim.o.wrap					= false										-- Display long lines as just one line
-vim.o.encoding					= 'UTF-8'									-- The encoding displayed
 vim.o.fileencoding				= 'UTF-8'									-- The encoding written to file
-vim.o.ruler					= true										-- Show the cursor position all the time
 vim.o.iskeyword					= vim.o.iskeyword .. ',-'							-- treat dash separated words as a word text object
 vim.o.tabstop					= 8										-- Set the width of a tab
 vim.o.shiftwidth				= 8										-- Change the number of space characters inserted for indentation
 vim.o.softtabstop				= 8										-- Change the number of space characters inserted for indentation
 vim.o.smartindent				= true										-- Does smart autoindenting when starting a new line
-vim.o.expandtab					= false										-- Disable the tab expansion of spaces
 vim.o.number					= true										-- Line numbers
 vim.o.relativenumber				= true										-- Relative number (enabled after number for hybrid mode)
 vim.o.cursorline				= true										-- Enable highlighting of the current line
@@ -690,7 +696,7 @@ vim.o.updatetime				= 200										-- Time before CursorHold triggers
 vim.o.swapfile					= false										-- Disable swapfile usage
 vim.o.wildmode					= 'longest,list,full'								-- Enable autocompletion in COMMAND mode
 vim.o.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
-vim.o.wildignore				= vim.o.wildignore .. '*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'	-- Ignore files in fuzzy finder
+vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
 vim.o.undofile					= true										-- Enable undofile to save undos after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
 Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end)						-- Enable wraping only for LaTeX files
