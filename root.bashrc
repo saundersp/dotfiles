@@ -306,6 +306,11 @@ Available flags:
 				repo_len=15
 				commit_len=16
 
+				if [ ! -d /var/db/repos ] || [ -z "$(ls /var/db/repos)" ]; then
+					echo 'No repositories found'
+					return 0
+				fi
+
 				for repo in /var/db/repos/*; do
 					repo_name=$(echo "$repo" | cut -d / -f 5)
 					if [ -f "$repo"/metadata/timestamp ]; then

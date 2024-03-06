@@ -279,6 +279,7 @@ Available flags:
 	__cmd_checker__ aur
 	aur(){
 		AUR_PATH="$HOME"/.aur
+		test ! -d "$AUR_PATH" && mkdir "$AUR_PATH"
 		USAGE='AUR Install helper
 Implemented by @saundersp
 
@@ -302,6 +303,10 @@ Available flags:
 				;;
 
 			-u|u|update|--update)
+				if [ -z "$(ls $AUR_PATH)" ]; then
+					echo 'No AUR packages to update'
+					return 0
+				fi
 				for PACKAGE_NAME in "$AUR_PATH"/*; do
 					PACKAGE_NAME="${PACKAGE_NAME/$AUR_PATH\//}"
 					if [ "$(git -C "$AUR_PATH"/"$PACKAGE_NAME" pull)" = 'Already up to date.' ]; then
@@ -315,7 +320,7 @@ Available flags:
 
 			-r|r|remove|--remove)
 				if [ -z "$2" ] || [ "$2" = 'h' ] || [ "$2" = '-h' ] || [ "$2" = 'help' ]|| [ "$2" = '--help' ]; then
-					echo "Usage : $0 $1 <aur-package-name"
+					echo "Usage : $0 $1 <aur-package-name>"
 					return 0
 				fi
 				PACKAGE_NAME="$2"
@@ -329,6 +334,10 @@ Available flags:
 				;;
 
 			-l|l|list|--list)
+				if [ -z "$(ls $AUR_PATH)" ]; then
+					echo 'No AUR packages installed'
+					return 0
+				fi
 				for PACKAGE_NAME in "$AUR_PATH"/*; do
 					PACKAGE_NAME="${PACKAGE_NAME/$AUR_PATH\//}"
 					PACMAN_INFO="$(pacman -Q "$PACKAGE_NAME" 2>>/dev/null)"
@@ -383,6 +392,11 @@ Available flags:
 				declare -a repos commits
 				repo_len=15
 				commit_len=16
+
+				if [ ! -d /var/db/repos ] || [ -z "$(ls /var/db/repos)" ]; then
+					echo 'No repositories found'
+					return 0
+				fi
 
 				for repo in /var/db/repos/*; do
 					repo_name=$(echo "$repo" | cut -d / -f 5)
