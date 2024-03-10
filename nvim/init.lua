@@ -120,8 +120,7 @@ require('lazy').setup({
 			nmap('<leader>sr', tbi.registers,	'[S]earch [R]egisters')
 			telescope.load_extension('ui-select')
 
-			local todo = require('todo-comments')
-			nmap('<leader>st', ':TodoTelescope<CR>', '[S]earch [T]odo elements')
+			nmap('<leader>st', '<cmd>TodoTelescope<CR>', '[S]earch [T]odo elements')
 		end,
 		dependencies = {
 			-- Bind vim.ui.select to telescope
@@ -425,10 +424,10 @@ require('lazy').setup({
 	-- Allow use of background jobs
 	{ 'tpope/vim-dispatch',
 		keys = {
-			{'<leader>tp', ':Dispatch! make preview<CR>', desc = 'La[T]eX [P]review document'},
+			{'<leader>tp', '<cmd>Dispatch! make preview<CR>', desc = 'La[T]eX [P]review document'},
 			-- TUI programs
-			{'<leader>$g', ':Start lazygit<CR>',    desc = 'Open Lazy[G]it'},
-			{'<leader>$d', ':Start lazydocker<CR>', desc = 'Open Lazy[D]ocker'}
+			{'<leader>$g', '<cmd>Start lazygit<CR>',    desc = 'Open Lazy[G]it'},
+			{'<leader>$d', '<cmd>Start lazydocker<CR>', desc = 'Open Lazy[D]ocker'}
 		},
 		config = function()
 			Autocmd('BufWritePost', '*.tex', function() vim.cmd('Spawn! make') end)		-- Auto compile LaTeX document on save
@@ -446,10 +445,10 @@ require('lazy').setup({
 				indent = { enable = false }
 			})
 		end,
-		build = ':TSUpdate'
+		build = '<cmd>TSUpdate'
 	},
 	-- Colourize multiple inner level to ( [ {
-	{ 'HiPhish/rainbow-delimiters.nvim' },
+	{ 'HiPhish/rainbow-delimiters.nvim', dependencies = 'nvim-treesitter/nvim-treesitter' },
 	-- Arduino commands
 	{ 'stevearc/vim-arduino',
 		keys = {
@@ -474,6 +473,7 @@ require('lazy').setup({
 	-- Display a popup with possible key bindings of the command you started typing
 	{ 'folke/which-key.nvim',
 		event = 'VeryLazy',
+		config = true,
 		init = function()
 			vim.o.timeout = true
 			vim.o.timeoutlen = 200
@@ -622,7 +622,7 @@ require('lazy').setup({
 	-- Hex editing done right
 	{ 'RaafatTurki/hex.nvim',
 		keys = {
-			{ '<leader>x', ":lua require('hex').toggle()<CR>", 'Toggle between hex view and normal view' }
+			{ '<leader>x', "<cmd>lua require('hex').toggle()<CR>", 'Toggle between hex view and normal view' }
 		}
 	},
 	-- Better navigation inside tmux
@@ -711,26 +711,26 @@ Autocmd({ 'BufRead', 'BufNewFile' }, '*.tex',	function() vim.o.filetype = 'tex' 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping configuration
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-nmap('<C-s>', ':w<CR>',														   'Save buffer shortcut')
-nmap({ '<C-F4>', '<F28>' }, ':tabclose!<CR>',											   'Close tab shortcut (keeps buffer open)')
-nmap({ '<S-F4>', '<F16>' }, ':bd<CR>',												   'Close buffer shortcut')
-nmap('<M-j>', ':resize -1<CR>',													   'Decrease buffer window horizontal size (M is the ALT modifier key)')
-nmap('<M-k>', ':resize +1<CR>',													   'Increase buffer window horizontal size (M is the ALT modifier key)')
-nmap('<M-h>', ':vertical resize -1<CR>',											   'Decrease buffer window vertical size (M is the ALT modifier key)')
-nmap('<M-l>', ':vertical resize +1<CR>',											   'Increase buffer window vertical size (M is the ALT modifier key)')
+nmap('<C-s>', '<cmd>w<CR>',													   'Save buffer shortcut')
+nmap({ '<C-F4>', '<F28>' }, '<cmd>tabclose!<CR>',										   'Close tab shortcut (keeps buffer open)')
+nmap({ '<S-F4>', '<F16>' }, '<cmd>bd<CR>',											   'Close buffer shortcut')
+nmap('<M-j>', '<cmd>resize -1<CR>',												   'Decrease buffer window horizontal size (M is the ALT modifier key)')
+nmap('<M-k>', '<cmd>resize +1<CR>',												   'Increase buffer window horizontal size (M is the ALT modifier key)')
+nmap('<M-h>', '<cmd>vertical resize -1<CR>',											   'Decrease buffer window vertical size (M is the ALT modifier key)')
+nmap('<M-l>', '<cmd>vertical resize +1<CR>',											   'Increase buffer window vertical size (M is the ALT modifier key)')
 map('t', '<Esc>', '<C-\\><C-n>',												   'Fix terminal exit button')
-nmap({'<C-m>', '<CR>'}, ':noh<CR>',												   'Clear the highlighting of :set hlsearch (<C-M> == <CR> in st)')
+nmap({'<C-m>', '<CR>'}, '<cmd>noh<CR>',												   'Clear the highlighting of :set hlsearch (<C-M> == <CR> in st)')
 nmap('<C-z>', '<Nop>',														   'Disable the suspend signal')
 vmap('<', '<gv',														   'Shift the selection one indent to the right')
 vmap('>', '>gv',														   'Shift the selection one indent to the left')
-nmap('<F2>', ':set invpaste paste?<CR>',											   'Toggle clipboard pasting')
+nmap('<F2>', '<cmd>set invpaste paste?<CR>',											   'Toggle clipboard pasting')
 nmap('<C-J>', 'ddp',														   'Move the current line down')
 nmap('<C-K>', 'ddkkp',														   'Move the current line up')
-nmap('gb', ':bnext<CR>',													   'Go to the next buffer in buffer list')
-nmap('gB', ':bprevious<CR>',													   'Go to the previous buffer in buffer list')
+nmap('gb', '<cmd>bnext<CR>',													   'Go to the next buffer in buffer list')
+nmap('gB', '<cmd>bprevious<CR>',												   'Go to the previous buffer in buffer list')
 nmap('J', 'mzJ`z',														   'Keep the cursor at the same position when joining lines')
-vmap('<C-J>', ":m '>+1<CR>gv=gv",												   'Move the selected block downwards while keeping target indentation')
-vmap('<C-K>', ":m '<0<CR>gv=gv",												   'Move the selected block upwards while keeping target indentation')
+vmap('<C-J>', "<cmd>m '>+1<CR>gv=gv",												   'Move the selected block downwards while keeping target indentation')
+vmap('<C-K>', "<cmd>m '<0<CR>gv=gv",												   'Move the selected block upwards while keeping target indentation')
 nmap('<C-u>', '<C-u>zz',													   'Scroll window upwards in the buffer while keeping cursor at the middle of the window')
 nmap('<C-d>', '<C-d>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
 nmap('<C-f>', '<C-f>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
