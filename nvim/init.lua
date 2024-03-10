@@ -54,6 +54,7 @@ require('lazy').setup({
 	},
 	-- Add a fancy bottom bar with details
 	{ 'nvim-lualine/lualine.nvim',
+		event = 'VeryLazy',
 		opts = {
 			options = {
 				theme = 'codedark',
@@ -69,6 +70,7 @@ require('lazy').setup({
 	},
 	-- Add the left column indicating git line status and preview window
 	{ 'lewis6991/gitsigns.nvim',
+		event = 'VeryLazy',
 		config = function()
 			local gs = require('gitsigns')
 			gs.setup({})
@@ -86,7 +88,7 @@ require('lazy').setup({
 	},
 	-- Colourize RGB codes to it designated colour and add a colour picker
 	{ 'uga-rosa/ccc.nvim',
-		lazy = false,
+		event = 'VeryLazy',
 		cmd = { 'CccPick', 'CccConvert', 'CccHighlighterEnable', 'CccHighlighterDisable', 'CccHighlighterToggle' },
 		keys = {
 			{'<leader>cp', '<cmd>CccPick<CR>',			desc = 'open [C]olour [P]icker'},
@@ -98,9 +100,10 @@ require('lazy').setup({
 		opts = { highlighter = { auto_enable = true } }
 	},
 	-- Quickly surround word with given symbol
-	{ 'kylechui/nvim-surround', config = true },
+	{ 'kylechui/nvim-surround', event = 'VeryLazy', config = true },
 	-- Add fuzzy finder to files, command and more
 	{ 'nvim-telescope/telescope.nvim',
+		event = 'VeryLazy',
 		config = function()
 			local telescope = require('telescope')
 			telescope.setup({ extensions = { ['ui-select'] = { require('telescope.themes').get_dropdown({}) } } })
@@ -163,7 +166,7 @@ require('lazy').setup({
 	},
 	-- Automatic white spaces trimming
 	{ 'ntpeters/vim-better-whitespace',
-		lazy = false,
+		event = 'VeryLazy',
 		config = function()
 			vim.g.better_whitespace_enabled = 1	-- Enable the plugin
 			vim.g.strip_whitespace_on_save  = 1	-- Remove trailing white spaces on save
@@ -172,14 +175,15 @@ require('lazy').setup({
 	},
 	-- CSV file handling
 	{ 'chrisbra/csv.vim',
+		event = 'VeryLazy',
 		config = function()
 			vim.b.csv_arrange_align = 'lc.'		-- Left align when using ArrangeColumn in a csv file
 		end
 	},
 	-- LSP Configuration & Plugins
 	{ 'neovim/nvim-lspconfig',
-		lazy = false,
-		keys = { { '<leader>mo', ':Mason<CR>', desc = '[M]ason [O]pen' } },
+		event = 'VeryLazy',
+		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = '[M]ason [O]pen' } },
 		config = function()
 			require('neodev').setup({})		-- Setup neovim lua configuration
 			require('mason').setup({})		-- Setup mason so it can manage external tooling
@@ -433,6 +437,7 @@ require('lazy').setup({
 	},
 	-- Highlight, edit, and navigate code
 	{ 'nvim-treesitter/nvim-treesitter',
+		event = 'VeryLazy',
 		config = function()
 			require('nvim-treesitter.configs').setup({
 				-- Add languages to be installed here that you want installed for treesitter
@@ -476,10 +481,8 @@ require('lazy').setup({
 	},
 	-- Stylize the bufferline
 	{ 'akinsho/bufferline.nvim', event = 'VeryLazy', opts = { options = { mode = 'tabs' } }, dependencies = 'nvim-tree/nvim-web-devicons' },
-	-- Scope buffers for each tab
-	-- { 'tiagovla/scope.nvim', event = 'VeryLazy', config = true },
 	-- Easily update all Mason packages with one command
-	{ 'RubixDev/mason-update-all', config = true, dependencies = 'williamboman/mason.nvim' },
+	{ 'RubixDev/mason-update-all', cmd = { 'MasonUpdateAll' }, config = true, dependencies = 'williamboman/mason.nvim' },
 	-- Greeter for neovim
 	{ 'goolord/alpha-nvim',
 		event = 'VimEnter',
@@ -604,6 +607,7 @@ require('lazy').setup({
 	},
 	-- Bring automated annotation
 	{ 'danymat/neogen',
+		event = 'VeryLazy',
 		config = function()
 			local neogen = require('neogen')
 			neogen.setup({})
@@ -635,8 +639,9 @@ require('lazy').setup({
 	},
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim',
-	dependencies = { 'nvim-lua/plenary.nvim' },
-	config = function()
+		event = 'VeryLazy',
+		dependencies = { 'nvim-lua/plenary.nvim' },
+		config = function()
 			local todo = require('todo-comments')
 			todo.setup({
 				signs = false,
