@@ -182,7 +182,6 @@ require('lazy').setup({
 	-- LSP Configuration & Plugins
 	{ 'neovim/nvim-lspconfig',
 		event = 'VeryLazy',
-		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = '[M]ason [O]pen' } },
 		config = function()
 			require('neodev').setup({})		-- Setup neovim lua configuration
 			require('mason').setup({})		-- Setup mason so it can manage external tooling
@@ -481,6 +480,12 @@ require('lazy').setup({
 	},
 	-- Stylize the bufferline
 	{ 'akinsho/bufferline.nvim', event = 'VeryLazy', opts = { options = { mode = 'tabs' } }, dependencies = 'nvim-tree/nvim-web-devicons' },
+	-- Tool to install LSPs, DAPs, linters and formatters
+	{ 'williamboman/mason.nvim',
+		config = true,
+		cmd = { 'Mason', 'MasonUpdate' },
+		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = '[M]ason [O]pen' } }
+	},
 	-- Easily update all Mason packages with one command
 	{ 'RubixDev/mason-update-all', cmd = { 'MasonUpdateAll' }, config = true, dependencies = 'williamboman/mason.nvim' },
 	-- Greeter for neovim
