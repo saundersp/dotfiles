@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # Debug changes to repository
-# git am patch_file.diff
+# git am -3 patch_file.diff
+# -3 flag enable resolving 3-way merge strategy
 # Update the patch file (LENGTH = dmenu:7 st:12)
 # git format-patch --stdout HEAD~$LENGTH > patch_file.diff
 # diff -u FILE.bak FILE > patch_file.diff
