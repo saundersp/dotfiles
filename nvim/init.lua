@@ -17,13 +17,13 @@ local function Autocmd(events, pattern, callback)
 	vim.api.nvim_create_autocmd(events, { pattern = pattern, callback = callback })
 end
 local function filter(sequence, predicate)
-	local newlist = {}
+	local new_list = {}
 	for k, v in pairs(sequence) do
 		if predicate(k, v) then
-			newlist[k] = v
+			new_list[k] = v
 		end
 	end
-	return newlist
+	return new_list
 end
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -327,11 +327,11 @@ require('lazy').setup({
 					__skip = true,
 					cmd = { 'haskell-language-server-wrapper', '--lsp' },
 					filetypes = { 'haskell', 'lhaskell', 'cabal' },
-					root_dir = root_pattern('*.cabal', 'stack.yaml', 'cabal.project', 'package.yaml', 'hie.yaml'),
+					root_dir = root_pattern('*.cabal', 'stack.yaml', 'cabal.project', 'package.yaml', 'hie.yaml')
 				},
 				cmake = {},
 				bashls = {},
-				pyright = {},
+				pyright = {}
 			}
 
 			local mason_lspconfig = require('mason-lspconfig')
@@ -467,7 +467,7 @@ require('lazy').setup({
 			'ArduinoInfo'
 		}
 	},
-	-- Show a toggable undotree
+	-- Show a togglable undotree
 	{ 'mbbill/undotree', keys = { { '<leader>ut', '<Cmd>UndotreeToggle<CR>', desc = 'Open [U]ndo [T]ree' } } },
 	-- Display a popup with possible key bindings of the command you started typing
 	{ 'folke/which-key.nvim',
@@ -504,7 +504,7 @@ require('lazy').setup({
 				'     █████████  ███    █████████████ █████ ██████████████   ',
 				'    █████████ ██████████ █████████ █████ █████ ████ █████   ',
 				'  ███████████ ███    ███ █████████ █████ █████ ████ █████  ',
-				' ██████  █████████████████████ ████ █████ █████ ████ ██████ ',
+				' ██████  █████████████████████ ████ █████ █████ ████ ██████ '
 			}
 
 			require('alpha').setup(startify.config)
@@ -605,8 +605,11 @@ require('lazy').setup({
 			{ '<leader>gf', vim.lsp.buf.format, desc = 'Format the document' }
 		},
 		dependencies = {
+			-- Lua library functions
 			'nvim-lua/plenary.nvim',
+			-- Adding extra sources not included in none-ls
 			'nvimtools/none-ls-extras.nvim',
+			-- Adding support for cspell diagnostics and code actions
 			'davidmh/cspell.nvim'
 		}
 	},
@@ -636,16 +639,16 @@ require('lazy').setup({
 		config = function()
 			local nvim_tmux_nav = require('nvim-tmux-navigation')
 			nvim_tmux_nav.setup({ disable_when_zoomed = true })
-			nmap('<C-b>h', nvim_tmux_nav.NvimTmuxNavigateLeft,	'Navigate to the left tmux pane if existant')
-			nmap('<C-b>j', nvim_tmux_nav.NvimTmuxNavigateDown,	'Navigate to the down tmux pane if existant')
-			nmap('<C-b>k', nvim_tmux_nav.NvimTmuxNavigateUp,	'Navigate to the up tmux pane if existant')
-			nmap('<C-b>l', nvim_tmux_nav.NvimTmuxNavigateRight,	'Navigate to the right tmux pane if existant')
+			nmap('<C-b>h', nvim_tmux_nav.NvimTmuxNavigateLeft,	'Navigate to the left tmux pane if existent')
+			nmap('<C-b>j', nvim_tmux_nav.NvimTmuxNavigateDown,	'Navigate to the down tmux pane if existent')
+			nmap('<C-b>k', nvim_tmux_nav.NvimTmuxNavigateUp,	'Navigate to the up tmux pane if existent')
+			nmap('<C-b>l', nvim_tmux_nav.NvimTmuxNavigateRight,	'Navigate to the right tmux pane if existent')
 		end
 	},
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim',
 		event = 'VeryLazy',
-		dependencies = { 'nvim-lua/plenary.nvim' },
+		dependencies = 'nvim-lua/plenary.nvim',
 		config = function()
 			local todo = require('todo-comments')
 			todo.setup({
@@ -653,8 +656,8 @@ require('lazy').setup({
 				highlight = { pattern = '.*<(KEYWORDS)\\s*[: ]' },
 				search = { pattern = '\\b(KEYWORDS)[: ]' }
 			})
-			nmap(']t', todo.jump_next,		 'Next todo comment')
-			nmap('[t', todo.jump_prev,		 'Previous todo comment')
+			nmap(']t', todo.jump_next, 'Next todo comment')
+			nmap('[t', todo.jump_prev, 'Previous todo comment')
 		end
 	}
 })
