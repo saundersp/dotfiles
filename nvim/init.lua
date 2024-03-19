@@ -118,6 +118,7 @@ require('lazy').setup({
 			nmap('<leader>sb', tbi.buffers,		'[S]earch [B]uffers')
 			nmap('<leader>sm', tbi.marks,		'[S]earch [M]arks')
 			nmap('<leader>sr', tbi.registers,	'[S]earch [R]egisters')
+			nmap('<leader>ss', tbi.resume,		'[S]earch re[S]ume')
 			telescope.load_extension('ui-select')
 
 			nmap('<leader>st', '<cmd>TodoTelescope<CR>', '[S]earch [T]odo elements')
@@ -139,8 +140,7 @@ require('lazy').setup({
 	{ 'nvim-tree/nvim-tree.lua',
 		event = 'VeryLazy',
 		keys = {
-			{ '<C-n>', '<cmd>NvimTreeToggle<CR>',		desc = 'Open [N]erd tree explorer' },
-			{ '<leader>no', '<cmd>NvimTreeToggle<CR>',	desc = '[N]erd tree [O]pen explorer' }
+			{ '<C-n>', '<cmd>NvimTreeToggle<CR>',	desc = 'Open [N]erd tree explorer' }
 		},
 		opts = {
 			filters = {
@@ -181,107 +181,30 @@ require('lazy').setup({
 	},
 	-- LSP Configuration & Plugins
 	{ 'neovim/nvim-lspconfig',
-		event = 'VeryLazy',
+		event = 'BufRead',
 		config = function()
 			require('neodev').setup({})		-- Setup neovim lua configuration
-			require('mason').setup({})		-- Setup mason so it can manage external tooling
 			require('fidget').setup({		-- Turn on lsp status information
 				integration = { ['nvim-tree'] = { enable = true } }
 			})
 
-			local on_attach = function(_, bufnr)
-				local dap = require('dap')
-				local dapui = require('dapui')
-				dapui.setup()
+			nmap('<leader>rn', vim.lsp.buf.rename,						'LSP: [R]e[n]ame')
+			nmap('gd',	   vim.lsp.buf.definition,					'LSP: [G]oto [D]efinition')
+			nmap('gI',	   vim.lsp.buf.implementation,					'LSP: [G]oto [I]mplementation')
+			nmap('<leader>D',  vim.lsp.buf.type_definition,					'LSP: Type [D]efinition')
+			nmap('K',	   vim.lsp.buf.hover,						'LSP: Hover Documentation')
+			--nmap('<M-k>',	   vim.lsp.buf.signature_help,					'LSP: Signature Documentation')
+			nmap('gD',	   vim.lsp.buf.declaration,					'LSP: [G]oto [D]eclaration')
+			nmap('<leader>e',  vim.diagnostic.open_float,					'LSP: Show diagnostic [E]rror message')
 
-				dap.listeners.after.event_initialized['dapui_config'] = function() dapui.open({}) end
-				dap.listeners.before.event_terminated['dapui_config'] = function() dapui.close({}) end
-				dap.listeners.before.event_exited['dapui_config'] = function() dapui.close({}) end
-				vim.fn.sign_define('DapBreakpoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' })
-				vim.fn.sign_define('DapBreakpointCondition',	{ text = '', texthl = 'DapUIBreakpointsInfo' })
-				vim.fn.sign_define('DapBreakpointRejected',	{ text = '', texthl = 'DapUIBreakpointsInfo' })
-				vim.fn.sign_define('DapLogPoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' })
-				vim.fn.sign_define('DapStopped',		{ text = '', texthl = 'DapUIStopped' })
+			nmap('gr',	   require('telescope.builtin').lsp_references,			'LSP: [G]oto [R]eferences')
+			--nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols,		'LSP: [D]ocument [S]ymbols')
+			nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols,	'LSP: [W]orkspace [S]ymbols')
 
-				nmap('<leader>rn', vim.lsp.buf.rename,							'LSP: [R]e[n]ame', bufnr)
-				nmap('<leader>ca', vim.lsp.buf.code_action,						'LSP: [C]ode [A]ction', bufnr)
-				nmap('gd',	   vim.lsp.buf.definition,						'LSP: [G]oto [D]efinition', bufnr)
-				nmap('gr',	   require('telescope.builtin').lsp_references,				'LSP: [G]oto [R]eferences', bufnr)
-				nmap('gI',	   vim.lsp.buf.implementation,						'LSP: [G]oto [I]mplementation', bufnr)
-				nmap('<leader>D',  vim.lsp.buf.type_definition,						'LSP: Type [D]efinition', bufnr)
-				--nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols,			'LSP: [D]ocument [S]ymbols', bufnr)
-				nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols,		'LSP: [W]orkspace [S]ymbols', bufnr)
-				nmap('<leader>db', dap.toggle_breakpoint,						'[D]ebug toggle [B]reakpoint]', bufnr)
-				nmap({ '<leader>dc', '<F5>' }, dap.continue,						'[D]ebug [C]ontinue', bufnr)
-				nmap({ '<leader>do', '<F10>' }, dap.step_over,						'[D]ebug Step [O]ver', bufnr)
-				nmap({ '<leader>di', '<F11>' }, dap.step_into,						'[D]ebug Step [I]nto', bufnr)
-				nmap({ '<leader>dO', '<F12>' }, dap.step_out,						'[D]ebug Step [O]ut', bufnr)
-				nmap({ '<leader>dt', '<S-F5>' }, dap.terminate,						'[D]ebug [T]erminate', bufnr)
-				nmap({ '<leader>dr', '<C-F5>' }, function() dap.terminate(); dap.continue(); end,	'[D]ebug [R]estart', bufnr)
-				nmap('K',	   vim.lsp.buf.hover,							'LSP: Hover Documentation', bufnr)
-				--nmap('<M-k>',	   vim.lsp.buf.signature_help,						'LSP: Signature Documentation', bufnr)
-				nmap('gD',	   vim.lsp.buf.declaration,						'LSP: [G]oto [D]eclaration', bufnr)
-				nmap('<leader>du', dapui.toggle,							'[D]ebug toggle [U]I', bufnr)
-				nmap('[d',	   vim.diagnostic.goto_prev,						'LSP: Jump to previous [D]iagnostics', bufnr)
-				nmap(']d',	   vim.diagnostic.goto_next,						'LSP: Jump to next [D]iagnostics', bufnr)
-				nmap('<leader>e',  vim.diagnostic.open_float,						'LSP: Show diagnostic [E]rror message', bufnr)
-				nmap('<leader>q',  vim.diagnostic.setloclist,						'LSP: Open diagmostic [Q]uickfix', bufnr)
-
-				dap.adapters.cppdbg = {
-					id = 'cppdbg',
-					type = 'executable',
-					command = vim.fn.stdpath 'data' .. '/mason/bin/OpenDebugAD7'
-				}
-				dap.configurations.cpp = {
-					{
-						name = 'Launch file',
-						type = 'cppdbg',
-						request = 'launch',
-						program = function()
-							return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-						end,
-						cwd = '${workspaceFolder}',
-						stopAtEntry = true
-					}
-				}
-				dap.configurations.cuda = {
-					{
-						name = 'Launch file',
-						type = 'cppdbg',
-						request = 'launch',
-						program = function()
-							return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-						end,
-						cwd = '${workspaceFolder}',
-						stopAtEntry = true
-					}
-				}
-				dap.adapters.debugpy = {
-					id = 'debugpy',
-					type = 'executable',
-					command = vim.fn.stdpath 'data' .. '/mason/bin/debugpy-adapter'
-				}
-				dap.configurations.python = {
-					{
-						type = 'debugpy',
-						request = 'launch',
-						name = 'Launch file',
-						program = '${file}',
-						pythonPath = function()
-							return '/usr/bin/python'
-						end
-					},
-					{
-						type = 'debugpy',
-						request = 'launch',
-						name = 'Launch file (venv)',
-						program = '${file}',
-						pythonPath = function()
-							return '${workspaceFolder}/venv/bin/python'
-						end
-					}
-				}
-			end
+			nmap('<leader>ca', vim.lsp.buf.code_action,					'LSP: [C]ode [A]ction')
+			nmap('[d',	   vim.diagnostic.goto_prev,					'LSP: Jump to previous [D]iagnostics')
+			nmap(']d',	   vim.diagnostic.goto_next,					'LSP: Jump to next [D]iagnostics')
+			nmap('<leader>q',  vim.diagnostic.setloclist,					'LSP: Open diagnostic [Q]uickfix')
 
 			local lspconfig = require('lspconfig')
 			local root_pattern = lspconfig.util.root_pattern
@@ -302,27 +225,13 @@ require('lazy').setup({
 						telemetry = { enable = false }
 					}
 				},
-				--ccls = {
-				--	cmd = { 'ccls' },
-				--	filetypes = { 'c', 'cpp', 'cuda', 'objc', 'objcpp' },
-				--	init_options = {
-				--		compilationDatabaseDirectory = 'build',
-				--		index = {
-				--			threads = 0
-				--		},
-				--		clang = {
-				--			--extraArgs = { '-std=c++17' },
-				--			excludeArgs = { '-frounding-math' }
-				--		}
-				--	},
-				--},
 				clangd = {
 					__skip = true,
 					CompileFlags = {
 						add = { '-I/opt/cuda/targets/x86_64-linux/include' }
 					}
 				},
-				--tsserver = {},
+				tsserver = {},
 				hls = {
 					__skip = true,
 					cmd = { 'haskell-language-server-wrapper', '--lsp' },
@@ -354,10 +263,111 @@ require('lazy').setup({
 			'j-hui/fidget.nvim',
 			-- Additional lua configurations, make nvim stuff amazing
 			'folke/neodev.nvim',
-			-- Auto completion functionnalities
-			'hrsh7th/cmp-nvim-lsp',
-			-- Debugging purposes
-			'mfussenegger/nvim-dap', 'rcarriga/nvim-dap-ui'
+			-- Auto completion functionalities
+			'hrsh7th/cmp-nvim-lsp'
+		}
+	},
+	-- Debugging purposes
+	{ 'mfussenegger/nvim-dap',
+		event = 'VeryLazy',
+		config = function()
+			local dap = require('dap')
+
+
+			dap.adapters = {
+				cppdbg = {
+					id = 'cppdbg',
+					type = 'executable',
+					command = 'OpenDebugAD7'
+				},
+				debugpy = {
+					id = 'debugpy',
+					type = 'executable',
+					command = 'debugpy-adapter'
+				}
+			}
+
+			dap.configurations = {
+				cpp = {
+					{
+						name = 'Launch file',
+						type = 'cppdbg',
+						request = 'launch',
+						program = function()
+							return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+						end,
+						cwd = '${workspaceFolder}',
+						stopAtEntry = true
+					}
+				},
+				cuda = {
+					{
+						name = 'Launch file',
+						type = 'cppdbg',
+						request = 'launch',
+						program = function()
+							return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+						end,
+						cwd = '${workspaceFolder}',
+						stopAtEntry = true
+					}
+				},
+				python = {
+					{
+						type = 'debugpy',
+						request = 'launch',
+						name = 'Launch file',
+						program = '${file}',
+						pythonPath = function()
+							return '/usr/bin/python'
+						end
+					},
+					{
+						type = 'debugpy',
+						request = 'launch',
+						name = 'Launch file (venv)',
+						program = '${file}',
+						pythonPath = function()
+							return '${workspaceFolder}/venv/bin/python'
+						end
+					}
+				}
+			}
+
+			nmap('<leader>db',		 dap.toggle_breakpoint,					'[D]ebug toggle [B]reakpoint]')
+			nmap({ '<leader>dc', '<F5>' },	 dap.continue,						'[D]ebug [C]ontinue')
+			nmap({ '<leader>dC', '<F7>' },	 dap.run_to_cursor,					'[D]ebug run to [C]ursor')
+			nmap({ '<leader>do', '<F10>' },	 dap.step_over,						'[D]ebug Step [O]ver')
+			nmap({ '<leader>di', '<F11>' },	 dap.step_into,						'[D]ebug Step [I]nto')
+			nmap({ '<leader>dO', '<F12>' },	 dap.step_out,						'[D]ebug Step [O]ut')
+			nmap({ '<leader>dt', '<S-F5>' }, dap.terminate,						'[D]ebug [T]erminate')
+			nmap('<leader>ds',		 dap.up,						'[D]ebug up in the [S]tacktrace')
+			nmap('<leader>dS',		 dap.down,						'[D]ebug down in the [S]tacktrace')
+			nmap('<leader>dp',		 dap.pause,						'[D]ebug [P]ause')
+			nmap({ '<leader>dr', '<C-F5>' }, function() dap.terminate(); dap.continue(); end,	'[D]ebug [R]estart')
+		end
+	},
+	{ 'rcarriga/nvim-dap-ui',
+		event = 'VeryLazy',
+		config = function()
+			local dap = require('dap')
+			local dapui = require('dapui')
+			dapui.setup()
+
+			dap.listeners.after.event_initialized['dapui_config'] = function() dapui.open({}) end
+			dap.listeners.before.event_terminated['dapui_config'] = function() dapui.close({}) end
+			dap.listeners.before.event_exited['dapui_config'] = function() dapui.close({}) end
+			vim.fn.sign_define('DapBreakpoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' })
+			vim.fn.sign_define('DapBreakpointCondition',	{ text = '', texthl = 'DapUIBreakpointsInfo' })
+			vim.fn.sign_define('DapBreakpointRejected',	{ text = '', texthl = 'DapUIBreakpointsInfo' })
+			vim.fn.sign_define('DapLogPoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' })
+			vim.fn.sign_define('DapStopped',		{ text = '', texthl = 'DapUIStopped' })
+
+			nmap('<leader>du', dapui.toggle, '[D]ebug toggle [U]I')
+		end,
+		dependencies = {
+			'mfussenegger/nvim-dap',
+			'nvim-neotest/nvim-nio'
 		}
 	},
 	-- Autocompletion
@@ -447,7 +457,7 @@ require('lazy').setup({
 		build = '<cmd>TSUpdate'
 	},
 	-- Colourize multiple inner level to ( [ {
-	{ 'HiPhish/rainbow-delimiters.nvim', dependencies = 'nvim-treesitter/nvim-treesitter' },
+	{ 'HiPhish/rainbow-delimiters.nvim', event = 'VeryLazy', dependencies = 'nvim-treesitter/nvim-treesitter' },
 	-- Arduino commands
 	{ 'stevearc/vim-arduino',
 		keys = {
@@ -514,31 +524,27 @@ require('lazy').setup({
 	-- Add an extensible scrollbar
 	{ 'petertriho/nvim-scrollbar',
 		event = 'VeryLazy',
-		config = function()
-			local scrollbar = require('scrollbar')
-			scrollbar.setup({
-				show_in_active_only = true,
-				handlers = {
-					search = true, -- Binding for hlslens
-					gitsigns = true
-				}
-			})
-		end,
+		opts = {
+			show_in_active_only = true,
+			handlers = {
+				search = true, -- Binding for hlslens
+				gitsigns = true
+			}
+		},
 		dependencies = { 'lewis6991/gitsigns.nvim', 'kevinhwang91/nvim-hlslens' }
 	},
 	-- Helps getting better glance at matched information, seamlessly jump between matched instances.
 	{ 'kevinhwang91/nvim-hlslens',
 		event = 'VeryLazy',
-		config = function()
-			require('hlslens').setup({})
-
-			nmap('n', "<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>zz", 'Repeat the latest "/" or "?" [count] times forward')
-			nmap('N', "<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>zz", 'Repeat the latest "/" or "?" [count] times backward')
-			nmap('*', "*<Cmd>lua require('hlslens').start()<CR>", "Search forward for the [count]'th occurrence of the whole word")
-			nmap('#', "#<Cmd>lua require('hlslens').start()<CR>", "Search backward for the [count]'th occurrence of the whole word")
-			nmap('g*', "g*<Cmd>lua require('hlslens').start()<CR>", "Search forward for the [count]'th occurrence of the word")
-			nmap('g#', "g#<Cmd>lua require('hlslens').start()<CR>", "Search backward for the [count]'th occurrence of the word")
-		end
+		config = true,
+		keys = {
+			{ 'n', "<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>zz", 'Repeat the latest "/" or "?" [count] times forward' },
+			{ 'N', "<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>zz", 'Repeat the latest "/" or "?" [count] times backward' },
+			{ '*', "*<Cmd>lua require('hlslens').start()<CR>", "Search forward for the [count]'th occurrence of the whole word" },
+			{ '#', "#<Cmd>lua require('hlslens').start()<CR>", "Search backward for the [count]'th occurrence of the whole word" },
+			{ 'g*', "g*<Cmd>lua require('hlslens').start()<CR>", "Search forward for the [count]'th occurrence of the word" },
+			{ 'g#', "g#<Cmd>lua require('hlslens').start()<CR>", "Search backward for the [count]'th occurrence of the word" }
+		}
 	},
 	-- Make folding look modern
 	{ 'kevinhwang91/nvim-ufo',
@@ -549,7 +555,7 @@ require('lazy').setup({
 	-- Add formatters and linters
 	-- See available configs at : https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md
 	{ 'nvimtools/none-ls.nvim',
-		event = 'VeryLazy',
+		event = 'BufRead',
 		config = function()
 			local null_ls = require('null-ls')
 			local cspell = require('cspell')
@@ -663,19 +669,9 @@ require('lazy').setup({
 })
 local lazy = require('lazy')
 nmap('<leader>lo', lazy.home,		'[L]azy [O]pen home')
-nmap('<leader>lb', lazy.build,		'[L]azy [B]uild')
-nmap('<leader>lc', lazy.check,		'[L]azy [C]heck')
-nmap('<leader>lC', lazy.clean,		'[L]azy [C]lean')
-nmap('<leader>lt', lazy.clear,		'[L]azy clear [T]asks')
-nmap('<leader>lH', lazy.health,		'[L]azy [H]ealth')
-nmap('<leader>lh', lazy.help,		'[L]azy [H]elp')
-nmap('<leader>li', lazy.install,	'[L]azy [I]nstall')
 nmap('<leader>lu', lazy.update,		'[L]azy [U]pdate')
 nmap('<leader>ls', lazy.sync,		'[L]azy [S]ync')
-nmap('<leader>lr', lazy.restore,	'[L]azy [R]estore')
 nmap('<leader>lp', lazy.profile,	'[L]azy [P]rofile')
-nmap('<leader>ll', lazy.log,		'[L]azy [L]og')
-nmap('<leader>ld', lazy.debug,		'[L]azy [D]ebug')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General settings configuration
