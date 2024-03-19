@@ -1,4 +1,4 @@
-From cbe290ad78b20beb4d1cd0f8e27965181c5e9f6e Mon Sep 17 00:00:00 2001
+From 1791dd6fcc9cfddee47f851eabfa3659b3251043 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:24:33 +0200
 Subject: [PATCH 1/7] Added center
@@ -37,10 +37,10 @@ index 323f93c..c036baa 100644
  dmenu grabs the keyboard before reading stdin if not reading from a tty. This
  is faster, but will lock up X until stdin reaches end\-of\-file.
 diff --git a/dmenu.c b/dmenu.c
-index 62f1089..5b09277 100644
+index 40f93e0..2e1ef90 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -96,6 +96,15 @@ calcoffsets(void)
+@@ -95,6 +95,15 @@ calcoffsets(void)
  			break;
  }
  
@@ -56,7 +56,7 @@ index 62f1089..5b09277 100644
  static void
  cleanup(void)
  {
-@@ -637,6 +646,7 @@ setup(void)
+@@ -636,6 +645,7 @@ setup(void)
  	bh = drw->fonts->h + 2;
  	lines = MAX(lines, 0);
  	mh = (lines + 1) * bh;
@@ -64,7 +64,7 @@ index 62f1089..5b09277 100644
  #ifdef XINERAMA
  	i = 0;
  	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
-@@ -663,9 +673,16 @@ setup(void)
+@@ -662,9 +672,16 @@ setup(void)
  				if (INTERSECT(x, y, 1, 1, info[i]) != 0)
  					break;
  
@@ -84,7 +84,7 @@ index 62f1089..5b09277 100644
  		XFree(info);
  	} else
  #endif
-@@ -673,11 +690,17 @@ setup(void)
+@@ -672,11 +689,17 @@ setup(void)
  		if (!XGetWindowAttributes(dpy, parentwin, &wa))
  			die("could not get embedding window attributes: 0x%lx",
  			    parentwin);
@@ -106,7 +106,7 @@ index 62f1089..5b09277 100644
  	inputw = mw / 3; /* input width: ~33% of monitor width */
  	match();
  
-@@ -716,7 +739,7 @@ setup(void)
+@@ -715,7 +738,7 @@ setup(void)
  static void
  usage(void)
  {
@@ -115,7 +115,7 @@ index 62f1089..5b09277 100644
  	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
  
-@@ -735,6 +758,8 @@ main(int argc, char *argv[])
+@@ -734,6 +757,8 @@ main(int argc, char *argv[])
  			topbar = 0;
  		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
  			fast = 1;
@@ -125,10 +125,10 @@ index 62f1089..5b09277 100644
  			fstrncmp = strncasecmp;
  			fstrstr = cistrstr;
 -- 
-2.40.0
+2.44.0
 
 
-From c7b47f25fd321f4536ff9ae16720537709651847 Mon Sep 17 00:00:00 2001
+From 2b11ba650f33430749c8eb89a0cba1e5e3f59585 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:25:50 +0200
 Subject: [PATCH 2/7] Added instant
@@ -175,10 +175,10 @@ index c036baa..2a9fca0 100644
  dmenu lists items vertically, with the given number of lines.
  .TP
 diff --git a/dmenu.c b/dmenu.c
-index 5b09277..17ded1d 100644
+index 2e1ef90..91ec74a 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -287,6 +287,13 @@ match(void)
+@@ -286,6 +286,13 @@ match(void)
  		matchend = substrend;
  	}
  	curr = sel = matches;
@@ -192,7 +192,7 @@ index 5b09277..17ded1d 100644
  	calcoffsets();
  }
  
-@@ -739,7 +746,7 @@ setup(void)
+@@ -738,7 +745,7 @@ setup(void)
  static void
  usage(void)
  {
@@ -201,7 +201,7 @@ index 5b09277..17ded1d 100644
  	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
  
-@@ -763,7 +770,9 @@ main(int argc, char *argv[])
+@@ -762,7 +769,9 @@ main(int argc, char *argv[])
  		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
  			fstrncmp = strncasecmp;
  			fstrstr = cistrstr;
@@ -213,10 +213,10 @@ index 5b09277..17ded1d 100644
  		/* these options take one argument */
  		else if (!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
 -- 
-2.40.0
+2.44.0
 
 
-From b450d803747bef45a48ba15497474b5f2e51b04b Mon Sep 17 00:00:00 2001
+From caae0db194fa8effe71d3d11ad7ed9de537f26c3 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:27:32 +0200
 Subject: [PATCH 3/7] Added numbers
@@ -226,19 +226,19 @@ Subject: [PATCH 3/7] Added numbers
  1 file changed, 23 insertions(+), 2 deletions(-)
 
 diff --git a/dmenu.c b/dmenu.c
-index 17ded1d..e68e046 100644
+index 91ec74a..f6b3c21 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -24,6 +24,8 @@
+@@ -23,6 +23,8 @@
+ #define INTERSECT(x,y,w,h,r)  (MAX(0, MIN((x)+(w),(r).x_org+(r).width)  - MAX((x),(r).x_org)) \
                               * MAX(0, MIN((y)+(h),(r).y_org+(r).height) - MAX((y),(r).y_org)))
- #define LENGTH(X)             (sizeof X / sizeof X[0])
  #define TEXTW(X)              (drw_fontset_getwidth(drw, (X)) + lrpad)
 +#define NUMBERSMAXDIGITS      100
 +#define NUMBERSBUFSIZE        (NUMBERSMAXDIGITS * 2) + 1
  
  /* enums */
  enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
-@@ -34,6 +36,7 @@ struct item {
+@@ -33,6 +35,7 @@ struct item {
  	int out;
  };
  
@@ -246,7 +246,7 @@ index 17ded1d..e68e046 100644
  static char text[BUFSIZ] = "";
  static char *embed;
  static int bh, mw, mh;
-@@ -152,6 +155,21 @@ drawitem(struct item *item, int x, int y, int w)
+@@ -151,6 +154,21 @@ drawitem(struct item *item, int x, int y, int w)
  	return drw_text(drw, x, y, w, bh, lrpad / 2, item->text, 0);
  }
  
@@ -268,7 +268,7 @@ index 17ded1d..e68e046 100644
  static void
  drawmenu(void)
  {
-@@ -177,6 +195,7 @@ drawmenu(void)
+@@ -176,6 +194,7 @@ drawmenu(void)
  		drw_rect(drw, x + curpos, 2, 2, bh - 4, 1, 0);
  	}
  
@@ -276,7 +276,7 @@ index 17ded1d..e68e046 100644
  	if (lines > 0) {
  		/* draw vertical list */
  		for (item = curr; item != next; item = item->right)
-@@ -191,13 +210,15 @@ drawmenu(void)
+@@ -190,13 +209,15 @@ drawmenu(void)
  		}
  		x += w;
  		for (item = curr; item != next; item = item->right)
@@ -295,10 +295,10 @@ index 17ded1d..e68e046 100644
  }
  
 -- 
-2.40.0
+2.44.0
 
 
-From ec7afaf2005d6f6048695d0ec78f65e83090ee45 Mon Sep 17 00:00:00 2001
+From e72b1bb32324cf15d617dc9fe0ed04522066b14e Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:28:38 +0200
 Subject: [PATCH 4/7] Added highlight
@@ -322,10 +322,10 @@ index 52dc14a..6758acf 100644
  };
  /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
 diff --git a/dmenu.c b/dmenu.c
-index e68e046..ecd29e2 100644
+index f6b3c21..7ebd42e 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -28,7 +28,7 @@
+@@ -27,7 +27,7 @@
  #define NUMBERSBUFSIZE        (NUMBERSMAXDIGITS * 2) + 1
  
  /* enums */
@@ -334,7 +334,7 @@ index e68e046..ecd29e2 100644
  
  struct item {
  	char *text;
-@@ -142,6 +142,43 @@ cistrstr(const char *h, const char *n)
+@@ -141,6 +141,43 @@ cistrstr(const char *h, const char *n)
  	return NULL;
  }
  
@@ -378,7 +378,7 @@ index e68e046..ecd29e2 100644
  static int
  drawitem(struct item *item, int x, int y, int w)
  {
-@@ -152,7 +189,9 @@ drawitem(struct item *item, int x, int y, int w)
+@@ -151,7 +188,9 @@ drawitem(struct item *item, int x, int y, int w)
  	else
  		drw_setscheme(drw, scheme[SchemeNorm]);
  
@@ -390,10 +390,10 @@ index e68e046..ecd29e2 100644
  
  static void
 -- 
-2.40.0
+2.44.0
 
 
-From 92df28c4bd24a19157b65b9241a6319d3abd49e3 Mon Sep 17 00:00:00 2001
+From c4d207cbcca968acd8698593a32cbe89ce8be4f7 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:30:05 +0200
 Subject: [PATCH 5/7] Added caseinsensitive
@@ -428,10 +428,10 @@ index 2a9fca0..eeed8d6 100644
  .B \-n
  dmenu instantly selects if only one match.
 diff --git a/dmenu.c b/dmenu.c
-index ecd29e2..c05a4af 100644
+index 7ebd42e..f2c8b3c 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -58,8 +58,9 @@ static Clr *scheme[SchemeLast];
+@@ -57,8 +57,9 @@ static Clr *scheme[SchemeLast];
  
  #include "config.h"
  
@@ -443,7 +443,7 @@ index ecd29e2..c05a4af 100644
  
  static unsigned int
  textw_clamp(const char *str, unsigned int n)
-@@ -806,7 +807,7 @@ setup(void)
+@@ -805,7 +806,7 @@ setup(void)
  static void
  usage(void)
  {
@@ -452,7 +452,7 @@ index ecd29e2..c05a4af 100644
  	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
  
-@@ -827,9 +828,9 @@ main(int argc, char *argv[])
+@@ -826,9 +827,9 @@ main(int argc, char *argv[])
  			fast = 1;
  		else if (!strcmp(argv[i], "-c"))   /* centers dmenu on screen */
  			centered = 1;
@@ -466,10 +466,10 @@ index ecd29e2..c05a4af 100644
  			instant = 1;
  		else if (i + 1 == argc)
 -- 
-2.40.0
+2.44.0
 
 
-From 71eb5eb165bf195e69eec564c3d15b488d86632c Mon Sep 17 00:00:00 2001
+From 3ccc158ed70f6c8941a048fccb9e1101321efc53 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:36:31 +0200
 Subject: [PATCH 6/7] Added borders
@@ -491,10 +491,10 @@ index 6758acf..8332ffc 100644
 +/* Size of the window border */
 +static unsigned int border_width = 1;
 diff --git a/dmenu.c b/dmenu.c
-index c05a4af..fabd017 100644
+index f2c8b3c..8dc30e2 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -776,9 +776,11 @@ setup(void)
+@@ -775,9 +775,11 @@ setup(void)
  	swa.override_redirect = True;
  	swa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
  	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
@@ -507,7 +507,7 @@ index c05a4af..fabd017 100644
  	XSetClassHint(dpy, win, &ch);
  
  
-@@ -854,6 +856,8 @@ main(int argc, char *argv[])
+@@ -853,6 +855,8 @@ main(int argc, char *argv[])
  			colors[SchemeSel][ColFg] = argv[++i];
  		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
  			embed = argv[++i];
@@ -517,10 +517,10 @@ index c05a4af..fabd017 100644
  			usage();
  
 -- 
-2.40.0
+2.44.0
 
 
-From d54e6f05e73c6664ce8482c4e5a7c8dccb4920c9 Mon Sep 17 00:00:00 2001
+From 33fa778cad76ced1a3633791e64041d1e9dc678e Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Wed, 11 May 2022 16:37:44 +0200
 Subject: [PATCH 7/7] Added xresources
@@ -530,7 +530,7 @@ Subject: [PATCH 7/7] Added xresources
  1 file changed, 72 insertions(+), 8 deletions(-)
 
 diff --git a/dmenu.c b/dmenu.c
-index fabd017..679644a 100644
+index 8dc30e2..cfdb83c 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -15,6 +15,7 @@
@@ -541,7 +541,7 @@ index fabd017..679644a 100644
  
  #include "drw.h"
  #include "util.h"
-@@ -56,6 +57,10 @@ static XIC xic;
+@@ -55,6 +56,10 @@ static XIC xic;
  static Drw *drw;
  static Clr *scheme[SchemeLast];
  
@@ -552,7 +552,7 @@ index fabd017..679644a 100644
  #include "config.h"
  
  static char * cistrstr(const char *s, const char *sub);
-@@ -704,8 +709,13 @@ setup(void)
+@@ -703,8 +708,13 @@ setup(void)
  	int a, di, n, area = 0;
  #endif
  	/* init appearance */
@@ -568,7 +568,7 @@ index fabd017..679644a 100644
  
  	clip = XInternAtom(dpy, "CLIPBOARD",   False);
  	utf8 = XInternAtom(dpy, "UTF8_STRING", False);
-@@ -813,6 +823,45 @@ usage(void)
+@@ -812,6 +822,45 @@ usage(void)
  	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
  
@@ -614,7 +614,7 @@ index fabd017..679644a 100644
  int
  main(int argc, char *argv[])
  {
-@@ -845,15 +894,15 @@ main(int argc, char *argv[])
+@@ -844,15 +893,15 @@ main(int argc, char *argv[])
  		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
  			prompt = argv[++i];
  		else if (!strcmp(argv[i], "-fn"))  /* font or font set */
@@ -635,7 +635,7 @@ index fabd017..679644a 100644
  		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
  			embed = argv[++i];
  		else if (!strcmp(argv[i], "-bw"))
-@@ -873,8 +922,23 @@ main(int argc, char *argv[])
+@@ -872,8 +921,23 @@ main(int argc, char *argv[])
  		die("could not get embedding window attributes: 0x%lx",
  		    parentwin);
  	drw = drw_create(dpy, screen, root, wa.width, wa.height);
@@ -661,5 +661,5 @@ index fabd017..679644a 100644
  
  #ifdef __OpenBSD__
 -- 
-2.40.0
+2.44.0
 

@@ -1,4 +1,4 @@
-From 3cb9b754ad5fd6ad7219f21ff452b6ced64bbf2e Mon Sep 17 00:00:00 2001
+From 8d4e38d766e25f26708b8c901b49c4997afbab44 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:13:47 +0200
 Subject: [PATCH 01/12] Changed font to Hasklug Nerd Font Mono
@@ -8,7 +8,7 @@ Subject: [PATCH 01/12] Changed font to Hasklug Nerd Font Mono
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/config.def.h b/config.def.h
-index 91ab8ca..e894fa8 100644
+index 2cd740a..0111bd5 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,7 +5,7 @@
@@ -21,10 +21,10 @@ index 91ab8ca..e894fa8 100644
  
  /*
 -- 
-2.40.0
+2.44.0
 
 
-From 2ba68876aede6a521c021cddf0abdf176a761f78 Mon Sep 17 00:00:00 2001
+From 96c063ede6130085de27cb62c735922fe67d9da9 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:14:12 +0200
 Subject: [PATCH 02/12] Added boxdraw patch
@@ -42,7 +42,7 @@ Subject: [PATCH 02/12] Added boxdraw patch
  create mode 100644 boxdraw_data.h
 
 diff --git a/Makefile b/Makefile
-index 470ac86..6dfa212 100644
+index 15db421..a64b4c2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -4,7 +4,7 @@
@@ -53,8 +53,8 @@ index 470ac86..6dfa212 100644
 +SRC = st.c x.c boxdraw.c
  OBJ = $(SRC:.c=.o)
  
- all: options st
-@@ -23,6 +23,7 @@ config.h:
+ all: st
+@@ -17,6 +17,7 @@ config.h:
  
  st.o: config.h st.h win.h
  x.o: arg.h config.h st.h win.h
@@ -483,7 +483,7 @@ index 0000000..7890500
 +	/* U+2571 - U+2573: unsupported (diagonals) */
 +};
 diff --git a/config.def.h b/config.def.h
-index e894fa8..7d83cb7 100644
+index 0111bd5..15defce 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -67,6 +67,18 @@ static unsigned int blinktimeout = 800;
@@ -506,7 +506,7 @@ index e894fa8..7d83cb7 100644
   * bell volume. It must be a value between -100 and 100. Use 0 for disabling
   * it
 diff --git a/st.c b/st.c
-index 134e724..398bb98 100644
+index 683493d..3262217 100644
 --- a/st.c
 +++ b/st.c
 @@ -1215,6 +1215,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
@@ -552,7 +552,7 @@ index fd3b0d8..808f5f7 100644
  extern unsigned int defaultcs;
 +extern const int boxdraw, boxdraw_bold, boxdraw_braille;
 diff --git a/x.c b/x.c
-index aa09997..f79ea58 100644
+index b36fb8c..fcffc21 100644
 --- a/x.c
 +++ b/x.c
 @@ -1237,6 +1237,8 @@ xinit(int cols, int rows)
@@ -605,10 +605,10 @@ index aa09997..f79ea58 100644
  	if (IS_SET(MODE_REVERSE)) {
  		g.mode |= ATTR_REVERSE;
 -- 
-2.40.0
+2.44.0
 
 
-From 46119df42f295f76bc23dde1b67acbeaab6db0b7 Mon Sep 17 00:00:00 2001
+From 00baf486b1cec8d23fde5dc032afb579eb3558a3 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:14:36 +0200
 Subject: [PATCH 03/12] Added ligatures patch
@@ -627,7 +627,7 @@ Subject: [PATCH 03/12] Added ligatures patch
  create mode 100644 hb.h
 
 diff --git a/Makefile b/Makefile
-index 6dfa212..2ffd3c8 100644
+index a64b4c2..ab3549a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -4,7 +4,7 @@
@@ -638,8 +638,8 @@ index 6dfa212..2ffd3c8 100644
 +SRC = st.c x.c boxdraw.c hb.c
  OBJ = $(SRC:.c=.o)
  
- all: options st
-@@ -22,7 +22,8 @@ config.h:
+ all: st
+@@ -16,7 +16,8 @@ config.h:
  	$(CC) $(STCFLAGS) -c $<
  
  st.o: config.h st.h win.h
@@ -650,7 +650,7 @@ index 6dfa212..2ffd3c8 100644
  
  $(OBJ): config.h config.mk
 diff --git a/config.mk b/config.mk
-index 1e306f8..3e13e53 100644
+index 7f35f71..ca22b00 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -15,10 +15,12 @@ PKG_CONFIG = pkg-config
@@ -835,10 +835,10 @@ index 0000000..07888df
 +void hbunloadfonts();
 +void hbtransform(XftGlyphFontSpec *, const Glyph *, size_t, int, int);
 diff --git a/st.c b/st.c
-index 398bb98..7154f00 100644
+index 3262217..3428707 100644
 --- a/st.c
 +++ b/st.c
-@@ -2655,7 +2655,8 @@ draw(void)
+@@ -2666,7 +2666,8 @@ draw(void)
  
  	drawregion(0, 0, term.col, term.row);
  	xdrawcursor(cx, term.c.y, term.line[term.c.y][cx],
@@ -884,7 +884,7 @@ index 6de960d..94679e4 100644
  void xfinishdraw(void);
  void xloadcols(void);
 diff --git a/x.c b/x.c
-index f79ea58..33d2764 100644
+index fcffc21..f71b616 100644
 --- a/x.c
 +++ b/x.c
 @@ -19,6 +19,7 @@ char *argv0;
@@ -945,10 +945,10 @@ index f79ea58..33d2764 100644
  	if (IS_SET(MODE_HIDE))
  		return;
 -- 
-2.40.0
+2.44.0
 
 
-From b33662ac84f9a255d77f6d6fd1bf1921ecc92b2e Mon Sep 17 00:00:00 2001
+From 96d337247036f285081926f16703ebdb5c642940 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:15:00 +0200
 Subject: [PATCH 04/12] Added scrollback patch
@@ -960,7 +960,7 @@ Subject: [PATCH 04/12] Added scrollback patch
  3 files changed, 103 insertions(+), 28 deletions(-)
 
 diff --git a/config.def.h b/config.def.h
-index 7d83cb7..2044cbb 100644
+index 15defce..21b8230 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -213,6 +213,8 @@ static Shortcut shortcuts[] = {
@@ -973,7 +973,7 @@ index 7d83cb7..2044cbb 100644
  
  /*
 diff --git a/st.c b/st.c
-index 7154f00..82bfd02 100644
+index 3428707..e6492ae 100644
 --- a/st.c
 +++ b/st.c
 @@ -35,6 +35,7 @@
@@ -1219,9 +1219,9 @@ index 7154f00..82bfd02 100644
  }
  
  int32_t
-@@ -1732,11 +1794,11 @@ csihandle(void)
- 		break;
+@@ -1733,11 +1795,11 @@ csihandle(void)
  	case 'S': /* SU -- Scroll <n> line up */
+ 		if (csiescseq.priv) break;
  		DEFAULT(csiescseq.arg[0], 1);
 -		tscrollup(term.top, csiescseq.arg[0]);
 +		tscrollup(term.top, csiescseq.arg[0], 0);
@@ -1233,7 +1233,7 @@ index 7154f00..82bfd02 100644
  		break;
  	case 'L': /* IL -- Insert <n> blank lines */
  		DEFAULT(csiescseq.arg[0], 1);
-@@ -2308,7 +2370,7 @@ eschandle(uchar ascii)
+@@ -2313,7 +2375,7 @@ eschandle(uchar ascii)
  		return 0;
  	case 'D': /* IND -- Linefeed */
  		if (term.c.y == term.bot) {
@@ -1242,7 +1242,7 @@ index 7154f00..82bfd02 100644
  		} else {
  			tmoveto(term.c.x, term.c.y+1);
  		}
-@@ -2321,7 +2383,7 @@ eschandle(uchar ascii)
+@@ -2326,7 +2388,7 @@ eschandle(uchar ascii)
  		break;
  	case 'M': /* RI -- Reverse index */
  		if (term.c.y == term.top) {
@@ -1251,7 +1251,7 @@ index 7154f00..82bfd02 100644
  		} else {
  			tmoveto(term.c.x, term.c.y-1);
  		}
-@@ -2538,7 +2600,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2549,7 +2611,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
  void
  tresize(int col, int row)
  {
@@ -1260,7 +1260,7 @@ index 7154f00..82bfd02 100644
  	int minrow = MIN(row, term.row);
  	int mincol = MIN(col, term.col);
  	int *bp;
-@@ -2575,6 +2637,14 @@ tresize(int col, int row)
+@@ -2586,6 +2648,14 @@ tresize(int col, int row)
  	term.dirty = xrealloc(term.dirty, row * sizeof(*term.dirty));
  	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
  
@@ -1275,7 +1275,7 @@ index 7154f00..82bfd02 100644
  	/* resize each row to new width, zero-pad if needed */
  	for (i = 0; i < minrow; i++) {
  		term.line[i] = xrealloc(term.line[i], col * sizeof(Glyph));
-@@ -2633,7 +2703,7 @@ drawregion(int x1, int y1, int x2, int y2)
+@@ -2644,7 +2714,7 @@ drawregion(int x1, int y1, int x2, int y2)
  			continue;
  
  		term.dirty[y] = 0;
@@ -1284,7 +1284,7 @@ index 7154f00..82bfd02 100644
  	}
  }
  
-@@ -2654,9 +2724,10 @@ draw(void)
+@@ -2665,9 +2735,10 @@ draw(void)
  		cx--;
  
  	drawregion(0, 0, term.col, term.row);
@@ -1312,10 +1312,10 @@ index b889a88..0cfab7b 100644
  void printsel(const Arg *);
  void sendbreak(const Arg *);
 -- 
-2.40.0
+2.44.0
 
 
-From bffb34d2b2e26ac245f457a699b06436a572dc21 Mon Sep 17 00:00:00 2001
+From e2a5987fcbc5dc235e697293de08726c914526d9 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:16:01 +0200
 Subject: [PATCH 05/12] Added visualbell patch
@@ -1326,7 +1326,7 @@ Subject: [PATCH 05/12] Added visualbell patch
  2 files changed, 43 insertions(+)
 
 diff --git a/config.def.h b/config.def.h
-index 2044cbb..51178c7 100644
+index 21b8230..8ddad2b 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -85,6 +85,14 @@ const int boxdraw_braille = 0;
@@ -1345,7 +1345,7 @@ index 2044cbb..51178c7 100644
  char *termname = "st-256color";
  
 diff --git a/x.c b/x.c
-index 33d2764..f63eeb8 100644
+index f71b616..0d1b85e 100644
 --- a/x.c
 +++ b/x.c
 @@ -1660,6 +1660,27 @@ xsettitle(char *p)
@@ -1412,10 +1412,10 @@ index 33d2764..f63eeb8 100644
  		XFlush(xw.dpy);
  		drawing = 0;
 -- 
-2.40.0
+2.44.0
 
 
-From 92c0408d54e5c98f17555c2614dd2a337a752023 Mon Sep 17 00:00:00 2001
+From 4cc93709f585ab65909d015ab0998e1a4057718a Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:16:24 +0200
 Subject: [PATCH 06/12] Added mousescroll patch
@@ -1425,7 +1425,7 @@ Subject: [PATCH 06/12] Added mousescroll patch
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/config.def.h b/config.def.h
-index 51178c7..8f15788 100644
+index 8ddad2b..9e88b23 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -198,9 +198,9 @@ static MouseShortcut mshortcuts[] = {
@@ -1441,10 +1441,10 @@ index 51178c7..8f15788 100644
  
  /* Internal keyboard shortcuts. */
 -- 
-2.40.0
+2.44.0
 
 
-From 1a41b4afc5bc7a80eb3676f2a0c24c1c3b35a5fa Mon Sep 17 00:00:00 2001
+From 7a1029da96ce673c92ea75c6b0190a3f78c3af4f Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:17:00 +0200
 Subject: [PATCH 07/12] Added xresources patch
@@ -1454,7 +1454,7 @@ Subject: [PATCH 07/12] Added xresources patch
  1 file changed, 115 insertions(+)
 
 diff --git a/x.c b/x.c
-index f63eeb8..1555948 100644
+index 0d1b85e..ab297d0 100644
 --- a/x.c
 +++ b/x.c
 @@ -14,6 +14,7 @@
@@ -1594,10 +1594,10 @@ index f63eeb8..1555948 100644
  	rows = MAX(rows, 1);
  	tnew(cols, rows);
 -- 
-2.40.0
+2.44.0
 
 
-From 7865ab792d34b3c7e66a8bbf70abeacd8b5fbe29 Mon Sep 17 00:00:00 2001
+From 099ad9da9ec19ba7708c5c4f7fa90538e0931d2f Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:19:17 +0200
 Subject: [PATCH 08/12] Added font2 patch
@@ -1608,7 +1608,7 @@ Subject: [PATCH 08/12] Added font2 patch
  2 files changed, 109 insertions(+)
 
 diff --git a/config.def.h b/config.def.h
-index 8f15788..b894f9d 100644
+index 9e88b23..126d8dd 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -7,6 +7,14 @@
@@ -1627,7 +1627,7 @@ index 8f15788..b894f9d 100644
  /*
   * What program is execed by st depends of these precedence rules:
 diff --git a/x.c b/x.c
-index 1555948..16241bf 100644
+index ab297d0..6c588a6 100644
 --- a/x.c
 +++ b/x.c
 @@ -159,6 +159,8 @@ static void xhints(void);
@@ -1760,10 +1760,10 @@ index 1555948..16241bf 100644
  	xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
  	xloadcols();
 -- 
-2.40.0
+2.44.0
 
 
-From c3e7bafcb3f94599e7ad701f60f7d958892f4b73 Mon Sep 17 00:00:00 2001
+From 6d5c91a31ad4bdd232b4a315dcad23bf4f84eaf4 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:20:00 +0200
 Subject: [PATCH 09/12] Added support for keypad prior and next patch
@@ -1773,7 +1773,7 @@ Subject: [PATCH 09/12] Added support for keypad prior and next patch
  1 file changed, 2 insertions(+)
 
 diff --git a/config.def.h b/config.def.h
-index b894f9d..de68122 100644
+index 126d8dd..6f8c504 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -223,6 +223,8 @@ static Shortcut shortcuts[] = {
@@ -1786,10 +1786,10 @@ index b894f9d..de68122 100644
  	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
  	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
 -- 
-2.40.0
+2.44.0
 
 
-From afdb03c32ea136889bce647f6ab83cdaa3d5d34a Mon Sep 17 00:00:00 2001
+From d9dcc40adfd5c51a6f2ea6988b5a0ab734bf4679 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Fri, 7 Apr 2023 18:28:50 +0200
 Subject: [PATCH 10/12] Added support w3m images patch
@@ -1799,7 +1799,7 @@ Subject: [PATCH 10/12] Added support w3m images patch
  1 file changed, 2 insertions(+)
 
 diff --git a/x.c b/x.c
-index 16241bf..c102a20 100644
+index 6c588a6..1826d9a 100644
 --- a/x.c
 +++ b/x.c
 @@ -1786,6 +1786,8 @@ vbellbegin() {
@@ -1812,10 +1812,10 @@ index 16241bf..c102a20 100644
  }
  
 -- 
-2.40.0
+2.44.0
 
 
-From 846b51789d92a0684c25d5c99ce2af6dc911e332 Mon Sep 17 00:00:00 2001
+From 285fc338c0118148d32fbff465c0c5cefe812c3e Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Fri, 7 Apr 2023 18:39:30 +0200
 Subject: [PATCH 11/12] Added hidecursor patch
@@ -1825,7 +1825,7 @@ Subject: [PATCH 11/12] Added hidecursor patch
  1 file changed, 28 insertions(+), 4 deletions(-)
 
 diff --git a/x.c b/x.c
-index c102a20..881c4f2 100644
+index 1826d9a..47dc5ae 100644
 --- a/x.c
 +++ b/x.c
 @@ -105,6 +105,11 @@ typedef struct {
@@ -1913,10 +1913,10 @@ index c102a20..881c4f2 100644
  		return;
  
 -- 
-2.40.0
+2.44.0
 
 
-From 7f52d11f2919eafd22e4f67a93a8cbbdf76490ad Mon Sep 17 00:00:00 2001
+From c587dddff1e921eaa948c90a4214b8877ac6903a Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Sat, 8 Apr 2023 14:05:09 +0200
 Subject: [PATCH 12/12] Added fix keyboard input patch
@@ -1926,7 +1926,7 @@ Subject: [PATCH 12/12] Added fix keyboard input patch
  1 file changed, 641 insertions(+), 50 deletions(-)
 
 diff --git a/config.def.h b/config.def.h
-index de68122..06488a1 100644
+index 6f8c504..07be65c 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -260,7 +260,80 @@ static Shortcut shortcuts[] = {
@@ -2683,5 +2683,5 @@ index de68122..06488a1 100644
  
  /*
 -- 
-2.40.0
+2.44.0
 
