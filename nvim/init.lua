@@ -63,11 +63,22 @@ require('lazy').setup({
 					'dapui_scopes', 'dapui_console',
 					'dapui_stacks', 'dap-repl'
 				}
+			},
+			sections = {
+				lualine_x = {
+					{
+						function() return require('noice').api.statusline.mode.get() end,
+						cond = function() return require('noice').api.statusline.mode.has() end,
+						--color = { fg = '#ff9e64' }
+					}
+				}
 			}
 		},
 		dependencies = {
 			-- Provides nerd fonts icons
 			'nvim-tree/nvim-web-devicons',
+			-- Completely replaces the UI for messages, cmdline and the popupmenu
+			'folke/noice.nvim'
 		}
 	},
 	-- Add the left column indicating git line status and preview window
@@ -127,9 +138,13 @@ require('lazy').setup({
 			nmap('<leader>sr', tbi.registers,	'[S]earch [R]egisters')
 			nmap('<leader>ss', tbi.resume,		'[S]earch re[S]ume')
 			telescope.load_extension('ui-select')
-
-			nmap('<leader>st', '<cmd>TodoTelescope<CR>', '[S]earch [T]odo elements')
+			telescope.load_extension('noice')
 		end,
+		keys = {
+			{ '<leader>st', '<cmd>TodoTelescope<CR>',	desc = '[S]earch [T]odo elements' },
+			{ '<leader>sN', '<cmd>Telescope noice<CR>',	desc = '[S]earch [N]oice (powered by noice)' },
+			{ '<leader>sn', '<cmd>Telescope notify<CR>',	desc = '[S]earch [N]otifications (powered by notify)' },
+		},
 		dependencies = {
 			-- Bind vim.ui.select to telescope
 			'nvim-telescope/telescope-ui-select.nvim',
@@ -138,7 +153,11 @@ require('lazy').setup({
 			-- Provides nerd fonts icons
 			'nvim-tree/nvim-web-devicons',
 			-- Highlight todo, notes, etc in comments
-			'folke/todo-comments.nvim'
+			'folke/todo-comments.nvim',
+			-- Completely replaces the UI for messages, cmdline and the popupmenu
+			'folke/noice.nvim',
+			-- A fancy, configurable, notification manager for Neovim
+			'rcarriga/nvim-notify'
 		}
 	},
 	-- Automatic pairs of ( [ { insertion
@@ -556,23 +575,34 @@ require('lazy').setup({
 		opts = {
 			show_in_active_only = true,
 			handlers = {
-				search = true, -- Binding for hlslens
 				gitsigns = true
 			}
 		},
-		dependencies = { 'lewis6991/gitsigns.nvim', 'kevinhwang91/nvim-hlslens' }
+		dependencies = {
+			-- Add the left column indicating git line status and preview window
+			'lewis6991/gitsigns.nvim'
+		}
 	},
-	-- Helps getting better glance at matched information, seamlessly jump between matched instances.
-	{ 'kevinhwang91/nvim-hlslens',
+	-- Completely replaces the UI for messages, cmdline and the popupmenu
+	{ 'folke/noice.nvim',
 		event = 'VeryLazy',
-		config = true,
-		keys = {
-			{ 'n', "<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>zz", 'Repeat the latest "/" or "?" [count] times forward' },
-			{ 'N', "<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>zz", 'Repeat the latest "/" or "?" [count] times backward' },
-			{ '*', "*<Cmd>lua require('hlslens').start()<CR>", "Search forward for the [count]'th occurrence of the whole word" },
-			{ '#', "#<Cmd>lua require('hlslens').start()<CR>", "Search backward for the [count]'th occurrence of the whole word" },
-			{ 'g*', "g*<Cmd>lua require('hlslens').start()<CR>", "Search forward for the [count]'th occurrence of the word" },
-			{ 'g#', "g#<Cmd>lua require('hlslens').start()<CR>", "Search backward for the [count]'th occurrence of the word" }
+		opts = {
+			routes = {
+				{ -- Hide 'wrtiten' messages
+					filter = {
+						event = 'msg_show',
+						kind = '',
+						find = 'written'
+					},
+					opts = { skip = true }
+				}
+			}
+		},
+		dependencies = {
+			-- UI Component Library for Neovim
+			'MunifTanjim/nui.nvim',
+			-- A fancy, configurable, notification manager for Neovim
+			'rcarriga/nvim-notify',
 		}
 	},
 	-- Make folding look modern
