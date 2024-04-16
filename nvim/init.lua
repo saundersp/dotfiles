@@ -94,8 +94,8 @@ require('lazy').setup({
 			nmap(		  '<leader>hu', gs.undo_stage_hunk,		'[H]unk [U]ndo')
 			nmap(		  '<leader>hd', gs.diffthis,			'[H]unk [D]iff this')
 			nmap(		  '<leader>hb', gs.toggle_current_line_blame,	'[H]unk toggle line [B]lame')
-			nmap(		  '[h', function() gs.prev_hunk(); if vim.o.diff then return end gs.preview_hunk_inline() end, 'Previous [H]unk')
-			nmap(		  ']h', function() gs.next_hunk(); if vim.o.diff then return end gs.preview_hunk_inline() end, 'Next [H]unk')
+			nmap(		  ']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next [H]unk')
+			nmap(		  '[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous [H]unk')
 		end,
 		dependencies = {
 			-- Lua library functions
@@ -200,6 +200,7 @@ require('lazy').setup({
 		config = function()
 			require('neodev').setup({})		-- Setup neovim lua configuration
 			require('fidget').setup({		-- Turn on lsp status information
+				progress = { ignore = { 'null-ls' } }
 			})
 
 			nmap('<leader>rn', vim.lsp.buf.rename,						'LSP: [R]e[n]ame')
@@ -439,6 +440,29 @@ require('lazy').setup({
 					{ name = 'buffer' }
 				}, {
 					{ name = 'buffer' }
+				})
+			})
+
+			-- `/` cmdline setup.
+			cmp.setup.cmdline('/', {
+				mapping = cmp.mapping.preset.cmdline(),
+				sources = {
+					{ name = 'buffer' }
+				}
+			})
+
+			-- `:` cmdline setup.
+			cmp.setup.cmdline(':', {
+				mapping = cmp.mapping.preset.cmdline(),
+				sources = cmp.config.sources({
+					{ name = 'path' }
+				}, {
+					{
+						name = 'cmdline',
+						option = {
+							ignore_cmds = { 'Man', '!' }
+						}
+					}
 				})
 			})
 		end,
