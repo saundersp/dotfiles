@@ -26,6 +26,11 @@ command -v ipython >> /dev/null && export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
 command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
 command -v docker >> /dev/null && export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
+if command -v pipx >> /dev/null; then
+	export PIPX_BIN_DIR="$XDG_DATA_HOME/pipx/bin"
+	export PIPX_MAN_DIR="$XDG_DATA_HOME/pipx/man"
+	export PATH="$PATH:$PIPX_BIN_DIR"
+fi
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
@@ -118,14 +123,14 @@ if [ -f /usr/share/bash-completion/bash_completion ]; then . /usr/share/bash-com
 elif [ -f /etc/bash_completion ]; then . /etc/bash_completion
 fi
 
-# Enable fzf functionnalities
+# Enable fzf functionalities
 if command -v fzf >> /dev/null; then
 	test -f /usr/share/bash-completion/completions/fzf && . /usr/share/bash-completion/completions/fzf
 	# CTRL-T, CTRL-R, and ALT-C
 	test -f /usr/share/fzf/key-bindings.bash && . /usr/share/fzf/key-bindings.bash
 fi
 
-# Add better human readness by default to common commands
+# Add better human readability by default to common commands
 command -v df >> /dev/null && alias df='df -h'
 command -v free >> /dev/null && alias free='free -h'
 command -v mkdir >> /dev/null && alias mkdir='mkdir -p'
@@ -155,7 +160,9 @@ command -v fgrep >> /dev/null && alias fgrep='fgrep --color=auto'
 command -v egrep >> /dev/null && alias egrep='egrep --color=auto'
 command -v diff >> /dev/null && alias diff='diff --color=auto'
 command -v ip >> /dev/null && alias ip='ip --color=auto'
-command -v wget >> /dev/null && alias wget='wget --hsts-file=$XDG_DATA_HOME/wget-hsts'
+command -v wget >> /dev/null && alias wget="wget --hsts-file=$XDG_DATA_HOME/wget-hsts"
+# Replace default cat command
+command -v bat >> /dev/null && alias cat='bat'
 
 # Print out escape sequences usable for coloured text on tty.
 __cmd_checker__ colours
@@ -290,7 +297,7 @@ Available flags:
 	-h, h, help, --help		Show this help message."
 		case "$1" in
 			-s|s|sync|--sync) sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
-			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uUDv @world && emerge -v @preserved-rebuild && dispatch-conf' ;;
+			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uUDv --keep-going=y @world && emerge -v @preserved-rebuild && dispatch-conf' ;;
 			-l|l|list|--list) cat /var/lib/portage/world ;;
 			-q|q|query|--query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
 			-c|c|clean|--clean) __command_requirer_pkg__ 'sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && find /var/tmp/portage -mindepth 1 -delete"' eclean app-portage/gentoolkit ;;
@@ -521,7 +528,7 @@ command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl d
 
 __cmd_checker__ pow
 pow(){
-	# The script assumes that all availables cpus has the same governor
+	# The script assumes that all available cpus has the same governor
 	GOVERNORS_PATH=/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 	test ! -f "$GOVERNORS_PATH" && echo 'CPU governors file unavailable' && return 1
 	MODES="$(cat "$GOVERNORS_PATH")"
@@ -531,7 +538,7 @@ Implemented by @saundersp
 
 USAGE: pow FLAG
 Available flags:
-	-l, l, list, --list		List all the availables scaling governors.
+	-l, l, list, --list		List all the available scaling governors.
 	-c, c, current, --current	Display the current selected scaling governor.
 	${MODES/ /, }		Set the scaling governor to argument name.
 	-h, h, help, --help		Show this help message"
