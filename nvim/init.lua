@@ -58,7 +58,6 @@ require('lazy').setup({
 		opts = {
 			options = {
 				theme = 'codedark',
-				disabled_filetypes = { 'NvimTree' },
 				ignore_focus = {
 					'dapui_watches', 'dapui_breakpoints',
 					'dapui_scopes', 'dapui_console',
@@ -136,25 +135,14 @@ require('lazy').setup({
 	},
 	-- Automatic pairs of ( [ { insertion
 	{ 'windwp/nvim-autopairs', config = true },
-	-- Add a fancy file explorer
-	{ 'nvim-tree/nvim-tree.lua',
-		event = 'VeryLazy',
-		keys = {
-			{ '<C-n>', '<cmd>NvimTreeToggle<CR>',	desc = 'Open [N]erd tree explorer' }
-		},
-		opts = {
-			filters = {
-				custom = {
-					'.git',
-					'node_modules',
-					'venv',
-					'package-lock.json'
-				}
-			},
-			sync_root_with_cwd = true,
-			actions = { open_file = { quit_on_open = true } }
-		},
-		dependencies = 'nvim-tree/nvim-web-devicons'
+	-- Edit the filesystem like a buffer
+	{ 'stevearc/oil.nvim',
+		keys = {{ '<C-n>', '<cmd>Oil<CR>', desc = 'Open Oil file manager' }},
+		config = true,
+		dependencies = {
+			-- Provides nerd fonts icons
+			'nvim-tree/nvim-web-devicons'
+		}
 	},
 	-- add the vmap gl<SYMBOL> to vertical align to the given symbol
 	{ 'tommcdo/vim-lion',
@@ -185,7 +173,6 @@ require('lazy').setup({
 		config = function()
 			require('neodev').setup({})		-- Setup neovim lua configuration
 			require('fidget').setup({		-- Turn on lsp status information
-				integration = { ['nvim-tree'] = { enable = true } }
 			})
 
 			nmap('<leader>rn', vim.lsp.buf.rename,						'LSP: [R]e[n]ame')
