@@ -394,7 +394,6 @@ Available flags:
 	}
 fi
 
-command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard'
 command -v wg-quick >> /dev/null && alias vpn='wg-quick up wg0' && alias vpn_off='wg-quick down wg0'
 command -v lazygit >> /dev/null && alias lg='lazygit'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker'
@@ -416,113 +415,7 @@ if command -v ranger >> /dev/null; then
 	bind '"\C-o":"\C-wranger_cd\C-m"'
 fi
 
-if command -v xrandr >> /dev/null; then
-	__cmd_checker__ hdmi
-	hdmi(){
-		USAGE='HDMI connection helper
-Implemented by @saundersp
-
-USAGE: hdmi FLAG
-Available flags:
-	-e, e, extend, --extend		Extend the primary display to the secondary.
-	-m, m, mirror, --mirror		Mirror the primary display to the secondary.
-	-o, o, off, --off		Turn off a display.
-	-h, h, help, --help		Show this help message'
-		__cmd_checker__ __get_display__
-		__get_display__(){
-			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
-		}
-		case "$1" in
-			-e|e|extend|--extend)
-				Primary="$(__get_display__ Primary)"
-				test -z "$Primary" && return 0
-				Secondary="$(__get_display__ Secondary)"
-				test -z "$Secondary" && return 0
-				mode="$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)"
-				test -z "$mode" && return 0
-				xrandr --output "$Secondary" --auto --"$mode" "$Primary"
-			;;
-			-m|m|mirror|--mirror)
-				Primary="$(__get_display__ Primary)"
-				test -z "$Primary" && return 0
-				Secondary="$(__get_display__ Secondary)"
-				test -z "$Secondary" && return 0
-				xrandr --output "$Secondary" --auto --same-as "$Primary"
-			;;
-			-o|o|off|--off)
-				Primary="$(__get_display__ Primary)"
-				test -z "$Primary" && return 0
-				xrandr --output "$Primary" --off
-			;;
-			-h|h|help|--help) echo "$USAGE" ;;
-			*) echo "$USAGE" && return 1 ;;
-		esac
-	}
-fi
-
 __cmd_checker__ cb && alias cb='clear && exec bash'
-
-if command -v pactl >> /dev/null; then
-	__cmd_checker__ __moff__ __soff__ __paloopoff__ pa
-
-	__moff__(){
-		pactl unload-module module-native-protocol-tcp 2>>/dev/null
-	}
-
-	__soff__(){
-		pactl unload-module module-tunnel-sink-new 2>>/dev/null
-		pactl unload-module module-tunnel-source 2>>/dev/null
-	}
-
-	__paloopoff__(){
-		pactl unload-module module-loopback 2>>/dev/null
-	}
-
-	pa(){
-		USAGE='Pulseaudio modules helper
-Implemented by @saundersp
-
-USAGE: pa FLAG
-Available flags:
-	moff			Disable master audio modules.
-	m			Enable master audio modules.
-	soff			Disable slave audio modules.
-	s			Enable slave audio modules.
-	loopoff			Disable audio loopback.
-	loop [ms]		Enable audio loopback.
-	-h, h, help, --help	Show this help message'
-		case "$1" in
-			moff) __moff__ ;;
-			m)
-				__moff__
-				pactl load-module module-native-protocol-tcp listen=192.168.137.1 auth-ip-acl=192.168.137.0/24
-			;;
-			soff) __soff__ ;;
-			s)
-				__soff__
-				pactl load-module module-tunnel-sink-new server=192.168.137.1
-				pactl load-module module-tunnel-source server=192.168.137.1
-			;;
-			loopoff) __paloopoff__ ;;
-			loop)
-				__paloopoff__
-				source="$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )"
-				test -z "$source" && return 0
-				sink="$(pactl list sinks | grep Na |  awk '{ print $2 }' | dmenu -p 'Sink:' -c -l 10 )"
-				test -z "$sink" && return 0
-				if [ -z "$2" ]; then
-					pactl load-module module-loopback sink="$sink" source="$source"
-				else
-					pactl load-module module-loopback sink="$sink" source="$source" latency_msec="$2"
-				fi
-			;;
-			-h|h|help|--help) echo "$USAGE" ;;
-			*) echo "$USAGE" && return 1 ;;
-		esac
-	}
-	__cmd_checker__ pm
-	command -v pulsemixer >> /dev/null && alias pm='pulsemixer'
-fi
 
 command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
 
