@@ -65,7 +65,10 @@ require('lazy').setup({
 				}
 			}
 		},
-		dependencies = 'nvim-tree/nvim-web-devicons'
+		dependencies = {
+			-- Provides nerd fonts icons
+			'nvim-tree/nvim-web-devicons',
+		}
 	},
 	-- Add the left column indicating git line status and preview window
 	{ 'lewis6991/gitsigns.nvim',
@@ -83,7 +86,12 @@ require('lazy').setup({
 			nmap(		  '[h', function() gs.prev_hunk(); if vim.o.diff then return end gs.preview_hunk_inline() end, 'Previous [H]unk')
 			nmap(		  ']h', function() gs.next_hunk(); if vim.o.diff then return end gs.preview_hunk_inline() end, 'Next [H]unk')
 		end,
-		dependencies = { 'nvim-lua/plenary.nvim', 'petertriho/nvim-scrollbar' }
+		dependencies = {
+			-- Lua library functions
+			'nvim-lua/plenary.nvim',
+			-- Add an extensible scrollbar
+			'petertriho/nvim-scrollbar'
+		}
 	},
 	-- Colourize RGB codes to it designated colour and add a colour picker
 	{ 'uga-rosa/ccc.nvim',
@@ -134,7 +142,7 @@ require('lazy').setup({
 		}
 	},
 	-- Automatic pairs of ( [ { insertion
-	{ 'windwp/nvim-autopairs', config = true },
+	{ 'windwp/nvim-autopairs', event = 'VimEnter', config = true },
 	-- Edit the filesystem like a buffer
 	{ 'stevearc/oil.nvim',
 		keys = {{ '<C-n>', '<cmd>Oil<CR>', desc = 'Open Oil file manager' }},
@@ -404,16 +412,27 @@ require('lazy').setup({
 					end, { 'i', 's' })
 				}),
 				sources = cmp.config.sources({
+					-- LSP completion
 					{ name = 'nvim_lsp' },
-					{ name = 'luasnip' }
+					-- Snippets
+					{ name = 'luasnip' },
+					-- Buffer words
+					{ name = 'buffer' }
 				}, {
 					{ name = 'buffer' }
 				})
 			})
 		end,
 		dependencies = {
+			-- nvim-cmp source for neovim builtin LSP client
 			'hrsh7th/cmp-nvim-lsp',
+			-- nvim-cmp source for buffer words
+			'hrsh7th/cmp-buffer',
+			-- nvim-cmp source for vim's cmdline
+			'hrsh7th/cmp-cmdline',
+			-- Snippet Engine for Neovim written in Lua
 			'L3MON4D3/LuaSnip',
+			-- luasnip completion source for nvim-cmp
 			'saadparwaiz1/cmp_luasnip'
 		}
 	},
@@ -444,7 +463,13 @@ require('lazy').setup({
 		build = '<cmd>TSUpdate'
 	},
 	-- Colourize multiple inner level to ( [ {
-	{ 'HiPhish/rainbow-delimiters.nvim', event = 'VeryLazy', dependencies = 'nvim-treesitter/nvim-treesitter' },
+	{ 'HiPhish/rainbow-delimiters.nvim',
+		event = 'VeryLazy',
+		dependencies = {
+			-- Highlight, edit, and navigate code
+			'nvim-treesitter/nvim-treesitter'
+		}
+	},
 	-- Arduino commands
 	{ 'stevearc/vim-arduino',
 		keys = {
@@ -476,7 +501,14 @@ require('lazy').setup({
 		end
 	},
 	-- Stylize the bufferline
-	{ 'akinsho/bufferline.nvim', event = 'VeryLazy', opts = { options = { mode = 'tabs' } }, dependencies = 'nvim-tree/nvim-web-devicons' },
+	{ 'akinsho/bufferline.nvim',
+		event = 'VeryLazy',
+		opts = { options = { mode = 'tabs' } },
+		dependencies = {
+			-- Provides nerd fonts icons
+			'nvim-tree/nvim-web-devicons'
+		}
+	},
 	-- Tool to install LSPs, DAPs, linters and formatters
 	{ 'williamboman/mason.nvim',
 		config = true,
@@ -484,7 +516,14 @@ require('lazy').setup({
 		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = '[M]ason [O]pen' } }
 	},
 	-- Easily update all Mason packages with one command
-	{ 'RubixDev/mason-update-all', cmd = { 'MasonUpdateAll' }, config = true, dependencies = 'williamboman/mason.nvim' },
+	{ 'RubixDev/mason-update-all',
+		cmd = { 'MasonUpdateAll' },
+		config = true,
+		dependencies = { 
+			-- Tool to install LSPs, DAPs, linters and formatters
+			'williamboman/mason.nvim'
+		}
+	},
 	-- Greeter for neovim
 	{ 'goolord/alpha-nvim',
 		event = 'VimEnter',
@@ -506,7 +545,10 @@ require('lazy').setup({
 
 			require('alpha').setup(startify.config)
 		end,
-		dependencies = 'nvim-tree/nvim-web-devicons'
+		dependencies = {
+			-- Provides nerd fonts icons
+			'nvim-tree/nvim-web-devicons'
+		}
 	},
 	-- Add an extensible scrollbar
 	{ 'petertriho/nvim-scrollbar',
@@ -537,7 +579,10 @@ require('lazy').setup({
 	{ 'kevinhwang91/nvim-ufo',
 		event = 'VeryLazy',
 		opts = { provider_selector = function() return { 'treesitter', 'indent' } end },
-		dependencies = 'kevinhwang91/promise-async'
+		dependencies = {
+			-- Porting Promise & Async from JavaScript to Lua
+			'kevinhwang91/promise-async'
+		}
 	},
 	-- Add formatters and linters
 	-- See available configs at : https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md
@@ -618,7 +663,10 @@ require('lazy').setup({
 			imap('<C-h>', neogen.jump_prev)
 			nmap('<C-h>', neogen.jump_prev)
 		end,
-		dependencies = 'nvim-treesitter/nvim-treesitter'
+		dependencies = {
+			-- Highlight, edit, and navigate code
+			'nvim-treesitter/nvim-treesitter'
+		}
 	},
 	-- Hex editing done right
 	{ 'RaafatTurki/hex.nvim',
@@ -641,7 +689,6 @@ require('lazy').setup({
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim',
 		event = 'VeryLazy',
-		dependencies = 'nvim-lua/plenary.nvim',
 		config = function()
 			local todo = require('todo-comments')
 			todo.setup({
@@ -651,7 +698,11 @@ require('lazy').setup({
 			})
 			nmap(']t', todo.jump_next, 'Next todo comment')
 			nmap('[t', todo.jump_prev, 'Previous todo comment')
-		end
+		end,
+		dependencies = {
+			-- Lua library functions
+			'nvim-lua/plenary.nvim'
+		}
 	}
 })
 local lazy = require('lazy')
