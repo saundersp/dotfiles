@@ -136,7 +136,7 @@ case "$1" in
 
 		# https://github.com/arp242/find-cursor.git
 		# Dependencies : dev-build/make
-		__updatepackages__ 'find-cursor' 'make && mv find-cursor /usr/local/bin && make clean'
+		__updatepackages__ 'find-cursor' 'make all install clean'
 
 		FONT_DIR=/usr/share/fonts/Hasklig
 		if [ -d "$FONT_DIR" ]; then
