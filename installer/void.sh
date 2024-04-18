@@ -92,8 +92,8 @@ install_pkg base-system opendoas grub-x86_64-efi efibootmgr cryptsetup which man
 EOF
 
 install_server(){
-	install_pkg neovim lazygit lazydocker git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep htop ranger tmux \
-		docker dos2unix fd highlight ccls gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers
+	install_pkg neovim lazygit lazydocker git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep btop ranger tmux \
+		docker dos2unix fd highlight gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers
 }
 install_ihm(){
 	install_server
@@ -152,6 +152,7 @@ if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/\"\$LATEST_TAG\"/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
+	echo \$LATEST_TAG > /usr/share/fonts/Hasklig/VERSION
 	rm Hasklig.zip
 fi
 

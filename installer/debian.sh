@@ -131,6 +131,7 @@ EOF
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/"$LATEST_TAG"/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
+	echo "$LATEST_TAG" > /usr/share/fonts/Hasklig/VERSION
 	rm Hasklig.zip
 }
 install_dotfiles(){

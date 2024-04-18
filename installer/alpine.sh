@@ -123,7 +123,7 @@ install_pkg(){
 }
 install_server(){
 	install_pkg neovim doas lazygit git wget unzip openssh bash-completion nodejs npm python3 \
-		py3-pip ripgrep htop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc man-pages \
+		py3-pip ripgrep btop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc man-pages \
 		mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev tmux lazydocker \
 		docker docker-compose dos2unix gdb highlight progress py3-pynvim ncdu cmake make
 
@@ -237,6 +237,7 @@ install_ihm(){
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/\"\$LATEST_TAG\"/Hasklig.zip
 	mkdir /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
+	echo \$LATEST_TAG > /usr/share/fonts/Hasklig/VERSION
 	rm Hasklig.zip
 }
 

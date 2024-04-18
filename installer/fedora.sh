@@ -38,10 +38,9 @@ install_server(){
 	# Installing lazydocker
 	dnf copr enable atim/lazydocker -y
 
-	install_pkg fastfetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep htop opendoas git ranger tmux dash \
+	install_pkg fastfetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep btop opendoas git ranger tmux dash \
 		dnf-plugins-core docker-ce docker-ce-cli containerd.io docker-compose-plugin dos2unix fd-find gcc gcc-c++ gdb make highlight lazygit \
 		lazydocker man-db wireguard-tools patch pkgconf progress python3-neovim ncdu
-	# ccls is temporally not available
 
 	# Compiling lazynpm
 	cd /usr/local/src
@@ -91,6 +90,7 @@ install_ihm(){
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/"$LATEST_TAG"/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
+	echo "$LATEST_TAG" > /usr/share/fonts/Hasklig/VERSION
 	rm Hasklig.zip
 }
 install_dotfiles(){

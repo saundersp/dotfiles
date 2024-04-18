@@ -95,7 +95,7 @@ install_pkg(){
 }
 install_server(){
 	install_pkg neovim lazygit fastfetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep \
-		btop ranger fd fakeroot make gcc pkgconf tmux ccls docker docker-compose dos2unix gdb highlight progress python-pynvim
+		btop ranger fd fakeroot make gcc pkgconf tmux docker docker-compose dos2unix gdb highlight progress python-pynvim
 }
 install_ihm(){
 	install_server
@@ -158,6 +158,7 @@ if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/\"\$LATEST_TAG\"/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
+	echo \$LATEST_TAG > /usr/share/fonts/Hasklig/VERSION
 	rm Hasklig.zip
 fi
 

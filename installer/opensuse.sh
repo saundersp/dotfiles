@@ -42,7 +42,7 @@ install_server(){
 	zypper addrepo -G https://download.opensuse.org/repositories/home:Dead_Mozay/openSUSE_Tumbleweed/home:Dead_Mozay.repo # For lazygit
 	zypper addrepo -G https://download.opensuse.org/repositories/home:lemmy04/openSUSE_Tumbleweed/home:lemmy04.repo       # For lazydocker
 	zypper refresh
-	install_pkg git fastfetch neovim unzip bash-completion nodejs-default npm-default python310 python310-pip ripgrep htop lazygit \
+	install_pkg git fastfetch neovim unzip bash-completion nodejs-default npm-default python310 python310-pip ripgrep btop lazygit \
 		opendoas ranger lazydocker patch gcc gcc-c++ make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python310-neovim \
 		go ncdu
 
@@ -87,6 +87,7 @@ install_ihm(){
 	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/"$LATEST_TAG"/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
+	echo "$LATEST_TAG" > /usr/share/fonts/Hasklig/VERSION
 	rm Hasklig.zip
 }
 install_dotfiles(){
