@@ -38,25 +38,32 @@ case "$1" in
 	;;
 	p|packages|-p|--packages)
 		__updatepackages__(){
+			__r__(){
+				end="$1"
+				for _ in $(seq 1 "$end") ; do
+					env printf '%s' "$2";
+				done
+			}
 			for PACKAGE_NAME in $1; do
 				if [ ! -d /usr/local/src/"$PACKAGE_NAME" ]; then
 					#echo "Package $PACKAGE_NAME not installed, skipping..."
 					continue
 				fi
-				cd "$PACKAGE_NAME"
-				#if [ "$(git pull)" = 'Already up to date.' ]; then
-				#	echo "Package $PACKAGE_NAME already up to date"
-				#else
-				if [ "$(git pull)" != 'Already up to date.' ]; then
-					printf '\nUpdating package %s\n' "$PACKAGE_NAME"
+				cd "$PACKAGE_NAME" || continue
+				env printf "┌$(__r__ 40 ─)┐\n"
+				env printf "│ %-38s │\n" "$PACKAGE_NAME"
+				env printf "└$(__r__ 40 '─')┘\n"
+				if [ "$(git pull)" = 'Already up to date.' ]; then
+					echo 'Already up to date'
+				else
 					$2
-					printf '\nUpdated package %s\n' "$PACKAGE_NAME"
 				fi
 				cd ..
 			done
+			unset __r__
 		}
 
-		cd /usr/local/src
+		cd /usr/local/src || exit 1
 
 		# https://github.com/arduino/arduino-cli.git
 		# Dependencies : dev-lang/go
@@ -87,7 +94,7 @@ case "$1" in
 		# https://github.com/b3nj5m1n/xdg-ninja.git
 		# Dependencies : app-shells/bash
 		# Optional dependencies : app-misc/glow
-		__updatepackages__ 'xdg-ninja' 'ln -sf /usr/local/src/xdg-ninja/xdg-ninja.sh /usr/local/bin/xdg-ninja'
+		__updatepackages__ 'xdg-ninja' 'ln -svf /usr/local/src/xdg-ninja/xdg-ninja.sh /usr/local/bin/xdg-ninja'
 
 		# https://github.com/ankitects/anki.git
 		# Dependencies : app-crypt/mit-krb5 dev-python/PyQt5 dev-python/PyQtWebEngine dev-python/httplib2 dev-python/beautifulsoup4 dev-python/decorator dev-python/jsonschema dev-python/markdown dev-python/requests dev-python/send2trash dev-python/nose dev-python/mock
@@ -124,10 +131,7 @@ case "$1" in
 		# https://github.com/neovim/neovim.git
 		# Dependencies : dev-build/cmake dev-build/ninja app-arch/unzip net-misc/curl sys-devel/gettext sys-devel/gcc
 		__update_cmake__(){
-			make CMAKE_BUILD_TYPE=Release -j $(nproc) -l $(nproc)
-			make install
-			make clean
-			rm -rf .deps
+			make CMAKE_BUILD_TYPE=Release -j $(nproc) -l $(nproc) && make install clean && rm -rf .deps
 		}
 		__updatepackages__ 'neovim' '__update_cmake__'
 
@@ -185,8 +189,8 @@ case "$1" in
 			echo "You have to specify at least one relative module path !"
 			exit 1
 		elif [ "$2" = 'all' ]; then
-			./$0 s video/nvidia video/nvidia-drm video/nvidia-modeset video/nvidia-peermem video/nvidia-uvm
-			./$0 s misc/vboxdrv misc/vboxnetadp misc/vboxnetflt
+			./"$0" s video/nvidia video/nvidia-drm video/nvidia-modeset video/nvidia-peermem video/nvidia-uvm
+			./"$0" s misc/vboxdrv misc/vboxnetadp misc/vboxnetflt
 			exit 0
 		fi
 		NAME=$(grep 'CONFIG_LOCALVERSION'=\" /usr/src/linux/.config | cut -d \" -f 2)
