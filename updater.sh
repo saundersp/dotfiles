@@ -92,7 +92,7 @@ case "$1" in
 		__updatepackages__ 'dmenu st' '__update_suckless__'
 
 		# https://github.com/b3nj5m1n/xdg-ninja.git
-		# Dependencies : app-shells/bash
+		# Dependencies : app-shells/bash app-misc/jq
 		# Optional dependencies : app-misc/glow
 		__updatepackages__ 'xdg-ninja' 'ln -svf /usr/local/src/xdg-ninja/xdg-ninja.sh /usr/local/bin/xdg-ninja'
 
