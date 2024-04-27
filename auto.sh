@@ -62,7 +62,6 @@ elif [ "$(id -u)" -ne 0 ]; then
 		ln -sf "$CURRENT_FOLDER"/X11/Xresources "$XDG_CONFIG_HOME"/X11/Xresources
 	fi
 	nvim --headless -c 'Lazy sync' +q
-	nvim --headless -c CocUpdateSync +q
 	nvim --headless -c TSUpdateSync +q
 else
 	mkdir -p "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/nvim "$XDG_CONFIG_HOME"/fastfetch
