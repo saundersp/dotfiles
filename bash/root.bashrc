@@ -11,8 +11,6 @@ export XDG_STATE_HOME="$HOME"/.XDG/state
 export XDG_RUNTIME_DIR="$HOME"/.XDG/runtime
 
 # Some global XDG variables
-command -v librewolf >> /dev/null && export BROWSER=librewolf
-command -v calibre >> /dev/null && export CALIBRE_USE_DARK_PALETTE=1
 if [ -d /opt/cuda ]; then
 	export CUDA_HOME=/opt/cuda
 	export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
@@ -23,7 +21,6 @@ export LESSHISTFILE="$XDG_STATE_HOME"/less_history
 command -v gradle >> /dev/null && export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
 command -v java >> /dev/null && export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 command -v gpg >> /dev/null && export GNUPGHOME="$XDG_DATA_HOME"/gnupg
-command -v qt5ct >> /dev/null && export QT_QPA_PLATFORMTHEME='qt5ct'
 command -v wine >> /dev/null && export WINEPREFIX="$XDG_DATA_HOME"/wine
 command -v ipython >> /dev/null && export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
 command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
@@ -34,10 +31,9 @@ if command -v pipx >> /dev/null; then
 	export PIPX_MAN_DIR="$XDG_DATA_HOME/pipx/man"
 	export PATH="$PATH:$PIPX_BIN_DIR"
 fi
-export KERAS_HOME="$XDG_STATE_HOME/keras"
 
 # Define colours
-LIGHTGRAY='\033[0;37m'
+#LIGHTGRAY='\033[0;37m'
 #WHITE='\033[1;37m'
 #BLACK='\033[0;30m'
 #DARKGRAY='\033[1;30m'
@@ -54,7 +50,7 @@ MAGENTA='\033[0;35m'
 #CYAN='\033[0;36m'
 #LIGHTCYAN='\033[1;36m'
 NOCOLOUR='\033[0m'
-USER_COLOUR="$LIGHTGRAY"
+USER_COLOUR="$LIGHTRED"
 
 # Define text styles
 BOLD='\033[1m'
@@ -103,9 +99,6 @@ __setprompt() {
 	# Skip to the next line
 	PS1="$PS1\r\n\[${USER_COLOUR}\]└─>\[${NOCOLOUR}\] "
 
-	# Window title
-	PS1="$PS1\[\033]0;st (\w)\007\]"
-
 	# PS2 is used to continue a command using the \ character
 	PS2="\[${USER_COLOUR}\]>\[${NOCOLOUR}\] "
 
@@ -136,9 +129,6 @@ if command -v fzf >> /dev/null; then
 	# CTRL-T, CTRL-R, and ALT-C
 	test -f /usr/share/fzf/key-bindings.bash && . /usr/share/fzf/key-bindings.bash
 fi
-
-# Enable autocompletion as superuser
-complete -cf sudo
 
 # Add better human readability by default to common commands
 command -v df >> /dev/null && alias df='df -h'
@@ -240,8 +230,8 @@ fi
 
 if command -v nvim >> /dev/null; then
 	export EDITOR=nvim
-	__cmd_checker__ vid vi
-	command -v nvim >> /dev/null && alias vid='nvim -d' && alias vi='nvim'
+	__cmd_checker__ vid
+	command -v nvim >> /dev/null && alias vid='nvim -d'
 fi
 
 # Little helper for missing packages
@@ -259,7 +249,7 @@ if command -v pacman >> /dev/null; then
 	__update_arch_mirrors__(){
 		MIRRORFILE=/etc/pacman.d/mirrorlist
 		test "$(grep '^ID' /etc/os-release)" = 'ID=artix' && MIRRORFILE="$MIRRORFILE-arch"
-		sudo reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
+		reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
 	}
 
 	__cmd_checker__ pac
@@ -275,88 +265,10 @@ Available flags:
 	-p, p, prune, --prune		Remove unused packages (orphans).
 	-h, h, help, --help		Show this help message'
 		case "$1" in
-			-u|u|update|--update) sudo pacman -Syu ;;
+			-u|u|update|--update) pacman -Syu ;;
 			-l|l|list|--list) pacman -Qe ;;
 			-m|m|mirrors|--mirrors) __command_requirer_pkg__ __update_arch_mirrors__ reflector reflector ;;
-			-p|p|prune|--prune) pacman -Qtdq | sudo pacman -Rns - ;;
-			-h|h|help|--help) echo "$USAGE" ;;
-			*) echo "$USAGE" && return 1 ;;
-		esac
-	}
-
-	__cmd_checker__ aur
-	aur(){
-		AUR_PATH="$HOME"/.aur
-		test ! -d "$AUR_PATH" && mkdir "$AUR_PATH"
-		USAGE='AUR Install helper
-Implemented by @saundersp
-
-USAGE: aur FLAG
-Available flags:
-	-i, i, install, --install <aur-package-name>	Install the specified AUR package.
-	-r, r, remove, --remove <aur-package-name>	Uninstall the specified AUR package.
-	-l, l, list, --list				List all the AUR packages.
-	-u, u, update, --update				Update all the AUR packages.
-	-h, h, help, --help				Show this help message'
-		case "$1" in
-			-i|i|install|-install)
-				PACKAGE_NAME="$2"
-				echo "Package name : $PACKAGE_NAME"
-				test ! -d "$AUR_PATH/$PACKAGE_NAME" && git clone https://aur.archlinux.org/"$PACKAGE_NAME".git "$AUR_PATH"/"$PACKAGE_NAME"
-				cd "$AUR_PATH"/"$PACKAGE_NAME"
-				GPG_KEY=$(grep validpgpkeys PKGBUILD | cut -d "'" -f 2)
-				test ! -z "$GPG_KEY" && gpg --recv-keys "$GPG_KEY"
-				makepkg -sri
-				cd -
-				;;
-
-			-u|u|update|--update)
-				if [ -z "$(ls $AUR_PATH)" ]; then
-					echo 'No AUR packages to update'
-					return 0
-				fi
-				for PACKAGE_NAME in "$AUR_PATH"/*; do
-					PACKAGE_NAME="${PACKAGE_NAME/$AUR_PATH\//}"
-					if [ "$(git -C "$AUR_PATH"/"$PACKAGE_NAME" pull)" = 'Already up to date.' ]; then
-						echo "Package $PACKAGE_NAME already up to date"
-					else
-						echo "Updating $PACKAGE_NAME"
-						(cd "$AUR_PATH"/"$PACKAGE_NAME" && makepkg -sri)
-					fi
-				done
-			;;
-
-			-r|r|remove|--remove)
-				if [ -z "$2" ] || [ "$2" = 'h' ] || [ "$2" = '-h' ] || [ "$2" = 'help' ]|| [ "$2" = '--help' ]; then
-					echo "Usage : $0 $1 <aur-package-name>"
-					return 0
-				fi
-				PACKAGE_NAME="$2"
-				if [ ! -d "$AUR_PATH"/"$PACKAGE_NAME" ]; then
-					echo "No such package : $PACKAGE_NAME"
-					return 1
-				fi
-				sudo pacman -Rns "$PACKAGE_NAME"
-				rm -rf "${AUR_PATH:?}"/"$PACKAGE_NAME"
-				echo "Uninstalled $PACKAGE_NAME successfully"
-				;;
-
-			-l|l|list|--list)
-				if [ -z "$(ls $AUR_PATH)" ]; then
-					echo 'No AUR packages installed'
-					return 0
-				fi
-				for PACKAGE_NAME in "$AUR_PATH"/*; do
-					PACKAGE_NAME="${PACKAGE_NAME/$AUR_PATH\//}"
-					PACMAN_INFO="$(pacman -Q "$PACKAGE_NAME" 2>>/dev/null)"
-					if [ -n "$PACMAN_INFO" ]; then
-						echo "- [x] $PACMAN_INFO"
-					else
-						echo "- [ ] $PACKAGE_NAME"
-					fi
-				done
-			;;
-
+			-p|p|prune|--prune) pacman -Qtdq | pacman -Rns - ;;
 			-h|h|help|--help) echo "$USAGE" ;;
 			*) echo "$USAGE" && return 1 ;;
 		esac
@@ -384,15 +296,15 @@ Available flags:
 	-b, b, board, --board		Show the latest sync timestamp of the repositories.
 	-h, h, help, --help		Show this help message."
 		case "$1" in
-			-s|s|sync|--sync) sudo sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
-			-u|u|update|--update) sudo sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uUDv --keep-going=y @world && emerge -v @preserved-rebuild && dispatch-conf' ;;
+			-s|s|sync|--sync) sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
+			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uUDv --keep-going=y @world && emerge -v @preserved-rebuild && dispatch-conf' ;;
 			-l|l|list|--list) cat /var/lib/portage/world ;;
 			-q|q|query|--query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
-			-c|c|clean|--clean) __command_requirer_pkg__ 'sudo sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && find /var/tmp/portage -mindepth 1 -delete"' eclean app-portage/gentoolkit ;;
-			-p|p|prune|--prune) sudo emerge -acD ;;
+			-c|c|clean|--clean) __command_requirer_pkg__ 'sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && find /var/tmp/portage -mindepth 1 -delete"' eclean app-portage/gentoolkit ;;
+			-p|p|prune|--prune) emerge -acD ;;
 			-d|d|desc|--desc) less /var/db/repos/gentoo/profiles/use.desc ;;
 			-U|U|use|--use) __command_requirer_pkg__ 'portageq envvar USE | xargs -n1 | less' portageq sys-apps/portage ;;
-			-m|m|mirrors|--mirrors) sudo sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
+			-m|m|mirrors|--mirrors) sh -c "sed -z -i 's/\\n\{,2\}GENTOO_MIRRORS=\".*\"\\n//g' /etc/portage/make.conf; mirrorselect -s 10 -o | sed -z 's/\\\\\n    //g' >> /etc/portage/make.conf" ;;
 			-b|b|board|--board)
 				if ! __command_requirer_pkg__ '' format_time saundersp/format_time; then
 					return 1
@@ -472,18 +384,17 @@ Available flags:
 	-p, p, prune, --prune		Remove unused packages (orphans).
 	-h, h, help, --help		Show this help message"
 		case "$1" in
-			-u|u|update|--update) sudo sh -c 'apt-get update && apt-get upgrade -y' ;;
+			-u|u|update|--update) sh -c 'apt-get update && apt-get upgrade -y' ;;
 			-l|l|list|--list) apt-get list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
 			-q|q|query|--query) __command_requirer_pkg__ apt-file apt-file apt-file "search $2" ;;
-			-p|p|prune|--prune) sudo apt-get autoremove -y ;;
+			-p|p|prune|--prune) apt-get autoremove -y ;;
 			-h|h|help|--help) echo "$USAGE" ;;
 			*) echo "$USAGE" && return 1 ;;
 		esac
 	}
 fi
 
-command -v xclip >> /dev/null && alias xclip='xclip -selection clipboard'
-command -v wg-quick >> /dev/null && alias vpn='sudo wg-quick up wg0' && alias vpn_off='sudo wg-quick down wg0'
+command -v wg-quick >> /dev/null && alias vpn='wg-quick up wg0' && alias vpn_off='wg-quick down wg0'
 command -v lazygit >> /dev/null && alias lg='lazygit'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker'
 command -v lazynpm >> /dev/null && alias lpm='lazynpm'
@@ -504,125 +415,9 @@ if command -v ranger >> /dev/null; then
 	bind '"\C-o":"\C-wranger_cd\C-m"'
 fi
 
-if command -v xrandr >> /dev/null; then
-	__cmd_checker__ hdmi
-
-	if ! __command_requirer_pkg__ '' dmenu x11-misc/dmenu; then
-		return 1
-	fi
-
-	if ! __command_requirer_pkg__ '' xrandr x11-apps/xrandr; then
-		return 1
-	fi
-
-	hdmi(){
-		USAGE='HDMI connection helper
-Implemented by @saundersp
-
-USAGE: hdmi FLAG
-Available flags:
-	-e, e, extend, --extend		Extend the primary display to the secondary.
-	-m, m, mirror, --mirror		Mirror the primary display to the secondary.
-	-o, o, off, --off		Turn off a display.
-	-h, h, help, --help		Show this help message'
-		__cmd_checker__ __get_display__
-		__get_display__(){
-			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
-		}
-		case "$1" in
-			-e|e|extend|--extend)
-				Primary="$(__get_display__ Primary)"
-				test -z "$Primary" && return 0
-				Secondary="$(__get_display__ Secondary)"
-				test -z "$Secondary" && return 0
-				mode="$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)"
-				test -z "$mode" && return 0
-				xrandr --output "$Secondary" --auto --"$mode" "$Primary"
-			;;
-			-m|m|mirror|--mirror)
-				Primary="$(__get_display__ Primary)"
-				test -z "$Primary" && return 0
-				Secondary="$(__get_display__ Secondary)"
-				test -z "$Secondary" && return 0
-				xrandr --output "$Secondary" --auto --same-as "$Primary"
-			;;
-			-o|o|off|--off)
-				Primary="$(__get_display__ Primary)"
-				test -z "$Primary" && return 0
-				xrandr --output "$Primary" --off
-			;;
-			-h|h|help|--help) echo "$USAGE" ;;
-			*) echo "$USAGE" && return 1 ;;
-		esac
-	}
-fi
-
 __cmd_checker__ cb && alias cb='clear && exec bash'
 
-if command -v pactl >> /dev/null; then
-	__cmd_checker__ __moff__ __soff__ __paloopoff__ pa
-
-	__moff__(){
-		pactl unload-module module-native-protocol-tcp 2>>/dev/null
-	}
-
-	__soff__(){
-		pactl unload-module module-tunnel-sink-new 2>>/dev/null
-		pactl unload-module module-tunnel-source 2>>/dev/null
-	}
-
-	__paloopoff__(){
-		pactl unload-module module-loopback 2>>/dev/null
-	}
-
-	pa(){
-		USAGE='Pulseaudio modules helper
-Implemented by @saundersp
-
-USAGE: pa FLAG
-Available flags:
-	moff			Disable master audio modules.
-	m			Enable master audio modules.
-	soff			Disable slave audio modules.
-	s			Enable slave audio modules.
-	loopoff			Disable audio loopback.
-	loop [ms]		Enable audio loopback.
-	-h, h, help, --help	Show this help message'
-		case "$1" in
-			moff) __moff__ ;;
-			m)
-				__moff__
-				pactl load-module module-native-protocol-tcp listen=192.168.137.1 auth-ip-acl=192.168.137.0/24
-			;;
-			soff) __soff__ ;;
-			s)
-				__soff__
-				pactl load-module module-tunnel-sink-new server=192.168.137.1
-				pactl load-module module-tunnel-source server=192.168.137.1
-			;;
-			loopoff) __paloopoff__ ;;
-			loop)
-				__paloopoff__
-				source="$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )"
-				test -z "$source" && return 0
-				sink="$(pactl list sinks | grep Na |  awk '{ print $2 }' | dmenu -p 'Sink:' -c -l 10 )"
-				test -z "$sink" && return 0
-				if [ -z "$2" ]; then
-					pactl load-module module-loopback sink="$sink" source="$source"
-				else
-					pactl load-module module-loopback sink="$sink" source="$source" latency_msec="$2"
-				fi
-			;;
-			-h|h|help|--help) echo "$USAGE" ;;
-			*) echo "$USAGE" && return 1 ;;
-		esac
-	}
-	__cmd_checker__ pm
-	command -v pulsemixer >> /dev/null && alias pm='pulsemixer'
-fi
-
 command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
-test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after $HOME/"Calibre Library"/ linode:~/"Calibre Library"/'
 
 __cmd_checker__ pow
 pow(){
@@ -647,7 +442,7 @@ Available flags:
 		-ħ|h|help|--help) echo "$USAGE" ;;
 		*)
 			if echo "$MODES" | grep -wq "$1"; then
-				echo "$1" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >> /dev/null
+				echo "$1" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >> /dev/null
 			else
 				echo "$USAGE" && return 1
 			fi
@@ -657,18 +452,11 @@ Available flags:
 
 __cmd_checker__ update
 update(){
-	sudo bash -i -c '
 	command -v em >> /dev/null && em s && em u && em p && em c
 	command -v pac >> /dev/null && pac u && pac p
 	command -v ap >> /dev/null && ap u && ap p
-	(cd && ./updater.sh p)'
-	command -v aur >> /dev/null && aur u
+	(cd && ./updater.sh p)
 	command -v nix-env >> /dev/null && nix-env -u
-	command -v arduino-cli >> /dev/null && arduino-cli update && arduino-cli upgrade
-	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":Lazy") ~= 0 then vim.cmd("Lazy! update") end' +qa
-	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":MasonUpdate") ~= 0 then vim.cmd("MasonUpdate") end' +q
-	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":MasonUpdateAll") ~= 0 then vim.cmd("MasonUpdateAll") end' -c 'autocmd User MasonUpdateAllComplete quitall'
-	command -v nvim >> /dev/null && nvim --headless -c 'lua if vim.fn.exists(":TSUpdateSync") ~= 0 then vim.cmd("TSUpdateSync") end' +q
 }
 
 __cmd_checker__ __helpme__
@@ -696,7 +484,6 @@ __helpme__(){
 	tprint_cmd 'pac' 'Pacman helper'
 	tprint_cmd 'em' "Portage's emerge helper"
 	tprint_cmd 'ap' "APT's helper"
-	tprint_cmd 'aur' 'AUR Install helper script'
 	tprint_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
 	tprint_cmd 'vpn' 'Easily enable a secure VPN connection'
 	tprint_cmd 'vpn_off' 'Easily disable a VPN connection'
@@ -710,7 +497,6 @@ __helpme__(){
 	tprint_cmd 'pm' 'Pulsemixer shortcut'
 	tprint_cmd 'weather' 'Get current weather status'
 	print_cmd 'pow' 'CPU scaling governor helper'
-	tprint_cmd 'sync_books' "Sync calibre's books to the linode's VPS"
 	print_cmd '?' 'Print this reminder'
 
 	echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"

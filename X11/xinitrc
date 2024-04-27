@@ -11,9 +11,17 @@ picom -b &
 # Set the keyboard repeat delay to 150ms and rate to 80 repeat/s
 xset r rate 150 80 &
 # Set the keyboard layout to french
-setxkbmap fr &
+setxkbmap us altgr-intl &
 # Disable mouse acceleration
 xset m 0 0 &
 # Load colour ressources
 xrdb -load "$XDG_CONFIG_HOME/X11/Xresources"
+
+# DON'T PUSH ME
+# Fixing bad default refresh rate
+xrandr --output DP-2 --mode 2560x1440 --rate 165.00
+# Fixing bad default ethernet priority list
+connmanctl move-before ethernet_6045cb6955c5_cable ethernet_0024321936dd_cable
+connmanctl move-before ethernet_6045cb6955c5_cable ethernet_00e04c6895ff_cable
+
 exec dbus-run-session i3

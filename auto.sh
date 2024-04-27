@@ -43,12 +43,12 @@ elif [ "$(id -u)" -ne 0 ]; then
 	ln -sf "$CURRENT_FOLDER"/nvim/coc-settings.json "$XDG_CONFIG_HOME"/nvim/coc-settings.json
 	ln -sf "$CURRENT_FOLDER"/fastfetch/config.conf "$XDG_CONFIG_HOME"/fastfetch/config.conf
 	ln -sf "$CURRENT_FOLDER"/ranger/rc.conf "$XDG_CONFIG_HOME"/ranger/rc.conf
-	ln -sf "$CURRENT_FOLDER"/.bashrc "$HOME"/.bashrc
-	ln -sf "$CURRENT_FOLDER"/.gitconfig "$XDG_CONFIG_HOME"/git/config
-	ln -sf "$CURRENT_FOLDER"/.tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
+	ln -sf "$CURRENT_FOLDER"/bash/bashrc "$HOME"/.bashrc
+	ln -sf "$CURRENT_FOLDER"/git/config "$XDG_CONFIG_HOME"/git/config
+	ln -sf "$CURRENT_FOLDER"/tmux/tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
 
 	if [ "$1" = '-s' ] || [ "$1" = 's' ] || [ "$1" = 'server' ] || [ "$1" = '--server' ]; then
-		ln -sf "$CURRENT_FOLDER"/.profile_server "$HOME"/.profile
+		ln -sf "$CURRENT_FOLDER"/shell_profile/profile_server "$HOME"/.profile
 	else
 		mkdir -p "$XDG_CONFIG_HOME"/i3 "$XDG_CONFIG_HOME"/polybar "$XDG_CONFIG_HOME"/X11
 
@@ -57,9 +57,9 @@ elif [ "$(id -u)" -ne 0 ]; then
 		test ! -d "$XDG_CONFIG_HOME"/polybar/scripts && ln -sf "$CURRENT_FOLDER"/polybar/scripts "$XDG_CONFIG_HOME"/polybar/scripts
 		ln -sf "$CURRENT_FOLDER"/i3/config "$XDG_CONFIG_HOME"/i3/config
 		ln -sf "$CURRENT_FOLDER"/picom "$XDG_CONFIG_HOME"
-		ln -sf "$CURRENT_FOLDER"/.xinitrc "$HOME"/.xinitrc
-		ln -sf "$CURRENT_FOLDER"/.profile "$HOME"/.profile
-		ln -sf "$CURRENT_FOLDER"/.Xresources "$XDG_CONFIG_HOME"/X11/Xresources
+		ln -sf "$CURRENT_FOLDER"/X11/xinitrc "$HOME"/.xinitrc
+		ln -sf "$CURRENT_FOLDER"/shell_profile/profile "$HOME"/.profile
+		ln -sf "$CURRENT_FOLDER"/X11/Xresources "$XDG_CONFIG_HOME"/X11/Xresources
 	fi
 	nvim --headless -c 'Lazy sync' +q
 	nvim --headless -c CocUpdateSync +q
@@ -68,9 +68,9 @@ else
 	mkdir -p "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/nvim "$XDG_CONFIG_HOME"/fastfetch
 
 	ln -sf "$CURRENT_FOLDER"/fastfetch/config.conf "$XDG_CONFIG_HOME"/fastfetch/config.conf
-	ln -sf "$CURRENT_FOLDER"/root.bashrc "$HOME"/.bashrc
-	ln -sf "$CURRENT_FOLDER"/root.profile "$HOME"/.profile
-	ln -sf "$CURRENT_FOLDER"/root.tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
+	ln -sf "$CURRENT_FOLDER"/bash/root.bashrc "$HOME"/.bashrc
+	ln -sf "$CURRENT_FOLDER"/shell_profile/root.profile "$HOME"/.profile
+	ln -sf "$CURRENT_FOLDER"/tmux/root.tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
 	ln -sf "$CURRENT_FOLDER"/nvim/root_init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
 	ln -sf "$CURRENT_FOLDER"/updater.sh "$HOME"/updater.sh
 
