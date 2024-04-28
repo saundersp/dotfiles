@@ -230,8 +230,8 @@ fi
 
 if command -v nvim >> /dev/null; then
 	export EDITOR=nvim
-	__cmd_checker__ vid
-	command -v nvim >> /dev/null && alias vid='nvim -d'
+	__cmd_checker__ vid vi
+	command -v nvim >> /dev/null && alias vid='nvim -d' && alias vi='nvim'
 fi
 
 # Little helper for missing packages
