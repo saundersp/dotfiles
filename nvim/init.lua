@@ -810,7 +810,7 @@ require('lazy').setup({
 			-- Adding extra sources not included in none-ls
 			'nvimtools/none-ls-extras.nvim',
 			-- Adding support for cspell diagnostics and code actions
-			'davidmh/cspell.nvim'
+			'davidmh/cspell.nvim',
 			-- Shellcheck diagnostics and code-actions sources for none-ls.nvim
 			'gbprod/none-ls-shellcheck.nvim',
 			-- Lua library functions
