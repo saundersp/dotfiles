@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function map(mode, key, action, desc, buffer)
 	if type(key) == 'table' then
-		for _,e in ipairs(key) do
+		for _, e in ipairs(key) do
 			map(mode, e, action, desc, buffer)
 		end
 	else
@@ -25,6 +25,9 @@ local function filter(sequence, predicate)
 	end
 	return new_list
 end
+local function create_cmd(cmd, fnc, desc, nargs)
+	vim.api.nvim_create_user_command(cmd, fnc, { nargs = nargs or 0, desc = desc })
+end
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Plugin enabler
@@ -43,7 +46,7 @@ require('lazy').setup({
 	-- Install the vscode's codedark theme
 	{ 'tomasiser/vim-code-dark',
 		priority = 1000,
-		config = function()
+		init = function()
 			vim.cmd.colorscheme('codedark')
 
 			-- Fix the git colours palette
@@ -67,9 +70,9 @@ require('lazy').setup({
 			sections = {
 				lualine_x = {
 					{
-						function() return require('noice').api.statusline.mode.get() end,
-						cond = function() return require('noice').api.statusline.mode.has() end,
-						--color = { fg = '#ff9e64' }
+						function() return require('noice').api.status.mode.get() end,
+						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
+						color = 'WarningMsg'
 					}
 				}
 			}
@@ -94,9 +97,10 @@ require('lazy').setup({
 			nmap(		  '<leader>hu', gs.undo_stage_hunk,		'[H]unk [U]ndo')
 			nmap(		  '<leader>hd', gs.diffthis,			'[H]unk [D]iff this')
 			nmap(		  '<leader>hb', gs.toggle_current_line_blame,	'[H]unk toggle line [B]lame')
-			nmap(		  ']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next [H]unk')
-			nmap(		  '[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous [H]unk')
+			nmap(		  ']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next Hunk (or [C]hange)')
+			nmap(		  '[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous Hunk (or [C]hange)')
 		end,
+		cm = 'GitSigns',
 		dependencies = {
 			-- Lua library functions
 			'nvim-lua/plenary.nvim',
@@ -106,14 +110,14 @@ require('lazy').setup({
 	},
 	-- Colourize RGB codes to it designated colour and add a colour picker
 	{ 'uga-rosa/ccc.nvim',
-		event = 'VeryLazy',
+		event = 'BufRead',
 		cmd = { 'CccPick', 'CccConvert', 'CccHighlighterEnable', 'CccHighlighterDisable', 'CccHighlighterToggle' },
 		keys = {
-			{'<leader>cp', '<cmd>CccPick<CR>',			desc = 'open [C]olour [P]icker'},
-			{'<leader>cc', '<cmd>CccConvert<CR>',			desc = '[C]olour [C]onvert'},
-			{'<leader>ct', '<cmd>CccHighlighterToggle<CR>',		desc = '[C]olour highlight [T]oggle'},
-			{'<leader>ce', '<cmd>CccHighlighterEnable<CR>',		desc = '[C]olour highlight [E]nable'},
-			{'<leader>cd', '<cmd>CccHighlighterDisable<CR>',	desc = '[C]olour highlight [D]isable'}
+			{ '<leader>cp', '<cmd>CccPick<CR>',			desc = 'open [C]olour [P]icker' },
+			{ '<leader>cc', '<cmd>CccConvert<CR>',			desc = '[C]olour [C]onvert' },
+			{ '<leader>ct', '<cmd>CccHighlighterToggle<CR>',	desc = '[C]olour highlight [T]oggle' },
+			{ '<leader>ce', '<cmd>CccHighlighterEnable<CR>',	desc = '[C]olour highlight [E]nable' },
+			{ '<leader>cd', '<cmd>CccHighlighterDisable<CR>',	desc = '[C]olour highlight [D]isable' }
 		},
 		opts = { highlighter = { auto_enable = true } }
 	},
@@ -145,6 +149,7 @@ require('lazy').setup({
 			{ '<leader>sN', '<cmd>Telescope noice<CR>',	desc = '[S]earch [N]oice (powered by noice)' },
 			{ '<leader>sn', '<cmd>Telescope notify<CR>',	desc = '[S]earch [N]otifications (powered by notify)' },
 		},
+		cmd = 'Telescope',
 		dependencies = {
 			-- Bind vim.ui.select to telescope
 			'nvim-telescope/telescope-ui-select.nvim',
@@ -161,11 +166,27 @@ require('lazy').setup({
 		}
 	},
 	-- Automatic pairs of ( [ { insertion
-	{ 'windwp/nvim-autopairs', event = 'VimEnter', config = true },
+	{ 'windwp/nvim-autopairs', event = 'InsertEnter', config = true },
+	-- Neovim plugin to manage the file system and other tree like structures
+	{ 'nvim-neo-tree/neo-tree.nvim',
+		branch = 'v3.x',
+		opts = { close_if_last_window = true, window = { position = 'current' } },
+		cmd = 'Neotree',
+		keys = { { '<C-p>', '<cmd>Neotree toggle reveal<CR>', desc = 'Open [N]eotree file manager' } },
+		dependencies = {
+			-- Lua library functions
+			'nvim-lua/plenary.nvim',
+			-- Provides nerd fonts icons
+			'nvim-tree/nvim-web-devicons',
+			-- UI Component Library for Neovim
+			'MunifTanjim/nui.nvim'
+		}
+	},
 	-- Edit the filesystem like a buffer
 	{ 'stevearc/oil.nvim',
-		keys = {{ '<C-n>', '<cmd>Oil<CR>', desc = 'Open Oil file manager' }},
 		config = true,
+		cmd = 'Oil',
+		keys = { { '<C-n>', '<cmd>Oil<CR>', desc = 'Open Oil file manager' } },
 		dependencies = {
 			-- Provides nerd fonts icons
 			'nvim-tree/nvim-web-devicons'
@@ -174,14 +195,14 @@ require('lazy').setup({
 	-- add the vmap gl<SYMBOL> to vertical align to the given symbol
 	{ 'tommcdo/vim-lion',
 		event = 'VeryLazy',
-		config = function()
+		init = function()
 			vim.g.lion_squeeze_spaces = 1		-- Squeeze extra spaces when doing a vertical alignment
 		end
 	},
 	-- Automatic white spaces trimming
 	{ 'ntpeters/vim-better-whitespace',
 		event = 'VeryLazy',
-		config = function()
+		init = function()
 			vim.g.better_whitespace_enabled = 1	-- Enable the plugin
 			vim.g.strip_whitespace_on_save  = 1	-- Remove trailing white spaces on save
 			vim.g.strip_whitespace_confirm  = 0	-- Disable the confirmation message on stripping white spaces
@@ -189,10 +210,11 @@ require('lazy').setup({
 	},
 	-- CSV file handling
 	{ 'chrisbra/csv.vim',
-		event = 'VeryLazy',
-		config = function()
+		event = 'BufReadPre',
+		init = function()
 			vim.b.csv_arrange_align = 'lc.'		-- Left align when using ArrangeColumn in a csv file
-		end
+		end,
+		cmd = 'CSVTable'
 	},
 	-- LSP Configuration & Plugins
 	{ 'neovim/nvim-lspconfig',
@@ -202,6 +224,11 @@ require('lazy').setup({
 			require('fidget').setup({		-- Turn on lsp status information
 				progress = { ignore = { 'null-ls' } }
 			})
+
+			vim.fn.sign_define('DiagnosticSignError', { text = '', texthl = 'DiagnosticSignError' }) -- nf-cod-error
+			vim.fn.sign_define('DiagnosticSignWarn',  { text = '', texthl = 'DiagnosticSignWarn'  }) -- nf-cod-warning
+			vim.fn.sign_define('DiagnosticSignInfo',  { text = '', texthl = 'DiagnosticSignInfo'  }) -- nf-cod-info
+			vim.fn.sign_define('DiagnosticSignHint',  { text = '', texthl = 'DiagnosticSignHint'  }) -- nf-oct-light_bulb
 
 			nmap('<leader>rn', vim.lsp.buf.rename,						'LSP: [R]e[n]ame')
 			nmap('gd',	   vim.lsp.buf.definition,					'LSP: [G]oto [D]efinition')
@@ -241,36 +268,41 @@ require('lazy').setup({
 					}
 				},
 				clangd = {
-					__skip = true,
+					-- Install package rather than using Mason
+					-- https://clangd.llvm.org/installation.html
+					__skip_download = true,
 					CompileFlags = {
 						add = { '-I/opt/cuda/targets/x86_64-linux/include' }
 					}
 				},
 				tsserver = {},
 				hls = {
-					__skip = true,
-					cmd = { 'haskell-language-server-wrapper', '--lsp' },
+					-- Install package rather than using Mason
+					-- https://github.com/haskell/haskell-language-server
+					__skip_download = true,
 					filetypes = { 'haskell', 'lhaskell', 'cabal' },
 					root_dir = root_pattern('*.cabal', 'stack.yaml', 'cabal.project', 'package.yaml', 'hie.yaml')
 				},
 				cmake = {},
 				bashls = {},
-				pyright = {}
+				pyright = {},
+				texlab = {},
+				docker_compose_language_service = {}
 			}
 
 			local mason_lspconfig = require('mason-lspconfig')
 			mason_lspconfig.setup({
-				ensure_installed = vim.tbl_keys(filter(servers, function(_, server) return server.__skip ~= true end))
+				ensure_installed = vim.tbl_keys(filter(servers, function(_, server) return server.__skip_download ~= true end))
 			})
 
 			for name, opts in pairs(servers) do
 				lspconfig[name].setup({
 					capabilities = capabilities,
-					on_attach = on_attach,
 					settings = opts
 				})
 			end
 		end,
+		cmd = { 'LspInfo', 'LspInstall', 'LspLog', 'LspRestart', 'LspStart', 'LspStop', 'LspUninstall' },
 		dependencies = {
 			-- Automatically install LSPs to stdpath for neovim
 			'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim',
@@ -287,7 +319,6 @@ require('lazy').setup({
 		event = 'VeryLazy',
 		config = function()
 			local dap = require('dap')
-
 
 			dap.adapters = {
 				cppdbg = {
@@ -349,7 +380,7 @@ require('lazy').setup({
 				}
 			}
 
-			nmap('<leader>db',		 dap.toggle_breakpoint,					'[D]ebug toggle [B]reakpoint]')
+			nmap('<leader>db',		 dap.toggle_breakpoint,					'[D]ebug toggle [B]reakpoint')
 			nmap({ '<leader>dc', '<F5>' },	 dap.continue,						'[D]ebug [C]ontinue')
 			nmap({ '<leader>dC', '<F7>' },	 dap.run_to_cursor,					'[D]ebug run to [C]ursor')
 			nmap({ '<leader>do', '<F10>' },	 dap.step_over,						'[D]ebug Step [O]ver')
@@ -360,7 +391,11 @@ require('lazy').setup({
 			nmap('<leader>dS',		 dap.down,						'[D]ebug down in the [S]tacktrace')
 			nmap('<leader>dp',		 dap.pause,						'[D]ebug [P]ause')
 			nmap({ '<leader>dr', '<C-F5>' }, function() dap.terminate(); dap.continue(); end,	'[D]ebug [R]estart')
-		end
+		end,
+		cmd = {
+			'DapContinue', 'DapLoadLaunchJSON', 'DapRestartFrame', 'DapSetLogLevel', 'DapShowLog',
+			'DapStepInto', 'DapStepOut', 'DapStepOver', 'DapTerminate', 'DapToggleBreakpoint', 'DapToggleRepl'
+		}
 	},
 	{ 'rcarriga/nvim-dap-ui',
 		event = 'VeryLazy',
@@ -369,14 +404,14 @@ require('lazy').setup({
 			local dapui = require('dapui')
 			dapui.setup()
 
-			dap.listeners.after.event_initialized['dapui_config'] = function() dapui.open({}) end
-			dap.listeners.before.event_terminated['dapui_config'] = function() dapui.close({}) end
-			dap.listeners.before.event_exited['dapui_config'] = function() dapui.close({}) end
-			vim.fn.sign_define('DapBreakpoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' })
-			vim.fn.sign_define('DapBreakpointCondition',	{ text = '', texthl = 'DapUIBreakpointsInfo' })
-			vim.fn.sign_define('DapBreakpointRejected',	{ text = '', texthl = 'DapUIBreakpointsInfo' })
-			vim.fn.sign_define('DapLogPoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' })
-			vim.fn.sign_define('DapStopped',		{ text = '', texthl = 'DapUIStopped' })
+			dap.listeners.after.event_initialized['dapui_config'] = dapui.open
+			dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+			dap.listeners.before.event_exited['dapui_config'] = dapui.close
+			vim.fn.sign_define('DapBreakpoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-fa-stop
+			vim.fn.sign_define('DapBreakpointCondition',	{ text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-cod-debug_breakpoint_conditional
+			vim.fn.sign_define('DapBreakpointRejected',	{ text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-fa-hand
+			vim.fn.sign_define('DapLogPoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-cod-debug_breakpoint_log
+			vim.fn.sign_define('DapStopped',		{ text = '', texthl = 'DapUIStopped' })	 -- nf-fa-circle_stop
 
 			nmap('<leader>du', dapui.toggle, '[D]ebug toggle [U]I')
 		end,
@@ -466,6 +501,7 @@ require('lazy').setup({
 				})
 			})
 		end,
+		cmd = 'CmpStatus',
 		dependencies = {
 			-- nvim-cmp source for neovim builtin LSP client
 			'hrsh7th/cmp-nvim-lsp',
@@ -482,14 +518,17 @@ require('lazy').setup({
 	-- Allow use of background jobs
 	{ 'tpope/vim-dispatch',
 		keys = {
-			{'<leader>tp', '<cmd>Dispatch! make preview<CR>', desc = 'La[T]eX [P]review document'},
+			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	desc = 'La[T]eX [P]review document' },
+			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		desc = '[M]ake the default recipe in the current directory (multi-jobs)' },
+			{ '<leader>mM', '<cmd>Make<CR>',				desc = '[M]ake the default recipe in the current directory' },
+			{ '<leader>ms', '<cmd>Start make start<CR>',		desc = '[M]ake the "[s]tart" recipe in the current directory' },
+			{ '<leader>mc', '<cmd>Make clean<CR>',			desc = '[M]ake the "[c]lean" recipe in the current directory' },
+			{ '<leader>mC', '<cmd>Make mrproper<CR>',		desc = '[M]ake the "mrproper" recipe in the current directory' },
+			{ '<leader>md', '<cmd>Start docker compose build<CR>',	desc = 'Build all "[d]ocker" compose tag in the current directory' },
 			-- TUI programs
-			{'<leader>$g', '<cmd>Start lazygit<CR>',    desc = 'Open Lazy[G]it'},
-			{'<leader>$d', '<cmd>Start lazydocker<CR>', desc = 'Open Lazy[D]ocker'}
+			{ '<leader>og', '<cmd>Start lazygit<CR>',		desc = '[O]pen Lazy[G]it' },
+			{ '<leader>od', '<cmd>Start lazydocker<CR>',		desc = '[O]pen Lazy[D]ocker' }
 		},
-		config = function()
-			Autocmd('BufWritePost', '*.tex', function() vim.cmd('Spawn! make') end)		-- Auto compile LaTeX document on save
-		end,
 		cmd = { 'Dispatch', 'Make', 'Focus', 'Start', 'Spawn' }
 	},
 	-- Highlight, edit, and navigate code
@@ -503,6 +542,11 @@ require('lazy').setup({
 				indent = { enable = false }
 			})
 		end,
+		cmd = {
+			'TSBufDisable', 'TSBufEnable', 'TSBufToggle', 'TSConfigInfo', 'TSDisable', 'TSEditQuery',
+			'TSEditQueryUserAfter', 'TSEnable', 'TSInstall', 'TSInstallFromGrammar', 'TSInstallInfo',
+			'TSInstallSync', 'TSModuleInfo', 'TSToggle', 'TSUninstall', 'TSUpdate', 'TSUpdateSync'
+		},
 		build = '<cmd>TSUpdate'
 	},
 	-- Colourize multiple inner level to ( [ {
@@ -516,15 +560,15 @@ require('lazy').setup({
 	-- Arduino commands
 	{ 'stevearc/vim-arduino',
 		keys = {
-			{'<leader>aa', '<cmd>ArduinoAttach<CR>',		desc = '[A]rduino [A]ttach'},
-			{'<leader>av', '<cmd>ArduinoVerify<CR>',		desc = '[A]rduino [V]erify'},
-			{'<leader>au', '<cmd>ArduinoUpload<CR>',		desc = '[A]rduino [U]pload'},
-			{'<leader>ad', '<cmd>ArduinoUploadAndSerial<CR>',	desc = '[A]rduino upload an[D] serial'},
-			{'<leader>ab', '<cmd>ArduinoChooseBoard<CR>',		desc = '[A]rduino choose [B]oard'},
-			{'<leader>ap', '<cmd>ArduinoChooseProgrammer<CR>',	desc = '[A]rduino choose [P]rogrammer'},
-			{'<leader>aP', '<cmd>ArduinoChoosePort<CR>',		desc = '[A]rduino choose [P]ort'},
-			{'<leader>as', '<cmd>ArduinoSerial<CR>',		desc = '[A]rduino [S]erial'},
-			{'<leader>ai', '<cmd>ArduinoInfo<CR>',			desc = '[A]rduino [I]nfo'}
+			{ '<leader>aa', '<cmd>ArduinoAttach<CR>',		desc = '[A]rduino [A]ttach' },
+			{ '<leader>av', '<cmd>ArduinoVerify<CR>',		desc = '[A]rduino [V]erify' },
+			{ '<leader>au', '<cmd>ArduinoUpload<CR>',		desc = '[A]rduino [U]pload' },
+			{ '<leader>ad', '<cmd>ArduinoUploadAndSerial<CR>',	desc = '[A]rduino upload an[D] serial' },
+			{ '<leader>ab', '<cmd>ArduinoChooseBoard<CR>',		desc = '[A]rduino choose [B]oard' },
+			{ '<leader>ap', '<cmd>ArduinoChooseProgrammer<CR>',	desc = '[A]rduino choose [P]rogrammer' },
+			{ '<leader>aP', '<cmd>ArduinoChoosePort<CR>',		desc = '[A]rduino choose [P]ort' },
+			{ '<leader>as', '<cmd>ArduinoSerial<CR>',		desc = '[A]rduino [S]erial' },
+			{ '<leader>ai', '<cmd>ArduinoInfo<CR>',			desc = '[A]rduino [I]nfo' }
 		},
 		cmd = {
 			'ArduinoAttach', 'ArduinoVerify', 'ArduinoUpload', 'ArduinoUploadAndSerial',
@@ -533,7 +577,10 @@ require('lazy').setup({
 		}
 	},
 	-- Show a togglable undotree
-	{ 'mbbill/undotree', keys = { { '<leader>ut', '<Cmd>UndotreeToggle<CR>', desc = 'Open [U]ndo [T]ree' } } },
+	{ 'mbbill/undotree',
+		cmd = { 'UndotreeFocus', 'UndotreeHide', 'UndotreePersistUndo', 'UndotreeShow', 'UndotreeToggle' },
+		keys = { { '<leader>ut', '<Cmd>UndotreeToggle<CR>', desc = 'Open [U]ndo [T]ree' } }
+	},
 	-- Display a popup with possible key bindings of the command you started typing
 	{ 'folke/which-key.nvim',
 		event = 'VeryLazy',
@@ -541,12 +588,25 @@ require('lazy').setup({
 		init = function()
 			vim.o.timeout = true
 			vim.o.timeoutlen = 200
-		end
+		end,
+		cmd = 'WhichKey'
 	},
 	-- Stylize the bufferline
 	{ 'akinsho/bufferline.nvim',
 		event = 'VeryLazy',
-		opts = { options = { mode = 'tabs' } },
+		opts = { options = {
+			mode = 'tabs',
+			show_close_icon = false,
+			show_buffer_close_icons = false
+		}},
+		cmd = {
+			'BufferLineCloseLeft', 'BufferLineCloseOthers', 'BufferLineCloseRight',
+			'BufferLineCycleNext', 'BufferLineCyclePrev', 'BufferLineGoToBuffer',
+			'BufferLineGroupClose', 'BufferLineGroupToggle', 'BufferLineMoveNext',
+			'BufferLineMovePrev', 'BufferLinePick', 'BufferLinePickClose',
+			'BufferLineSortByDirectory', 'BufferLineSortByExtension', 'BufferLineSortByRelativeDirectory',
+			'BufferLineSortByTabs', 'BufferLineTabRename', 'BufferLineTogglePin'
+		},
 		dependencies = {
 			-- Provides nerd fonts icons
 			'nvim-tree/nvim-web-devicons'
@@ -555,14 +615,14 @@ require('lazy').setup({
 	-- Tool to install LSPs, DAPs, linters and formatters
 	{ 'williamboman/mason.nvim',
 		config = true,
-		cmd = { 'Mason', 'MasonUpdate' },
+		cmd = { 'Mason', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll', 'MasonLog' },
 		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = '[M]ason [O]pen' } }
 	},
 	-- Easily update all Mason packages with one command
 	{ 'RubixDev/mason-update-all',
-		cmd = { 'MasonUpdateAll' },
 		config = true,
-		dependencies = { 
+		cmd = 'MasonUpdateAll',
+		dependencies = {
 			-- Tool to install LSPs, DAPs, linters and formatters
 			'williamboman/mason.nvim'
 		}
@@ -570,7 +630,6 @@ require('lazy').setup({
 	-- Greeter for neovim
 	{ 'goolord/alpha-nvim',
 		event = 'VimEnter',
-		cmd = { 'Alpha' },
 		config = function()
 			local startify = require('alpha.themes.startify')
 
@@ -585,9 +644,17 @@ require('lazy').setup({
 				'  ███████████ ███    ███ █████████ █████ █████ ████ █████  ',
 				' ██████  █████████████████████ ████ █████ █████ ████ ██████ '
 			}
+			startify.section.top_buttons.val = {
+				startify.button('e', ' New file',		'<cmd>ene<CR>'),	    -- nf-fa-file
+				startify.button('r', ' Restore session',	'<cmd>SessionRestore<CR>'), -- nf-fa-clone
+				startify.button('l', ' Load last session',	'<cmd>SessionLoad<CR>'),    -- nf-fa-history
+				startify.button('s', ' Settings',		'<cmd>EditConfig<CR>'),	    -- nf-fa-cog
+				startify.button('E', ' Espanso config edit',	'<cmd>EspansoEdit<CR>')	    -- nf-fa-keyboard
+			}
 
 			require('alpha').setup(startify.config)
 		end,
+		cmd = 'Alpha',
 		dependencies = {
 			-- Provides nerd fonts icons
 			'nvim-tree/nvim-web-devicons'
@@ -602,6 +669,7 @@ require('lazy').setup({
 				gitsigns = true
 			}
 		},
+		cmd = { 'ScrollbarShow', 'ScrollbarHide', 'ScrollbarToggle' },
 		dependencies = {
 			-- Add the left column indicating git line status and preview window
 			'lewis6991/gitsigns.nvim'
@@ -619,8 +687,38 @@ require('lazy').setup({
 						find = 'written'
 					},
 					opts = { skip = true }
+				},
+				{ -- Hide 'yanked' messages
+					filter = {
+						event = 'msg_show',
+						kind = '',
+						find = 'yanked'
+					},
+					opts = { skip = true }
+				},
+				{ -- Hide 'deleted lines' messages
+					filter = {
+						event = 'msg_show',
+						kind = '',
+						find = 'fewer'
+					},
+					opts = { skip = true }
 				}
 			}
+		},
+		init = function()
+			-- Fix bad lualine
+			vim.o.showmode = false
+		end,
+		cmd = {
+			'Noice', 'NoiceConfig', 'NoiceDebug', 'NoiceDisable',
+			'NoiceDismiss', 'NoiceEnable', 'NoiceErrors', 'NoiceHistory',
+			'NoiceLast', 'NoiceLog', 'NoiceRoutes', 'NoiceStats',
+			'NoiceTelescope', 'NoiceViewstats'
+		},
+		keys = {
+			{ '<leader>nd', '<cmd>Noice dismiss<CR>', '[D]ismiss the [n]otifications' },
+			{ '<leader>nl', '<cmd>Noice last<CR>', 'Show the last notification in a popup' }
 		},
 		dependencies = {
 			-- UI Component Library for Neovim
@@ -633,29 +731,36 @@ require('lazy').setup({
 	{ 'kevinhwang91/nvim-ufo',
 		event = 'VeryLazy',
 		opts = { provider_selector = function() return { 'treesitter', 'indent' } end },
+		cmd = {
+			'UfoEnable', 'UfoDisable', 'UfoInspect', 'UfoAttach',
+			'UfoDetach', 'UfoEnableFold', 'UfoDisableFold'
+		},
 		dependencies = {
 			-- Porting Promise & Async from JavaScript to Lua
 			'kevinhwang91/promise-async'
 		}
 	},
-	-- Add formatters and linters
-	-- See available configs at : https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md
-	{ 'nvimtools/none-ls.nvim',
-		event = 'BufRead',
+	--Setup additional LSPs, linters and formatters
+	{ 'jay-babu/mason-null-ls.nvim',
+		event = 'BufReadPre',
 		config = function()
-			local null_ls = require('null-ls')
 			local cspell = require('cspell')
+			-- none-ls is a drop-in replacement for null-ls. Therefore it uses a mix of the old and new names
+			local none_ls = require('null-ls')
+			require('mason-null-ls').setup({
+				ensure_installed = { 'autopep8', 'flake8', 'cspell', 'checkmake', 'markdownlint', 'prettier', 'hadolint', 'shellcheck' }
+			})
 
-			null_ls.setup({
+			none_ls.setup({
+				-- See available configs at : https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md
+				-- And even additional configs at : https://github.com/nvimtools/none-ls-extras.nvim/
 				sources = {
-					-- TODO Deprecated
 					require('none-ls.formatting.autopep8').with({
 						extra_args = {
 							'--max-line-length=150',
 							'--ignore=E101,E11,E111,E121,E127,E128,E129,E301,E302,E402,E704,E265,E251,E305,E731,E122,E123,W191'
 						}
 					}),
-					-- TODO Deprecated
 					require('none-ls.diagnostics.flake8').with({
 						extra_args = {
 							'--max-line-length=150',
@@ -677,46 +782,51 @@ require('lazy').setup({
 						--	'torchvision', 'tqdm', 'xclip', 'xinit', 'xorg', 'xset'
 						--}
 					--}),
-					null_ls.builtins.formatting.markdownlint,
-					null_ls.builtins.diagnostics.markdownlint.with({
+					none_ls.builtins.formatting.markdownlint,
+					none_ls.builtins.diagnostics.markdownlint.with({
 						extra_args = {
 							'--disable line_length hard_tab'
 						}
 					}),
-					null_ls.builtins.formatting.prettier.with({
+					none_ls.builtins.formatting.prettier.with({
 						extra_args = {
 							'--print-width 150',
 							'--tab-width 8',
 							'--use-tabs'
 						}
-					})
+					}),
+					none_ls.builtins.diagnostics.hadolint,
+					require('none-ls-shellcheck.diagnostics'),
+					require('none-ls-shellcheck.code_actions'),
+					none_ls.builtins.diagnostics.checkmake
 				}
 			})
 		end,
-		keys = {
-			{ '<leader>gf', vim.lsp.buf.format, desc = 'Format the document' }
-		},
+		cmd = { 'NullLsInstall', 'NoneLsInstall', 'NullLsUninstall', 'NoneLsUninstall', 'NullLsLog', 'NullLsInfo' },
+		keys = { { '<leader>gf', vim.lsp.buf.format, desc = 'Format the document' } },
 		dependencies = {
-			-- Lua library functions
-			'nvim-lua/plenary.nvim',
+			-- Add additional LSP, linters and formatters not provided by williamboman/mason-lspconfig
+			'nvimtools/none-ls.nvim',
 			-- Adding extra sources not included in none-ls
 			'nvimtools/none-ls-extras.nvim',
 			-- Adding support for cspell diagnostics and code actions
 			'davidmh/cspell.nvim'
+			-- Shellcheck diagnostics and code-actions sources for none-ls.nvim
+			'gbprod/none-ls-shellcheck.nvim',
+			-- Lua library functions
+			'nvim-lua/plenary.nvim'
 		}
 	},
 	-- Bring automated annotation
 	{ 'danymat/neogen',
 		event = 'VeryLazy',
-		config = function()
-			local neogen = require('neogen')
-			neogen.setup({})
-			nmap('<leader>ng', neogen.generate)
-			imap('<C-l>', neogen.jump_next)
-			nmap('<C-l>', neogen.jump_next)
-			imap('<C-h>', neogen.jump_prev)
-			nmap('<C-h>', neogen.jump_prev)
-		end,
+		config = true,
+		keys = {
+			{ '<leader>ng', function() require('neogen').generate() end,			   desc = 'Generate doxygen documentation' },
+			{ '<C-l>',	function() require('neogen').jump_next() end, mode = { 'n', 'i' }, desc = 'Jump to next entry of doxygen' },
+			{ '<C-h>',	function() require('neogen').jump_prev() end, mode = { 'n', 'i' }, desc = 'Jump to previous entry of doxygen' }
+		},
+		cmd = 'Neogen',
 		dependencies = {
 			-- Highlight, edit, and navigate code
 			'nvim-treesitter/nvim-treesitter'
@@ -724,40 +834,49 @@ require('lazy').setup({
 	},
 	-- Hex editing done right
 	{ 'RaafatTurki/hex.nvim',
-		keys = {
-			{ '<leader>x', "<cmd>lua require('hex').toggle()<CR>", 'Toggle between hex view and normal view' }
-		}
+		cmd = { 'HexDump', 'HexAssemble', 'HexToggle' },
+		keys = { { '<leader>x', function() require('hex').toggle() end, 'Toggle between hex view and normal view' } }
 	},
 	-- Better navigation inside tmux
 	{ 'alexghergh/nvim-tmux-navigation',
 		event = 'VimEnter',
-		config = function()
-			local nvim_tmux_nav = require('nvim-tmux-navigation')
-			nvim_tmux_nav.setup({ disable_when_zoomed = true })
-			nmap('<C-b>h', nvim_tmux_nav.NvimTmuxNavigateLeft,	'Navigate to the left tmux pane if existent')
-			nmap('<C-b>j', nvim_tmux_nav.NvimTmuxNavigateDown,	'Navigate to the down tmux pane if existent')
-			nmap('<C-b>k', nvim_tmux_nav.NvimTmuxNavigateUp,	'Navigate to the up tmux pane if existent')
-			nmap('<C-b>l', nvim_tmux_nav.NvimTmuxNavigateRight,	'Navigate to the right tmux pane if existent')
-		end
+		opts = { disable_when_zoomed = true },
+		keys = {
+			{ '<C-b>h', function() require('nvim-tmux-navigation').NvimTmuxNavigateLeft() end,  desc = 'Navigate to the left tmux pane if existent' },
+			{ '<C-b>j', function() require('nvim-tmux-navigation').NvimTmuxNavigateDown() end,  desc = 'Navigate to the down tmux pane if existent' },
+			{ '<C-b>k', function() require('nvim-tmux-navigation').NvimTmuxNavigateUp() end,    desc = 'Navigate to the up tmux pane if existent' },
+			{ '<C-b>l', function() require('nvim-tmux-navigation').NvimTmuxNavigateRight() end, desc = 'Navigate to the right tmux pane if existent' }
+		}
 	},
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim',
 		event = 'VeryLazy',
-		config = function()
-			local todo = require('todo-comments')
-			todo.setup({
-				signs = false,
-				highlight = { pattern = '.*<(KEYWORDS)\\s*[: ]' },
-				search = { pattern = '\\b(KEYWORDS)[: ]' }
-			})
-			nmap(']t', todo.jump_next, 'Next todo comment')
-			nmap('[t', todo.jump_prev, 'Previous todo comment')
-		end,
+		opts = {
+			signs = false,
+			highlight = { pattern = '.*<(KEYWORDS)\\s*[: ]' },
+			search = { pattern = '\\b(KEYWORDS)[: ]' }
+		},
+		keys = {
+			{ ']t', function() require('todo-comments').jump_next() end, desc = 'Next todo comment' },
+			{ '[t', function() require('todo-comments').jump_prev() end, desc = 'Previous todo comment' }
+		},
+		cmd = { 'TodoTelescope', 'TodoQuickFix', 'TodoLocList' },
 		dependencies = {
 			-- Lua library functions
 			'nvim-lua/plenary.nvim'
 		}
-	}
+	},
+	-- Simple session management for Neovim
+	{ 'folke/persistence.nvim',
+		event = 'BufReadPre',
+		cmd = { 'SessionLoad', 'SessionRestore' },
+		config = true,
+		init = function()
+			local persistence = require('persistence')
+			create_cmd('SessionLoad', persistence.load,					 'Restore the session for the current directory')
+			create_cmd('SessionRestore', function() persistence.load({ last = true }) end,	 'Restore the last session')
+		end
+}
 })
 local lazy = require('lazy')
 nmap('<leader>lo', lazy.home,		'[L]azy [O]pen home')
@@ -770,52 +889,52 @@ nmap('<leader>lp', lazy.profile,	'[L]azy [P]rofile')
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 vim.o.mouse					= 'a'										-- Enable mouse mode (selection, scrolling etc.)
 vim.o.termguicolors				= true										-- Enable 24-bit RGB colours in the terminal
-vim.o.syntax					= true										-- Enables syntax highlighting
+vim.bo.syntax					= true										-- Enables syntax highlighting
 vim.o.listchars					= 'eol:󰌑,tab:󰌒 ,trail:•,extends:,precedes:,space:·,nbsp:󱁐'			-- List of whitespace characters replacement (see :h listchars) (using: nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
-vim.o.list					= true										-- Enable replacement of listchars
-vim.o.wrap					= false										-- Display long lines as just one line
-vim.o.fileencoding				= 'UTF-8'									-- The encoding written to file
-vim.o.iskeyword					= vim.o.iskeyword .. ',-'							-- treat dash separated words as a word text object
-vim.o.tabstop					= 8										-- Set the width of a tab
-vim.o.shiftwidth				= 8										-- Change the number of space characters inserted for indentation
-vim.o.softtabstop				= 8										-- Change the number of space characters inserted for indentation
-vim.o.smartindent				= true										-- Does smart autoindenting when starting a new line
-vim.o.number					= true										-- Line numbers
-vim.o.relativenumber				= true										-- Relative number (enabled after number for hybrid mode)
-vim.o.cursorline				= true										-- Enable highlighting of the current line
-vim.o.cursorcolumn				= true										-- Enable highlighting of the current column
+vim.wo.list					= true										-- Enable replacement of listchars
+vim.wo.wrap					= false										-- Display long lines as just one line
+vim.bo.fileencoding				= 'UTF-8'									-- The encoding written to file
+vim.bo.iskeyword				= vim.o.iskeyword .. ',-'							-- treat dash separated words as a word text object
+vim.bo.tabstop					= 8										-- Set the width of a tab
+vim.bo.shiftwidth				= 8										-- Change the number of space characters inserted for indentation
+vim.bo.softtabstop				= 8										-- Change the number of space characters inserted for indentation
+vim.bo.smartindent				= true										-- Does smart autoindenting when starting a new line
+vim.wo.number					= true										-- Line numbers
+vim.wo.relativenumber				= true										-- Relative number (enabled after number for hybrid mode)
+vim.wo.cursorline				= true										-- Enable highlighting of the current line
+vim.wo.cursorcolumn				= true										-- Enable highlighting of the current column
 vim.o.showtabline				= 2										-- Always show top files tabs
-vim.o.showmode					= false										-- We don't need to see things like -- INSERT -- any more
-vim.o.foldlevel					= 99										-- Fold are open when you first open a file
+vim.wo.foldlevel				= 99										-- Fold are open when you first open a file
 vim.o.visualbell				= true										-- Disable bell noise
 vim.o.splitbelow				= true										-- Horizontal splits will automatically be below
 vim.o.splitright				= true										-- Vertical splits will automatically be to the right
 vim.o.completeopt				= 'menuone,noselect'								-- Add LSP complete popup menu
-vim.o.signcolumn				= 'auto:1-9'									-- Draw the signcolumn with 1 fixed space width but resize if needed
+vim.wo.signcolumn				= 'yes:1'									-- Draw the signcolumn with 1 fixed space width
 vim.o.title					= true										-- Change the window's title to the opened file name and directory
 vim.o.updatetime				= 200										-- Time before CursorHold triggers
-vim.o.swapfile					= false										-- Disable swapfile usage
+vim.bo.swapfile					= false										-- Disable swapfile usage
 vim.o.wildmode					= 'longest,list,full'								-- Enable autocompletion in COMMAND mode
-vim.o.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
+vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
 vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
-vim.o.undofile					= true										-- Enable undofile to save undos after exit
+vim.bo.undofile					= true										-- Enable undofile to save undos after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
 Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end)						-- Enable wraping only for LaTeX files
 Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end)						-- Disable the tab expansion of spaces
-Autocmd({ 'BufRead', 'BufNewFile' }, '*.tex',	function() vim.o.filetype = 'tex' end)						-- Sometimes LaTeX isn't properly recognized
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping configuration
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 nmap('<C-s>', '<cmd>w<CR>',													   'Save buffer shortcut')
 nmap({ '<C-F4>', '<F28>' }, '<cmd>tabclose!<CR>',										   'Close tab shortcut (keeps buffer open)')
+nmap('<C-S-h>', '<cmd>-tabmove<CR>',												   'Move the current tab to the left')
+nmap('<C-S-l>', '<cmd>+tabmove<CR>',												   'Move the current tab to the right')
 nmap({ '<S-F4>', '<F16>' }, '<cmd>bd<CR>',											   'Close buffer shortcut')
 nmap('<M-j>', '<cmd>resize -1<CR>',												   'Decrease buffer window horizontal size (M is the ALT modifier key)')
 nmap('<M-k>', '<cmd>resize +1<CR>',												   'Increase buffer window horizontal size (M is the ALT modifier key)')
 nmap('<M-h>', '<cmd>vertical resize -1<CR>',											   'Decrease buffer window vertical size (M is the ALT modifier key)')
 nmap('<M-l>', '<cmd>vertical resize +1<CR>',											   'Increase buffer window vertical size (M is the ALT modifier key)')
 map('t', '<Esc>', '<C-\\><C-n>',												   'Fix terminal exit button')
-nmap({'<C-m>', '<CR>'}, '<cmd>noh<CR>',												   'Clear the highlighting of :set hlsearch (<C-M> == <CR> in st)')
+nmap({ '<C-m>', '<CR>' }, '<cmd>noh<CR>',											   'Clear the highlighting of :set hlsearch (<C-M> == <CR> in st)')
 nmap('<C-z>', '<Nop>',														   'Disable the suspend signal')
 vmap('<', '<gv',														   'Shift the selection one indent to the right')
 vmap('>', '>gv',														   'Shift the selection one indent to the left')
@@ -836,5 +955,5 @@ vmap('<leader>y', '"+y',													   'Yank into the system clipboard')
 nmap('<leader>y', '"+Y',													   'Yank the entire buffer into the system clipboard')
 nmap('<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file executable')
 nmap('<leader>fX', '<cmd>!chmod -x %<CR>',											   'Make the current file non executable')
-vim.api.nvim_create_user_command('EditConfig', 'e $MYVIMRC', { desc =								   'Edit Neovim config file' })
-vim.api.nvim_create_user_command('EspansoEdit', 'e ' .. vim.fn.stdpath 'config' .. '/../espanso/match/base.yml', { desc =	   'Edit Espanso config file' })
+create_cmd('EditConfig', 'e $MYVIMRC', 												   'Edit Neovim config file')
+create_cmd('EspansoEdit', 'e ' .. vim.fn.stdpath 'config' .. '/../espanso/match/base.yml',					   'Edit Espanso config file')
