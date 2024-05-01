@@ -218,7 +218,7 @@ require('lazy').setup({
 	},
 	-- LSP Configuration & Plugins
 	{ 'neovim/nvim-lspconfig',
-		event = 'BufRead',
+		event = 'VeryLazy',
 		config = function()
 			require('neodev').setup({})		-- Setup neovim lua configuration
 			require('fidget').setup({		-- Turn on lsp status information
@@ -249,7 +249,6 @@ require('lazy').setup({
 			nmap('<leader>q',  vim.diagnostic.setloclist,					'LSP: Open diagnostic [Q]uickfix')
 
 			local lspconfig = require('lspconfig')
-			local root_pattern = lspconfig.util.root_pattern
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
@@ -280,8 +279,7 @@ require('lazy').setup({
 					-- Install package rather than using Mason
 					-- https://github.com/haskell/haskell-language-server
 					__skip_download = true,
-					filetypes = { 'haskell', 'lhaskell', 'cabal' },
-					root_dir = root_pattern('*.cabal', 'stack.yaml', 'cabal.project', 'package.yaml', 'hie.yaml')
+					filetypes = { 'haskell', 'lhaskell', 'cabal' }
 				},
 				cmake = {},
 				bashls = {},
@@ -290,8 +288,7 @@ require('lazy').setup({
 				docker_compose_language_service = {}
 			}
 
-			local mason_lspconfig = require('mason-lspconfig')
-			mason_lspconfig.setup({
+			require('mason-lspconfig').setup({
 				ensure_installed = vim.tbl_keys(filter(servers, function(_, server) return server.__skip_download ~= true end))
 			})
 
@@ -315,9 +312,13 @@ require('lazy').setup({
 		}
 	},
 	-- Debugging purposes
-	{ 'mfussenegger/nvim-dap',
+	{ 'jay-babu/mason-nvim-dap.nvim',
 		event = 'VeryLazy',
 		config = function()
+			require('mason-nvim-dap').setup({
+				ensure_installed = { 'cpptools', 'debugpy' }
+			})
+
 			local dap = require('dap')
 
 			dap.adapters = {
@@ -393,10 +394,18 @@ require('lazy').setup({
 			nmap({ '<leader>dr', '<C-F5>' }, function() dap.terminate(); dap.continue(); end,	'[D]ebug [R]estart')
 		end,
 		cmd = {
+			'DapInstall', 'DapUninstall',
 			'DapContinue', 'DapLoadLaunchJSON', 'DapRestartFrame', 'DapSetLogLevel', 'DapShowLog',
 			'DapStepInto', 'DapStepOut', 'DapStepOver', 'DapTerminate', 'DapToggleBreakpoint', 'DapToggleRepl'
+		},
+		dependencies = {
+			-- Debugging purposes
+			'mfussenegger/nvim-dap',
+			-- Tool to install LSPs, DAPs, linters and formatters
+			'williamboman/mason.nvim'
 		}
 	},
+	-- A UI for nvim-dap
 	{ 'rcarriga/nvim-dap-ui',
 		event = 'VeryLazy',
 		config = function()
@@ -416,7 +425,9 @@ require('lazy').setup({
 			nmap('<leader>du', dapui.toggle, '[D]ebug toggle [U]I')
 		end,
 		dependencies = {
+			-- Debug Adapter Protocol client implementation
 			'mfussenegger/nvim-dap',
+			-- A library for asynchronous IO
 			'nvim-neotest/nvim-nio'
 		}
 	},
@@ -520,14 +531,15 @@ require('lazy').setup({
 		keys = {
 			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	desc = 'La[T]eX [P]review document' },
 			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		desc = '[M]ake the default recipe in the current directory (multi-jobs)' },
-			{ '<leader>mM', '<cmd>Make<CR>',				desc = '[M]ake the default recipe in the current directory' },
+			{ '<leader>mM', '<cmd>Make<CR>',			desc = '[M]ake the default recipe in the current directory' },
 			{ '<leader>ms', '<cmd>Start make start<CR>',		desc = '[M]ake the "[s]tart" recipe in the current directory' },
 			{ '<leader>mc', '<cmd>Make clean<CR>',			desc = '[M]ake the "[c]lean" recipe in the current directory' },
 			{ '<leader>mC', '<cmd>Make mrproper<CR>',		desc = '[M]ake the "mrproper" recipe in the current directory' },
 			{ '<leader>md', '<cmd>Start docker compose build<CR>',	desc = 'Build all "[d]ocker" compose tag in the current directory' },
 			-- TUI programs
 			{ '<leader>og', '<cmd>Start lazygit<CR>',		desc = '[O]pen Lazy[G]it' },
-			{ '<leader>od', '<cmd>Start lazydocker<CR>',		desc = '[O]pen Lazy[D]ocker' }
+			{ '<leader>od', '<cmd>Start lazydocker<CR>',		desc = '[O]pen Lazy[D]ocker' },
+			{ '<leader>on', '<cmd>Start lazynpm<CR>',		desc = '[O]pen Lazy[N]pm' }
 		},
 		cmd = { 'Dispatch', 'Make', 'Focus', 'Start', 'Spawn' }
 	},
@@ -724,7 +736,7 @@ require('lazy').setup({
 			-- UI Component Library for Neovim
 			'MunifTanjim/nui.nvim',
 			-- A fancy, configurable, notification manager for Neovim
-			'rcarriga/nvim-notify',
+			'rcarriga/nvim-notify'
 		}
 	},
 	-- Make folding look modern
@@ -742,7 +754,7 @@ require('lazy').setup({
 	},
 	--Setup additional LSPs, linters and formatters
 	{ 'jay-babu/mason-null-ls.nvim',
-		event = 'BufReadPre',
+		event = 'VeryLazy',
 		config = function()
 			local cspell = require('cspell')
 			-- none-ls is a drop-in replacement for null-ls. Therefore it uses a mix of the old and new names
@@ -879,10 +891,10 @@ require('lazy').setup({
 }
 })
 local lazy = require('lazy')
-nmap('<leader>lo', lazy.home,		'[L]azy [O]pen home')
-nmap('<leader>lu', lazy.update,		'[L]azy [U]pdate')
-nmap('<leader>ls', lazy.sync,		'[L]azy [S]ync')
-nmap('<leader>lp', lazy.profile,	'[L]azy [P]rofile')
+nmap('<leader>lo', lazy.home,	 '[L]azy [O]pen home')
+nmap('<leader>lu', lazy.update,	 '[L]azy [U]pdate')
+nmap('<leader>ls', lazy.sync,	 '[L]azy [S]ync')
+nmap('<leader>lp', lazy.profile, '[L]azy [P]rofile')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General settings configuration
