@@ -174,41 +174,6 @@ command -v wget >> /dev/null && alias wget="wget --hsts-file=$XDG_DATA_HOME/wget
 # Replace default cat command
 command -v bat >> /dev/null && alias cat='bat'
 
-# Print out escape sequences usable for coloured text on tty.
-__cmd_checker__ colours
-colours() {
-	printf 'Colour escapes are %s\n' '\e[${value};...;${value}m'
-	printf 'Values 30..37 are \e[33mforeground colours\e[m\n'
-	printf 'Values 40..47 are \e[43mbackground colours\e[m\n'
-	printf 'Value  1 gives a  \e[1mbold look\e[m\n'
-	printf 'Value  2 gives a  \e[2mdim look\e[m\n'
-	printf 'Value  3 gives a  \e[3mitalic look\e[m\n'
-	printf 'Value  4 gives a  \e[4munderlined look\e[m\n'
-	printf 'Value  5 gives a  \e[5mblinking look\e[m\n\n'
-
-	# foreground colours
-	for fgc in {30..37}; do
-		# background colours
-		for bgc in {40..47}; do
-			fgc=${fgc#37} # white
-			bgc=${bgc#40} # black
-
-			vals="${fgc:+$fgc;}${bgc}"
-			vals=${vals%%;}
-
-			seq0="${vals:+\e[${vals}m}"
-			printf " %-9s" "${seq0:-(default)}"
-			echo -e -n " ${seq0}TEXT\e[m"
-			echo -e -n " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
-			echo -e -n " \e[${vals:+${vals+$vals;}}2mDIM\e[m"
-			echo -e -n " \e[${vals:+${vals+$vals;}}3mITA\e[m"
-			echo -e -n " \e[${vals:+${vals+$vals;}}4mUND\e[m"
-			echo -e -n " \e[${vals:+${vals+$vals;}}5mBLI\e[m"
-		done
-		echo; echo
-	done
-}
-
 # Simple command to preview csv files
 __cmd_checker__ preview_csv
 preview_csv(){
@@ -689,7 +654,6 @@ __helpme__(){
 
 	echo -e "${BOLD}Available commands :${NOCOLOUR}"
 	tprint_cmd 'activate' 'Activate the python virtual environment'
-	tprint_cmd 'colours' 'Show the colours palette of the current terminal'
 	tprint_cmd 'preview_csv' 'Preview a csv file' '<file>'
 	tprint_cmd 'vid' 'Shortcut to nvim diff mode' '<file1> <file2>'
 	tprint_cmd 'll' 'Detailed ls' '<directory>'
