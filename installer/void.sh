@@ -93,7 +93,7 @@ EOF
 
 install_server(){
 	install_pkg neovim lazygit lazydocker git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep btop ranger tmux \
-		docker dos2unix fd highlight gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers
+		docker dos2unix fd highlight gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers go
 }
 install_ihm(){
 	install_server
@@ -253,7 +253,7 @@ if [ '$PACKAGES' == 'laptop' ] || [ '$PACKAGES' == 'virtual' ]; then
 	cd /usr/local/src
 	git clone https://github.com/jstkdng/ueberzugpp.git
 	cd ueberzugpp
-	cmake -DCMAKE_BUILD_TYPE=Release build
+	cmake -DCMAKE_BUILD_TYPE=Release -B build
 	cmake --build build -j \$(nproc)
 	mv /usr/local/src/ueberzugpp/build/ueberzugpp /usr/local/bin/ueberzugpp
 	mv /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug
@@ -267,6 +267,9 @@ echo "#!/usr/bin/env bash
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
+
+# Removing bash profile that blocks default .profile
+rm ~/.bash_profile ~/.bash_logout
 
 if [ '$PACKAGES' != 'minimal' ]; then
 	# Getting the dotfiles
