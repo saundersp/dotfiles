@@ -1,29 +1,26 @@
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Global shortcuts/helper
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-local function map(mode, key, action, desc, buffer)
+local function map(mode, key, action, desc)
 	if type(key) == 'table' then
 		for _, e in ipairs(key) do
-			map(mode, e, action, desc, buffer)
+			map(mode, e, action, desc)
 		end
 	else
-		vim.keymap.set(mode, key, action, { silent = true, buffer = buffer, desc = desc })
+		vim.keymap.set(mode, key, action, { silent = true, desc = desc })
 	end
 end
-local function nmap(key, action, desc, buffer) map('n', key, action, desc, buffer) end
-local function imap(key, action, desc, buffer) map('i', key, action, desc, buffer) end
-local function vmap(key, action, desc, buffer) map('v', key, action, desc, buffer) end
-local function Autocmd(events, pattern, callback)
-	vim.api.nvim_create_autocmd(events, { pattern = pattern, callback = callback })
+local function nmap(key, action, desc) map('n', key, action, desc) end
+local function vmap(key, action, desc) map('v', key, action, desc) end
+local function Autocmd(events, pattern, callback, desc)
+	vim.api.nvim_create_autocmd(events, { pattern = pattern, callback = callback, desc = desc })
 end
-local function filter(sequence, predicate)
-	local new_list = {}
-	for k, v in pairs(sequence) do
-		if predicate(k, v) then
-			new_list[k] = v
-		end
+local function reduce(tbl, predicate, initial)
+	local acc = initial or {}
+	for k, v in pairs(tbl) do
+		predicate(acc, k, v)
 	end
-	return new_list
+	return acc
 end
 local function create_cmd(cmd, fnc, desc, nargs)
 	vim.api.nvim_create_user_command(cmd, fnc, { nargs = nargs or 0, desc = desc })
@@ -289,7 +286,11 @@ require('lazy').setup({
 			}
 
 			require('mason-lspconfig').setup({
-				ensure_installed = vim.tbl_keys(filter(servers, function(_, server) return server.__skip_download ~= true end))
+				ensure_installed = reduce(servers, function(acc, server_name, server)
+					if server.__skip_download ~= true then
+						table.insert(acc, server_name)
+					end
+				end)
 			})
 
 			for name, opts in pairs(servers) do
@@ -315,24 +316,30 @@ require('lazy').setup({
 	{ 'jay-babu/mason-nvim-dap.nvim',
 		event = 'VeryLazy',
 		config = function()
-			require('mason-nvim-dap').setup({
-				ensure_installed = { 'cpptools', 'debugpy' }
-			})
-
 			local dap = require('dap')
 
 			dap.adapters = {
 				cppdbg = {
 					id = 'cppdbg',
+					pkg_name = 'cppdbg',
 					type = 'executable',
 					command = 'OpenDebugAD7'
 				},
 				debugpy = {
 					id = 'debugpy',
+					pkg_name = 'python',
 					type = 'executable',
 					command = 'debugpy-adapter'
 				}
 			}
+
+			require('mason-nvim-dap').setup({
+				ensure_installed = reduce(dap.adapters, function(acc, _, adapter)
+					if adapter.__skip_download ~= true then
+						table.insert(acc, adapter.pkg_name)
+					end
+				end)
+			})
 
 			dap.configurations = {
 				cpp = {
@@ -763,25 +770,27 @@ require('lazy').setup({
 				ensure_installed = { 'autopep8', 'flake8', 'cspell', 'checkmake', 'markdownlint', 'prettier', 'hadolint', 'shellcheck' }
 			})
 
-			none_ls.setup({
-				-- See available configs at : https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md
-				-- And even additional configs at : https://github.com/nvimtools/none-ls-extras.nvim/
-				sources = {
+			-- See available configs at : https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md
+			-- And even additional configs at : https://github.com/nvimtools/none-ls-extras.nvim/
+			local sources = {
+				autopep8 = {
 					require('none-ls.formatting.autopep8').with({
 						extra_args = {
 							'--max-line-length=150',
 							'--ignore=E101,E11,E111,E121,E127,E128,E129,E301,E302,E402,E704,E265,E251,E305,E731,E122,E123,W191'
 						}
-					}),
+					})
+				},
+				flake8 = {
 					require('none-ls.diagnostics.flake8').with({
 						extra_args = {
 							'--max-line-length=150',
 							'--ignore=W191,E302,E704,E101,E128,E265,E251,E301,E305,E731'
 						}
-					}),
-					cspell.diagnostics,
-					cspell.code_actions,
-					--null_ls.builtins.diagnostics.cspell.with({
+					})
+				},
+				cspell = { cspell.diagnostics, cspell.code_actions
+					--none_ls.builtins.diagnostics.cspell.with({
 						--language = 'en-GB,fr,de,it,es,ru',
 						--enableDictionaries = { 'medical-terms', 'french', 'german' },
 						--userWords = {
@@ -794,24 +803,42 @@ require('lazy').setup({
 						--	'torchvision', 'tqdm', 'xclip', 'xinit', 'xorg', 'xset'
 						--}
 					--}),
+				},
+				markdownlint = {
 					none_ls.builtins.formatting.markdownlint,
 					none_ls.builtins.diagnostics.markdownlint.with({
 						extra_args = {
 							'--disable line_length hard_tab'
 						}
-					}),
+					})
+				},
+				prettier = {
 					none_ls.builtins.formatting.prettier.with({
 						extra_args = {
 							'--print-width 150',
 							'--tab-width 8',
 							'--use-tabs'
 						}
-					}),
-					none_ls.builtins.diagnostics.hadolint,
+					})
+				},
+				hadolint = { none_ls.builtins.diagnostics.hadolint },
+				shellcheck = {
 					require('none-ls-shellcheck.diagnostics'),
-					require('none-ls-shellcheck.code_actions'),
-					none_ls.builtins.diagnostics.checkmake
-				}
+					require('none-ls-shellcheck.code_actions')
+				},
+				checkmake = { none_ls.builtins.diagnostics.checkmake }
+			}
+
+			require('mason-null-ls').setup({
+				ensure_installed = vim.tbl_keys(sources)
+			})
+
+			none_ls.setup({
+				sources = reduce(sources, function(acc, _, source)
+					for _, inner_source in pairs(source) do
+						table.insert(acc, inner_source)
+					end
+				end)
 			})
 		end,
 		cmd = { 'NullLsInstall', 'NoneLsInstall', 'NullLsUninstall', 'NoneLsUninstall', 'NullLsLog', 'NullLsInfo' },
@@ -930,8 +957,8 @@ vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in b
 vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
 vim.bo.undofile					= true										-- Enable undofile to save undos after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
-Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end)						-- Enable wraping only for LaTeX files
-Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end)						-- Disable the tab expansion of spaces
+Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end,						   'Enable wraping only for LaTeX files')
+Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   'Disable the tab expansion of spaces')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping configuration
