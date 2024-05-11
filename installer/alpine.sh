@@ -125,7 +125,12 @@ install_server(){
 	install_pkg neovim doas lazygit git wget unzip openssh bash-completion nodejs npm python3 \
 		py3-pip ripgrep btop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc man-pages \
 		mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev tmux lazydocker \
-		docker docker-compose dos2unix gdb highlight progress py3-pynvim ncdu cmake make
+		docker docker-compose dos2unix gdb highlight progress py3-pynvim ncdu cmake make elogind \
+		polkit-elogind
+
+	# Adding login manager
+	rc-update add elogind boot
+	rc-update add polkit boot
 
 	# Replace sudo
 	ln -s /usr/bin/doas /usr/bin/sudo
