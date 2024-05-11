@@ -12,7 +12,7 @@ Available flags:
 	e, empty, -e, --empty			Show the options that are enabled/modularized.
 	c, compare, -c, --compare		Compare the current profile with the saved one.
 	u, update, -u, --update			Update the kernel.
-	p, packages, -p, --packages		Update the localy installed packages.
+	p, packages, -p, --packages		Update the locally installed packages.
 	ck, change-kernel, -ck, --change-kernel	Change the current selected kernel to specified one.
 	s, sign, -s, --sign			Sign the specified module path
 	h, help, -h, --help			Which display this help message."
