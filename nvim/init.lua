@@ -54,22 +54,24 @@ require('lazy').setup({
 	},
 	-- Add a fancy bottom bar with details
 	{ 'nvim-lualine/lualine.nvim',
-		event = 'VeryLazy',
+		event = 'UIEnter',
 		opts = {
 			options = {
-				theme = 'codedark',
+				-- Special theme keyword to automatically load theme based on colourscheme
+				theme = 'auto',
 				ignore_focus = {
 					'dapui_watches', 'dapui_breakpoints',
 					'dapui_scopes', 'dapui_console',
 					'dapui_stacks', 'dap-repl'
-				}
+				},
+				disabled_filetypes = { statusline = { 'alpha', 'neo-tree' } }
 			},
 			sections = {
 				lualine_x = {
 					{
 						function() return require('noice').api.status.mode.get() end,
 						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
-						color = 'WarningMsg'
+						color = { fg = '#ce9178' }
 					}
 				}
 			}
@@ -83,21 +85,23 @@ require('lazy').setup({
 	},
 	-- Add the left column indicating git line status and preview window
 	{ 'lewis6991/gitsigns.nvim',
-		event = 'VeryLazy',
+		event = 'UIEnter',
 		config = function()
 			local gs = require('gitsigns')
 			gs.setup({})
 			require('scrollbar.handlers.gitsigns').setup({})
-			nmap(		  '<leader>hp', gs.preview_hunk,		'[H]unk [P]review')
-			map({ 'n', 'v' }, '<leader>hR', gs.reset_hunk,			'[H]unk [R]eset')
-			map({ 'n', 'v' }, '<leader>hs', gs.stage_hunk,			'[H]unk [S]tage')
-			nmap(		  '<leader>hu', gs.undo_stage_hunk,		'[H]unk [U]ndo')
-			nmap(		  '<leader>hd', gs.diffthis,			'[H]unk [D]iff this')
-			nmap(		  '<leader>hb', gs.toggle_current_line_blame,	'[H]unk toggle line [B]lame')
-			nmap(		  ']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next Hunk (or [C]hange)')
-			nmap(		  '[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous Hunk (or [C]hange)')
+			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next Hunk (or [C]hange)')
+			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous Hunk (or [C]hange)')
 		end,
-		cm = 'GitSigns',
+		keys = {
+			{ '<leader>hp', '<cmd>Gitsigns preview_hunk<CR>',		     desc = '[H]unk [P]review' },
+			{ '<leader>hR', '<cmd>Gitsigns reset_hunk<CR>', mode = { 'n', 'v' }, desc = '[H]unk [R]eset' },
+			{ '<leader>hs', '<cmd>Gitsigns stage_hunk<CR>', mode = { 'n', 'v' }, desc = '[H]unk [S]tage' },
+			{ '<leader>hu', '<cmd>Gitsigns undo_stage_hunk<CR>',		     desc = '[H]unk [U]ndo' },
+			{ '<leader>hd', '<cmd>Gitsigns diffthis<CR>',			     desc = '[H]unk [D]iff this' },
+			{ '<leader>hb', '<cmd>Gitsigns toggle_current_line_blame<CR>',	     desc = '[H]unk toggle line [B]lame' }
+		},
+		cmd = 'Gitsigns',
 		dependencies = {
 			-- Lua library functions
 			'nvim-lua/plenary.nvim',
@@ -107,44 +111,59 @@ require('lazy').setup({
 	},
 	-- Colourize RGB codes to it designated colour and add a colour picker
 	{ 'uga-rosa/ccc.nvim',
-		event = 'BufRead',
-		cmd = { 'CccPick', 'CccConvert', 'CccHighlighterEnable', 'CccHighlighterDisable', 'CccHighlighterToggle' },
+		event = 'BufReadPost',
+		opts = { highlighter = { auto_enable = true } },
 		keys = {
-			{ '<leader>cp', '<cmd>CccPick<CR>',			desc = 'open [C]olour [P]icker' },
-			{ '<leader>cc', '<cmd>CccConvert<CR>',			desc = '[C]olour [C]onvert' },
-			{ '<leader>ct', '<cmd>CccHighlighterToggle<CR>',	desc = '[C]olour highlight [T]oggle' },
-			{ '<leader>ce', '<cmd>CccHighlighterEnable<CR>',	desc = '[C]olour highlight [E]nable' },
-			{ '<leader>cd', '<cmd>CccHighlighterDisable<CR>',	desc = '[C]olour highlight [D]isable' }
+			{ '<leader>cp', '<cmd>CccPick<CR>',		  desc = 'open [C]olour [P]icker' },
+			{ '<leader>cc', '<cmd>CccConvert<CR>',		  desc = '[C]olour [C]onvert' },
+			{ '<leader>ct', '<cmd>CccHighlighterToggle<CR>',  desc = '[C]olour highlight [T]oggle' },
+			{ '<leader>ce', '<cmd>CccHighlighterEnable<CR>',  desc = '[C]olour highlight [E]nable' },
+			{ '<leader>cd', '<cmd>CccHighlighterDisable<CR>', desc = '[C]olour highlight [D]isable' }
 		},
-		opts = { highlighter = { auto_enable = true } }
+		cmd = { 'CccPick', 'CccConvert', 'CccHighlighterEnable', 'CccHighlighterDisable', 'CccHighlighterToggle' }
 	},
 	-- Quickly surround word with given symbol
 	{ 'kylechui/nvim-surround', event = 'VeryLazy', config = true },
 	-- Add fuzzy finder to files, command and more
 	{ 'nvim-telescope/telescope.nvim',
-		event = 'VeryLazy',
 		config = function()
 			local telescope = require('telescope')
-			telescope.setup({ extensions = { ['ui-select'] = { require('telescope.themes').get_dropdown({}) } } })
-			local tbi = require('telescope.builtin')
-			nmap('<leader>sf', tbi.find_files,	'[S]earch [F]iles')
-			nmap('<leader>sh', tbi.help_tags,	'[S]earch [H]elp')
-			nmap('<leader>sw', tbi.grep_string,	'[S]earch current [W]ord')
-			nmap('<leader>sg', tbi.live_grep,	'[S]earch by [G]rep')
-			nmap('<leader>sd', tbi.diagnostics,	'[S]earch [D]iagnostics')
-			nmap('<leader>sk', tbi.keymaps,		'[S]earch [K]eymaps')
-			nmap('<leader>sc', tbi.commands,	'[S]earch [c]ommands')
-			nmap('<leader>sb', tbi.buffers,		'[S]earch [B]uffers')
-			nmap('<leader>sm', tbi.marks,		'[S]earch [M]arks')
-			nmap('<leader>sr', tbi.registers,	'[S]earch [R]egisters')
-			nmap('<leader>ss', tbi.resume,		'[S]earch re[S]ume')
-			telescope.load_extension('ui-select')
-			telescope.load_extension('noice')
+			local actions = require('telescope.actions')
+			telescope.setup({
+				defaults = {
+					mappings = {
+						i = {
+							['<c-d>'] = actions.delete_buffer
+						}
+					}
+				},
+				extensions = {
+					['ui-select'] = { require('telescope.themes').get_dropdown({}) },
+					media_files = { filetypes = {'png', 'svg', 'webp', 'jpg', 'jpeg'} }
+				}
+			})
+			vim.tbl_map(telescope.load_extension, { 'ui-select', 'noice', 'dap', 'media_files', 'bibtex' })
 		end,
 		keys = {
-			{ '<leader>st', '<cmd>TodoTelescope<CR>',	desc = '[S]earch [T]odo elements' },
-			{ '<leader>sN', '<cmd>Telescope noice<CR>',	desc = '[S]earch [N]oice (powered by noice)' },
-			{ '<leader>sn', '<cmd>Telescope notify<CR>',	desc = '[S]earch [N]otifications (powered by notify)' },
+			{ 'gr',		'<cmd>Telescope lsp_references<CR>',		    desc = 'LSP: [G]oto [R]eferences' },
+			{ '<leader>ws', '<cmd>Telescope lsp_dynamic_workspace_symbols<CR>', desc = 'LSP: [W]orkspace [S]ymbols' },
+			{ '<leader>sf', '<cmd>Telescope find_files<CR>',		    desc = '[S]earch [F]iles' },
+			{ '<leader>sF', '<cmd>Telescope git_files<CR>',			    desc = '[S]earch [F]iles' },
+			{ '<leader>sh', '<cmd>Telescope help_tags<CR>',			    desc = '[S]earch [H]elp' },
+			{ '<leader>sg', '<cmd>Telescope live_grep<CR>',			    desc = '[S]earch by [G]rep' },
+			{ '<leader>sd', '<cmd>Telescope diagnostics<CR>',		    desc = '[S]earch [D]iagnostics' },
+			{ '<leader>sk', '<cmd>Telescope keymaps<CR>',			    desc = '[S]earch [K]eymaps' },
+			{ '<leader>sc', '<cmd>Telescope commands<CR>',			    desc = '[S]earch [c]ommands' },
+			{ '<leader>sb', '<cmd>Telescope buffers<CR>',			    desc = '[S]earch [B]uffers' },
+			{ '<leader>sB', '<cmd>Telescope bibtex<CR>',			    desc = '[S]earch [B]ibtex entries' },
+			{ '<leader>sm', '<cmd>Telescope media_files<CR>',		    desc = '[S]earch [M]edia files' },
+			{ '<leader>ss', '<cmd>Telescope resume<CR>',			    desc = '[S]earch re[S]ume' },
+			{ '<leader>st', '<cmd>TodoTelescope<CR>',			    desc = '[S]earch [T]odo elements' },
+			{ '<leader>sN', '<cmd>Telescope noice<CR>',			    desc = '[S]earch [N]oice' },
+			{ '<leader>sn', '<cmd>Telescope notify<CR>',			    desc = '[S]earch [N]otifications (powered by notify)' },
+			{ '<leader>dh', '<cmd>Telescope dap commands<CR>',		    desc = 'Search [D]ap [C]ommands' },
+			{ '<leader>dv', '<cmd>Telescope dap variables<CR>',		    desc = 'Search [D]ap [V]ariables' },
+			{ '<leader>dB', '<cmd>Telescope dap list_breakpoints<CR>',	    desc = 'Search [D]ap list of [B]reakpoints' }
 		},
 		cmd = 'Telescope',
 		dependencies = {
@@ -159,7 +178,17 @@ require('lazy').setup({
 			-- Completely replaces the UI for messages, cmdline and the popupmenu
 			'folke/noice.nvim',
 			-- A fancy, configurable, notification manager for Neovim
-			'rcarriga/nvim-notify'
+			'rcarriga/nvim-notify',
+			-- Extension to integrate nvim-dap
+			'nvim-telescope/telescope-dap.nvim',
+			-- LSP Configuration & Plugins
+			'neovim/nvim-lspconfig',
+			-- Extension to preview media files using Ueberzug
+			'nvim-telescope/telescope-media-files.nvim',
+			-- [WIP] Popup API from vim in Neovim (needed for telescope-media-files). Will eventually be merged upstream
+			'nvim-lua/popup.nvim',
+			-- Extension to search and paste bibtex entries into your TeX files
+			'nvim-telescope/telescope-bibtex.nvim'
 		}
 	},
 	-- Automatic pairs of ( [ { insertion
@@ -168,8 +197,8 @@ require('lazy').setup({
 	{ 'nvim-neo-tree/neo-tree.nvim',
 		branch = 'v3.x',
 		opts = { close_if_last_window = true, window = { position = 'current' } },
-		cmd = 'Neotree',
 		keys = { { '<C-p>', '<cmd>Neotree toggle reveal<CR>', desc = 'Open [N]eotree file manager' } },
+		cmd = 'Neotree',
 		dependencies = {
 			-- Lua library functions
 			'nvim-lua/plenary.nvim',
@@ -181,9 +210,9 @@ require('lazy').setup({
 	},
 	-- Edit the filesystem like a buffer
 	{ 'stevearc/oil.nvim',
-		config = true,
-		cmd = 'Oil',
+		opts = { default_file_explorer = false },
 		keys = { { '<C-n>', '<cmd>Oil<CR>', desc = 'Open Oil file manager' } },
+		cmd = 'Oil',
 		dependencies = {
 			-- Provides nerd fonts icons
 			'nvim-tree/nvim-web-devicons'
@@ -198,7 +227,7 @@ require('lazy').setup({
 	},
 	-- Automatic white spaces trimming
 	{ 'ntpeters/vim-better-whitespace',
-		event = 'VeryLazy',
+		event = 'UIEnter',
 		init = function()
 			vim.g.better_whitespace_enabled = 1	-- Enable the plugin
 			vim.g.strip_whitespace_on_save  = 1	-- Remove trailing white spaces on save
@@ -215,36 +244,14 @@ require('lazy').setup({
 	},
 	-- LSP Configuration & Plugins
 	{ 'neovim/nvim-lspconfig',
-		event = 'VeryLazy',
-		config = function()
-			require('neodev').setup({})		-- Setup neovim lua configuration
-			require('fidget').setup({		-- Turn on lsp status information
-				progress = { ignore = { 'null-ls' } }
-			})
-
+		event = { 'BufReadPost', 'BufNewFile' },
+		init = function()
 			vim.fn.sign_define('DiagnosticSignError', { text = '', texthl = 'DiagnosticSignError' }) -- nf-cod-error
 			vim.fn.sign_define('DiagnosticSignWarn',  { text = '', texthl = 'DiagnosticSignWarn'  }) -- nf-cod-warning
 			vim.fn.sign_define('DiagnosticSignInfo',  { text = '', texthl = 'DiagnosticSignInfo'  }) -- nf-cod-info
 			vim.fn.sign_define('DiagnosticSignHint',  { text = '', texthl = 'DiagnosticSignHint'  }) -- nf-oct-light_bulb
-
-			nmap('<leader>rn', vim.lsp.buf.rename,						'LSP: [R]e[n]ame')
-			nmap('gd',	   vim.lsp.buf.definition,					'LSP: [G]oto [D]efinition')
-			nmap('gI',	   vim.lsp.buf.implementation,					'LSP: [G]oto [I]mplementation')
-			nmap('<leader>D',  vim.lsp.buf.type_definition,					'LSP: Type [D]efinition')
-			nmap('K',	   vim.lsp.buf.hover,						'LSP: Hover Documentation')
-			--nmap('<M-k>',	   vim.lsp.buf.signature_help,					'LSP: Signature Documentation')
-			nmap('gD',	   vim.lsp.buf.declaration,					'LSP: [G]oto [D]eclaration')
-			nmap('<leader>e',  vim.diagnostic.open_float,					'LSP: Show diagnostic [E]rror message')
-
-			nmap('gr',	   require('telescope.builtin').lsp_references,			'LSP: [G]oto [R]eferences')
-			--nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols,		'LSP: [D]ocument [S]ymbols')
-			nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols,	'LSP: [W]orkspace [S]ymbols')
-
-			nmap('<leader>ca', vim.lsp.buf.code_action,					'LSP: [C]ode [A]ction')
-			nmap('[d',	   vim.diagnostic.goto_prev,					'LSP: Jump to previous [D]iagnostics')
-			nmap(']d',	   vim.diagnostic.goto_next,					'LSP: Jump to next [D]iagnostics')
-			nmap('<leader>q',  vim.diagnostic.setloclist,					'LSP: Open diagnostic [Q]uickfix')
-
+		end,
+		config = function()
 			local lspconfig = require('lspconfig')
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
@@ -300,33 +307,53 @@ require('lazy').setup({
 				})
 			end
 		end,
+		keys = {
+			{ '<leader>rn', vim.lsp.buf.rename,	     desc = 'LSP: [R]e[n]ame' },
+			{ 'gd',		vim.lsp.buf.definition,	     desc = 'LSP: [G]oto [D]efinition' },
+			{ 'gI',		vim.lsp.buf.implementation,  desc = 'LSP: [G]oto [I]mplementation' },
+			{ '<leader>D',  vim.lsp.buf.type_definition, desc = 'LSP: Type [D]efinition' },
+			{ 'K',		vim.lsp.buf.hover,	     desc = 'LSP: Hover Documentation' },
+			{ 'gK',		vim.lsp.buf.signature_help,  desc = 'LSP: Signature Documentation' },
+			{ 'gD',		vim.lsp.buf.declaration,     desc = 'LSP: [G]oto [D]eclaration' },
+			{ '<leader>e',  vim.diagnostic.open_float,   desc = 'LSP: Show diagnostic [E]rror message' },
+
+			{ '<leader>ca', vim.lsp.buf.code_action,     desc = 'LSP: [C]ode [A]ction' },
+			{ '[d',		vim.diagnostic.goto_prev,    desc = 'LSP: Jump to previous [D]iagnostics' },
+			{ ']d',		vim.diagnostic.goto_next,    desc = 'LSP: Jump to next [D]iagnostics' },
+			{ '<leader>q',  vim.diagnostic.setloclist,   desc = 'LSP: Open diagnostic [Q]uickfix' }
+		},
 		cmd = { 'LspInfo', 'LspInstall', 'LspLog', 'LspRestart', 'LspStart', 'LspStop', 'LspUninstall' },
 		dependencies = {
 			-- Automatically install LSPs to stdpath for neovim
 			'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim',
 			-- Useful status updates for LSP
-			'j-hui/fidget.nvim',
+			{ 'j-hui/fidget.nvim', opts = { progress = { ignore = { 'null-ls' } } } },
 			-- Additional lua configurations, make nvim stuff amazing
-			'folke/neodev.nvim',
+			{ 'folke/neodev.nvim', opts = { library = { plugins = { 'nvim-dap-ui'}, types = true } } },
 			-- Auto completion functionalities
 			'hrsh7th/cmp-nvim-lsp'
 		}
 	},
 	-- Debugging purposes
 	{ 'jay-babu/mason-nvim-dap.nvim',
-		event = 'VeryLazy',
+		init  = function()
+			vim.fn.sign_define('DapBreakpoint',	     { text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-fa-stop
+			vim.fn.sign_define('DapBreakpointCondition', { text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-cod-debug_breakpoint_conditional
+			vim.fn.sign_define('DapBreakpointRejected',  { text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-fa-hand
+			vim.fn.sign_define('DapLogPoint',	     { text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-cod-debug_breakpoint_log
+			vim.fn.sign_define('DapStopped',	     { text = '', texthl = 'DapUIStopped' })	      -- nf-fa-circle_stop
+		end,
 		config = function()
 			local dap = require('dap')
 
 			dap.adapters = {
-				cppdbg = {
+				cpptools = {
 					id = 'cppdbg',
 					pkg_name = 'cppdbg',
 					type = 'executable',
 					command = 'OpenDebugAD7'
 				},
 				debugpy = {
-					id = 'debugpy',
 					pkg_name = 'python',
 					type = 'executable',
 					command = 'debugpy-adapter'
@@ -341,31 +368,26 @@ require('lazy').setup({
 				end)
 			})
 
+			local default_c_config = {
+				name = 'Launch file',
+				type = 'cpptools',
+				request = 'launch',
+				program = function()
+					local cwd = vim.fn.getcwd() .. '/'
+					if vim.fn.isdirectory(cwd .. '/bin') == 1 then
+						cwd = cwd .. 'bin/'
+					elseif vim.fn.isdirectory(cwd .. '/build') == 1 then
+						cwd = cwd .. 'build/'
+					end
+					return vim.fn.input('Path to executable: ', cwd, 'file')
+				end,
+				cwd = '${workspaceFolder}'
+			}
+
 			dap.configurations = {
-				cpp = {
-					{
-						name = 'Launch file',
-						type = 'cppdbg',
-						request = 'launch',
-						program = function()
-							return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-						end,
-						cwd = '${workspaceFolder}',
-						stopAtEntry = true
-					}
-				},
-				cuda = {
-					{
-						name = 'Launch file',
-						type = 'cppdbg',
-						request = 'launch',
-						program = function()
-							return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-						end,
-						cwd = '${workspaceFolder}',
-						stopAtEntry = true
-					}
-				},
+				c = { default_c_config },
+				cpp = { default_c_config },
+				cuda = { default_c_config },
 				python = {
 					{
 						type = 'debugpy',
@@ -373,33 +395,37 @@ require('lazy').setup({
 						name = 'Launch file',
 						program = '${file}',
 						pythonPath = function()
-							return '/usr/bin/python'
-						end
-					},
-					{
-						type = 'debugpy',
-						request = 'launch',
-						name = 'Launch file (venv)',
-						program = '${file}',
-						pythonPath = function()
-							return '${workspaceFolder}/venv/bin/python'
+							local cwd = vim.fn.getcwd()
+							if vim.fn.isdirectory(cwd .. '/venv') == 1 then
+								return cwd .. '/venv/bin/python'
+							else
+								return '/usr/bin/python'
+							end
 						end
 					}
 				}
 			}
 
-			nmap('<leader>db',		 dap.toggle_breakpoint,					'[D]ebug toggle [B]reakpoint')
-			nmap({ '<leader>dc', '<F5>' },	 dap.continue,						'[D]ebug [C]ontinue')
-			nmap({ '<leader>dC', '<F7>' },	 dap.run_to_cursor,					'[D]ebug run to [C]ursor')
-			nmap({ '<leader>do', '<F10>' },	 dap.step_over,						'[D]ebug Step [O]ver')
-			nmap({ '<leader>di', '<F11>' },	 dap.step_into,						'[D]ebug Step [I]nto')
-			nmap({ '<leader>dO', '<F12>' },	 dap.step_out,						'[D]ebug Step [O]ut')
-			nmap({ '<leader>dt', '<S-F5>' }, dap.terminate,						'[D]ebug [T]erminate')
-			nmap('<leader>ds',		 dap.up,						'[D]ebug up in the [S]tacktrace')
-			nmap('<leader>dS',		 dap.down,						'[D]ebug down in the [S]tacktrace')
-			nmap('<leader>dp',		 dap.pause,						'[D]ebug [P]ause')
-			nmap({ '<leader>dr', '<C-F5>' }, function() dap.terminate(); dap.continue(); end,	'[D]ebug [R]estart')
+			local dapui = require('dapui')
+			dap.listeners.after.event_initialized['dapui_config'] = dapui.open
+			dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+			dap.listeners.before.event_exited['dapui_config'] = dapui.close
 		end,
+		keys = {
+			{ '<leader>db', '<cmd>DapToggleBreakpoint<CR>',		       desc = '[D]ebug toggle [B]reakpoint' },
+			{ '<leader>dc', '<cmd>DapContinue<CR>',			       desc = '[D]ebug [C]ontinue' },
+			{ '<leader>dC', function() require('dap').run_to_cursor() end, desc = '[D]ebug run to [C]ursor' },
+			{ '<leader>do', '<cmd>DapStepOver<CR>',			       desc = '[D]ebug Step [O]ver' },
+			{ '<leader>di', '<cmd>DapStepInto<CR>',			       desc = '[D]ebug Step [I]nto' },
+			{ '<leader>dO', '<cmd>DapStepOut<CR>',			       desc = '[D]ebug Step [O]ut' },
+			{ '<leader>dt', '<cmd>DapTerminate<CR>',		       desc = '[D]ebug [T]erminate' },
+			{ '<leader>ds', function() require('dap').up() end,	       desc = '[D]ebug up in the [S]tacktrace' },
+			{ '<leader>dS', function() require('dap').down() end,	       desc = '[D]ebug down in the [S]tacktrace' },
+			{ '<leader>dp', function() require('dap').pause() end,	       desc = '[D]ebug [P]ause' },
+			{ '<leader>dr', function() require('dap').restart() end,       desc = '[D]ebug [R]estart' },
+			-- dapui
+			{ '<leader>du', function() require('dapui').toggle() end,      desc = '[D]ebug toggle [U]I' }
+		},
 		cmd = {
 			'DapInstall', 'DapUninstall',
 			'DapContinue', 'DapLoadLaunchJSON', 'DapRestartFrame', 'DapSetLogLevel', 'DapShowLog',
@@ -409,32 +435,10 @@ require('lazy').setup({
 			-- Debugging purposes
 			'mfussenegger/nvim-dap',
 			-- Tool to install LSPs, DAPs, linters and formatters
-			'williamboman/mason.nvim'
-		}
-	},
-	-- A UI for nvim-dap
-	{ 'rcarriga/nvim-dap-ui',
-		event = 'VeryLazy',
-		config = function()
-			local dap = require('dap')
-			local dapui = require('dapui')
-			dapui.setup()
-
-			dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-			dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-			dap.listeners.before.event_exited['dapui_config'] = dapui.close
-			vim.fn.sign_define('DapBreakpoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-fa-stop
-			vim.fn.sign_define('DapBreakpointCondition',	{ text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-cod-debug_breakpoint_conditional
-			vim.fn.sign_define('DapBreakpointRejected',	{ text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-fa-hand
-			vim.fn.sign_define('DapLogPoint',		{ text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-cod-debug_breakpoint_log
-			vim.fn.sign_define('DapStopped',		{ text = '', texthl = 'DapUIStopped' })	 -- nf-fa-circle_stop
-
-			nmap('<leader>du', dapui.toggle, '[D]ebug toggle [U]I')
-		end,
-		dependencies = {
-			-- Debug Adapter Protocol client implementation
-			'mfussenegger/nvim-dap',
-			-- A library for asynchronous IO
+			'williamboman/mason.nvim',
+			-- A UI for nvim-dap
+			{ 'rcarriga/nvim-dap-ui', config = true },
+			-- A library for asynchronous IO (for nvim-dap-ui)
 			'nvim-neotest/nvim-nio'
 		}
 	},
@@ -536,27 +540,33 @@ require('lazy').setup({
 	-- Allow use of background jobs
 	{ 'tpope/vim-dispatch',
 		keys = {
-			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	desc = 'La[T]eX [P]review document' },
-			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		desc = '[M]ake the default recipe in the current directory (multi-jobs)' },
-			{ '<leader>mM', '<cmd>Make<CR>',			desc = '[M]ake the default recipe in the current directory' },
-			{ '<leader>ms', '<cmd>Start make start<CR>',		desc = '[M]ake the "[s]tart" recipe in the current directory' },
-			{ '<leader>mc', '<cmd>Make clean<CR>',			desc = '[M]ake the "[c]lean" recipe in the current directory' },
-			{ '<leader>mC', '<cmd>Make mrproper<CR>',		desc = '[M]ake the "mrproper" recipe in the current directory' },
-			{ '<leader>md', '<cmd>Start docker compose build<CR>',	desc = 'Build all "[d]ocker" compose tag in the current directory' },
+			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	 desc = 'La[T]eX [P]review document' },
+			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		 desc = '[M]ake the default recipe in the current directory (multi-jobs)' },
+			{ '<leader>mM', '<cmd>Make<CR>',			 desc = '[M]ake the default recipe in the current directory' },
+			{ '<leader>ms', '<cmd>Start -wait=error make start<CR>', desc = '[M]ake the "[s]tart" recipe in the current directory' },
+			{ '<leader>mt', '<cmd>Start -wait=always make test<CR>', desc = '[M]ake the "[t]est" recipe in the current directory' },
+			{ '<leader>mc', '<cmd>Make -wait=error clean<CR>',	 desc = '[M]ake the "[c]lean" recipe in the current directory' },
+			{ '<leader>mC', '<cmd>Make -wait=error mrproper<CR>',	 desc = '[M]ake the "mrproper" recipe in the current directory' },
+			{ '<leader>md', '<cmd>Start docker compose build<CR>',	 desc = 'Build all "[d]ocker" compose tag in the current directory' },
 			-- TUI programs
-			{ '<leader>og', '<cmd>Start lazygit<CR>',		desc = '[O]pen Lazy[G]it' },
-			{ '<leader>od', '<cmd>Start lazydocker<CR>',		desc = '[O]pen Lazy[D]ocker' },
-			{ '<leader>on', '<cmd>Start lazynpm<CR>',		desc = '[O]pen Lazy[N]pm' }
+			{ '<leader>og', '<cmd>Start lazygit<CR>',		 desc = '[O]pen Lazy[G]it' },
+			{ '<leader>od', '<cmd>Start lazydocker<CR>',		 desc = '[O]pen Lazy[D]ocker' },
+			{ '<leader>on', '<cmd>Start lazynpm<CR>',		 desc = '[O]pen Lazy[N]pm' }
 		},
 		cmd = { 'Dispatch', 'Make', 'Focus', 'Start', 'Spawn' }
 	},
 	-- Highlight, edit, and navigate code
 	{ 'nvim-treesitter/nvim-treesitter',
-		event = 'VeryLazy',
+		event = 'BufReadPost',
 		config = function()
 			require('nvim-treesitter.configs').setup({
 				-- Add languages to be installed here that you want installed for treesitter
-				ensure_installed = { 'c', 'cpp', 'cuda', 'lua', 'python', 'haskell', 'javascript', 'typescript' },
+				ensure_installed = {
+					'bash', 'c', 'cpp', 'cuda', 'diff', 'haskell', 'html', 'javascript',
+					'jsdoc', 'json', 'jsonc', 'lua', 'luadoc', 'luap', 'markdown_inline',
+					'python', 'query', 'regex', 'toml', 'tsx', 'typescript', 'vim',
+					'vimdoc', 'xml', 'yaml'
+				},
 				highlight = { enable = true },
 				indent = { enable = false }
 			})
@@ -568,9 +578,20 @@ require('lazy').setup({
 		},
 		build = '<cmd>TSUpdate'
 	},
+	-- Shows the context of the currently visible buffer contents
+	{ 'nvim-treesitter/nvim-treesitter-context',
+		event = 'VeryLazy',
+		opts = { max_lines = 3 },
+		cmd = { 'TSContextEnable', 'TSContextDisable', 'TSContextToggle' },
+		dependencies = {
+			-- Highlight, edit, and navigate code
+			'nvim-treesitter/nvim-treesitter'
+		}
+
+	},
 	-- Colourize multiple inner level to ( [ {
 	{ 'HiPhish/rainbow-delimiters.nvim',
-		event = 'VeryLazy',
+		event = 'BufReadPost',
 		dependencies = {
 			-- Highlight, edit, and navigate code
 			'nvim-treesitter/nvim-treesitter'
@@ -579,15 +600,15 @@ require('lazy').setup({
 	-- Arduino commands
 	{ 'stevearc/vim-arduino',
 		keys = {
-			{ '<leader>aa', '<cmd>ArduinoAttach<CR>',		desc = '[A]rduino [A]ttach' },
-			{ '<leader>av', '<cmd>ArduinoVerify<CR>',		desc = '[A]rduino [V]erify' },
-			{ '<leader>au', '<cmd>ArduinoUpload<CR>',		desc = '[A]rduino [U]pload' },
-			{ '<leader>ad', '<cmd>ArduinoUploadAndSerial<CR>',	desc = '[A]rduino upload an[D] serial' },
-			{ '<leader>ab', '<cmd>ArduinoChooseBoard<CR>',		desc = '[A]rduino choose [B]oard' },
-			{ '<leader>ap', '<cmd>ArduinoChooseProgrammer<CR>',	desc = '[A]rduino choose [P]rogrammer' },
-			{ '<leader>aP', '<cmd>ArduinoChoosePort<CR>',		desc = '[A]rduino choose [P]ort' },
-			{ '<leader>as', '<cmd>ArduinoSerial<CR>',		desc = '[A]rduino [S]erial' },
-			{ '<leader>ai', '<cmd>ArduinoInfo<CR>',			desc = '[A]rduino [I]nfo' }
+			{ '<leader>aa', '<cmd>ArduinoAttach<CR>',	    desc = '[A]rduino [A]ttach' },
+			{ '<leader>av', '<cmd>ArduinoVerify<CR>',	    desc = '[A]rduino [V]erify' },
+			{ '<leader>au', '<cmd>ArduinoUpload<CR>',	    desc = '[A]rduino [U]pload' },
+			{ '<leader>ad', '<cmd>ArduinoUploadAndSerial<CR>',  desc = '[A]rduino upload an[D] serial' },
+			{ '<leader>ab', '<cmd>ArduinoChooseBoard<CR>',	    desc = '[A]rduino choose [B]oard' },
+			{ '<leader>ap', '<cmd>ArduinoChooseProgrammer<CR>', desc = '[A]rduino choose [P]rogrammer' },
+			{ '<leader>aP', '<cmd>ArduinoChoosePort<CR>',	    desc = '[A]rduino choose [P]ort' },
+			{ '<leader>as', '<cmd>ArduinoSerial<CR>',	    desc = '[A]rduino [S]erial' },
+			{ '<leader>ai', '<cmd>ArduinoInfo<CR>',		    desc = '[A]rduino [I]nfo' }
 		},
 		cmd = {
 			'ArduinoAttach', 'ArduinoVerify', 'ArduinoUpload', 'ArduinoUploadAndSerial',
@@ -597,26 +618,28 @@ require('lazy').setup({
 	},
 	-- Show a togglable undotree
 	{ 'mbbill/undotree',
-		cmd = { 'UndotreeFocus', 'UndotreeHide', 'UndotreePersistUndo', 'UndotreeShow', 'UndotreeToggle' },
-		keys = { { '<leader>ut', '<Cmd>UndotreeToggle<CR>', desc = 'Open [U]ndo [T]ree' } }
+		keys = { { '<leader>ut', '<Cmd>UndotreeToggle<CR>', desc = 'Open [U]ndo [T]ree' } },
+		cmd = { 'UndotreeFocus', 'UndotreeHide', 'UndotreePersistUndo', 'UndotreeShow', 'UndotreeToggle' }
 	},
 	-- Display a popup with possible key bindings of the command you started typing
 	{ 'folke/which-key.nvim',
 		event = 'VeryLazy',
-		config = true,
 		init = function()
 			vim.o.timeout = true
 			vim.o.timeoutlen = 200
 		end,
+		opts = { layout = { align = 'center' } },
 		cmd = 'WhichKey'
 	},
 	-- Stylize the bufferline
 	{ 'akinsho/bufferline.nvim',
-		event = 'VeryLazy',
+		event = 'VimEnter',
 		opts = { options = {
 			mode = 'tabs',
 			show_close_icon = false,
-			show_buffer_close_icons = false
+			show_buffer_close_icons = false,
+			diagnostics = 'nvim_lsp',
+			diagnostics_indicator = function(count) return '(' .. count .. ')' end
 		}},
 		cmd = {
 			'BufferLineCloseLeft', 'BufferLineCloseOthers', 'BufferLineCloseRight',
@@ -634,8 +657,8 @@ require('lazy').setup({
 	-- Tool to install LSPs, DAPs, linters and formatters
 	{ 'williamboman/mason.nvim',
 		config = true,
-		cmd = { 'Mason', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll', 'MasonLog' },
-		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = '[M]ason [O]pen' } }
+		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = '[M]ason [O]pen' } },
+		cmd = { 'Mason', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll', 'MasonLog' }
 	},
 	-- Easily update all Mason packages with one command
 	{ 'RubixDev/mason-update-all',
@@ -654,22 +677,39 @@ require('lazy').setup({
 
 			startify.section.header.opts.position = 'center'
 			startify.section.header.val = {
-				'                                                                     ',
-				'       ████ ██████           █████      ██                     ',
-				'      ███████████             █████                             ',
-				'      █████████ ███████████████████ ███   ███████████   ',
-				'     █████████  ███    █████████████ █████ ██████████████   ',
-				'    █████████ ██████████ █████████ █████ █████ ████ █████   ',
-				'  ███████████ ███    ███ █████████ █████ █████ ████ █████  ',
-				' ██████  █████████████████████ ████ █████ █████ ████ ██████ '
+				"                        ...',;;:cccccccc:;,..",
+				"                    ..,;:cccc::::ccccclloooolc;'.",
+				"                 .',;:::;;;;:loodxk0kkxxkxxdocccc;;'..",
+				"               .,;;;,,;:coxldKNWWWMMMMWNNWWNNKkdolcccc:,.",
+				"            .',;;,',;lxo:...dXWMMMMMMMMNkloOXNNNX0koc:coo;.",
+				"         ..,;:;,,,:ldl'   .kWMMMWXXNWMMMMXd..':d0XWWN0d:;lkd,",
+				"       ..,;;,,'':loc.     lKMMMNl. .c0KNWNK:  ..';lx00X0l,cxo,.",
+				"     ..''....'cooc.       c0NMMX;   .l0XWN0;       ,ddx00occl:.",
+				"   ..'..  .':odc.         .x0KKKkolcld000xc.       .cxxxkkdl:,..",
+				" ..''..   ;dxolc;'         .lxx000kkxx00kc.      .;looolllol:'..",
+				"..'..    .':lloolc:,..       'lxkkkkk0kd,   ..':clc:::;,,;:;,'..",
+				"......   ....',;;;:ccc::;;,''',:loddol:,,;:clllolc:;;,'........",
+				"    .     ....'''',,,;;:cccccclllloooollllccc:c:::;,'..",
+				"            .......'',,,,,,,,;;::::ccccc::::;;;,,''...",
+				"              ...............''',,,;;;,,''''''......",
+				"                   ............................"
 			}
+
 			startify.section.top_buttons.val = {
-				startify.button('e', ' New file',		'<cmd>ene<CR>'),	    -- nf-fa-file
-				startify.button('r', ' Restore session',	'<cmd>SessionRestore<CR>'), -- nf-fa-clone
-				startify.button('l', ' Load last session',	'<cmd>SessionLoad<CR>'),    -- nf-fa-history
-				startify.button('s', ' Settings',		'<cmd>EditConfig<CR>'),	    -- nf-fa-cog
-				startify.button('E', ' Espanso config edit',	'<cmd>EspansoEdit<CR>')	    -- nf-fa-keyboard
+				startify.button('e', ' New file',	    '<cmd>ene<CR>'),		      -- nf-fa-file
+				startify.button('r', ' Restore session',   '<cmd>SessionRestore<CR>'),	      -- nf-fa-clone
+				startify.button('l', ' Load last session', '<cmd>SessionLoad<CR>'),	      -- nf-fa-history
+				startify.button('s', ' Settings',	    '<cmd>EditConfig<CR>'),	      -- nf-fa-cog
+				startify.button('E', ' Espanso',	    '<cmd>EspansoEdit<CR>'),	      -- nf-fa-keyboard
+				startify.button('f', '󰍉 Files',		    '<cmd>Telescope find_files<CR>'), -- nf-md-magnify
+				startify.button('g', '󰑑 Find string',	    '<cmd>Telescope live_grep<CR>'),  -- nf-md-regex
+				startify.button('t', '󰑑 Todos',		    '<cmd>TodoTelescope<CR>')	      -- nf-md-regex
 			}
+
+			local tl = vim.o.showtabline
+			Autocmd('User', 'AlphaReady', function() vim.o.showtabline = 0 end, 'Disable tabline after alpha')
+			Autocmd('User', 'AlphaClosed', function() vim.o.showtabline = tl end, 'Enable tabline after alpha')
+			startify.config.opts.noautocmd = false
 
 			require('alpha').setup(startify.config)
 		end,
@@ -684,9 +724,7 @@ require('lazy').setup({
 		event = 'VeryLazy',
 		opts = {
 			show_in_active_only = true,
-			handlers = {
-				gitsigns = true
-			}
+			handlers = { gitsigns = true }
 		},
 		cmd = { 'ScrollbarShow', 'ScrollbarHide', 'ScrollbarToggle' },
 		dependencies = {
@@ -697,47 +735,40 @@ require('lazy').setup({
 	-- Completely replaces the UI for messages, cmdline and the popupmenu
 	{ 'folke/noice.nvim',
 		event = 'VeryLazy',
-		opts = {
-			routes = {
-				{ -- Hide 'wrtiten' messages
-					filter = {
-						event = 'msg_show',
-						kind = '',
-						find = 'written'
-					},
-					opts = { skip = true }
-				},
-				{ -- Hide 'yanked' messages
-					filter = {
-						event = 'msg_show',
-						kind = '',
-						find = 'yanked'
-					},
-					opts = { skip = true }
-				},
-				{ -- Hide 'deleted lines' messages
-					filter = {
-						event = 'msg_show',
-						kind = '',
-						find = 'fewer'
-					},
-					opts = { skip = true }
-				}
-			}
-		},
 		init = function()
 			-- Fix bad lualine
 			vim.o.showmode = false
 		end,
+		opts = {
+			routes = {{
+				filter = {
+					event = 'msg_show',
+					any = {
+						-- Hide written messages
+						{ find = '%d+L, %d+B' },
+						-- Hide undo messages
+						{ find = '; after #%d+' },
+						{ find = '; before #%d+' },
+						{ find = 'Already at newest change' },
+						{ find = 'Already at oldest change' },
+						-- Hide deleted lines messages
+						{ find = '%d fewer lines' },
+						-- Hide yanked messages
+						{ find = '%d lines yanked' }
+					}
+				},
+				opts = { skip = true }
+			}}
+		},
+		keys = {
+			{ '<leader>nd', '<cmd>Noice dismiss<CR>', '[D]ismiss the [n]otifications' },
+			{ '<leader>nl', '<cmd>Noice last<CR>', 'Show the last notification in a popup' }
+		},
 		cmd = {
 			'Noice', 'NoiceConfig', 'NoiceDebug', 'NoiceDisable',
 			'NoiceDismiss', 'NoiceEnable', 'NoiceErrors', 'NoiceHistory',
 			'NoiceLast', 'NoiceLog', 'NoiceRoutes', 'NoiceStats',
 			'NoiceTelescope', 'NoiceViewstats'
-		},
-		keys = {
-			{ '<leader>nd', '<cmd>Noice dismiss<CR>', '[D]ismiss the [n]otifications' },
-			{ '<leader>nl', '<cmd>Noice last<CR>', 'Show the last notification in a popup' }
 		},
 		dependencies = {
 			-- UI Component Library for Neovim
@@ -763,12 +794,9 @@ require('lazy').setup({
 	{ 'jay-babu/mason-null-ls.nvim',
 		event = 'VeryLazy',
 		config = function()
-			local cspell = require('cspell')
 			-- none-ls is a drop-in replacement for null-ls. Therefore it uses a mix of the old and new names
 			local none_ls = require('null-ls')
-			require('mason-null-ls').setup({
-				ensure_installed = { 'autopep8', 'flake8', 'cspell', 'checkmake', 'markdownlint', 'prettier', 'hadolint', 'shellcheck' }
-			})
+			local cspell = require('cspell')
 
 			-- See available configs at : https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md
 			-- And even additional configs at : https://github.com/nvimtools/none-ls-extras.nvim/
@@ -841,8 +869,8 @@ require('lazy').setup({
 				end)
 			})
 		end,
-		cmd = { 'NullLsInstall', 'NoneLsInstall', 'NullLsUninstall', 'NoneLsUninstall', 'NullLsLog', 'NullLsInfo' },
 		keys = { { '<leader>gf', vim.lsp.buf.format, desc = 'Format the document' } },
+		cmd = { 'NullLsInstall', 'NoneLsInstall', 'NullLsUninstall', 'NoneLsUninstall', 'NullLsLog', 'NullLsInfo' },
 		dependencies = {
 			-- Add additional LSP, linters and formatters not provided by williamboman/mason-lspconfig
 			'nvimtools/none-ls.nvim',
@@ -858,7 +886,6 @@ require('lazy').setup({
 	},
 	-- Bring automated annotation
 	{ 'danymat/neogen',
-		event = 'VeryLazy',
 		config = true,
 		keys = {
 			{ '<leader>ng', function() require('neogen').generate() end,			   desc = 'Generate doxygen documentation' },
@@ -873,23 +900,26 @@ require('lazy').setup({
 	},
 	-- Hex editing done right
 	{ 'RaafatTurki/hex.nvim',
-		cmd = { 'HexDump', 'HexAssemble', 'HexToggle' },
-		keys = { { '<leader>x', function() require('hex').toggle() end, 'Toggle between hex view and normal view' } }
+		keys = { { '<leader>x', '<cmd>HexToggle<CR>', 'Toggle between hex view and normal view' } },
+		cmd = { 'HexDump', 'HexAssemble', 'HexToggle' }
 	},
 	-- Better navigation inside tmux
 	{ 'alexghergh/nvim-tmux-navigation',
 		event = 'VimEnter',
 		opts = { disable_when_zoomed = true },
 		keys = {
-			{ '<C-b>h', function() require('nvim-tmux-navigation').NvimTmuxNavigateLeft() end,  desc = 'Navigate to the left tmux pane if existent' },
-			{ '<C-b>j', function() require('nvim-tmux-navigation').NvimTmuxNavigateDown() end,  desc = 'Navigate to the down tmux pane if existent' },
-			{ '<C-b>k', function() require('nvim-tmux-navigation').NvimTmuxNavigateUp() end,    desc = 'Navigate to the up tmux pane if existent' },
-			{ '<C-b>l', function() require('nvim-tmux-navigation').NvimTmuxNavigateRight() end, desc = 'Navigate to the right tmux pane if existent' }
+			{ '<C-b>h', '<cmd>NvimTmuxNavigateLeft<CR>',  desc = 'Navigate to the left tmux pane if existent' },
+			{ '<C-b>j', '<cmd>NvimTmuxNavigateDown<CR>',  desc = 'Navigate to the down tmux pane if existent' },
+			{ '<C-b>k', '<cmd>NvimTmuxNavigateUp<CR>',    desc = 'Navigate to the up tmux pane if existent' },
+			{ '<C-b>l', '<cmd>NvimTmuxNavigateRight<CR>', desc = 'Navigate to the right tmux pane if existent' }
+		},
+		cmd = {
+			'NvimTmuxNavigateUp', 'NvimTmuxNavigateRight', 'NvimTmuxNavigateDown',
+			'NvimTmuxNavigateLeft', 'NvimTmuxNavigateNext', 'NvimTmuxNavigateLastActive'
 		}
 	},
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim',
-		event = 'VeryLazy',
 		opts = {
 			signs = false,
 			highlight = { pattern = '.*<(KEYWORDS)\\s*[: ]' },
@@ -907,15 +937,41 @@ require('lazy').setup({
 	},
 	-- Simple session management for Neovim
 	{ 'folke/persistence.nvim',
-		event = 'BufReadPre',
-		cmd = { 'SessionLoad', 'SessionRestore' },
-		config = true,
 		init = function()
-			local persistence = require('persistence')
-			create_cmd('SessionLoad', persistence.load,					 'Restore the session for the current directory')
-			create_cmd('SessionRestore', function() persistence.load({ last = true }) end,	 'Restore the last session')
-		end
-}
+			create_cmd('SessionLoad', function() require('persistence').load() end,			  'Restore the session for the current directory')
+			create_cmd('SessionRestore', function() require('persistence').load({ last = true }) end, 'Restore the last session')
+		end,
+		config = true,
+		cmd = { 'SessionLoad', 'SessionRestore' }
+	},
+	-- It uses Neovim's virtual text feature and no conceal to add indentation guides to Neovim
+	{ 'lukas-reineke/indent-blankline.nvim',
+		main = 'ibl',
+		event = 'VeryLazy',
+		opts = {
+			indent = { char = '│', tab_char = '│' },
+			exclude = {
+				filetypes = {
+					'alpha', 'help', 'neo-tree',
+					'lazy', 'mason', 'notify'
+				}
+			},
+			scope = {
+				highlight = {
+					'RainbowDelimiterRed', 'RainbowDelimiterYellow',
+					'RainbowDelimiterBlue', 'RainbowDelimiterOrange',
+					'RainbowDelimiterGreen', 'RainbowDelimiterViolet',
+					'RainbowDelimiterCyan',
+				}
+			}
+		},
+		dependencies = {
+			-- Highlight, edit, and navigate code
+			'nvim-treesitter/nvim-treesitter',
+			-- Colourize multiple inner level to ( [ {
+			'HiPhish/rainbow-delimiters.nvim'
+		}
+	}
 })
 local lazy = require('lazy')
 nmap('<leader>lo', lazy.home,	 '[L]azy [O]pen home')
