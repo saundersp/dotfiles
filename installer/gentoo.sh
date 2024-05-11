@@ -209,7 +209,7 @@ emerge -q --noreplace sys-fs/cryptsetup
 rc-update add dmcrypt boot
 
 # Compilation and installation of the kernel
-emerge -q --noreplace sys-kernel/gentoo-sources
+emerge -q --noreplace sys-kernel/gentoo-sources sys-kernel/installkernel
 eselect kernel set 1
 cd /usr/src/linux
 wget https://raw.githubusercontent.com/saundersp/dotfiles/main/installer/${PACKAGES^^}.config -O .config
@@ -261,7 +261,7 @@ EOF
 
 # Installing and setting up doas
 emerge -q --noreplace app-admin/doas
-echo -e 'permit nopass :wheel\npermit nopass :wheel cmd poweroff\npermit nopass :wheel cmd reboot' > /etc/doas.conf
+echo -e 'permit nopass :wheel' > /etc/doas.conf
 
 # Replace sudo
 ln -s /usr/bin/doas /usr/bin/sudo
