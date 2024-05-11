@@ -364,10 +364,24 @@ command -v lazygit >> /dev/null && alias lg='lazygit'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker'
 command -v lazynpm >> /dev/null && alias lpm='lazynpm'
 
-if command -v ranger >> /dev/null; then
-	__cmd_checker__ ranger_cd
-	ranger_cd() {
-		tmp="$(mktemp)"
+if command -v yazi >> /dev/null; then
+	__cmd_checker__ yazi-cd
+	yazi-cd() {
+		tmp="$(mktemp -t 'yazi-cwd.XXXXXX')"
+		yazi "$@" --cwd-file="$tmp"
+		if [ -f "$tmp" ]; then
+			dir="$(cat "$tmp")"
+			rm -f "$tmp" >> /dev/null
+			if [ "$dir" ] && [ "$dir" != "$(pwd)" ]; then
+				cd "$dir" || true
+			fi
+		fi
+	}
+	bind '"\C-o":"\C-wyazi-cd\C-m"'
+elif command -v ranger >> /dev/null; then
+	__cmd_checker__ ranger-cd
+	ranger-cd() {
+		tmp="$(mktemp -t 'ranger-cwd.XXXXXX')"
 		ranger --choosedir="$tmp"
 		if [ -f "$tmp" ]; then
 			dir="$(cat "$tmp")"
@@ -377,7 +391,7 @@ if command -v ranger >> /dev/null; then
 			fi
 		fi
 	}
-	bind '"\C-o":"\C-wranger_cd\C-m"'
+	bind '"\C-o":"\C-wranger-cd\C-m"'
 fi
 
 __cmd_checker__ cb && alias cb='clear && exec bash'
@@ -454,6 +468,7 @@ __helpme__(){
 	tprint_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 	tprint_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
 	tprint_cmd 'lpm' 'Shortcut to lazynpm, a fancy CLI npm interface'
+	tprint_cmd 'yazi-cd' 'Modded yazi to changed pwd on exit' '/ C-o'
 	tprint_cmd 'ranger-cd' 'Modded ranger to changed pwd on exit' '/ C-o'
 	tprint_cmd 'hdmi' 'HDMI connection helper script'
 	print_cmd 'cb' 'Shortcut to clear && exec bash'
