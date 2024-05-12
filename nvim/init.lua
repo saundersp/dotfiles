@@ -334,7 +334,10 @@ require('lazy').setup({
 			{ 'gD',		vim.lsp.buf.declaration,     desc = 'LSP: [G]oto [D]eclaration' },
 			{ '<leader>e',  vim.diagnostic.open_float,   desc = 'LSP: Show diagnostic [E]rror message' },
 
-			{ '<leader>ca', vim.lsp.buf.code_action,     desc = 'LSP: [C]ode [A]ction' },
+			{ '<leader>ca', function()
+				if package.loaded['telescope'] == nil then require('telescope') end
+				return vim.lsp.buf.code_action() end,
+								     desc = 'LSP: [C]ode [A]ction' },
 			{ '[d',		vim.diagnostic.goto_prev,    desc = 'LSP: Jump to previous [D]iagnostics' },
 			{ ']d',		vim.diagnostic.goto_next,    desc = 'LSP: Jump to next [D]iagnostics' },
 			{ '<leader>q',  vim.diagnostic.setloclist,   desc = 'LSP: Open diagnostic [Q]uickfix' }
