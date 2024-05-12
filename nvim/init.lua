@@ -196,7 +196,24 @@ require('lazy').setup({
 	-- Neovim plugin to manage the file system and other tree like structures
 	{ 'nvim-neo-tree/neo-tree.nvim',
 		branch = 'v3.x',
-		opts = { close_if_last_window = true, window = { position = 'current' } },
+		init = function()
+			-- Hijack netrw without loading plugin
+			if vim.fn.argc(-1) == 1 then
+				local stat = vim.loop.fs_stat(vim.fn.argv(0))
+				if stat and stat.type == "directory" then
+					require("neo-tree")
+				end
+			end
+		end,
+		opts = {
+			close_if_last_window = true,
+			window = { position = 'current' },
+			filesystem = {
+				bind_to_cwd = false,
+				follow_current_file = { enabled = true },
+				use_libuv_file_watcher = true
+			}
+		},
 		keys = { { '<C-p>', '<cmd>Neotree toggle reveal<CR>', desc = 'Open [N]eotree file manager' } },
 		cmd = 'Neotree',
 		dependencies = {
