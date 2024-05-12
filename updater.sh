@@ -28,12 +28,22 @@ case "$1" in
 	u|update|-u|--update)
 		cd /usr/src/linux
 		NPROC=$(nproc)
-		make modules_prepare \
-			&& make -j"$NPROC" -l"$NPROC" \
-			&& make modules_install -j"$NPROC" \
-			&& make install && genkernel --luks initramfs \
-			&& grub-mkconfig -o /boot/grub/grub.cfg \
-			&& emerge -v @module-rebuild
+		make modules_prepare
+		if command -v distcc >> /dev/null; then
+			DISTCC_PROC=$(distcc-config --get-hosts | grep -Po '/(\d)' | sed 's./..' | paste -sd + | bc)
+			if ! distcc-config --get-hosts | grep -Pq 'localhost/\d'; then
+				DISTCC_PROC=$((DISTCC_PROC + NPROC))
+			fi
+			make CXX=distcc CC=distcc -j"$DISTCC_PROC" -l"$NPROC" \
+				&& make modules_install -j"$NPROC" \
+				&& make install && genkernel --kernel-cc=distcc --utils-cc=distcc --utils-cxx=distcc --luks initramfs
+		else
+			make -j"$NPROC" -l"$NPROC" \
+				&& make modules_install -j"$NPROC" \
+				&& make install && genkernel --luks initramfs
+		fi
+		grub-mkconfig -o /boot/grub/grub.cfg
+		emerge -v @module-rebuild
 		cd
 	;;
 	p|packages|-p|--packages)
