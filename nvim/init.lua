@@ -158,7 +158,7 @@ require('lazy').setup({
 			{ '<leader>sB', '<cmd>Telescope bibtex<CR>',			    desc = '[S]earch [B]ibtex entries' },
 			{ '<leader>sm', '<cmd>Telescope media_files<CR>',		    desc = '[S]earch [M]edia files' },
 			{ '<leader>ss', '<cmd>Telescope resume<CR>',			    desc = '[S]earch re[S]ume' },
-			{ '<leader>st', '<cmd>TodoTelescope<CR>',			    desc = '[S]earch [T]odo elements' },
+			{ '<leader>st', '<cmd>TodoTelescope keywords=TODO,FIX<CR>',	    desc = '[S]earch [T]odo elements' },
 			{ '<leader>sN', '<cmd>Telescope noice<CR>',			    desc = '[S]earch [N]oice' },
 			{ '<leader>sn', '<cmd>Telescope notify<CR>',			    desc = '[S]earch [N]otifications (powered by notify)' },
 			{ '<leader>dh', '<cmd>Telescope dap commands<CR>',		    desc = 'Search [D]ap [C]ommands' },
