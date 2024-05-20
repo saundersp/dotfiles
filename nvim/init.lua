@@ -26,6 +26,25 @@ local function create_cmd(cmd, fnc, desc, nargs)
 	vim.api.nvim_create_user_command(cmd, fnc, { nargs = nargs or 0, desc = desc })
 end
 
+local function run_cmd(cmd)
+	local handler = io.popen(cmd)
+	if (handler == nil) then
+		print("Couldn't run specified command : " .. cmd)
+		return
+	end
+	local cmd_output = handler:read('*a')
+	handler:close()
+	return cmd_output
+end
+
+local function str_to_list(str)
+	local list = {}
+	for token in string.gmatch(str, "[^%c]+") do
+		table.insert(list, token)
+	end
+	return list
+end
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Plugin enabler
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -388,18 +407,54 @@ require('lazy').setup({
 				end)
 			})
 
+			local function select_exec(directory, callback)
+				local pickers = require('telescope.pickers')
+				local finders = require('telescope.finders')
+				local actions = require('telescope.actions')
+				local actions_state = require('telescope.actions.state')
+
+				local cmd_output = run_cmd('fd . -t x ' .. directory)
+				if (cmd_output == nil) then
+					return false
+				end
+				local list_files = str_to_list(cmd_output)
+
+				pickers.new({
+					prompt_title = 'Executable',
+					finder = finders.new_table(list_files),
+					attach_mappings = function(prompt_bufnr)
+						actions.select_default:replace(function()
+							local selection = actions_state.get_selected_entry()
+							actions.close(prompt_bufnr)
+							callback(selection.value)
+						end)
+						return true
+					end
+				}):find()
+				return true
+			end
+
 			local default_c_config = {
 				name = 'Launch file',
 				type = 'cpptools',
 				request = 'launch',
 				program = function()
-					local cwd = vim.fn.getcwd() .. '/'
-					if vim.fn.isdirectory(cwd .. '/bin') == 1 then
-						cwd = cwd .. 'bin/'
-					elseif vim.fn.isdirectory(cwd .. '/build') == 1 then
-						cwd = cwd .. 'build/'
+					local cwd = './'
+					if vim.fn.isdirectory('./bin') == 1 then
+						cwd = './bin/'
+					elseif vim.fn.isdirectory('./build') == 1 then
+						cwd = './build/'
 					end
-					return vim.fn.input('Path to executable: ', cwd, 'file')
+
+					local co = coroutine.running()
+					local executable = nil
+					select_exec(cwd, function(selection)
+						executable = selection
+						coroutine.resume(co)
+					end)
+
+					coroutine.yield()
+					return executable
 				end,
 				cwd = '${workspaceFolder}'
 			}
@@ -415,9 +470,8 @@ require('lazy').setup({
 						name = 'Launch file',
 						program = '${file}',
 						pythonPath = function()
-							local cwd = vim.fn.getcwd()
-							if vim.fn.isdirectory(cwd .. '/venv') == 1 then
-								return cwd .. '/venv/bin/python'
+							if vim.fn.isdirectory('./venv') == 1 then
+								return './venv/bin/python'
 							else
 								return '/usr/bin/python'
 							end
@@ -427,9 +481,10 @@ require('lazy').setup({
 			}
 
 			local dapui = require('dapui')
-			dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-			dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-			dap.listeners.before.event_exited['dapui_config'] = dapui.close
+			dap.listeners.before.attach.dapui_config = dapui.open
+			dap.listeners.before.launch.dapui_config = dapui.open
+			dap.listeners.before.event_terminated.dapui_config = dapui.close
+			dap.listeners.before.event_exited.dapui_config = dapui.close
 		end,
 		keys = {
 			{ '<leader>db', '<cmd>DapToggleBreakpoint<CR>',		       desc = '[D]ebug toggle [B]reakpoint' },
