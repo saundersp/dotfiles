@@ -141,7 +141,7 @@ case "$1" in
 		# https://github.com/neovim/neovim.git
 		# Dependencies : dev-build/cmake dev-build/ninja app-arch/unzip net-misc/curl sys-devel/gettext sys-devel/gcc
 		__update_cmake__(){
-			make CMAKE_BUILD_TYPE=Release -j $(nproc) -l $(nproc) && make install clean && rm -rf .deps
+			make CMAKE_BUILD_TYPE=Release -j $(nproc) -l $(nproc) && make install clean && rm -rf build .deps
 		}
 		__updatepackages__ 'neovim' '__update_cmake__'
 
