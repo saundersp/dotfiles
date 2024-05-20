@@ -12,9 +12,11 @@ local function map(mode, key, action, desc)
 end
 local function nmap(key, action, desc) map('n', key, action, desc) end
 local function vmap(key, action, desc) map('v', key, action, desc) end
+
 local function Autocmd(events, pattern, callback, desc)
 	vim.api.nvim_create_autocmd(events, { pattern = pattern, callback = callback, desc = desc })
 end
+
 local function reduce(tbl, predicate, initial)
 	local acc = initial or {}
 	for k, v in pairs(tbl) do
@@ -22,6 +24,7 @@ local function reduce(tbl, predicate, initial)
 	end
 	return acc
 end
+
 local function create_cmd(cmd, fnc, desc, nargs)
 	vim.api.nvim_create_user_command(cmd, fnc, { nargs = nargs or 0, desc = desc })
 end
@@ -780,8 +783,6 @@ require('lazy').setup({
 
 			startify.section.top_buttons.val = {
 				startify.button('e', ' New file',	    '<cmd>ene<CR>'),		      -- nf-fa-file
-				startify.button('r', ' Restore session',   '<cmd>SessionRestore<CR>'),	      -- nf-fa-clone
-				startify.button('l', ' Load last session', '<cmd>SessionLoad<CR>'),	      -- nf-fa-history
 				startify.button('s', ' Settings',	    '<cmd>EditConfig<CR>'),	      -- nf-fa-cog
 				startify.button('E', ' Espanso',	    '<cmd>EspansoEdit<CR>'),	      -- nf-fa-keyboard
 				startify.button('f', '󰍉 Files',		    '<cmd>Telescope find_files<CR>'), -- nf-md-magnify
@@ -1017,15 +1018,6 @@ require('lazy').setup({
 			-- Lua library functions
 			'nvim-lua/plenary.nvim'
 		}
-	},
-	-- Simple session management for Neovim
-	{ 'folke/persistence.nvim',
-		init = function()
-			create_cmd('SessionLoad', function() require('persistence').load() end,			  'Restore the session for the current directory')
-			create_cmd('SessionRestore', function() require('persistence').load({ last = true }) end, 'Restore the last session')
-		end,
-		config = true,
-		cmd = { 'SessionLoad', 'SessionRestore' }
 	},
 	-- It uses Neovim's virtual text feature and no conceal to add indentation guides to Neovim
 	{ 'lukas-reineke/indent-blankline.nvim',
