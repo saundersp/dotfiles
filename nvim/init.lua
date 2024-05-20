@@ -146,6 +146,7 @@ require('lazy').setup({
 		end,
 		keys = {
 			{ 'gr',		'<cmd>Telescope lsp_references<CR>',		    desc = 'LSP: [G]oto [R]eferences' },
+			{ '<leader>wd', '<cmd>Telescope lsp_document_symbols<CR>',	    desc = 'LSP: [D]ocument symbols' },
 			{ '<leader>ws', '<cmd>Telescope lsp_dynamic_workspace_symbols<CR>', desc = 'LSP: [W]orkspace [S]ymbols' },
 			{ '<leader>sf', '<cmd>Telescope find_files<CR>',		    desc = '[S]earch [F]iles' },
 			{ '<leader>sF', '<cmd>Telescope git_files<CR>',			    desc = '[S]earch [F]iles' },
@@ -333,7 +334,6 @@ require('lazy').setup({
 			{ 'gK',		vim.lsp.buf.signature_help,  desc = 'LSP: Signature Documentation' },
 			{ 'gD',		vim.lsp.buf.declaration,     desc = 'LSP: [G]oto [D]eclaration' },
 			{ '<leader>e',  vim.diagnostic.open_float,   desc = 'LSP: Show diagnostic [E]rror message' },
-
 			{ '<leader>ca', function()
 				if package.loaded['telescope'] == nil then require('telescope') end
 				return vim.lsp.buf.code_action() end,
@@ -458,6 +458,14 @@ require('lazy').setup({
 			'williamboman/mason.nvim',
 			-- A UI for nvim-dap
 			{ 'rcarriga/nvim-dap-ui', config = true },
+			-- Adds virtual text support to nvim-dap. nvim-treesitter is used to find variable definitions
+			{ 'theHamsta/nvim-dap-virtual-text',
+				config = true,
+				cmd = {
+					'DapVirtualTextDisable', 'DapVirtualTextEnable',
+					'DapVirtualTextForceRefresh', 'DapVirtualTextToggle'
+				}
+			},
 			-- A library for asynchronous IO (for nvim-dap-ui)
 			'nvim-neotest/nvim-nio'
 		}
@@ -1004,12 +1012,11 @@ nmap('<leader>lp', lazy.profile, '[L]azy [P]rofile')
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 vim.o.mouse					= 'a'										-- Enable mouse mode (selection, scrolling etc.)
 vim.o.termguicolors				= true										-- Enable 24-bit RGB colours in the terminal
-vim.bo.syntax					= true										-- Enables syntax highlighting
 vim.o.listchars					= 'eol:󰌑,tab:󰌒 ,trail:•,extends:,precedes:,space:·,nbsp:󱁐'			-- List of whitespace characters replacement (see :h listchars) (using: nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
 vim.wo.list					= true										-- Enable replacement of listchars
 vim.wo.wrap					= false										-- Display long lines as just one line
 vim.bo.fileencoding				= 'UTF-8'									-- The encoding written to file
-vim.bo.iskeyword				= vim.o.iskeyword .. ',-'							-- treat dash separated words as a word text object
+vim.bo.iskeyword				= vim.bo.iskeyword .. ',-'							-- treat dash separated words as a word text object
 vim.bo.tabstop					= 8										-- Set the width of a tab
 vim.bo.shiftwidth				= 8										-- Change the number of space characters inserted for indentation
 vim.bo.softtabstop				= 8										-- Change the number of space characters inserted for indentation
