@@ -286,10 +286,17 @@ require('lazy').setup({
 	{ 'neovim/nvim-lspconfig',
 		event = { 'BufReadPost', 'BufNewFile' },
 		init = function()
-			vim.fn.sign_define('DiagnosticSignError', { text = '', texthl = 'DiagnosticSignError' }) -- nf-cod-error
-			vim.fn.sign_define('DiagnosticSignWarn',  { text = '', texthl = 'DiagnosticSignWarn'  }) -- nf-cod-warning
-			vim.fn.sign_define('DiagnosticSignInfo',  { text = '', texthl = 'DiagnosticSignInfo'  }) -- nf-cod-info
-			vim.fn.sign_define('DiagnosticSignHint',  { text = '', texthl = 'DiagnosticSignHint'  }) -- nf-oct-light_bulb
+			vim.diagnostic.config({
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = '', -- nf-cod-error
+						[vim.diagnostic.severity.WARN] =  '', -- nf-cod-warning
+						[vim.diagnostic.severity.INFO] =  '', -- nf-cod-info
+						[vim.diagnostic.severity.HINT] =  ''  -- nf-oct-light_bulb
+					}
+				},
+				virtual_text = true
+			})
 		end,
 		config = function()
 			local lspconfig = require('lspconfig')
