@@ -415,8 +415,9 @@ require('lazy').setup({
 				local finders = require('telescope.finders')
 				local actions = require('telescope.actions')
 				local actions_state = require('telescope.actions.state')
+				local sorter = require('telescope.config').values.generic_sorter
 
-				local cmd_output = run_cmd('fd . -t x ' .. directory)
+				local cmd_output = run_cmd('fd . --color never -t x ' .. directory)
 				if (cmd_output == nil) then
 					return false
 				end
@@ -425,6 +426,7 @@ require('lazy').setup({
 				pickers.new({
 					prompt_title = 'Executable',
 					finder = finders.new_table(list_files),
+					sorter = sorter(),
 					attach_mappings = function(prompt_bufnr)
 						actions.select_default:replace(function()
 							local selection = actions_state.get_selected_entry()
