@@ -63,15 +63,11 @@ vim.g.maplocalleader = ' '
 
 require('lazy').setup({
 	-- Install the vscode's codedark theme
-	{ 'tomasiser/vim-code-dark',
+	{ 'ShermanDevers/codedark.nvim',
 		priority = 1000,
 		init = function()
-			vim.cmd.colorscheme('codedark')
-
-			-- Fix the git colours palette
-			vim.api.nvim_set_hl(0, 'GitSignsAdd',	 { ctermfg = 10, fg = '#009900' })
-			vim.api.nvim_set_hl(0, 'GitSignsChange', { ctermfg = 14, fg = '#bbbb00' })
-			vim.api.nvim_set_hl(0, 'GitSignsDelete', { ctermfg = 12, fg = '#ff2222' })
+			require('vscode').load()
+			vim.g.colors_name = 'codedark' -- Fix lualine theme deduction
 		end
 	},
 	-- Add a fancy bottom bar with details
@@ -93,7 +89,11 @@ require('lazy').setup({
 					{
 						function() return require('noice').api.status.mode.get() end,
 						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
-						color = { fg = '#ce9178' }
+						color = { fg = '#ce9178', gui = 'bold' }
+					},
+					{
+						'selectioncount',
+						color = { fg = '#787878', gui = 'bold' }
 					}
 				}
 			}
