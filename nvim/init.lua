@@ -1,6 +1,12 @@
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Global shortcuts/helper
+-- Global helper functions
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--- Create a keybinding
+---@see vim.keymap.set
+---@param mode string|string[] mode when the keybind is detected
+---@param key string|string[] key or key aliases to bind
+---@param action function|string callback of the keybind
+---@param desc string Description of the keybind
 local function map(mode, key, action, desc)
 	if type(key) == 'table' then
 		for _, e in ipairs(key) do
@@ -10,36 +16,73 @@ local function map(mode, key, action, desc)
 		vim.keymap.set(mode, key, action, { silent = true, desc = desc })
 	end
 end
+--- Create a keybinding in normal mode
+---@see vim.keymap.set
+---@see map
+---@param key string|string[] key or key aliases to bind
+---@param action function|string callback of the keybind
+---@param desc string Description of the keybind
 local function nmap(key, action, desc) map('n', key, action, desc) end
+--- Create a keybinding in visual mode
+---@see vim.keymap.set
+---@see map
+---@param key string|string[] key or key aliases to bind
+---@param action function|string callback of the keybind
+---@param desc string Description of the keybind
 local function vmap(key, action, desc) map('v', key, action, desc) end
 
+--- Create an automatic callback when a Neovim event occur
+---@see vim.api.nvim_create_autocmd
+---@param events string|string[] EventType
+---@param pattern string|string[] pattern of the event type
+---@param callback function|string callback to execute when the pattern is recognized
+---@param desc string Description of the callback
 local function Autocmd(events, pattern, callback, desc)
 	vim.api.nvim_create_autocmd(events, { pattern = pattern, callback = callback, desc = desc })
 end
 
+--- Generalized transformation of a given table
+---@param tbl table table desconstructable in pairs to transform
+---@param predicate function(acc: any, key: string, value: any): nil callback that transform the current element in the array
+---@param initial any|nil Initial value of the reduced result
+---@return any result transformed result
+---@nodiscard
 local function reduce(tbl, predicate, initial)
 	local acc = initial or {}
-	for k, v in pairs(tbl) do
-		predicate(acc, k, v)
+	for key, value in pairs(tbl) do
+		predicate(acc, key, value)
 	end
 	return acc
 end
 
+--- Create a user command usable in command mode
+---@see vim.api.nvim_create_user_command
+---@param cmd string Name of the command
+---@param fnc function|string Function to callback
+---@param desc string Description of the command
+---@param nargs number|nil Number of arguments needed (default = 0)
 local function create_cmd(cmd, fnc, desc, nargs)
 	vim.api.nvim_create_user_command(cmd, fnc, { nargs = nargs or 0, desc = desc })
 end
 
+--- Execute a given command on the system's shell
+---@param cmd string Command to run
+---@return string stdout of the command
 local function run_cmd(cmd)
 	local handler = io.popen(cmd)
 	if (handler == nil) then
 		print("Couldn't run specified command : " .. cmd)
-		return
+		return ''
 	end
 	local cmd_output = handler:read('*a')
 	handler:close()
 	return cmd_output
 end
 
+--- Split a given string to a list
+---@param str string String to split
+---@return string[] list splitted string
+---@nodiscard
 local function str_to_list(str)
 	local list = {}
 	for token in string.gmatch(str, "[^%c]+") do
@@ -112,16 +155,16 @@ require('lazy').setup({
 			local gs = require('gitsigns')
 			gs.setup({})
 			require('scrollbar.handlers.gitsigns').setup({})
-			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next Hunk (or [C]hange)')
-			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous Hunk (or [C]hange)')
+			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next Hunk (or change)')
+			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous Hunk (or change)')
 		end,
 		keys = {
-			{ '<leader>hp', '<cmd>Gitsigns preview_hunk<CR>',		     desc = '[H]unk [P]review' },
-			{ '<leader>hR', '<cmd>Gitsigns reset_hunk<CR>', mode = { 'n', 'v' }, desc = '[H]unk [R]eset' },
-			{ '<leader>hs', '<cmd>Gitsigns stage_hunk<CR>', mode = { 'n', 'v' }, desc = '[H]unk [S]tage' },
-			{ '<leader>hu', '<cmd>Gitsigns undo_stage_hunk<CR>',		     desc = '[H]unk [U]ndo' },
-			{ '<leader>hd', '<cmd>Gitsigns diffthis<CR>',			     desc = '[H]unk [D]iff this' },
-			{ '<leader>hb', '<cmd>Gitsigns toggle_current_line_blame<CR>',	     desc = '[H]unk toggle line [B]lame' }
+			{ '<leader>hp', '<cmd>Gitsigns preview_hunk<CR>',		     desc = 'Hunk preview' },
+			{ '<leader>hR', '<cmd>Gitsigns reset_hunk<CR>', mode = { 'n', 'v' }, desc = 'Hunk reset' },
+			{ '<leader>hs', '<cmd>Gitsigns stage_hunk<CR>', mode = { 'n', 'v' }, desc = 'Hunk stage' },
+			{ '<leader>hu', '<cmd>Gitsigns undo_stage_hunk<CR>',		     desc = 'Hunk undo' },
+			{ '<leader>hd', '<cmd>Gitsigns diffthis<CR>',			     desc = 'Hunk diff this' },
+			{ '<leader>hb', '<cmd>Gitsigns toggle_current_line_blame<CR>',	     desc = 'Hunk toggle line blame' }
 		},
 		cmd = 'Gitsigns',
 		dependencies = {
@@ -136,11 +179,11 @@ require('lazy').setup({
 		event = 'BufReadPost',
 		opts = { highlighter = { auto_enable = true } },
 		keys = {
-			{ '<leader>cp', '<cmd>CccPick<CR>',		  desc = 'open [C]olour [P]icker' },
-			{ '<leader>cc', '<cmd>CccConvert<CR>',		  desc = '[C]olour [C]onvert' },
-			{ '<leader>ct', '<cmd>CccHighlighterToggle<CR>',  desc = '[C]olour highlight [T]oggle' },
-			{ '<leader>ce', '<cmd>CccHighlighterEnable<CR>',  desc = '[C]olour highlight [E]nable' },
-			{ '<leader>cd', '<cmd>CccHighlighterDisable<CR>', desc = '[C]olour highlight [D]isable' }
+			{ '<leader>cp', '<cmd>CccPick<CR>',		  desc = 'open Colour Picker' },
+			{ '<leader>cc', '<cmd>CccConvert<CR>',		  desc = 'Colour Convert' },
+			{ '<leader>ct', '<cmd>CccHighlighterToggle<CR>',  desc = 'Colour highlight Toggle' },
+			{ '<leader>ce', '<cmd>CccHighlighterEnable<CR>',  desc = 'Colour highlight Enable' },
+			{ '<leader>cd', '<cmd>CccHighlighterDisable<CR>', desc = 'Colour highlight Disable' }
 		},
 		cmd = { 'CccPick', 'CccConvert', 'CccHighlighterEnable', 'CccHighlighterDisable', 'CccHighlighterToggle' }
 	},
@@ -152,41 +195,35 @@ require('lazy').setup({
 			local telescope = require('telescope')
 			local actions = require('telescope.actions')
 			telescope.setup({
-				defaults = {
-					mappings = {
-						i = {
-							['<c-d>'] = actions.delete_buffer
-						}
-					}
-				},
+				defaults = { mappings = { i = { ['<c-d>'] = actions.delete_buffer } } },
 				extensions = {
 					['ui-select'] = { require('telescope.themes').get_dropdown({}) },
-					media_files = { filetypes = {'png', 'svg', 'webp', 'jpg', 'jpeg'} }
+					media_files = { filetypes = { 'png', 'svg', 'webp', 'jpg', 'jpeg' } }
 				}
 			})
 			vim.tbl_map(telescope.load_extension, { 'ui-select', 'noice', 'dap', 'media_files', 'bibtex' })
 		end,
 		keys = {
-			{ 'gr',		'<cmd>Telescope lsp_references<CR>',		    desc = 'LSP: [G]oto [R]eferences' },
-			{ '<leader>wd', '<cmd>Telescope lsp_document_symbols<CR>',	    desc = 'LSP: [D]ocument symbols' },
-			{ '<leader>ws', '<cmd>Telescope lsp_dynamic_workspace_symbols<CR>', desc = 'LSP: [W]orkspace [S]ymbols' },
-			{ '<leader>sf', '<cmd>Telescope find_files<CR>',		    desc = '[S]earch [F]iles' },
-			{ '<leader>sF', '<cmd>Telescope git_files<CR>',			    desc = '[S]earch [F]iles' },
-			{ '<leader>sh', '<cmd>Telescope help_tags<CR>',			    desc = '[S]earch [H]elp' },
-			{ '<leader>sg', '<cmd>Telescope live_grep<CR>',			    desc = '[S]earch by [G]rep' },
-			{ '<leader>sd', '<cmd>Telescope diagnostics<CR>',		    desc = '[S]earch [D]iagnostics' },
-			{ '<leader>sk', '<cmd>Telescope keymaps<CR>',			    desc = '[S]earch [K]eymaps' },
-			{ '<leader>sc', '<cmd>Telescope commands<CR>',			    desc = '[S]earch [c]ommands' },
-			{ '<leader>sb', '<cmd>Telescope buffers<CR>',			    desc = '[S]earch [B]uffers' },
-			{ '<leader>sB', '<cmd>Telescope bibtex<CR>',			    desc = '[S]earch [B]ibtex entries' },
-			{ '<leader>sm', '<cmd>Telescope media_files<CR>',		    desc = '[S]earch [M]edia files' },
-			{ '<leader>ss', '<cmd>Telescope resume<CR>',			    desc = '[S]earch re[S]ume' },
-			{ '<leader>st', '<cmd>TodoTelescope keywords=TODO,FIX<CR>',	    desc = '[S]earch [T]odo elements' },
-			{ '<leader>sN', '<cmd>Telescope noice<CR>',			    desc = '[S]earch [N]oice' },
-			{ '<leader>sn', '<cmd>Telescope notify<CR>',			    desc = '[S]earch [N]otifications (powered by notify)' },
-			{ '<leader>dh', '<cmd>Telescope dap commands<CR>',		    desc = 'Search [D]ap [C]ommands' },
-			{ '<leader>dv', '<cmd>Telescope dap variables<CR>',		    desc = 'Search [D]ap [V]ariables' },
-			{ '<leader>dB', '<cmd>Telescope dap list_breakpoints<CR>',	    desc = 'Search [D]ap list of [B]reakpoints' }
+			{ 'gr',		'<cmd>Telescope lsp_references<CR>',		    desc = 'LSP: Goto references' },
+			{ '<leader>wd', '<cmd>Telescope lsp_document_symbols<CR>',	    desc = 'LSP: Document symbols' },
+			{ '<leader>ws', '<cmd>Telescope lsp_dynamic_workspace_symbols<CR>', desc = 'LSP: Workspace symbols' },
+			{ '<leader>sf', '<cmd>Telescope find_files<CR>',		    desc = 'Search files' },
+			{ '<leader>sF', '<cmd>Telescope git_files<CR>',			    desc = 'Search git files' },
+			{ '<leader>sh', '<cmd>Telescope help_tags<CR>',			    desc = 'Search help' },
+			{ '<leader>sg', '<cmd>Telescope live_grep<CR>',			    desc = 'Search by grep' },
+			{ '<leader>sd', '<cmd>Telescope diagnostics<CR>',		    desc = 'Search diagnostics' },
+			{ '<leader>sk', '<cmd>Telescope keymaps<CR>',			    desc = 'Search keymaps' },
+			{ '<leader>sc', '<cmd>Telescope commands<CR>',			    desc = 'Search commands' },
+			{ '<leader>sb', '<cmd>Telescope buffers<CR>',			    desc = 'Search buffers' },
+			{ '<leader>sB', '<cmd>Telescope bibtex<CR>',			    desc = 'Search bibtex entries' },
+			{ '<leader>sm', '<cmd>Telescope media_files<CR>',		    desc = 'Search media files' },
+			{ '<leader>ss', '<cmd>Telescope resume<CR>',			    desc = 'Search resume' },
+			{ '<leader>st', '<cmd>TodoTelescope keywords=TODO,FIX<CR>',	    desc = 'Search todos' },
+			{ '<leader>sN', '<cmd>Telescope noice<CR>',			    desc = 'Search Noice messages' },
+			{ '<leader>sn', '<cmd>Telescope notify<CR>',			    desc = 'Search notifications (powered by notify)' },
+			{ '<leader>dh', '<cmd>Telescope dap commands<CR>',		    desc = 'Dap search commands' },
+			{ '<leader>dv', '<cmd>Telescope dap variables<CR>',		    desc = 'Dap search variables' },
+			{ '<leader>dB', '<cmd>Telescope dap list_breakpoints<CR>',	    desc = 'Dap search breakpoints' }
 		},
 		cmd = 'Telescope',
 		dependencies = {
@@ -223,8 +260,8 @@ require('lazy').setup({
 			-- Hijack netrw without loading plugin
 			if vim.fn.argc(-1) == 1 then
 				local stat = vim.loop.fs_stat(vim.fn.argv(0))
-				if stat and stat.type == "directory" then
-					require("neo-tree")
+				if stat and stat.type == 'directory' then
+					require('neo-tree')
 				end
 			end
 		end,
@@ -237,7 +274,7 @@ require('lazy').setup({
 				use_libuv_file_watcher = true
 			}
 		},
-		keys = { { '<C-p>', '<cmd>Neotree toggle reveal<CR>', desc = 'Open [N]eotree file manager' } },
+		keys = { { '<C-p>', '<cmd>Neotree toggle reveal<CR>', desc = 'Open Neotree file manager' } },
 		cmd = 'Neotree',
 		dependencies = {
 			-- Lua library functions
@@ -355,21 +392,21 @@ require('lazy').setup({
 			end
 		end,
 		keys = {
-			{ '<leader>rn', vim.lsp.buf.rename,	     desc = 'LSP: [R]e[n]ame' },
-			{ 'gd',		vim.lsp.buf.definition,	     desc = 'LSP: [G]oto [D]efinition' },
-			{ 'gI',		vim.lsp.buf.implementation,  desc = 'LSP: [G]oto [I]mplementation' },
-			{ '<leader>D',  vim.lsp.buf.type_definition, desc = 'LSP: Type [D]efinition' },
-			{ 'K',		vim.lsp.buf.hover,	     desc = 'LSP: Hover Documentation' },
-			{ 'gK',		vim.lsp.buf.signature_help,  desc = 'LSP: Signature Documentation' },
-			{ 'gD',		vim.lsp.buf.declaration,     desc = 'LSP: [G]oto [D]eclaration' },
-			{ '<leader>e',  vim.diagnostic.open_float,   desc = 'LSP: Show diagnostic [E]rror message' },
+			{ '<leader>rn', vim.lsp.buf.rename,	     desc = 'LSP: Rename' },
+			{ 'gd',		vim.lsp.buf.definition,	     desc = 'LSP: Goto definition' },
+			{ 'gI',		vim.lsp.buf.implementation,  desc = 'LSP: Goto implementation' },
+			{ '<leader>D',  vim.lsp.buf.type_definition, desc = 'LSP: Type definition' },
+			{ 'K',		vim.lsp.buf.hover,	     desc = 'LSP: Hover documentation' },
+			{ 'gK',		vim.lsp.buf.signature_help,  desc = 'LSP: Signature documentation' },
+			{ 'gD',		vim.lsp.buf.declaration,     desc = 'LSP: Goto declaration' },
+			{ '<leader>e',  vim.diagnostic.open_float,   desc = 'LSP: Show diagnostic error message' },
 			{ '<leader>ca', function()
 				if package.loaded['telescope'] == nil then require('telescope') end
 				return vim.lsp.buf.code_action() end,
-								     desc = 'LSP: [C]ode [A]ction' },
-			{ '[d',		vim.diagnostic.goto_prev,    desc = 'LSP: Jump to previous [D]iagnostics' },
-			{ ']d',		vim.diagnostic.goto_next,    desc = 'LSP: Jump to next [D]iagnostics' },
-			{ '<leader>q',  vim.diagnostic.setloclist,   desc = 'LSP: Open diagnostic [Q]uickfix' }
+								     desc = 'LSP: Code action' },
+			{ '[d',		vim.diagnostic.goto_prev,    desc = 'LSP: Jump to previous diagnostics' },
+			{ ']d',		vim.diagnostic.goto_next,    desc = 'LSP: Jump to next diagnostics' },
+			{ '<leader>q',  vim.diagnostic.setloclist,   desc = 'LSP: Open diagnostic quickfix' }
 		},
 		cmd = { 'LspInfo', 'LspInstall', 'LspLog', 'LspRestart', 'LspStart', 'LspStop', 'LspUninstall' },
 		dependencies = {
@@ -378,7 +415,7 @@ require('lazy').setup({
 			-- Useful status updates for LSP
 			{ 'j-hui/fidget.nvim', opts = { progress = { ignore = { 'null-ls' } } } },
 			-- Additional lua configurations, make nvim stuff amazing
-			{ 'folke/neodev.nvim', opts = { library = { plugins = { 'nvim-dap-ui'}, types = true } } },
+			{ 'folke/neodev.nvim', opts = { library = { plugins = { 'nvim-dap-ui' }, types = true } } },
 			-- Auto completion functionalities
 			'hrsh7th/cmp-nvim-lsp'
 		}
@@ -499,19 +536,19 @@ require('lazy').setup({
 			dap.listeners.before.event_exited.dapui_config = dapui.close
 		end,
 		keys = {
-			{ '<leader>db', '<cmd>DapToggleBreakpoint<CR>',		       desc = '[D]ebug toggle [B]reakpoint' },
-			{ '<leader>dc', '<cmd>DapContinue<CR>',			       desc = '[D]ebug [C]ontinue' },
-			{ '<leader>dC', function() require('dap').run_to_cursor() end, desc = '[D]ebug run to [C]ursor' },
-			{ '<leader>do', '<cmd>DapStepOver<CR>',			       desc = '[D]ebug Step [O]ver' },
-			{ '<leader>di', '<cmd>DapStepInto<CR>',			       desc = '[D]ebug Step [I]nto' },
-			{ '<leader>dO', '<cmd>DapStepOut<CR>',			       desc = '[D]ebug Step [O]ut' },
-			{ '<leader>dt', '<cmd>DapTerminate<CR>',		       desc = '[D]ebug [T]erminate' },
-			{ '<leader>ds', function() require('dap').up() end,	       desc = '[D]ebug up in the [S]tacktrace' },
-			{ '<leader>dS', function() require('dap').down() end,	       desc = '[D]ebug down in the [S]tacktrace' },
-			{ '<leader>dp', function() require('dap').pause() end,	       desc = '[D]ebug [P]ause' },
-			{ '<leader>dr', function() require('dap').restart() end,       desc = '[D]ebug [R]estart' },
+			{ '<leader>db', '<cmd>DapToggleBreakpoint<CR>',		       desc = 'Debug toggle Breakpoint' },
+			{ '<leader>dc', '<cmd>DapContinue<CR>',			       desc = 'Debug Continue' },
+			{ '<leader>dC', function() require('dap').run_to_cursor() end, desc = 'Debug run to Cursor' },
+			{ '<leader>do', '<cmd>DapStepOver<CR>',			       desc = 'Debug Step Over' },
+			{ '<leader>di', '<cmd>DapStepInto<CR>',			       desc = 'Debug Step Into' },
+			{ '<leader>dO', '<cmd>DapStepOut<CR>',			       desc = 'Debug Step Out' },
+			{ '<leader>dt', '<cmd>DapTerminate<CR>',		       desc = 'Debug Terminate' },
+			{ '<leader>ds', function() require('dap').up() end,	       desc = 'Debug up in the Stacktrace' },
+			{ '<leader>dS', function() require('dap').down() end,	       desc = 'Debug down in the Stacktrace' },
+			{ '<leader>dp', function() require('dap').pause() end,	       desc = 'Debug Pause' },
+			{ '<leader>dr', function() require('dap').restart() end,       desc = 'Debug Restart' },
 			-- dapui
-			{ '<leader>du', function() require('dapui').toggle() end,      desc = '[D]ebug toggle [U]I' }
+			{ '<leader>du', function() require('dapui').toggle() end,      desc = 'Debug toggle UI' }
 		},
 		cmd = {
 			'DapInstall', 'DapUninstall',
@@ -635,18 +672,18 @@ require('lazy').setup({
 	-- Allow use of background jobs
 	{ 'tpope/vim-dispatch',
 		keys = {
-			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	 desc = 'La[T]eX [P]review document' },
-			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		 desc = '[M]ake the default recipe in the current directory (multi-jobs)' },
-			{ '<leader>mM', '<cmd>Make<CR>',			 desc = '[M]ake the default recipe in the current directory' },
-			{ '<leader>ms', '<cmd>Start -wait=error make start<CR>', desc = '[M]ake the "[s]tart" recipe in the current directory' },
-			{ '<leader>mt', '<cmd>Start -wait=always make test<CR>', desc = '[M]ake the "[t]est" recipe in the current directory' },
-			{ '<leader>mc', '<cmd>Make -wait=error clean<CR>',	 desc = '[M]ake the "[c]lean" recipe in the current directory' },
-			{ '<leader>mC', '<cmd>Make -wait=error mrproper<CR>',	 desc = '[M]ake the "mrproper" recipe in the current directory' },
-			{ '<leader>md', '<cmd>Start docker compose build<CR>',	 desc = 'Build all "[d]ocker" compose tag in the current directory' },
+			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	 desc = 'Preview LaTeX document' },
+			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		 desc = 'Make the default recipe in cwd (multi-jobs)' },
+			{ '<leader>mM', '<cmd>Make<CR>',			 desc = 'Make the default recipe in cwd' },
+			{ '<leader>ms', '<cmd>Start -wait=error make start<CR>', desc = 'Make the "start" recipe in cwd' },
+			{ '<leader>mt', '<cmd>Start -wait=always make test<CR>', desc = 'Make the "test" recipe in cwd' },
+			{ '<leader>mc', '<cmd>Make -wait=error clean<CR>',	 desc = 'Make the "clean" recipe in cwd' },
+			{ '<leader>mC', '<cmd>Make -wait=error mrproper<CR>',	 desc = 'Make the "mrproper" recipe in cwd' },
+			{ '<leader>md', '<cmd>Start docker compose build<CR>',	 desc = 'Build all "docker" compose tag in cwd' },
 			-- TUI programs
-			{ '<leader>og', '<cmd>Start lazygit<CR>',		 desc = '[O]pen Lazy[G]it' },
-			{ '<leader>od', '<cmd>Start lazydocker<CR>',		 desc = '[O]pen Lazy[D]ocker' },
-			{ '<leader>on', '<cmd>Start lazynpm<CR>',		 desc = '[O]pen Lazy[N]pm' }
+			{ '<leader>og', '<cmd>Start lazygit<CR>',		 desc = 'Open Lazygit' },
+			{ '<leader>od', '<cmd>Start lazydocker<CR>',		 desc = 'Open Lazydocker' },
+			{ '<leader>on', '<cmd>Start lazynpm<CR>',		 desc = 'Open Lazynpm' }
 		},
 		cmd = { 'Dispatch', 'Make', 'Focus', 'Start', 'Spawn' }
 	},
@@ -695,15 +732,15 @@ require('lazy').setup({
 	-- Arduino commands
 	{ 'stevearc/vim-arduino',
 		keys = {
-			{ '<leader>aa', '<cmd>ArduinoAttach<CR>',	    desc = '[A]rduino [A]ttach' },
-			{ '<leader>av', '<cmd>ArduinoVerify<CR>',	    desc = '[A]rduino [V]erify' },
-			{ '<leader>au', '<cmd>ArduinoUpload<CR>',	    desc = '[A]rduino [U]pload' },
-			{ '<leader>ad', '<cmd>ArduinoUploadAndSerial<CR>',  desc = '[A]rduino upload an[D] serial' },
-			{ '<leader>ab', '<cmd>ArduinoChooseBoard<CR>',	    desc = '[A]rduino choose [B]oard' },
-			{ '<leader>ap', '<cmd>ArduinoChooseProgrammer<CR>', desc = '[A]rduino choose [P]rogrammer' },
-			{ '<leader>aP', '<cmd>ArduinoChoosePort<CR>',	    desc = '[A]rduino choose [P]ort' },
-			{ '<leader>as', '<cmd>ArduinoSerial<CR>',	    desc = '[A]rduino [S]erial' },
-			{ '<leader>ai', '<cmd>ArduinoInfo<CR>',		    desc = '[A]rduino [I]nfo' }
+			{ '<leader>aa', '<cmd>ArduinoAttach<CR>',	    desc = 'Arduino: Attach board' },
+			{ '<leader>av', '<cmd>ArduinoVerify<CR>',	    desc = 'Arduino: Verify sketch' },
+			{ '<leader>au', '<cmd>ArduinoUpload<CR>',	    desc = 'Arduino: Upload sketch' },
+			{ '<leader>ad', '<cmd>ArduinoUploadAndSerial<CR>',  desc = 'Arduino: Upload and serial' },
+			{ '<leader>ab', '<cmd>ArduinoChooseBoard<CR>',	    desc = 'Arduino: Choose board' },
+			{ '<leader>ap', '<cmd>ArduinoChooseProgrammer<CR>', desc = 'Arduino: Choose programmer' },
+			{ '<leader>aP', '<cmd>ArduinoChoosePort<CR>',	    desc = 'Arduino: Choose port' },
+			{ '<leader>as', '<cmd>ArduinoSerial<CR>',	    desc = 'Arduino: Serial' },
+			{ '<leader>ai', '<cmd>ArduinoInfo<CR>',		    desc = 'Arduino: Info' }
 		},
 		cmd = {
 			'ArduinoAttach', 'ArduinoVerify', 'ArduinoUpload', 'ArduinoUploadAndSerial',
@@ -713,7 +750,7 @@ require('lazy').setup({
 	},
 	-- Show a togglable undotree
 	{ 'mbbill/undotree',
-		keys = { { '<leader>ut', '<Cmd>UndotreeToggle<CR>', desc = 'Open [U]ndo [T]ree' } },
+		keys = { { '<leader>ut', '<Cmd>UndotreeToggle<CR>', desc = 'Open Undo tree' } },
 		cmd = { 'UndotreeFocus', 'UndotreeHide', 'UndotreePersistUndo', 'UndotreeShow', 'UndotreeToggle' }
 	},
 	-- Display a popup with possible key bindings of the command you started typing
@@ -752,7 +789,7 @@ require('lazy').setup({
 	-- Tool to install LSPs, DAPs, linters and formatters
 	{ 'williamboman/mason.nvim',
 		config = true,
-		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = '[M]ason [O]pen' } },
+		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = 'Open Mason manager' } },
 		cmd = { 'Mason', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll', 'MasonLog' }
 	},
 	-- Easily update all Mason packages with one command
@@ -854,8 +891,8 @@ require('lazy').setup({
 			}}
 		},
 		keys = {
-			{ '<leader>nd', '<cmd>Noice dismiss<CR>', '[D]ismiss the [n]otifications' },
-			{ '<leader>nl', '<cmd>Noice last<CR>', 'Show the last notification in a popup' }
+			{ '<leader>nd', '<cmd>Noice dismiss<CR>', 'Dismiss the notifications' },
+			{ '<leader>nl', '<cmd>Noice last<CR>',	  'Show the last notification in a popup' }
 		},
 		cmd = {
 			'Noice', 'NoiceConfig', 'NoiceDebug', 'NoiceDisable',
@@ -1058,10 +1095,8 @@ require('lazy').setup({
 	}
 })
 local lazy = require('lazy')
-nmap('<leader>lo', lazy.home,	 '[L]azy [O]pen home')
-nmap('<leader>lu', lazy.update,	 '[L]azy [U]pdate')
-nmap('<leader>ls', lazy.sync,	 '[L]azy [S]ync')
-nmap('<leader>lp', lazy.profile, '[L]azy [P]rofile')
+nmap('<leader>lo', lazy.home,	 'Open Lazy plugin manager main menu')
+nmap('<leader>lp', lazy.profile, 'Open lazy loading profiling results')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General settings configuration
@@ -1094,9 +1129,9 @@ vim.bo.swapfile					= false										-- Disable swapfile usage
 vim.o.wildmode					= 'longest,list,full'								-- Enable autocompletion in COMMAND mode
 vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
 vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
-vim.bo.undofile					= true										-- Enable undofile to save undos after exit
+vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
-Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end,						   'Enable wraping only for LaTeX files')
+Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   'Disable the tab expansion of spaces')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
