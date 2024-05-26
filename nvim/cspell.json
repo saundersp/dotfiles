@@ -1,0 +1,26 @@
+{
+	"allowCompoundWords": true,
+	"ignorePaths": [
+		"node_modules/**",
+		"build/**",
+		"bin/**",
+		"venv/**",
+		".git/**"
+	],
+	"language": "en-GB",
+	"version": "0.2",
+	"dictionaries": ["en_US"],
+	"words": [
+		"cuda",
+		"espanso",
+		"saundersp",
+		"venv",
+		"color",
+		"nproc",
+		"nvim",
+		"lazynpm",
+		"behavior",
+		"mrproper",
+		"togglable"
+	]
+}
