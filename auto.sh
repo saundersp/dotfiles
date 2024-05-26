@@ -64,8 +64,11 @@ elif [ "$(id -u)" -ne 0 ]; then
 		ln -sf "$CURRENT_FOLDER"/shell_profile/profile "$HOME"/.profile
 		ln -sf "$CURRENT_FOLDER"/X11/Xresources "$XDG_CONFIG_HOME"/X11/Xresources
 	fi
+
 	nvim --headless -c 'Lazy sync' +q
 	nvim --headless -c TSUpdateSync +q
+	nvim --headless -c MasonUpdate +q
+	nvim --headless -c MasonUpdateAll -c 'autocmd User MasonUpdateAllComplete quitall'
 else
 	mkdir -p "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/nvim "$XDG_CONFIG_HOME"/fastfetch
 
