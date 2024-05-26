@@ -34,13 +34,15 @@ case "$1" in
 			if ! distcc-config --get-hosts | grep -Pq 'localhost/\d'; then
 				DISTCC_PROC=$((DISTCC_PROC + NPROC))
 			fi
-			make CXX=distcc CC=distcc -j"$DISTCC_PROC" -l"$NPROC" \
-				&& make modules_install -j"$NPROC" \
-				&& make install && genkernel --kernel-cc=distcc --utils-cc=distcc --utils-cxx=distcc --luks initramfs
+			make CXX=distcc CC=distcc -j"$DISTCC_PROC" -l"$NPROC"
+			make modules_install -j"$NPROC"
+			make install
+			genkernel --kernel-cc=distcc --utils-cc=distcc --utils-cxx=distcc --luks initramfs
 		else
-			make -j"$NPROC" -l"$NPROC" \
-				&& make modules_install -j"$NPROC" \
-				&& make install && genkernel --luks initramfs
+			make -j"$NPROC" -l"$NPROC"
+			make modules_install -j"$NPROC"
+			make install
+			genkernel --luks initramfs
 		fi
 		grub-mkconfig -o /boot/grub/grub.cfg
 		emerge -v @module-rebuild
