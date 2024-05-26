@@ -1116,6 +1116,12 @@ require('lazy').setup({
 			-- Colourize multiple inner level to ( [ {
 			'HiPhish/rainbow-delimiters.nvim'
 		}
+	},
+	-- General-purpose motion plugin for Neovim
+	{ 'https://github.com/ggandor/leap.nvim',
+		init = function()
+			require('leap').create_default_mappings()
+		end
 	}
 })
 local lazy = require('lazy')
