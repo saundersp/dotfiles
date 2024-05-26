@@ -897,7 +897,9 @@ require('lazy').setup({
 						-- Hide deleted lines messages
 						{ find = '%d fewer lines' },
 						-- Hide yanked messages
-						{ find = '%d lines yanked' }
+						{ find = '%d lines yanked' },
+						-- Hide indent messages
+						{ find = '%d lines [><]ed %d time' },
 					}
 				},
 				opts = { skip = true }
