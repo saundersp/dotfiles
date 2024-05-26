@@ -259,8 +259,6 @@ require('lazy').setup({
 			'nvim-telescope/telescope-bibtex.nvim'
 		}
 	},
-	-- Automatic pairs of ( [ { insertion
-	{ 'windwp/nvim-autopairs', event = 'InsertEnter', config = true },
 	-- Neovim plugin to manage the file system and other tree like structures
 	{ 'nvim-neo-tree/neo-tree.nvim',
 		branch = 'v3.x',
@@ -662,9 +660,14 @@ require('lazy').setup({
 					}
 				})
 			})
+
+			local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+			cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 		end,
 		cmd = 'CmpStatus',
 		dependencies = {
+			-- Automatic pairs of ( [ { insertion
+			{ 'windwp/nvim-autopairs', config = true },
 			-- nvim-cmp source for neovim builtin LSP client
 			'hrsh7th/cmp-nvim-lsp',
 			-- nvim-cmp source for buffer words
