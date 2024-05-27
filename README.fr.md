@@ -2,23 +2,44 @@
 
 _Lisez ceci dans d'autres langues: [English](README.md)_
 
-## Dépendances
+## Logiciels utilisés
 
-- neovim
-- neofetch
-- git
-- bash
+- neovim : Unique fichier de configuration utilisateur init.lua et cspell.json, ainsi que la configuration root root_init.lua sans plugins
+- git : email et nom globaux, autorise certains dossier sûrs
+- bash : dossier shell_profile avec bashrc utilisateur et root.bashrc qui ne diffère que de l'helper AUR et les logiciels de bureau (X11)
+- tmux : Configuration utilisateur et root, la configuration root essayera de lire le niveau de batterie et de luminosité, l'utilisateur est plus minimal
+- fastfetch : Rendu très similaire à neofetch
 - Node (with npm)
 - Python (with pip)
+- gcc
+- g++
+- curl
+- unzip
+- ranger
+- yazi
+- fzf
+- bat
+- arduino-cli
+- Docker
+- Docker Compose
+- eza
+- bluez-utils
+- lazygit
+- lazydocker
+- laznpm
+
+### Bureau seulement
+
+- i3-gaps :
+- polybar :
+- picom :
+- xorg-xrdb :
 - xorg-xinit
 - xorg-xset
+- xorg-xrandr
+- xorg-xclip
+- pulseaudio
 - feh
-- picom
-- i3-gaps
-- polybar
-- tmux
-- ranger
-- bluez-utils (optionnel)
 
 ## Installation
 
@@ -43,7 +64,7 @@ Vous pouvez choisir n'importe quel fichier ou bloc de code, ou simplement utilis
 
 ## Scripts d'installation automatique && post-installation
 
-Ces scripts sont destinés à installer/rice une installation minimale de linux à mon goût.
+Ces scripts sont destinés à installer/rice une installation minimale de linux à partir de zéro et à mon goût.
 
 Scripts d'installation automatique (celle-la incluent également une option d'installation minimale):
 
@@ -58,3 +79,11 @@ Scripts post-installation :
 - Debian
 - Fedora
 - OpenSUSE
+
+## Configuration de kernel custom
+
+- VIRTUAL.config : Gentoo dans VirtualBox
+- LAPTOP.config : Ordinateur portable Gentoo
+- STREAMPC.config : PC Encodeur de vidéo
+- MAINPC.config : PC multitâches
+- MAXIMUM.config : Ordinateur portable Gentoo mais avec tout activé (non recommandé)
