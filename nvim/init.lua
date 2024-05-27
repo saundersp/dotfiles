@@ -275,7 +275,6 @@ require('lazy').setup({
 			close_if_last_window = true,
 			window = { position = 'current' },
 			filesystem = {
-				bind_to_cwd = false,
 				follow_current_file = { enabled = true },
 				use_libuv_file_watcher = true
 			}
