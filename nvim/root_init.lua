@@ -1,6 +1,12 @@
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Global shortcuts/helper
+-- Global helper functions
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--- Create a keybinding
+---@see vim.keymap.set
+---@param mode string|string[] mode when the keybind is detected
+---@param key string|string[] key or key aliases to bind
+---@param action function|string callback of the keybind
+---@param desc string Description of the keybind
 local function map(mode, key, action, desc)
 	if type(key) == 'table' then
 		for _, e in ipairs(key) do
@@ -10,13 +16,37 @@ local function map(mode, key, action, desc)
 		vim.keymap.set(mode, key, action, { silent = true, desc = desc })
 	end
 end
+--- Create a keybinding in normal mode
+---@see vim.keymap.set
+---@see map
+---@param key string|string[] key or key aliases to bind
+---@param action function|string callback of the keybind
+---@param desc string Description of the keybind
 local function nmap(key, action, desc) map('n', key, action, desc) end
+--- Create a keybinding in visual mode
+---@see vim.keymap.set
+---@see map
+---@param key string|string[] key or key aliases to bind
+---@param action function|string callback of the keybind
+---@param desc string Description of the keybind
 local function vmap(key, action, desc) map('v', key, action, desc) end
 
+--- Create an automatic callback when a Neovim event occur
+---@see vim.api.nvim_create_autocmd
+---@param events string|string[] EventType
+---@param pattern string|string[] pattern of the event type
+---@param callback function|string callback to execute when the pattern is recognized
+---@param desc string Description of the callback
 local function Autocmd(events, pattern, callback, desc)
 	vim.api.nvim_create_autocmd(events, { pattern = pattern, callback = callback, desc = desc })
 end
 
+--- Create a user command usable in command mode
+---@see vim.api.nvim_create_user_command
+---@param cmd string Name of the command
+---@param fnc function|string Function to callback
+---@param desc string Description of the command
+---@param nargs number|nil Number of arguments needed (default = 0)
 local function create_cmd(cmd, fnc, desc, nargs)
 	vim.api.nvim_create_user_command(cmd, fnc, { nargs = nargs or 0, desc = desc })
 end
@@ -52,9 +82,9 @@ vim.bo.swapfile					= false										-- Disable swapfile usage
 vim.o.wildmode					= 'longest,list,full'								-- Enable autocompletion in COMMAND mode
 vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
 vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
-vim.bo.undofile					= true										-- Enable undofile to save undos after exit
+vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
-Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end,						   'Enable wraping only for LaTeX files')
+Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   'Disable the tab expansion of spaces')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
