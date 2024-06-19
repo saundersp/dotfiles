@@ -379,8 +379,10 @@ Available flags:
 						repo_date=$(cut "$repo"/metadata/timestamp.x -d ' ' -f 1)
 					elif [ -f "$repo"/metadata/timestamp.chk ]; then
 						repo_date=$(date --date="$(cat "$repo"/metadata/timestamp.chk)" +%s)
-					else
+					elif [ -d "$repo"/.git ]; then
 						repo_date=$(git -C "$repo" log -1 --format=%ct)
+					else
+						continue
 					fi
 					commit=$(format_time $(($(date +%s) - repo_date)))
 					commits+=("$commit")
