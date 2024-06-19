@@ -555,14 +555,15 @@ require('lazy').setup({
 			-- dapui
 			{ '<leader>du', function() require('dapui').toggle() end,      desc = 'Debug toggle UI' }
 		},
-		cmd = {
-			'DapInstall', 'DapUninstall',
-			'DapContinue', 'DapLoadLaunchJSON', 'DapRestartFrame', 'DapSetLogLevel', 'DapShowLog',
-			'DapStepInto', 'DapStepOut', 'DapStepOver', 'DapTerminate', 'DapToggleBreakpoint', 'DapToggleRepl'
-		},
+		cmd = { 'DapInstall', 'DapUninstall' },
 		dependencies = {
 			-- Debugging purposes
-			'mfussenegger/nvim-dap',
+			{ 'mfussenegger/nvim-dap',
+				cmd = {
+					'DapContinue', 'DapLoadLaunchJSON', 'DapRestartFrame', 'DapSetLogLevel', 'DapShowLog',
+					'DapStepInto', 'DapStepOut', 'DapStepOver', 'DapTerminate', 'DapToggleBreakpoint', 'DapToggleRepl'
+				}
+			},
 			-- Tool to install LSPs, DAPs, linters and formatters
 			'williamboman/mason.nvim',
 			-- A UI for nvim-dap
@@ -717,8 +718,7 @@ require('lazy').setup({
 			'TSBufDisable', 'TSBufEnable', 'TSBufToggle', 'TSConfigInfo', 'TSDisable', 'TSEditQuery',
 			'TSEditQueryUserAfter', 'TSEnable', 'TSInstall', 'TSInstallFromGrammar', 'TSInstallInfo',
 			'TSInstallSync', 'TSModuleInfo', 'TSToggle', 'TSUninstall', 'TSUpdate', 'TSUpdateSync'
-		},
-		build = '<cmd>TSUpdate'
+		}
 	},
 	-- Shows the context of the currently visible buffer contents
 	{ 'nvim-treesitter/nvim-treesitter-context',
@@ -1023,10 +1023,10 @@ require('lazy').setup({
 			})
 		end,
 		keys = { { '<leader>gf', vim.lsp.buf.format, desc = 'Format the document' } },
-		cmd = { 'NullLsInstall', 'NoneLsInstall', 'NullLsUninstall', 'NoneLsUninstall', 'NullLsLog', 'NullLsInfo' },
+		cmd = { 'NullLsInstall', 'NoneLsInstall', 'NullLsUninstall', 'NoneLsUninstall' },
 		dependencies = {
 			-- Add additional LSP, linters and formatters not provided by williamboman/mason-lspconfig
-			'nvimtools/none-ls.nvim',
+			{ 'nvimtools/none-ls.nvim', cmd = { 'NullLsLog', 'NullLsInfo' } },
 			-- Adding extra sources not included in none-ls
 			'nvimtools/none-ls-extras.nvim',
 			-- Adding support for cspell diagnostics and code actions
