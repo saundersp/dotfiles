@@ -49,7 +49,7 @@ MAGENTA='\033[0;35m'
 #LIGHTMAGENTA='\033[1;35m'
 #CYAN='\033[0;36m'
 #LIGHTCYAN='\033[1;36m'
-NOCOLOUR='\033[0m'
+NO_COLOUR='\033[0m'
 USER_COLOUR="$LIGHTRED"
 
 # Define text styles
@@ -97,16 +97,16 @@ __setprompt() {
 	PS1="$PS1\[${YELLOW}\]$(test -n "$VIRTUAL_ENV" >> /dev/null && echo " ( $(basename "$VIRTUAL_ENV"))")"
 
 	# Skip to the next line
-	PS1="$PS1\r\n\[${USER_COLOUR}\]└─>\[${NOCOLOUR}\] "
+	PS1="$PS1\r\n\[${USER_COLOUR}\]└─>\[${NO_COLOUR}\] "
 
 	# PS2 is used to continue a command using the \ character
-	PS2="\[${USER_COLOUR}\]>\[${NOCOLOUR}\] "
+	PS2="\[${USER_COLOUR}\]>\[${NO_COLOUR}\] "
 
 	# PS3 is used to enter a number choice in a script
 	PS3='Please enter a number from above list: '
 
 	# PS4 is used for tracing a script in debug mode
-	PS4="\[${USER_COLOUR}\]+\[${NOCOLOUR}\] "
+	PS4="\[${USER_COLOUR}\]+\[${NO_COLOUR}\] "
 }
 PROMPT_COMMAND='__setprompt' # Will run function every time a command is entered
 
@@ -160,7 +160,7 @@ command -v fgrep >> /dev/null && alias fgrep='fgrep --color=auto'
 command -v egrep >> /dev/null && alias egrep='egrep --color=auto'
 command -v diff >> /dev/null && alias diff='diff --color=auto'
 command -v ip >> /dev/null && alias ip='ip --color=auto'
-command -v wget >> /dev/null && alias wget="wget --hsts-file=$XDG_DATA_HOME/wget-hsts"
+command -v wget >> /dev/null && alias wget='wget --hsts-file=$XDG_DATA_HOME/wget-hsts'
 # Replace default cat command
 command -v bat >> /dev/null && alias cat='bat'
 command -v ncdu >> /dev/null && alias ncdu='ncdu --color=dark'
@@ -185,12 +185,31 @@ if command -v python >> /dev/null; then
 	# Activate the python virtual environment in the current folder
 	__cmd_checker__ activate
 	activate(){
-		if [ "$1" = 'h' ]|| [ "$1" = '-h' ]|| [ "$1" = 'help' ]|| [ "$1" = '--help' ]; then
+		if [ -n "$1" ] || [ "$1" = 'h' ] || [ "$1" = '-h' ]|| [ "$1" = 'help' ]|| [ "$1" = '--help' ]; then
 			echo "Usage: activate [h|-h|help|--help] to enable the current folder's python virtual environment"
 		elif [ -f venv/Scripts/activate ]; then . venv/Scripts/activate
 		elif [ -f venv/bin/activate ]; then . venv/bin/activate
 		else echo 'Python virtual environment not detected !'; return 1
 		fi
+	}
+
+	create_venv(){
+		if [ -n "$1" ] || [ "$1" = 'h' ] || [ "$1" = '-h' ]|| [ "$1" = 'help' ]|| [ "$1" = '--help' ]; then
+			echo 'Usage: create_venv [h|-h|help|--help] to create and enable a virtual python environment'
+			return 0
+		fi
+		if [ -d venv ]; then
+			echo 'A python environment already exists'
+			return 1
+		fi
+		if [ ! -f requirements.txt ]; then
+			echo 'Cannot create venv : Missing requirements.txt file'
+			return 1
+		fi
+
+		python -m venv venv
+		activate "$@"
+		pip install -r requirements.txt
 	}
 fi
 
@@ -441,11 +460,11 @@ update(){
 	command -v nix-env >> /dev/null && nix-env -u
 }
 
-__cmd_checker__ __helpme__
-__helpme__(){
+__cmd_checker__ __help_me__
+__help_me__(){
 	__cmd_checker__ print_cmd
 	print_cmd(){
-		printf "\055 ${ITALIC}%-32s${NOCOLOUR} : $2\n" "$1"
+		printf "\055 ${ITALIC}%-32s${NO_COLOUR} : $2\n" "$1"
 	}
 
 	__cmd_checker__ tprint_cmd
@@ -453,12 +472,13 @@ __helpme__(){
 		if command -v "$1" >> /dev/null; then
 			print_cmd "$1 $3" "$2"
 		#else
-		#	printf "\055 ${ITALIC}%-32s${NOCOLOUR} : ${BOLD}This command isn't enabled${NOCOLOUR}\n" "$1"
+		#	printf "\055 ${ITALIC}%-32s${NO_COLOUR} : ${BOLD}This command isn't enabled${NO_COLOUR}\n" "$1"
 		fi
 	}
 
-	echo -e "${BOLD}Available commands :${NOCOLOUR}"
+	echo -e "${BOLD}Available commands :${NO_COLOUR}"
 	tprint_cmd 'activate' 'Activate the python virtual environment'
+	tprint_cmd 'create_venv' 'Create and enable a virtual python environment'
 	tprint_cmd 'preview_csv' 'Preview a csv file' '<file>'
 	tprint_cmd 'vid' 'Shortcut to nvim diff mode' '<file1> <file2>'
 	tprint_cmd 'll' 'Detailed ls' '<directory>'
@@ -481,7 +501,7 @@ __helpme__(){
 	print_cmd 'pow' 'CPU scaling governor helper'
 	print_cmd '?' 'Print this reminder'
 
-	echo -e "${BOLD}\nBash bang shortcuts remainders :${NOCOLOUR}"
+	echo -e "${BOLD}\nBash bang shortcuts remainders :${NO_COLOUR}"
 	print_cmd '!!' 'Last command'
 	print_cmd '!$' 'Last item ran'
 	print_cmd '!^' 'First item ran'
@@ -490,4 +510,4 @@ __helpme__(){
 	unset print_cmd tprint_cmd
 }
 __cmd_checker__ '?'
-alias '?'='__helpme__'
+alias '?'='__help_me__'
