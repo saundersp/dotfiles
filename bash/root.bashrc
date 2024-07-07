@@ -99,6 +99,9 @@ __setprompt() {
 	# Skip to the next line
 	PS1="$PS1\r\n\[${USER_COLOUR}\]└─>\[${NO_COLOUR}\] "
 
+	# Window title
+	PS1="$PS1\[\033]0;\u@\h (\w)\007\]"
+
 	# PS2 is used to continue a command using the \ character
 	PS2="\[${USER_COLOUR}\]>\[${NO_COLOUR}\] "
 
