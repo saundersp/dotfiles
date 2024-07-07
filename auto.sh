@@ -36,8 +36,6 @@ elif [ "$(id -u)" -ne 0 ]; then
 	mkdir -p "$XDG_CONFIG_HOME"/nvim/autoload "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/git \
 		"$XDG_CONFIG_HOME"/fastfetch "$XDG_CONFIG_HOME"/dooit
 
-	FILENAME="$XDG_DATA_HOME"/nvim/lazy/lazy.nvim
-	test ! -d "$FILENAME" && git clone --filter blob:none https://github.com/folke/lazy.nvim.git --branch stable "$FILENAME"
 	FILENAME="$XDG_CONFIG_HOME"/ranger/plugins/ranger_devicons
 	test ! -d "$FILENAME" && git clone https://github.com/alexanderjeurissen/ranger_devicons.git "$FILENAME"
 
