@@ -534,26 +534,25 @@ local lazy_plugins = {
 				}
 			}
 
-			local dapui = require('dapui')
-			dap.listeners.before.attach.dapui_config = dapui.open
-			dap.listeners.before.launch.dapui_config = dapui.open
-			dap.listeners.before.event_terminated.dapui_config = dapui.close
-			dap.listeners.before.event_exited.dapui_config = dapui.close
+			local open_callback = function() require('dapui').open(); require('nvim-dap-virtual-text').enable() end
+			dap.listeners.before.attach.dapui_config = open_callback
+			dap.listeners.before.launch.dapui_config = open_callback
 		end,
 		keys = {
 			{ '<leader>db', '<cmd>DapToggleBreakpoint<CR>',		       desc = 'Debug toggle Breakpoint' },
 			{ '<leader>dc', '<cmd>DapContinue<CR>',			       desc = 'Debug Continue' },
 			{ '<leader>dC', function() require('dap').run_to_cursor() end, desc = 'Debug run to Cursor' },
+			{ '<leader>dn', '<cmd>DapStepOver<CR>',			       desc = 'Debug Step Next' },
 			{ '<leader>do', '<cmd>DapStepOver<CR>',			       desc = 'Debug Step Over' },
 			{ '<leader>di', '<cmd>DapStepInto<CR>',			       desc = 'Debug Step Into' },
 			{ '<leader>dO', '<cmd>DapStepOut<CR>',			       desc = 'Debug Step Out' },
 			{ '<leader>dt', '<cmd>DapTerminate<CR>',		       desc = 'Debug Terminate' },
-			{ '<leader>ds', function() require('dap').up() end,	       desc = 'Debug up in the Stacktrace' },
-			{ '<leader>dS', function() require('dap').down() end,	       desc = 'Debug down in the Stacktrace' },
+			{ '<leader>dk', function() require('dap').up() end,	       desc = 'Debug up in the Stacktrace' },
+			{ '<leader>dj', function() require('dap').down() end,	       desc = 'Debug down in the Stacktrace' },
 			{ '<leader>dp', function() require('dap').pause() end,	       desc = 'Debug Pause' },
 			{ '<leader>dr', function() require('dap').restart() end,       desc = 'Debug Restart' },
-			-- dapui
-			{ '<leader>du', function() require('dapui').toggle() end,      desc = 'Debug toggle UI' }
+			{ '<leader>du', function() require('dapui').toggle();
+				require('nvim-dap-virtual-text').toggle() end,	       desc = 'Debug toggle UI' }
 		},
 		cmd = { 'DapInstall', 'DapUninstall' },
 		dependencies = {
