@@ -1072,6 +1072,7 @@ local lazy_plugins = {
 	},
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim',
+		event = 'VeryLazy',
 		opts = {
 			signs = false,
 			highlight = { pattern = '.*<(KEYWORDS)\\s*[: ]' },
