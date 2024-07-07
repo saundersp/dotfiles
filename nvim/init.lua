@@ -840,12 +840,12 @@ local lazy_plugins = {
 			-- cspell:enable
 
 			startify.section.top_buttons.val = {
-				startify.button('e', ' New file',	    '<cmd>ene<CR>'),		      -- nf-fa-file
-				startify.button('s', ' Settings',	    '<cmd>EditConfig<CR>'),	      -- nf-fa-cog
-				startify.button('E', ' Espanso',	    '<cmd>EspansoEdit<CR>'),	      -- nf-fa-keyboard
-				startify.button('f', '󰍉 Files',		    '<cmd>Telescope find_files<CR>'), -- nf-md-magnify
-				startify.button('g', '󰑑 Find string',	    '<cmd>Telescope live_grep<CR>'),  -- nf-md-regex
-				startify.button('t', '󰑑 Todos',		    '<cmd>TodoTelescope<CR>')	      -- nf-md-regex
+				startify.button('e', ' New file',    '<cmd>ene<CR>'),			-- nf-fa-file
+				startify.button('s', ' Settings',    '<cmd>Settings<CR>'),		-- nf-fa-cog
+				startify.button('E', ' Espanso',     '<cmd>EspansoEdit<CR>'),		-- nf-fa-keyboard
+				startify.button('f', '󰍉 Files',	      '<cmd>Telescope find_files<CR>'), -- nf-md-magnify
+				startify.button('g', '󰑑 Find string', '<cmd>Telescope live_grep<CR>'),	-- nf-md-regex
+				startify.button('t', '󰑑 Todos',	      '<cmd>TodoTelescope<CR>')		-- nf-md-regex
 			}
 
 			local tl = vim.o.showtabline
@@ -1206,5 +1206,5 @@ vmap('<leader>y', '"+y',													   'Yank into the system clipboard')
 nmap('<leader>y', '"+Y',													   'Yank the entire buffer into the system clipboard')
 nmap('<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file executable')
 nmap('<leader>fX', '<cmd>!chmod -x %<CR>',											   'Make the current file non executable')
-create_cmd('EditConfig', 'e $MYVIMRC', 												   'Edit Neovim config file')
+create_cmd('Settings', 'e $MYVIMRC', 												   'Edit Neovim config file')
 create_cmd('EspansoEdit', 'e ' .. vim.fn.stdpath 'config' .. '/../espanso/match/base.yml',					   'Edit Espanso config file')
