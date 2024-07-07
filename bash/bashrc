@@ -494,14 +494,6 @@ fi
 if command -v xrandr >> /dev/null; then
 	__cmd_checker__ hdmi
 
-	if ! __command_requirer_pkg__ '' dmenu x11-misc/dmenu; then
-		return 1
-	fi
-
-	if ! __command_requirer_pkg__ '' xrandr x11-apps/xrandr; then
-		return 1
-	fi
-
 	hdmi(){
 		USAGE='HDMI connection helper
 Implemented by @saundersp
@@ -514,10 +506,16 @@ Available flags:
 	-h, h, help, --help		Show this help message'
 		__cmd_checker__ __get_display__
 		__get_display__(){
+			if ! __command_requirer_pkg__ '' dmenu x11-misc/dmenu; then
+				return 1
+			fi
 			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
 		}
 		case "$1" in
 			-e|e|extend|--extend)
+				if ! __command_requirer_pkg__ '' dmenu x11-misc/dmenu; then
+					return 1
+				fi
 				Primary="$(__get_display__ Primary)"
 				test -z "$Primary" && return 0
 				Secondary="$(__get_display__ Secondary)"
@@ -589,6 +587,9 @@ Available flags:
 			;;
 			loopoff) __paloopoff__ ;;
 			loop)
+				if ! __command_requirer_pkg__ '' dmenu x11-misc/dmenu; then
+					return 1
+				fi
 				__paloopoff__
 				source="$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )"
 				test -z "$source" && return 0
