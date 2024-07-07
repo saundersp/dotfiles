@@ -85,7 +85,7 @@ end
 ---@nodiscard
 local function str_to_list(str)
 	local list = {}
-	for token in string.gmatch(str, "[^%c]+") do
+	for token in string.gmatch(str, '[^%c]+') do
 		table.insert(list, token)
 	end
 	return list
@@ -1160,7 +1160,7 @@ vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in b
 vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
 vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
-Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
+Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   'Disable the tab expansion of spaces')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
