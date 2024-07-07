@@ -466,7 +466,7 @@ local lazy_plugins = {
 				local actions_state = require('telescope.actions.state')
 				local sorter = require('telescope.config').values.generic_sorter
 
-				local cmd_output = run_cmd('fd . --color never -t x ' .. directory)
+				local cmd_output = run_cmd('fd . --color never -t x --base-directory ' .. directory)
 				if (cmd_output == nil) then
 					return false
 				end
@@ -488,7 +488,8 @@ local lazy_plugins = {
 				return true
 			end
 
-			local default_c_config = {
+			local default_c_config
+			default_c_config = {
 				name = 'Launch file',
 				type = 'cpptools',
 				request = 'launch',
@@ -500,10 +501,12 @@ local lazy_plugins = {
 						cwd = './build/'
 					end
 
+					default_c_config.cwd = '${workspaceFolder}/' .. cwd
+
 					local co = coroutine.running()
 					local executable = nil
 					select_exec(cwd, function(selection)
-						executable = selection
+						executable = default_c_config.cwd .. selection
 						coroutine.resume(co)
 					end)
 
