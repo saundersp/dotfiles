@@ -16,7 +16,6 @@ _Read this in other languages: [Français](README.fr.md)_
 - curl
 - unzip
 - ranger
-- yazi
 - fzf
 - bat
 - arduino-cli
