@@ -112,7 +112,7 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-require('lazy').setup({
+local lazy_plugins = {
 	-- Install the vscode's codedark theme
 	{ 'ShermanDevers/codedark.nvim',
 		priority = 1000,
@@ -1122,6 +1122,12 @@ require('lazy').setup({
 			require('leap').create_default_mappings()
 		end
 	}
+}
+
+require('lazy').setup({
+	spec = lazy_plugins,
+	defaults = { lazy = true },
+	rocks = { enabled = false },
 })
 local lazy = require('lazy')
 nmap('<leader>lo', lazy.home,	 'Open Lazy plugin manager main menu')
