@@ -1116,11 +1116,14 @@ local lazy_plugins = {
 			'HiPhish/rainbow-delimiters.nvim'
 		}
 	},
-	-- General-purpose motion plugin for Neovim
-	{ 'https://github.com/ggandor/leap.nvim',
-		init = function()
-			require('leap').create_default_mappings()
-		end
+	-- Navigate code with search labels, enhanced character motions and Treesitter integration
+	{ 'folke/flash.nvim',
+		event = 'VeryLazy',
+		config = true,
+		keys = {
+			{ 's', mode = { 'n', 'x', 'o' }, function() require('flash').jump() end,       desc = 'Flash' },
+			{ 'S', mode = { 'n', 'x', 'o' }, function() require('flash').treesitter() end, desc = 'Flash Treesitter' }
+		}
 	}
 }
 
