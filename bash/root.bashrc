@@ -211,6 +211,7 @@ if command -v python >> /dev/null; then
 
 		python -m venv venv
 		activate "$@"
+		python -m pip install -U pip
 		pip install -r requirements.txt
 	}
 fi
