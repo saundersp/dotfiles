@@ -26,6 +26,7 @@ _Lisez ceci dans d'autres langues: [English](README.md)_
 - lazygit
 - lazydocker
 - laznpm
+- difftastic
 
 ### Bureau seulement
 

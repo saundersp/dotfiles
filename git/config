@@ -7,3 +7,7 @@
 	directory = /usr/local/src/**
 [pull]
 	rebase = false
+[diff]
+	external = difft
+[alias]
+	dlog = "-c diff.external=difft log -p --ext-diff"
