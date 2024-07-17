@@ -128,9 +128,8 @@ fi
 
 # Enable fzf functionalities
 if command -v fzf >> /dev/null; then
-	test -f /usr/share/bash-completion/completions/fzf && . /usr/share/bash-completion/completions/fzf
 	# CTRL-T, CTRL-R, and ALT-C
-	test -f /usr/share/fzf/key-bindings.bash && . /usr/share/fzf/key-bindings.bash
+	eval "$(fzf --bash)"
 fi
 
 # Add better human readability by default to common commands
