@@ -29,7 +29,7 @@ command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
 if command -v pipx >> /dev/null; then
 	export PIPX_BIN_DIR="$XDG_DATA_HOME/pipx/bin"
 	export PIPX_MAN_DIR="$XDG_DATA_HOME/pipx/man"
-	export PATH="$PATH:$PIPX_BIN_DIR"
+	export PATH="$PIPX_BIN_DIR:$PATH"
 fi
 
 # Define colours
