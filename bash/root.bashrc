@@ -209,9 +209,8 @@ if command -v python >> /dev/null; then
 			return 1
 		fi
 
-		python -m venv venv
+		python -m venv --upgrade-deps venv
 		activate "$@"
-		python -m pip install -U pip
 		pip install -r requirements.txt
 	}
 fi
