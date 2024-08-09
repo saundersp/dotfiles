@@ -1,4 +1,4 @@
-From 8d4e38d766e25f26708b8c901b49c4997afbab44 Mon Sep 17 00:00:00 2001
+From 7a00624d966c7ca0179760348ee4da05fb735c0a Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:13:47 +0200
 Subject: [PATCH 01/12] Changed font to Hasklug Nerd Font Mono
@@ -21,10 +21,10 @@ index 2cd740a..0111bd5 100644
  
  /*
 -- 
-2.44.0
+2.45.2
 
 
-From 96c063ede6130085de27cb62c735922fe67d9da9 Mon Sep 17 00:00:00 2001
+From 6673b8a8dca1df13844b24a061ab575910fd4c09 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:14:12 +0200
 Subject: [PATCH 02/12] Added boxdraw patch
@@ -506,10 +506,10 @@ index 0111bd5..15defce 100644
   * bell volume. It must be a value between -100 and 100. Use 0 for disabling
   * it
 diff --git a/st.c b/st.c
-index 683493d..3262217 100644
+index 57c6e96..b15aae5 100644
 --- a/st.c
 +++ b/st.c
-@@ -1215,6 +1215,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
+@@ -1218,6 +1218,9 @@ tsetchar(Rune u, const Glyph *attr, int x, int y)
  	term.dirty[y] = 1;
  	term.line[y][x] = *attr;
  	term.line[y][x].u = u;
@@ -552,10 +552,10 @@ index fd3b0d8..808f5f7 100644
  extern unsigned int defaultcs;
 +extern const int boxdraw, boxdraw_bold, boxdraw_braille;
 diff --git a/x.c b/x.c
-index b36fb8c..fcffc21 100644
+index d73152b..7157e56 100644
 --- a/x.c
 +++ b/x.c
-@@ -1237,6 +1237,8 @@ xinit(int cols, int rows)
+@@ -1240,6 +1240,8 @@ xinit(int cols, int rows)
  	xsel.xtarget = XInternAtom(xw.dpy, "UTF8_STRING", 0);
  	if (xsel.xtarget == None)
  		xsel.xtarget = XA_STRING;
@@ -564,7 +564,7 @@ index b36fb8c..fcffc21 100644
  }
  
  int
-@@ -1283,8 +1285,13 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+@@ -1286,8 +1288,13 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
  			yp = winy + font->ascent;
  		}
  
@@ -580,7 +580,7 @@ index b36fb8c..fcffc21 100644
  		if (glyphidx) {
  			specs[numspecs].font = font->match;
  			specs[numspecs].glyph = glyphidx;
-@@ -1488,8 +1495,12 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
+@@ -1491,8 +1498,12 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
  	r.width = width;
  	XftDrawSetClipRectangles(xw.draw, winx, winy, &r, 1);
  
@@ -595,7 +595,7 @@ index b36fb8c..fcffc21 100644
  
  	/* Render underline and strikethrough. */
  	if (base.mode & ATTR_UNDERLINE) {
-@@ -1532,7 +1543,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
+@@ -1535,7 +1546,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
  	/*
  	 * Select the right color for the right mode.
  	 */
@@ -605,10 +605,10 @@ index b36fb8c..fcffc21 100644
  	if (IS_SET(MODE_REVERSE)) {
  		g.mode |= ATTR_REVERSE;
 -- 
-2.44.0
+2.45.2
 
 
-From 00baf486b1cec8d23fde5dc032afb579eb3558a3 Mon Sep 17 00:00:00 2001
+From 67a4548dc979365aaf6f9d38d726024390437246 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:14:36 +0200
 Subject: [PATCH 03/12] Added ligatures patch
@@ -650,7 +650,7 @@ index a64b4c2..ab3549a 100644
  
  $(OBJ): config.h config.mk
 diff --git a/config.mk b/config.mk
-index 7f35f71..ca22b00 100644
+index fdc29a7..a4b891a 100644
 --- a/config.mk
 +++ b/config.mk
 @@ -15,10 +15,12 @@ PKG_CONFIG = pkg-config
@@ -835,10 +835,10 @@ index 0000000..07888df
 +void hbunloadfonts();
 +void hbtransform(XftGlyphFontSpec *, const Glyph *, size_t, int, int);
 diff --git a/st.c b/st.c
-index 3262217..3428707 100644
+index b15aae5..287d4ca 100644
 --- a/st.c
 +++ b/st.c
-@@ -2666,7 +2666,8 @@ draw(void)
+@@ -2665,7 +2665,8 @@ draw(void)
  
  	drawregion(0, 0, term.col, term.row);
  	xdrawcursor(cx, term.c.y, term.line[term.c.y][cx],
@@ -884,7 +884,7 @@ index 6de960d..94679e4 100644
  void xfinishdraw(void);
  void xloadcols(void);
 diff --git a/x.c b/x.c
-index fcffc21..f71b616 100644
+index 7157e56..5f17c6f 100644
 --- a/x.c
 +++ b/x.c
 @@ -19,6 +19,7 @@ char *argv0;
@@ -905,7 +905,7 @@ index fcffc21..f71b616 100644
  	/* Free the loaded fonts in the font cache.  */
  	while (frclen > 0)
  		XftFontClose(xw.dpy, frc[--frclen].font);
-@@ -1263,7 +1267,7 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+@@ -1266,7 +1270,7 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
  		mode = glyphs[i].mode;
  
  		/* Skip dummy wide-character spacing. */
@@ -914,7 +914,7 @@ index fcffc21..f71b616 100644
  			continue;
  
  		/* Determine font for glyph if different from previous glyph. */
-@@ -1375,6 +1379,9 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+@@ -1378,6 +1382,9 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
  		numspecs++;
  	}
  
@@ -924,7 +924,7 @@ index fcffc21..f71b616 100644
  	return numspecs;
  }
  
-@@ -1528,14 +1535,17 @@ xdrawglyph(Glyph g, int x, int y)
+@@ -1531,14 +1538,17 @@ xdrawglyph(Glyph g, int x, int y)
  }
  
  void
@@ -945,10 +945,10 @@ index fcffc21..f71b616 100644
  	if (IS_SET(MODE_HIDE))
  		return;
 -- 
-2.44.0
+2.45.2
 
 
-From 96d337247036f285081926f16703ebdb5c642940 Mon Sep 17 00:00:00 2001
+From 8da7f602b482d03ea636a126dddefe9040c7a704 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:15:00 +0200
 Subject: [PATCH 04/12] Added scrollback patch
@@ -973,7 +973,7 @@ index 15defce..21b8230 100644
  
  /*
 diff --git a/st.c b/st.c
-index 3428707..e6492ae 100644
+index 287d4ca..2ce8681 100644
 --- a/st.c
 +++ b/st.c
 @@ -35,6 +35,7 @@
@@ -1202,7 +1202,7 @@ index 3428707..e6492ae 100644
  	} else {
  		y++;
  	}
-@@ -1288,14 +1350,14 @@ void
+@@ -1291,14 +1353,14 @@ void
  tinsertblankline(int n)
  {
  	if (BETWEEN(term.c.y, term.top, term.bot))
@@ -1219,7 +1219,7 @@ index 3428707..e6492ae 100644
  }
  
  int32_t
-@@ -1733,11 +1795,11 @@ csihandle(void)
+@@ -1736,11 +1798,11 @@ csihandle(void)
  	case 'S': /* SU -- Scroll <n> line up */
  		if (csiescseq.priv) break;
  		DEFAULT(csiescseq.arg[0], 1);
@@ -1233,7 +1233,7 @@ index 3428707..e6492ae 100644
  		break;
  	case 'L': /* IL -- Insert <n> blank lines */
  		DEFAULT(csiescseq.arg[0], 1);
-@@ -2313,7 +2375,7 @@ eschandle(uchar ascii)
+@@ -2312,7 +2374,7 @@ eschandle(uchar ascii)
  		return 0;
  	case 'D': /* IND -- Linefeed */
  		if (term.c.y == term.bot) {
@@ -1242,7 +1242,7 @@ index 3428707..e6492ae 100644
  		} else {
  			tmoveto(term.c.x, term.c.y+1);
  		}
-@@ -2326,7 +2388,7 @@ eschandle(uchar ascii)
+@@ -2325,7 +2387,7 @@ eschandle(uchar ascii)
  		break;
  	case 'M': /* RI -- Reverse index */
  		if (term.c.y == term.top) {
@@ -1251,7 +1251,7 @@ index 3428707..e6492ae 100644
  		} else {
  			tmoveto(term.c.x, term.c.y-1);
  		}
-@@ -2549,7 +2611,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
+@@ -2548,7 +2610,7 @@ twrite(const char *buf, int buflen, int show_ctrl)
  void
  tresize(int col, int row)
  {
@@ -1260,7 +1260,7 @@ index 3428707..e6492ae 100644
  	int minrow = MIN(row, term.row);
  	int mincol = MIN(col, term.col);
  	int *bp;
-@@ -2586,6 +2648,14 @@ tresize(int col, int row)
+@@ -2585,6 +2647,14 @@ tresize(int col, int row)
  	term.dirty = xrealloc(term.dirty, row * sizeof(*term.dirty));
  	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
  
@@ -1275,7 +1275,7 @@ index 3428707..e6492ae 100644
  	/* resize each row to new width, zero-pad if needed */
  	for (i = 0; i < minrow; i++) {
  		term.line[i] = xrealloc(term.line[i], col * sizeof(Glyph));
-@@ -2644,7 +2714,7 @@ drawregion(int x1, int y1, int x2, int y2)
+@@ -2643,7 +2713,7 @@ drawregion(int x1, int y1, int x2, int y2)
  			continue;
  
  		term.dirty[y] = 0;
@@ -1284,7 +1284,7 @@ index 3428707..e6492ae 100644
  	}
  }
  
-@@ -2665,9 +2735,10 @@ draw(void)
+@@ -2664,9 +2734,10 @@ draw(void)
  		cx--;
  
  	drawregion(0, 0, term.col, term.row);
@@ -1312,10 +1312,10 @@ index b889a88..0cfab7b 100644
  void printsel(const Arg *);
  void sendbreak(const Arg *);
 -- 
-2.44.0
+2.45.2
 
 
-From e2a5987fcbc5dc235e697293de08726c914526d9 Mon Sep 17 00:00:00 2001
+From 5f62e5b8ee0f1dbf3bf60393ee71a2d6fb5ee195 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:16:01 +0200
 Subject: [PATCH 05/12] Added visualbell patch
@@ -1345,10 +1345,10 @@ index 21b8230..8ddad2b 100644
  char *termname = "st-256color";
  
 diff --git a/x.c b/x.c
-index f71b616..0d1b85e 100644
+index 5f17c6f..1018d3c 100644
 --- a/x.c
 +++ b/x.c
-@@ -1660,6 +1660,27 @@ xsettitle(char *p)
+@@ -1669,6 +1669,27 @@ xsettitle(char *p)
  	XFree(prop.value);
  }
  
@@ -1376,7 +1376,7 @@ index f71b616..0d1b85e 100644
  int
  xstartdraw(void)
  {
-@@ -1681,6 +1702,8 @@ xdrawline(Line line, int x1, int y1, int x2)
+@@ -1690,6 +1711,8 @@ xdrawline(Line line, int x1, int y1, int x2)
  			continue;
  		if (selected(x, y1))
  			new.mode ^= ATTR_REVERSE;
@@ -1385,7 +1385,7 @@ index f71b616..0d1b85e 100644
  		if (i > 0 && ATTRCMP(base, new)) {
  			xdrawglyphfontspecs(specs, base, i, ox, y1);
  			specs += i;
-@@ -1781,6 +1804,8 @@ xbell(void)
+@@ -1790,6 +1813,8 @@ xbell(void)
  		xseturgency(1);
  	if (bellvolume)
  		XkbBell(xw.dpy, xw.win, bellvolume, (Atom)NULL);
@@ -1394,7 +1394,7 @@ index f71b616..0d1b85e 100644
  }
  
  void
-@@ -2029,6 +2054,16 @@ run(void)
+@@ -2038,6 +2063,16 @@ run(void)
  			}
  		}
  
@@ -1412,10 +1412,10 @@ index f71b616..0d1b85e 100644
  		XFlush(xw.dpy);
  		drawing = 0;
 -- 
-2.44.0
+2.45.2
 
 
-From 4cc93709f585ab65909d015ab0998e1a4057718a Mon Sep 17 00:00:00 2001
+From 9d3f91e9287a7df14b4f21045affb5d64fe5683a Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:16:24 +0200
 Subject: [PATCH 06/12] Added mousescroll patch
@@ -1441,10 +1441,10 @@ index 8ddad2b..9e88b23 100644
  
  /* Internal keyboard shortcuts. */
 -- 
-2.44.0
+2.45.2
 
 
-From 7a1029da96ce673c92ea75c6b0190a3f78c3af4f Mon Sep 17 00:00:00 2001
+From 417d449e3056e2a5a63741939b8d98953cf5bbea Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:17:00 +0200
 Subject: [PATCH 07/12] Added xresources patch
@@ -1454,7 +1454,7 @@ Subject: [PATCH 07/12] Added xresources patch
  1 file changed, 115 insertions(+)
 
 diff --git a/x.c b/x.c
-index 0d1b85e..ab297d0 100644
+index 1018d3c..e0c1931 100644
 --- a/x.c
 +++ b/x.c
 @@ -14,6 +14,7 @@
@@ -1465,7 +1465,7 @@ index 0d1b85e..ab297d0 100644
  
  char *argv0;
  #include "arg.h"
-@@ -2070,6 +2071,118 @@ run(void)
+@@ -2079,6 +2080,118 @@ run(void)
  	}
  }
  
@@ -1584,7 +1584,7 @@ index 0d1b85e..ab297d0 100644
  void
  usage(void)
  {
-@@ -2143,6 +2256,8 @@ run:
+@@ -2152,6 +2265,8 @@ run:
  
  	setlocale(LC_CTYPE, "");
  	XSetLocaleModifiers("");
@@ -1594,10 +1594,10 @@ index 0d1b85e..ab297d0 100644
  	rows = MAX(rows, 1);
  	tnew(cols, rows);
 -- 
-2.44.0
+2.45.2
 
 
-From 099ad9da9ec19ba7708c5c4f7fa90538e0931d2f Mon Sep 17 00:00:00 2001
+From 82deb46da907d6803b5378b3182b6db24795e732 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:19:17 +0200
 Subject: [PATCH 08/12] Added font2 patch
@@ -1627,7 +1627,7 @@ index 9e88b23..126d8dd 100644
  /*
   * What program is execed by st depends of these precedence rules:
 diff --git a/x.c b/x.c
-index ab297d0..6c588a6 100644
+index e0c1931..8cc2f5b 100644
 --- a/x.c
 +++ b/x.c
 @@ -159,6 +159,8 @@ static void xhints(void);
@@ -1760,10 +1760,10 @@ index ab297d0..6c588a6 100644
  	xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
  	xloadcols();
 -- 
-2.44.0
+2.45.2
 
 
-From 6d5c91a31ad4bdd232b4a315dcad23bf4f84eaf4 Mon Sep 17 00:00:00 2001
+From bb56f6ef614329520b859d8add53c84b5a604b66 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Tue, 17 May 2022 22:20:00 +0200
 Subject: [PATCH 09/12] Added support for keypad prior and next patch
@@ -1786,10 +1786,10 @@ index 126d8dd..6f8c504 100644
  	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
  	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
 -- 
-2.44.0
+2.45.2
 
 
-From d9dcc40adfd5c51a6f2ea6988b5a0ab734bf4679 Mon Sep 17 00:00:00 2001
+From c36ef5b774676a8bee5ed2221fbade5959033830 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Fri, 7 Apr 2023 18:28:50 +0200
 Subject: [PATCH 10/12] Added support w3m images patch
@@ -1799,10 +1799,10 @@ Subject: [PATCH 10/12] Added support w3m images patch
  1 file changed, 2 insertions(+)
 
 diff --git a/x.c b/x.c
-index 6c588a6..1826d9a 100644
+index 8cc2f5b..d17123c 100644
 --- a/x.c
 +++ b/x.c
-@@ -1786,6 +1786,8 @@ vbellbegin() {
+@@ -1795,6 +1795,8 @@ vbellbegin() {
  int
  xstartdraw(void)
  {
@@ -1812,20 +1812,20 @@ index 6c588a6..1826d9a 100644
  }
  
 -- 
-2.44.0
+2.45.2
 
 
-From 285fc338c0118148d32fbff465c0c5cefe812c3e Mon Sep 17 00:00:00 2001
+From b03f473cc6854acaf91c031a8f93d24ec0d24f57 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Fri, 7 Apr 2023 18:39:30 +0200
 Subject: [PATCH 11/12] Added hidecursor patch
 
 ---
- x.c | 32 ++++++++++++++++++++++++++++----
- 1 file changed, 28 insertions(+), 4 deletions(-)
+ x.c | 31 ++++++++++++++++++++++++++++---
+ 1 file changed, 28 insertions(+), 3 deletions(-)
 
 diff --git a/x.c b/x.c
-index 1826d9a..47dc5ae 100644
+index d17123c..710ab05 100644
 --- a/x.c
 +++ b/x.c
 @@ -105,6 +105,11 @@ typedef struct {
@@ -1854,19 +1854,15 @@ index 1826d9a..47dc5ae 100644
  	if (IS_SET(MODE_MOUSE) && !(e->xbutton.state & forcemousemod)) {
  		mousereport(e);
  		return;
-@@ -1233,10 +1245,10 @@ void
- xinit(int cols, int rows)
- {
- 	XGCValues gcvalues;
--	Cursor cursor;
- 	Window parent;
+@@ -1237,6 +1249,7 @@ xinit(int cols, int rows)
+ 	Window parent, root;
  	pid_t thispid = getpid();
  	XColor xmousefg, xmousebg;
 +	Pixmap blankpm;
  
  	if (!(xw.dpy = XOpenDisplay(NULL)))
  		die("can't open display\n");
-@@ -1303,8 +1315,9 @@ xinit(int cols, int rows)
+@@ -1306,8 +1319,9 @@ xinit(int cols, int rows)
  	}
  
  	/* white cursor, black outline */
@@ -1878,7 +1874,7 @@ index 1826d9a..47dc5ae 100644
  
  	if (XParseColor(xw.dpy, xw.cmap, colorname[mousefg], &xmousefg) == 0) {
  		xmousefg.red   = 0xffff;
-@@ -1318,7 +1331,10 @@ xinit(int cols, int rows)
+@@ -1321,7 +1335,10 @@ xinit(int cols, int rows)
  		xmousebg.blue  = 0x0000;
  	}
  
@@ -1890,7 +1886,7 @@ index 1826d9a..47dc5ae 100644
  
  	xw.xembed = XInternAtom(xw.dpy, "_XEMBED", False);
  	xw.wmdeletewin = XInternAtom(xw.dpy, "WM_DELETE_WINDOW", False);
-@@ -1869,6 +1885,8 @@ unmap(XEvent *ev)
+@@ -1878,6 +1895,8 @@ unmap(XEvent *ev)
  void
  xsetpointermotion(int set)
  {
@@ -1899,7 +1895,7 @@ index 1826d9a..47dc5ae 100644
  	MODBIT(xw.attrs.event_mask, set, PointerMotionMask);
  	XChangeWindowAttributes(xw.dpy, xw.win, CWEventMask, &xw.attrs);
  }
-@@ -1990,6 +2008,12 @@ kpress(XEvent *ev)
+@@ -1999,6 +2018,12 @@ kpress(XEvent *ev)
  	Status status;
  	Shortcut *bp;
  
@@ -1913,10 +1909,10 @@ index 1826d9a..47dc5ae 100644
  		return;
  
 -- 
-2.44.0
+2.45.2
 
 
-From c587dddff1e921eaa948c90a4214b8877ac6903a Mon Sep 17 00:00:00 2001
+From 13cb64f33183d4cd4ba6bd41c7d9d4f2a64ccf50 Mon Sep 17 00:00:00 2001
 From: saundersp <pierre.saundersgb@gmail.com>
 Date: Sat, 8 Apr 2023 14:05:09 +0200
 Subject: [PATCH 12/12] Added fix keyboard input patch
@@ -2683,5 +2679,5 @@ index 6f8c504..07be65c 100644
  
  /*
 -- 
-2.44.0
+2.45.2
 
