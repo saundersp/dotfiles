@@ -237,7 +237,7 @@ bindsym $mod+r mode "Resize"
 
 set $mode_system System (l) lock, (e) logout, (r) reboot, (p) poweroff, (b) Toggle bluetooth
 mode "$mode_system" {
-	# Sometimes i3lock doesn't work properly, just chmod 4755 $(whereis i3lock)
+	# Sometimes i3lock doesn't work properly, just `chmod 4755 $(command -v i3lock)`
 	bindsym l exec --no-startup-id i3lock -i $(cat ~/.fehbg | sed 1d | cut -d "'" -f 2) -e -f, mode "default"
 	bindsym e exec --no-startup-id i3-msg exit
 	bindsym r exec --no-startup-id loginctl reboot, mode "default"
