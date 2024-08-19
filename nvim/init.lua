@@ -690,8 +690,8 @@ local lazy_plugins = {
 			{ '<leader>mM', '<cmd>Make<CR>',			 desc = 'Make the default recipe in cwd' },
 			{ '<leader>ms', '<cmd>Start -wait=error make start<CR>', desc = 'Make the "start" recipe in cwd' },
 			{ '<leader>mt', '<cmd>Start -wait=always make test<CR>', desc = 'Make the "test" recipe in cwd' },
-			{ '<leader>mc', '<cmd>Make -wait=error clean<CR>',	 desc = 'Make the "clean" recipe in cwd' },
-			{ '<leader>mC', '<cmd>Make -wait=error mrproper<CR>',	 desc = 'Make the "mrproper" recipe in cwd' },
+			{ '<leader>mc', '<cmd>Make clean<CR>',			 desc = 'Make the "clean" recipe in cwd' },
+			{ '<leader>mC', '<cmd>Make mrproper<CR>',		 desc = 'Make the "mrproper" recipe in cwd' },
 			{ '<leader>md', '<cmd>Start docker compose build<CR>',	 desc = 'Build all "docker" compose tag in cwd' },
 			-- TUI programs
 			{ '<leader>og', '<cmd>Start lazygit<CR>',		 desc = 'Open Lazygit' },
