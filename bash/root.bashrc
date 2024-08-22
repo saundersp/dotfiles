@@ -184,34 +184,73 @@ preview_csv(){
 command -v fastfetch >> /dev/null && [[ $- == *i* ]] && fastfetch
 
 if command -v python >> /dev/null; then
-	# Activate the python virtual environment in the current folder
-	__cmd_checker__ activate
-	activate(){
-		if [ -n "$1" ] || [ "$1" = 'h' ] || [ "$1" = '-h' ]|| [ "$1" = 'help' ]|| [ "$1" = '--help' ]; then
-			echo "Usage: activate [h|-h|help|--help] to enable the current folder's python virtual environment"
-		elif [ -f venv/Scripts/activate ]; then . venv/Scripts/activate
-		elif [ -f venv/bin/activate ]; then . venv/bin/activate
-		else echo 'Python virtual environment not detected !'; return 1
-		fi
-	}
+	USAGE="Python virtual environment helper
+Implemented by @saundersp
 
-	create_venv(){
-		if [ -n "$1" ] || [ "$1" = 'h' ] || [ "$1" = '-h' ]|| [ "$1" = 'help' ]|| [ "$1" = '--help' ]; then
-			echo 'Usage: create_venv [h|-h|help|--help] to create and enable a virtual python environment'
-			return 0
-		fi
-		if [ -d venv ]; then
-			echo 'A python environment already exists'
-			return 1
-		fi
-		if [ ! -f requirements.txt ]; then
-			echo 'Cannot create venv : Missing requirements.txt file'
-			return 1
-		fi
+USAGE: py FLAG [ARGS]
+Available flags:
+	-a, a, activate, --activate		Activate the virtual environment in the current folder
+	-c, c, create, --create			Create and enable a virtual environment in the current folder
+	-r, r, requirements, --requirements	Create and enable a virtual environment in the current folder
+	-h, h, help, --help			Show this help message"
 
-		python -m venv --upgrade-deps venv
-		activate "$@"
-		pip install -r requirements.txt
+	__cmd_checker__ py
+	py(){
+		case "$1" in
+			-a|a|activate|--activate)
+				if [ -n "$2" ] || [ "$2" = 'h' ] || [ "$2" = '-h' ]|| [ "$2" = 'help' ]|| [ "$2" = '--help' ]; then
+					echo "Usage: activate [h|-h|help|--help] to enable the current folder's python virtual environment"
+				elif [ -f venv/Scripts/activate ]; then . venv/Scripts/activate
+				elif [ -f venv/bin/activate ]; then . venv/bin/activate
+				else echo 'Python virtual environment not detected !'; return 1
+				fi
+			;;
+			-c|c|create|--create)
+				if [ -d venv ]; then
+					echo 'A python environment already exists'
+					return 1
+				elif [ ! -f requirements.txt ]; then
+					echo 'Cannot create venv : Missing requirements.txt file'
+					return 1
+				fi
+
+				python -m venv --upgrade-deps venv
+				py activate
+				pip install -r requirements.txt
+			;;
+			-u|u|update|--update)
+				if [ ! -d venv ]; then
+					echo 'Python virtual environment not detected !'
+					return 1
+				elif [ ! -f requirements.txt ]; then
+					echo 'Cannot updates venv : Missing requirements.txt file'
+					return 1
+				elif [ -n "$VIRTUAL_ENV" ] || [ -d venv ]; then
+					echo 'Assuming to update the local environment'
+					py activate
+				fi
+
+				grep -e '^[^#]' requirements.txt | cut -d = -f 1 | xargs pip install -U
+			;;
+			-r|r|requirements|--requirements)
+				if [ ! -d venv ]; then
+					echo 'Python virtual environment not detected !'
+					return 1
+				elif [ ! -f requirements.txt ]; then
+					echo 'Cannot create venv : Missing requirements.txt file'
+					return 1
+				elif [ -n "$VIRTUAL_ENV" ] || [ -d venv ]; then
+					echo 'Assuming to update the local environment'
+					py activate
+				fi
+
+				TEMP_FILE=$(mktemp)
+				pip freeze | grep -E "($(grep -e '^[^#]' requirements.txt | cut -d = -f 1 | paste -sd \|))=" > "$TEMP_FILE"
+				nvim -d requirements.txt "$TEMP_FILE"
+			;;
+			-h|h|help|--help) echo "$USAGE" ;;
+			*) echo "$USAGE" && return 1 ;;
+		esac
 	}
 fi
 
@@ -465,8 +504,7 @@ __help_me__(){
 	}
 
 	echo -e "${BOLD}Available commands :${NO_COLOUR}"
-	tprint_cmd 'activate' 'Activate the python virtual environment'
-	tprint_cmd 'create_venv' 'Create and enable a virtual python environment'
+	tprint_cmd 'pv' 'Python virtual environment helper'
 	tprint_cmd 'preview_csv' 'Preview a csv file' '<file>'
 	tprint_cmd 'vid' 'Shortcut to nvim diff mode' '<file1> <file2>'
 	tprint_cmd 'll' 'Detailed ls' '<directory>'
