@@ -1,0 +1,5 @@
+services:
+  dotfiles:
+    image: saundersp/dotfiles
+    build: .
+    pull_policy: never
