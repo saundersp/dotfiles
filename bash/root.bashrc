@@ -165,7 +165,7 @@ command -v ip >> /dev/null && alias ip='ip --color=auto'
 command -v wget >> /dev/null && alias wget='wget --hsts-file=$XDG_DATA_HOME/wget-hsts'
 # Replace default cat command
 command -v bat >> /dev/null && alias cat='bat --tabs=8'
-command -v ncdu >> /dev/null && alias ncdu="ncdu --color=dark -t $(nproc)"
+command -v ncdu >> /dev/null && alias ncdu='ncdu --color=dark -t $(nproc)'
 
 # Simple command to preview csv files
 __cmd_checker__ preview_csv
