@@ -504,7 +504,7 @@ __help_me__(){
 	}
 
 	echo -e "${BOLD}Available commands :${NO_COLOUR}"
-	tprint_cmd 'pv' 'Python virtual environment helper'
+	tprint_cmd 'py' 'Python virtual environment helper'
 	tprint_cmd 'preview_csv' 'Preview a csv file' '<file>'
 	tprint_cmd 'vid' 'Shortcut to nvim diff mode' '<file1> <file2>'
 	tprint_cmd 'll' 'Detailed ls' '<directory>'
