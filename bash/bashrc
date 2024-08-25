@@ -98,7 +98,7 @@ __setprompt() {
 	PS1="$PS1\[${BLUE}\]$(git branch 2>>/dev/null | sed -n 's/\* \(.*\)/ ( \1)/p')"
 
 	# Python virtual environment
-	PS1="$PS1\[${YELLOW}\]$(test -n "$VIRTUAL_ENV" >> /dev/null && echo " ( $(basename "$VIRTUAL_ENV"))")"
+	PS1="$PS1\[${YELLOW}\]$(test -n "$VIRTUAL_ENV" >> /dev/null && echo ' ( venv)')"
 
 	# Skip to the next line
 	PS1="$PS1\r\n\[${USER_COLOUR}\]└─>\[${NO_COLOUR}\] "
@@ -191,30 +191,39 @@ preview_csv(){
 command -v fastfetch >> /dev/null && [[ $- == *i* ]] && fastfetch
 
 if command -v python >> /dev/null; then
-
 	USAGE="Python virtual environment helper
 Implemented by @saundersp
 
-USAGE: py FLAG [ARGS]
+USAGE: py FLAG
 Available flags:
-	-a, a, activate, --activate		Activate the virtual environment in the current folder
-	-c, c, create, --create			Create and enable a virtual environment in the current folder
-	-r, r, requirements, --requirements	Create and enable a virtual environment in the current folder
-	-h, h, help, --help			Show this help message"
+	-a, a, activate, --activate		Activate the virtual environment in the current folder.
+	-c, c, create, --create			Create and enable a virtual environment in the current folder.
+	-u, u, update, --update			Update every dependencies in the requirements.txt file.
+	-U, U, uninstall, --uninstall		Remove the virtual environment in the current folder.
+	-r, r, requirements, --requirements	Compare the installed packages version with those included in the requirements.txt file.
+	-h, h, help, --help			Show this help message."
+
+	VENV_PATH='./.venv'
 
 	__cmd_checker__ py
 	py(){
 		case "$1" in
 			-a|a|activate|--activate)
-				if [ -n "$2" ] || [ "$2" = 'h' ] || [ "$2" = '-h' ]|| [ "$2" = 'help' ]|| [ "$2" = '--help' ]; then
-					echo "Usage: activate [h|-h|help|--help] to enable the current folder's python virtual environment"
-				elif [ -f venv/Scripts/activate ]; then . venv/Scripts/activate
-				elif [ -f venv/bin/activate ]; then . venv/bin/activate
-				else echo 'Python virtual environment not detected !'; return 1
+				if [ -f "$VENV_PATH"/Scripts/activate ]; then . "$VENV_PATH"/Scripts/activate
+				elif [ -f "$VENV_PATH"/bin/activate ]; then . "$VENV_PATH"/bin/activate
+				else
+					if [ -f requirements.txt ]; then
+						echo 'requirements.txt file found !'
+						read -r -p 'Would you like to install a Python virtual environment in the current folder ? (Y/N): ' ANS && [[ "$ANS" == '[yY]' || "$ANS" == '[yY][eE][sS]' ]] || return 1
+						py c
+					else
+						echo 'No Python virtual environment not detected'
+						return 1
+					fi
 				fi
 			;;
 			-c|c|create|--create)
-				if [ -d venv ]; then
+				if [ -d "$VENV_PATH" ]; then
 					echo 'A python environment already exists'
 					return 1
 				elif [ ! -f requirements.txt ]; then
@@ -222,32 +231,42 @@ Available flags:
 					return 1
 				fi
 
-				python -m venv --upgrade-deps venv
+				echo 'Creating Python virtual environment with updated dependencies...'
+				python -m venv --upgrade-deps "$VENV_PATH"
+				echo 'Activating Python virtual environment...'
 				py activate
+				echo 'Installing requirements...'
 				pip install -r requirements.txt
 			;;
 			-u|u|update|--update)
-				if [ ! -d venv ]; then
+				if [ ! -d "$VENV_PATH" ]; then
 					echo 'Python virtual environment not detected !'
 					return 1
 				elif [ ! -f requirements.txt ]; then
-					echo 'Cannot updates venv : Missing requirements.txt file'
+					echo 'Cannot update virtual environment : Missing requirements.txt file'
 					return 1
-				elif [ -n "$VIRTUAL_ENV" ] || [ -d venv ]; then
+				elif [ -n "$VIRTUAL_ENV" ] || [ -d "$VENV_PATH" ]; then
 					echo 'Assuming to update the local environment'
 					py activate
 				fi
 
+				echo 'Updating requirements...'
 				grep -e '^[^#]' requirements.txt | cut -d = -f 1 | xargs pip install -U
 			;;
+			-U|U|uninstall|--uninstall)
+				if [ -n "$VIRTUAL_ENV" ]; then
+					echo 'Deactivating Python virtual environment...'
+					deactivate
+				fi
+				echo 'Uninstalling Python virtual environment...'
+				rm -rf "$VENV_PATH"
+				echo 'Done.'
+			;;
 			-r|r|requirements|--requirements)
-				if [ ! -d venv ]; then
-					echo 'Python virtual environment not detected !'
+				if [ ! -f requirements.txt ]; then
+					echo 'Cannot fetch packages version : Missing requirements.txt file'
 					return 1
-				elif [ ! -f requirements.txt ]; then
-					echo 'Cannot create venv : Missing requirements.txt file'
-					return 1
-				elif [ -n "$VIRTUAL_ENV" ] || [ -d venv ]; then
+				elif [ -z "$VIRTUAL_ENV" ] || [ -d "$VENV_PATH" ]; then
 					echo 'Assuming to update the local environment'
 					py activate
 				fi
