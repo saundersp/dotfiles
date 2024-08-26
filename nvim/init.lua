@@ -1084,7 +1084,8 @@ local lazy_plugins = {
 	},
 	-- Hex editing done right
 	{ 'RaafatTurki/hex.nvim',
-		keys = { { '<leader>x', '<cmd>HexToggle<CR>', 'Toggle between hex view and normal view' } },
+		config = true,
+		keys = { { '<leader>xt', '<cmd>HexToggle<CR>', 'Toggle between hex view and normal view' } },
 		cmd = { 'HexDump', 'HexAssemble', 'HexToggle' }
 	},
 	-- Better navigation inside tmux
