@@ -812,7 +812,25 @@ local lazy_plugins = {
 			vim.o.timeout = true
 			vim.o.timeoutlen = 200
 		end,
-		opts = { layout = { align = 'center' } },
+		opts = {
+			preset = 'modern',
+			spec = {
+				{
+					mode = { 'n', 'v' },
+					{	'<leader>a',	group = 'Arduino' },
+					{	'<leader>h',	group = 'Git' },
+					{	'<leader>d',	group = 'Debugger' },
+					{	'<leader>s',	group = 'Search' },
+					{	'<leader>c',	group = 'Color picker' },
+					{	'<leader>W',	group = 'Workspace' },
+					{	'<leader>m',	group = 'Makefile scripts' },
+					{	'<leader>o',	group = 'External tools' },
+					{	'[',		group = 'prev' },
+					{	']',		group = 'next' },
+				}
+			}
+		},
+		keys = { { '<leader>?', function() require('which-key').show({}) end, desc = 'Buffer Local Keymaps (which-key)' } },
 		cmd = 'WhichKey'
 	},
 	-- Stylize the bufferline
