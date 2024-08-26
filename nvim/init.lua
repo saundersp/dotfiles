@@ -514,8 +514,8 @@ local lazy_plugins = {
 						name = 'Launch file',
 						program = '${file}',
 						pythonPath = function()
-							if vim.fn.isdirectory('./venv') == 1 then
-								return './venv/bin/python'
+							if vim.fn.isdirectory('./.venv') == 1 then
+								return './.venv/bin/python'
 							else
 								return '/usr/bin/python'
 							end
@@ -1127,7 +1127,7 @@ vim.o.updatetime				= 200										-- Time before CursorHold triggers
 vim.bo.swapfile					= false										-- Disable swapfile usage
 vim.o.wildmode					= 'longest,list,full'								-- Enable autocompletion in COMMAND mode
 vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
-vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
+vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/.venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
 vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
 Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
