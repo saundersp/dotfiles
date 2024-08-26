@@ -213,11 +213,11 @@ Available flags:
 				elif [ -f "$VENV_PATH"/bin/activate ]; then . "$VENV_PATH"/bin/activate
 				else
 					if [ -f requirements.txt ]; then
-						echo 'requirements.txt file found !'
-						read -r -p 'Would you like to install a Python virtual environment in the current folder ? (Y/N): ' ANS && [[ "$ANS" == '[yY]' || "$ANS" == '[yY][eE][sS]' ]] || return 1
+						echo 'Python virtual environment not detected but a requirements.txt is found'
+						read -r -p 'Install a Python virtual environment ? (Y/N): ' ANS && [[ "$ANS" == [yY] || "$ANS" == [yY][eE][sS] ]] || return 1
 						py c
 					else
-						echo 'No Python virtual environment not detected'
+						echo 'No Python virtual environment or requirements.txt detected'
 						return 1
 					fi
 				fi
@@ -225,13 +225,15 @@ Available flags:
 			-c|c|create|--create)
 				if [ -d "$VENV_PATH" ]; then
 					echo 'A python environment already exists'
-					return 1
-				elif [ ! -f requirements.txt ]; then
+					read -r -p 'Reinstall ? (Y/N): ' ANS && [[ "$ANS" == [yY] || "$ANS" == [yY][eE][sS] ]] || return 1
+					py U
+				fi
+				if [ ! -f requirements.txt ]; then
 					echo 'Cannot create venv : Missing requirements.txt file'
 					return 1
 				fi
 
-				echo 'Creating Python virtual environment with updated dependencies...'
+				echo 'Creating Python virtual environment...'
 				python -m venv --upgrade-deps "$VENV_PATH"
 				echo 'Activating Python virtual environment...'
 				py activate
@@ -240,8 +242,15 @@ Available flags:
 			;;
 			-u|u|update|--update)
 				if [ ! -d "$VENV_PATH" ]; then
-					echo 'Python virtual environment not detected !'
-					return 1
+					echo 'Python virtual environment not detected but a requirements.txt is found'
+					read -r -p 'Install a Python virtual environment with updated requirements ? (Y/N): ' ANS && [[ "$ANS" == [yY] || "$ANS" == [yY][eE][sS] ]] || return 1
+					echo 'Creating Python virtual environment with updated dependencies...'
+					python -m venv --upgrade-deps "$VENV_PATH"
+					echo 'Activating Python virtual environment...'
+					py activate
+					echo 'Installing with updated requirements...'
+					grep -e '^[^#]' requirements.txt | cut -d = -f 1 | xargs pip install -U
+					return 0
 				elif [ ! -f requirements.txt ]; then
 					echo 'Cannot update virtual environment : Missing requirements.txt file'
 					return 1
