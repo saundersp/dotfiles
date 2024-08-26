@@ -527,16 +527,68 @@ local lazy_plugins = {
 			local open_callback = function() require('dapui').open(); require('nvim-dap-virtual-text').enable() end
 			dap.listeners.before.attach.dapui_config = open_callback
 			dap.listeners.before.launch.dapui_config = open_callback
+
+			--- NOTE Temporary function to jump to next/previous breakpoint
+			--- It uses an unstable API and therefore can break at any point
+			--- See : https://github.com/mfussenegger/nvim-dap/issues/792
+			--- Function credits to @chrisgrieser
+			---@param dir 'next'|'prev'
+			local function gotoBreakpoint(dir)
+				local breakpoints = require('dap.breakpoints').get()
+				if #breakpoints == 0 then
+					vim.notify('No breakpoints set', vim.log.levels.WARN)
+					return
+				end
+				local points = {}
+				for bufnr, buffer in pairs(breakpoints) do
+					for _, point in ipairs(buffer) do
+						table.insert(points, { bufnr = bufnr, line = point.line })
+					end
+				end
+
+				local current = {
+					bufnr = vim.api.nvim_get_current_buf(),
+					line = vim.api.nvim_win_get_cursor(0)[1],
+				}
+
+				local nextPoint
+				for i = 1, #points do
+					local isAtBreakpointI = points[i].bufnr == current.bufnr and points[i].line == current.line
+					if isAtBreakpointI then
+						local nextIdx = dir == 'next' and i + 1 or i - 1
+						if nextIdx > #points then nextIdx = 1 end
+						if nextIdx == 0 then nextIdx = #points end
+						nextPoint = points[nextIdx]
+						break
+					end
+				end
+				if not nextPoint then nextPoint = points[1] end
+
+				vim.cmd(('buffer +%s %s'):format(nextPoint.line, nextPoint.bufnr))
+			end
+			nmap(']b', function() gotoBreakpoint('next') end, 'Go to the next breakpoint')
+			nmap('[b', function() gotoBreakpoint('prev') end, 'Go to the previous breakpoint')
 		end,
 		keys = {
+			{ '<F9>',	'<cmd>DapToggleBreakpoint<CR>',		       desc = 'Debug toggle Breakpoint' },
 			{ '<leader>db', '<cmd>DapToggleBreakpoint<CR>',		       desc = 'Debug toggle Breakpoint' },
+			{ '<leader>dB', function()
+					local cond = vim.fn.input('Condition: ')
+					if cond.len > 0 then
+						require('dap').toggle_breakpoint(cond)
+					end
+				end,						       desc = 'Debug toggle Breakpoint' },
+			{ '<F5>',	 '<cmd>DapContinue<CR>',		       desc = 'Debug Continue' },
 			{ '<leader>dc', '<cmd>DapContinue<CR>',			       desc = 'Debug Continue' },
 			{ '<leader>dC', function() require('dap').run_to_cursor() end, desc = 'Debug run to Cursor' },
+			{ '<F10>',	'<cmd>DapStepOver<CR>',			       desc = 'Debug Step Next' },
 			{ '<leader>dn', '<cmd>DapStepOver<CR>',			       desc = 'Debug Step Next' },
-			{ '<leader>do', '<cmd>DapStepOver<CR>',			       desc = 'Debug Step Over' },
+			{ '<F11>',	'<cmd>DapStepInto<CR>',			       desc = 'Debug Step Into' },
 			{ '<leader>di', '<cmd>DapStepInto<CR>',			       desc = 'Debug Step Into' },
-			{ '<leader>dO', '<cmd>DapStepOut<CR>',			       desc = 'Debug Step Out' },
+			{ '<F12>',	'<cmd>DapStepOut<CR>',			       desc = 'Debug Step Out' },
+			{ '<leader>do', '<cmd>DapStepOut<CR>',			       desc = 'Debug Step Out' },
 			{ '<leader>dt', '<cmd>DapTerminate<CR>',		       desc = 'Debug Terminate' },
+			{ '<leader>dl', '<cmd>DapToggleRepl<CR>',		       desc = 'Debug up in the Stacktrace' },
 			{ '<leader>dk', function() require('dap').up() end,	       desc = 'Debug up in the Stacktrace' },
 			{ '<leader>dj', function() require('dap').down() end,	       desc = 'Debug down in the Stacktrace' },
 			{ '<leader>dp', function() require('dap').pause() end,	       desc = 'Debug Pause' },
