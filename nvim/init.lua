@@ -91,14 +91,6 @@ local function str_to_list(str)
 	return list
 end
 
---- Get the realpath of a given absolute/relative path of a file
----@param path string path of a given file
----@return string result directory of the file
----@nodiscard
-local function realpath(path)
-	return path:sub(0, path:find('/[^/]*$'))
-end
-
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Plugin enabler
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -820,7 +812,6 @@ local lazy_plugins = {
 			local startify = require('alpha.themes.startify')
 
 			startify.section.header.opts.position = 'center'
-			-- cspell:disable
 			startify.section.header.val = {
 				"                        ...',;;:cccccccc:;,..",
 				"                    ..,;:cccc::::ccccclloooolc;'.",
@@ -839,7 +830,6 @@ local lazy_plugins = {
 				"              ...............''',,,;;;,,''''''......",
 				"                   ............................"
 			}
-			-- cspell:enable
 
 			startify.section.top_buttons.val = {
 				startify.button('e', ' New file',    '<cmd>ene<CR>'),			-- nf-fa-file
@@ -942,19 +932,6 @@ local lazy_plugins = {
 		config = function()
 			-- none-ls is a drop-in replacement for null-ls. Therefore it uses a mix of the old and new names
 			local none_ls = require('null-ls')
-			local cspell = require('cspell')
-			local cspell_config = {
-				find_json = function()
-					return realpath(vim.env['MYVIMRC']) .. 'cspell.json'
-				end,
-				on_add_to_json = function(payload)
-					if string.len(run_cmd('command -v jq')) ~= 0 then
-						local cp = payload.cspell_config_path
-						local cmd = string.format("cat %s | jq --tab -S '.words |= sort' | tee %s", cp, cp)
-						run_cmd(cmd)
-					end
-				end
-			}
 
 			-- See available configs at : https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md
 			-- And even additional configs at : https://github.com/nvimtools/none-ls-extras.nvim/
@@ -974,18 +951,6 @@ local lazy_plugins = {
 							'--ignore=W191,E302,E704,E101,E128,E265,E251,E301,E305,E731'
 						}
 					})
-				},
-				cspell = {
-					-- cspell:ignore akinsho alexghergh arduino babu bashls bnext bprevious bufnr clangd
-					-- cspell:ignore cppdbg danymat dapui davidmh ddkkp debugpy Devers hadolint Hamsta
-					-- cspell:ignore hlsearch hrsh Interpunct invpaste isdirectory iskeyword kylechui
-					-- cspell:ignore lhaskell libuv libuv lspconfig lualine luap luasnip lukas mbbill
-					-- cspell:ignore mfussenegger Munif MYVIMRC nargs netrw netrw nmap noautocmd nodiscard
-					-- cspell:ignore noice noselect ntpeters nvimtools petertriho pyright rcarriga redir
-					-- cspell:ignore Rubix saadparwaiz setloclist startify texthl tommcdo tpope Turki
-					-- cspell:ignore Ueberzug vmap
-					cspell.diagnostics.with({ config = cspell_config }),
-					cspell.code_actions.with({ config = cspell_config })
 				},
 				markdownlint = {
 					none_ls.builtins.formatting.markdownlint,
@@ -1031,8 +996,6 @@ local lazy_plugins = {
 			{ 'nvimtools/none-ls.nvim', cmd = { 'NullLsLog', 'NullLsInfo' } },
 			-- Adding extra sources not included in none-ls
 			'nvimtools/none-ls-extras.nvim',
-			-- Adding support for cspell diagnostics and code actions
-			'davidmh/cspell.nvim',
 			-- Shellcheck diagnostics and code-actions sources for none-ls.nvim
 			'gbprod/none-ls-shellcheck.nvim',
 			-- Lua library functions

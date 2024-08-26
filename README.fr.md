@@ -4,7 +4,7 @@ _Lisez ceci dans d'autres langues: [English](README.md)_
 
 ## Logiciels utilisés
 
-- neovim : Unique fichier de configuration utilisateur init.lua et cspell.json, ainsi que la configuration root root_init.lua sans plugins
+- neovim : Unique fichier de configuration utilisateur init.lua, ainsi que la configuration root root_init.lua sans plugins
 - git : email et nom globaux, autorise certains dossier sûrs
 - bash : dossier shell_profile avec bashrc utilisateur et root.bashrc qui ne diffère que de l'helper AUR et les logiciels de bureau (X11)
 - tmux : Configuration utilisateur et root, la configuration root essayera de lire le niveau de batterie et de luminosité, l'utilisateur est plus minimal

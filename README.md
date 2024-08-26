@@ -4,7 +4,7 @@ _Read this in other languages: [Français](README.fr.md)_
 
 ## Software used
 
-- neovim : User has a single init.lua config and cspell.json, root config has root_init.lua without plugins
+- neovim : User has a single init.lua config, root config has root_init.lua without plugins
 - git : Global email and name, allows certain safe directories
 - bash : shell_profile directory with user bashrc and root.bashrc only differs by AUR helper and desktop software (X11)
 - tmux : User and root config, root config tries to read battery and brightness level, user is more minimal
