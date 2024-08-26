@@ -1160,12 +1160,44 @@ local lazy_plugins = {
 	}
 }
 
-require('lazy').setup({
+local lazy = require('lazy')
+lazy.setup({
 	spec = lazy_plugins,
 	defaults = { lazy = true },
 	rocks = { enabled = false },
+	ui = {
+		custom_keys = {
+			['<localleader>i'] = {
+				function(plug)
+					local bufnr = vim.api.nvim_create_buf(false, false)
+					local width = 120
+					local borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰' }
+					local content = vim.inspect(plug)
+					local contents = str_to_list(content)
+					local height = math.min(40, #contents)
+
+					local win_id, _ = require('plenary.popup').create(bufnr, {
+						title = 'Configuration of ' .. plug.name,
+						line = math.floor((vim.o.lines - height) / 2),
+						col = math.floor((vim.o.columns - width) / 2),
+						minwidth = width,
+						minheight = height,
+						borderchars = borderchars,
+					})
+					vim.keymap.set({ 'n', 'v' }, 'q', function() vim.api.nvim_win_close(win_id, true) end, { silent = true, buffer = bufnr })
+
+					vim.api.nvim_set_option_value('number', true, { win = win_id })
+					vim.api.nvim_set_option_value('buftype', 'nowrite', { buf = bufnr })
+					vim.api.nvim_set_option_value('bufhidden', 'delete', { buf = bufnr })
+					vim.api.nvim_set_option_value('filetype', 'lua', { buf = bufnr })
+					vim.api.nvim_buf_set_lines(bufnr, 0, #content, false, contents)
+					vim.api.nvim_set_option_value('modifiable', false, { buf = bufnr })
+				end,
+				desc = 'Inspect Plugin'
+			}
+		}
+	}
 })
-local lazy = require('lazy')
 nmap('<leader>lo', lazy.home,	 'Open Lazy plugin manager main menu')
 nmap('<leader>lp', lazy.profile, 'Open lazy loading profiling results')
 
