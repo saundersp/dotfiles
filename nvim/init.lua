@@ -197,11 +197,11 @@ local lazy_plugins = {
 			telescope.setup({
 				defaults = { mappings = { i = { ['<c-d>'] = actions.delete_buffer } } },
 				extensions = {
-					['ui-select'] = { require('telescope.themes').get_dropdown({}) },
+					['ui-select'] = { require('telescope.themes').get_cursor({}) },
 					media_files = { filetypes = { 'png', 'svg', 'webp', 'jpg', 'jpeg' } }
 				}
 			})
-			vim.tbl_map(telescope.load_extension, { 'ui-select', 'noice', 'dap', 'media_files', 'bibtex' })
+			vim.tbl_map(telescope.load_extension, { 'ui-select', 'noice', 'dap', 'media_files' })
 		end,
 		keys = {
 			{ 'gr',		'<cmd>Telescope lsp_references<CR>',		    desc = 'LSP: Goto references' },
@@ -215,7 +215,6 @@ local lazy_plugins = {
 			{ '<leader>sk', '<cmd>Telescope keymaps<CR>',			    desc = 'Search keymaps' },
 			{ '<leader>sc', '<cmd>Telescope commands<CR>',			    desc = 'Search commands' },
 			{ '<leader>sb', '<cmd>Telescope buffers<CR>',			    desc = 'Search buffers' },
-			{ '<leader>sB', '<cmd>Telescope bibtex<CR>',			    desc = 'Search bibtex entries' },
 			{ '<leader>sm', '<cmd>Telescope media_files<CR>',		    desc = 'Search media files' },
 			{ '<leader>ss', '<cmd>Telescope resume<CR>',			    desc = 'Search resume' },
 			{ '<leader>st', '<cmd>TodoTelescope keywords=TODO,FIX<CR>',	    desc = 'Search todos' },
@@ -223,7 +222,7 @@ local lazy_plugins = {
 			{ '<leader>sn', '<cmd>Telescope notify<CR>',			    desc = 'Search notifications (powered by notify)' },
 			{ '<leader>dh', '<cmd>Telescope dap commands<CR>',		    desc = 'Dap search commands' },
 			{ '<leader>dv', '<cmd>Telescope dap variables<CR>',		    desc = 'Dap search variables' },
-			{ '<leader>dB', '<cmd>Telescope dap list_breakpoints<CR>',	    desc = 'Dap search breakpoints' }
+			{ '<leader>sp', '<cmd>Telescope dap list_breakpoints<CR>',	    desc = 'Dap search breakpoints' }
 		},
 		cmd = 'Telescope',
 		dependencies = {
@@ -246,9 +245,7 @@ local lazy_plugins = {
 			-- Extension to preview media files using Ueberzug
 			'nvim-telescope/telescope-media-files.nvim',
 			-- [WIP] Popup API from vim in Neovim (needed for telescope-media-files). Will eventually be merged upstream
-			'nvim-lua/popup.nvim',
-			-- Extension to search and paste bibtex entries into your TeX files
-			'nvim-telescope/telescope-bibtex.nvim'
+			'nvim-lua/popup.nvim'
 		}
 	},
 	-- Neovim plugin to manage the file system and other tree like structures
