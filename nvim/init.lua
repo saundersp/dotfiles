@@ -749,10 +749,11 @@ local lazy_plugins = {
 					'bash', 'c', 'cpp', 'cuda', 'diff', 'haskell', 'html', 'javascript',
 					'jsdoc', 'json', 'jsonc', 'lua', 'luadoc', 'luap', 'markdown_inline',
 					'python', 'query', 'regex', 'toml', 'tsx', 'typescript', 'vim',
-					'vimdoc', 'xml', 'yaml'
+					'vimdoc', 'xml', 'yaml', 'typst',
+					-- Requires tree-sitter-cli
+					'latex'
 				},
-				highlight = { enable = true },
-				indent = { enable = false }
+				highlight = { enable = true }
 			})
 		end,
 		cmd = {
