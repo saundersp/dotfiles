@@ -406,8 +406,6 @@ local lazy_plugins = {
 		dependencies = {
 			-- Automatically install LSPs to stdpath for neovim
 			'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim',
-			-- Useful status updates for LSP
-			{ 'j-hui/fidget.nvim', opts = { progress = { ignore = { 'null-ls' } } } },
 			-- Additional lua configurations, make nvim stuff amazing
 			{ 'folke/neodev.nvim', opts = { library = { plugins = { 'nvim-dap-ui' }, types = true } } },
 			-- Auto completion functionalities
