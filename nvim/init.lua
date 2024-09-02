@@ -574,10 +574,10 @@ local lazy_plugins = {
 			{ '<leader>db', '<cmd>DapToggleBreakpoint<CR>',		       desc = 'Debug toggle Breakpoint' },
 			{ '<leader>dB', function()
 					local cond = vim.fn.input('Condition: ')
-					if cond.len > 0 then
+					if #cond > 0 then
 						require('dap').toggle_breakpoint(cond)
 					end
-				end,						       desc = 'Debug toggle Breakpoint' },
+				end,						       desc = 'Debug toggle conditional breakpoint' },
 			{ '<F5>',	 '<cmd>DapContinue<CR>',		       desc = 'Debug Continue' },
 			{ '<leader>dc', '<cmd>DapContinue<CR>',			       desc = 'Debug Continue' },
 			{ '<leader>dC', function() require('dap').run_to_cursor() end, desc = 'Debug run to Cursor' },
