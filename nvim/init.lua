@@ -367,7 +367,9 @@ local lazy_plugins = {
 				bashls = {},
 				pyright = {},
 				texlab = {},
-				docker_compose_language_service = {}
+				docker_compose_language_service = {},
+				marksman = {},
+				typst_lsp = {}
 			}
 
 			require('mason-lspconfig').setup({
