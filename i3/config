@@ -104,6 +104,8 @@ set $ws9 9
 # nf-fa-cog
 set $ws10 10: 
 
+# NOTE Get window's class name with xprop
+
 # MainDesktop startup layout
 #assign [class="Synergy"] workspace $ws10
 #assign [class="pulsemixer"] workspace $ws10
