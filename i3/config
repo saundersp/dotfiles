@@ -226,8 +226,8 @@ mode "Resize" {
 
 	bindsym 0 gaps inner all set 0
 	bindsym Shift+0 gaps outer all set 0
-	bindsym parenright gaps inner all set $inner_gaps
-	bindsym Shift+parenright gaps outer all set $outer_gaps
+	bindsym apostrophe gaps inner all set $inner_gaps
+	bindsym Shift+apostrophe gaps outer all set $outer_gaps
 	bindsym minus gaps inner all minus 1
 	bindsym plus gaps inner all plus 1
 	bindsym Shift+minus gaps outer all minus 1
