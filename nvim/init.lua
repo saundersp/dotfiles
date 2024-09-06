@@ -557,7 +557,7 @@ local lazy_plugins = {
 
 				local current = {
 					bufnr = vim.api.nvim_get_current_buf(),
-					line = vim.api.nvim_win_get_cursor(0)[1],
+					line = vim.api.nvim_win_get_cursor(0)[1]
 				}
 
 				local nextPoint
@@ -780,7 +780,6 @@ local lazy_plugins = {
 			-- Highlight, edit, and navigate code
 			'nvim-treesitter/nvim-treesitter'
 		}
-
 	},
 	-- Colourize multiple inner level to ( [ {
 	{ 'HiPhish/rainbow-delimiters.nvim',
@@ -835,7 +834,7 @@ local lazy_plugins = {
 					{	'<leader>m',	group = 'Makefile scripts' },
 					{	'<leader>o',	group = 'External tools' },
 					{	'[',		group = 'prev' },
-					{	']',		group = 'next' },
+					{	']',		group = 'next' }
 				}
 			}
 		},
@@ -965,7 +964,7 @@ local lazy_plugins = {
 						-- Hide yanked messages
 						{ find = '%d lines yanked' },
 						-- Hide indent messages
-						{ find = '%d lines [><]ed %d time' },
+						{ find = '%d lines [><]ed %d time' }
 					}
 				},
 				opts = { skip = true }
@@ -1147,7 +1146,7 @@ local lazy_plugins = {
 					'RainbowDelimiterRed', 'RainbowDelimiterYellow',
 					'RainbowDelimiterBlue', 'RainbowDelimiterOrange',
 					'RainbowDelimiterGreen', 'RainbowDelimiterViolet',
-					'RainbowDelimiterCyan',
+					'RainbowDelimiterCyan'
 				}
 			}
 		},
@@ -1191,7 +1190,7 @@ lazy.setup({
 						col = math.floor((vim.o.columns - width) / 2),
 						minwidth = width,
 						minheight = height,
-						borderchars = borderchars,
+						borderchars = borderchars
 					})
 					vim.keymap.set({ 'n', 'v' }, 'q', function() vim.api.nvim_win_close(win_id, true) end, { silent = true, buffer = bufnr })
 
