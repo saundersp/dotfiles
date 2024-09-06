@@ -91,6 +91,24 @@ local function str_to_list(str)
 	return list
 end
 
+--- Format the list of ensure_installed packages name
+---@param sources table table of packages configuration
+---@return string[] list_packages list of packages name
+---@nodiscard
+local function format_ensure_install(sources)
+	local list_packages = {}
+	for source_name, source in pairs(sources) do
+		if source.__skip_download ~= true then
+			if source.__package_name ~= nil then
+				table.insert(list_packages, source.__package_name)
+			else
+				table.insert(list_packages, source_name)
+			end
+		end
+	end
+	return list_packages
+end
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Plugin enabler
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -373,17 +391,7 @@ local lazy_plugins = {
 				typst_lsp = {}
 			}
 
-			require('mason-lspconfig').setup({
-				ensure_installed = reduce(servers, function(acc, server_name, server)
-					if server.__skip_download ~= true then
-						if server.__package_name ~= nil then
-							table.insert(acc, server.__package_name)
-						else
-							table.insert(acc, server_name)
-						end
-					end
-				end)
-			})
+			require('mason-lspconfig').setup({ ensure_installed = format_ensure_install(servers) })
 
 			for name, opts in pairs(servers) do
 				lspconfig[name].setup({
@@ -434,24 +442,18 @@ local lazy_plugins = {
 			dap.adapters = {
 				cpptools = {
 					id = 'cppdbg',
-					pkg_name = 'cppdbg',
+					__package_name = 'cppdbg',
 					type = 'executable',
 					command = 'OpenDebugAD7'
 				},
 				debugpy = {
-					pkg_name = 'python',
+					__package_name = 'python',
 					type = 'executable',
 					command = 'debugpy-adapter'
 				}
 			}
 
-			require('mason-nvim-dap').setup({
-				ensure_installed = reduce(dap.adapters, function(acc, _, adapter)
-					if adapter.__skip_download ~= true then
-						table.insert(acc, adapter.pkg_name)
-					end
-				end)
-			})
+			require('mason-nvim-dap').setup({ ensure_installed = format_ensure_install(dap.adapters) })
 
 			local function select_exec(directory, callback)
 				local pickers = require('telescope.pickers')
@@ -1050,14 +1052,14 @@ local lazy_plugins = {
 				checkmake = { none_ls.builtins.diagnostics.checkmake }
 			}
 
-			require('mason-null-ls').setup({
-				ensure_installed = vim.tbl_keys(sources)
-			})
+			require('mason-null-ls').setup({ ensure_installed = format_ensure_install(sources) })
 
 			none_ls.setup({
 				sources = reduce(sources, function(acc, _, source)
-					for _, inner_source in pairs(source) do
-						table.insert(acc, inner_source)
+					for key_name, inner_source in pairs(source) do
+						if key_name ~= '__skip_download' or key_name ~= '__package_name' then
+							table.insert(acc, inner_source)
+						end
 					end
 				end)
 			})
