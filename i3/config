@@ -122,7 +122,7 @@ set $ws10 10: 
 ## Spotify doesn't assign a class name on startup
 #for_window [class="Spotify"] move to workspace $ws1
 #assign [class="discord"] workspace $ws1
-#assign [class="librewolf"] workspace $ws2
+#assign [class="LibreWolf"] workspace $ws2
 #assign [class="pulsemixer"] workspace $ws10
 #assign [class="term_annex"] workspace $ws10
 #assign [class="qBittorrent"] workspace $ws10
