@@ -1056,7 +1056,7 @@ local lazy_plugins = {
 			none_ls.setup({
 				sources = reduce(sources, function(acc, _, source)
 					for key_name, inner_source in pairs(source) do
-						if key_name ~= '__skip_download' or key_name ~= '__package_name' then
+						if key_name ~= '__skip_download' and key_name ~= '__package_name' then
 							table.insert(acc, inner_source)
 						end
 					end
