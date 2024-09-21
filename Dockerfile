@@ -12,7 +12,7 @@ RUN apt-get update \
 	neovim=0.9.5-6ubuntu2 \
 	nodejs=18.19.1+dfsg-6ubuntu5 \
 	pipx=1.4.3-1 \
-	curl=8.5.0-2ubuntu10.3 \
+	curl=8.5.0-2ubuntu10.4 \
 	npm=9.2.0~ds1-2 \
 	unzip=6.0-28ubuntu4 \
 	ranger=1.9.3-5 \
@@ -26,7 +26,7 @@ RUN apt-get update \
 	feh=3.10.1-1build3 \
 	ripgrep=14.1.0-1 \
 	fd-find=9.0.0-1 \
-	fastfetch=2.21.3 \
+	fastfetch=2.25.0 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1ubuntu4 \
 	rsync=3.2.7-1ubuntu1 \
