@@ -374,8 +374,7 @@ local lazy_plugins = {
 						add = { '-I/opt/cuda/targets/x86_64-linux/include' }
 					}
 				},
-				-- NOTE Mason package name doesn't align with lspconfig server name, will be probably be renamed in the future
-				ts_ls = { __package_name = 'tsserver' },
+				ts_ls = {},
 				hls = {
 					-- Install package rather than using Mason
 					-- https://github.com/haskell/haskell-language-server
