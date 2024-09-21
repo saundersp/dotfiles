@@ -866,7 +866,8 @@ local lazy_plugins = {
 	-- Tool to install LSPs, DAPs, linters and formatters
 	{ 'williamboman/mason.nvim',
 		config = true,
-		keys = { { '<leader>mo', '<cmd>Mason<CR>', desc = 'Open Mason manager' } },
+		keys = { { '<leader>mo', function() if package.loaded['telescope'] == nil then require('telescope') end vim.cmd('Mason') end,
+		desc = 'Open Mason manager' } },
 		cmd = { 'Mason', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll', 'MasonLog' }
 	},
 	-- Easily update all Mason packages with one command
