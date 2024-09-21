@@ -69,7 +69,6 @@ vim.wo.relativenumber				= true										-- Relative number (enabled after numbe
 vim.wo.cursorline				= true										-- Enable highlighting of the current line
 vim.wo.cursorcolumn				= true										-- Enable highlighting of the current column
 vim.o.showtabline				= 2										-- Always show top files tabs
-vim.o.showmode					= false										-- We don't need to see things like -- INSERT -- any more
 vim.wo.foldlevel				= 99										-- Fold are open when you first open a file
 vim.o.visualbell				= true										-- Disable bell noise
 vim.o.splitbelow				= true										-- Horizontal splits will automatically be below
@@ -81,10 +80,10 @@ vim.o.updatetime				= 200										-- Time before CursorHold triggers
 vim.bo.swapfile					= false										-- Disable swapfile usage
 vim.o.wildmode					= 'longest,list,full'								-- Enable autocompletion in COMMAND mode
 vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
-vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
+vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/.venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
 vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
-Autocmd('Filetype', 'tex',			function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
+Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   'Disable the tab expansion of spaces')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -117,4 +116,4 @@ nmap('<C-d>', '<C-d>zz',													   'Scroll window downwards in the buffer w
 nmap('<C-f>', '<C-f>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
 nmap('<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file executable')
 nmap('<leader>fX', '<cmd>!chmod -x %<CR>',											   'Make the current file non executable')
-create_cmd('EditConfig', 'e $MYVIMRC', 												   'Edit Neovim config file')
+create_cmd('Settings', 'e $MYVIMRC', 												   'Edit Neovim config file')
