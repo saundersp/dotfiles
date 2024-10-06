@@ -40,6 +40,7 @@ _Read this in other languages: [Français](README.fr.md)_
 - xorg-xclip
 - pulseaudio
 - feh
+- deskflow
 
 ## Installation
 

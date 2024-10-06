@@ -107,10 +107,10 @@ set $ws10 10: 
 # NOTE Get window's class name with xprop
 
 # MainDesktop startup layout
-#assign [class="Synergy"] workspace $ws10
+#assign [class="Deskflow"] workspace $ws10
 #assign [class="pulsemixer"] workspace $ws10
 #assign [class="term_annex"] workspace $ws10
-#exec --no-startup-id qsynergy
+#exec --no-startup-id deskflow
 #exec --no-startup-id st -c pulsemixer -e pulsemixer
 #exec --no-startup-id st -c term_annex
 
@@ -126,9 +126,9 @@ set $ws10 10: 
 #assign [class="pulsemixer"] workspace $ws10
 #assign [class="term_annex"] workspace $ws10
 #assign [class="qBittorrent"] workspace $ws10
-#assign [class="Synergy"] workspace $ws10
+#assign [class="Deskflow"] workspace $ws10
 #assign [class="Nextcloud"] workspace $ws10
-#exec --no-startup-id qsynergy
+#exec --no-startup-id deskflow
 #exec --no-startup-id st -c pulsemixer -e pulsemixer
 #exec --no-startup-id st -c term_annex
 #exec --no-startup-id qbittorrent-nox -d
