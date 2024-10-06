@@ -514,6 +514,7 @@ update(){
 	command -v ap >> /dev/null && ap u && ap p
 	(cd && ./updater.sh p)
 	command -v nix-env >> /dev/null && nix-env -u
+	command -v pipx >> /dev/null && pipx upgrade-all
 }
 
 __cmd_checker__ __help_me__
