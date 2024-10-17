@@ -14,7 +14,7 @@ RUN apt-get update \
 	pipx=1.6.0-1 \
 	curl=8.9.1-2ubuntu2 \
 	npm=9.2.0~ds1-3 \
-	unzip=6.0-28ubuntu5 \
+	unzip=6.0-28ubuntu6 \
 	ranger=1.9.3-5 \
 	cmake=3.30.3-1 \
 	make=4.3-4.1build2 \
@@ -26,7 +26,7 @@ RUN apt-get update \
 	feh=3.10.2-1 \
 	ripgrep=14.1.0-2 \
 	fd-find=10.2.0-1 \
-	fastfetch=2.26.1ubuntu1 \
+	fastfetch=2.27.1 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu1 \
 	rsync=3.3.0-1 \
@@ -40,8 +40,8 @@ RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
 	&& ln -s "$(command -v doas)" /usr/bin/sudo
 
 RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.6 --depth 1 /usr/local/src/ueberzugpp \
-	&& apt-get install --no-install-recommends -y libtbb-dev=2021.12.0-1ubuntu2 \
-	libxcb-util-dev=0.4.0-1build3 \
+	&& apt-get install --no-install-recommends -y \
+	libtbb-dev=2021.12.0-1ubuntu2 \
 	libxcb-image0-dev=0.4.0-2build1 \
 	libxcb-res0-dev=1.17.0-2 \
 	libvips-dev=8.15.2-2 \
