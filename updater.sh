@@ -17,14 +17,11 @@ Available flags:
 	s, sign, -s, --sign			Sign the specified module path
 	h, help, -h, --help			Which display this help message."
 
-CURRENT=DEFAULT.config
-#CURRENT=MAXIMUM.config
-
 case "$1" in
-	m|mod|-m|--mod) rg "=y" /usr/src/linux/.config | sed "s/=y/=m/" | xargs -I{} rg "{}" MAXIMUM.config | less ;;
+	m|mod|-m|--mod) rg "=y" /usr/src/linux/.config | less ;;
 	f|fill|-f|--fill) rg 'is not set' /usr/src/linux/.config | sed 's/# CONFIG_//;s/ is not set//' | less ;;
 	e|empty|-e|--empty) rg '=y|=m' /usr/src/linux/.config | sed 's/CONFIG_//' | less ;;
-	c|compare|-c|--compare) nvim -d /usr/src/linux/.config "$CURRENT" ;;
+	c|compare|-c|--compare) nvim -d /usr/src/linux/.config DEFAULT.config ;;
 	u|update|-u|--update)
 		cd /usr/src/linux
 		NPROC=$(nproc)
