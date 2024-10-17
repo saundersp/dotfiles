@@ -53,14 +53,15 @@ Xcursor.size: 16
 
 ! ================================= i3 ==========================================
 i3wm.title-align: center
-i3wm.default-border: none
+i3wm.default-border: normal
 i3wm.force-xinerama: no
 i3wm*border: black
 i3wm*backgr: mybackground
 i3wm*text: myforeground
 i3wm.cf.backgr: mybackgroundalt
 i3wm.cf.text: myforegroundalt
-i3wm.font: myfontmono 9
+i3wm.font: myfontmono
+i3wm.font-size: 9
 i3wm.inner-gaps: 3
 i3wm.outer-gaps: 1
 i3wm.smart-gaps: off

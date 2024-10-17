@@ -6,8 +6,9 @@ set $mod Mod4
 set $alt Mod1
 
 # Font for window titles
-set_from_resource $font i3wm.font 'DejaVu Sans Mono 10'
-font pango:$font
+set_from_resource $font i3wm.font 'DejaVu Sans Mono'
+set_from_resource $font-size i3wm.font-size 10
+font pango:$font $font-size
 
 # Where to align the title of windows
 # title_align left|center|right
