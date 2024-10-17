@@ -84,7 +84,9 @@ case "$1" in
 		# Dependencies : dev-lang/go dev-vcs/git
 		# https://github.com/jesseduffield/lazynpm.git
 		# Dependencies : dev-lang/go net-libs/nodejs
-		__updatepackages__ 'arduino-cli glow lazydocker lazygit lazynpm' 'go install'
+		# https://github.com/mrtazz/checkmake.git
+		# Dependencies : dev-lang/go app-text/pandoc
+		__updatepackages__ 'arduino-cli glow lazydocker lazygit lazynpm checkmake' 'go install'
 
 		# https://git.suckless.org/dmenu
 		# Dependencies : media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-libs/libXinerama x11-base/xorg-proto virtual/pkgconfig
@@ -116,15 +118,17 @@ case "$1" in
 		__updatepackages__ 'anki' '__update_anki__'
 
 		# https://github.com/espanso/espanso.git
-		# Dependencies : cargo-make x11-libs/wxGTK:3.0-gtk3 net-fs/samba
+		# Dependencies : dev-lang/rust x11-libs/wxGTK net-fs/samba
 		# https://github.com/veeso/termscp.git
-		# Dependencies : dev-util/pkgconf dev-libs/openssl
+		# Dependencies : dev-lang/rust dev-util/pkgconf dev-libs/openssl
+		# https://github.com/typst/typst.git
+		# Dependencies : dev-lang/rust
 		__update_rust__(){
 			cargo build --profile release
 			mv -f target/release/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME"
 			rm -r target
 		}
-		__updatepackages__ 'espanso termscp' '__update_rust__'
+		__updatepackages__ 'espanso termscp typst' '__update_rust__'
 
 		# https://github.com/logisim-evolution/logisim-evolution.git
 		# Dependencies : dev-java/openjdk:1.8
@@ -143,6 +147,13 @@ case "$1" in
 			make CMAKE_BUILD_TYPE=Release -j $(nproc) -l $(nproc) && make install clean && rm -rf build .deps
 		}
 		__updatepackages__ 'neovim' '__update_cmake__'
+
+		# https://github.com/deskflow/deskflow.git
+		# Dependencies : dev-build/cmake dev-util/pkgconf dev-libs/pugixml x11-libs/libnotify
+		__update_deskflow__(){
+			cmake -DBUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -B build && cmake --build build -j "$(nproc)" && cp -v build/bin/deskflow* /usr/local/bin/ && rm -rf build
+		}
+		__updatepackages__ 'deskflow' '__update_deskflow__'
 
 		# https://github.com/ventoy/Ventoy
 		__updatepackages__ 'Ventoy' 'echo Ventoy updated, Please build then plug USB'
