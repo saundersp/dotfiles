@@ -172,6 +172,7 @@ bindsym $mod+t layout tabbed
 bindsym $mod+e layout toggle split
 bindsym $mod+v split v
 bindsym $mod+w split h
+bindsym $mod+Shift+b border toggle
 
 # Gaps
 set_from_resource $inner_gaps i3wm.inner-gaps 0
