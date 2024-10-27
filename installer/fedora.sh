@@ -12,6 +12,7 @@
 # Select system destination
 # Select software : minimal install
 # Install and reboot
+# Login as root
 
 # Configuration (tweak to your liking)
 USERNAME=saundersp
@@ -40,7 +41,7 @@ install_server(){
 
 	install_pkg fastfetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep btop opendoas git ranger tmux dash \
 		dnf-plugins-core docker-ce docker-ce-cli containerd.io docker-compose-plugin dos2unix fd-find gcc gcc-c++ gdb make highlight lazygit \
-		lazydocker man-db wireguard-tools patch pkgconf progress python3-neovim ncdu
+		lazydocker man-db wireguard-tools patch pkgconf progress python3-neovim ncdu golang pipx
 
 	# Compiling lazynpm
 	cd /usr/local/src
@@ -48,6 +49,7 @@ install_server(){
 	cd lazynpm
 	go install -buildvcs=false
 	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
+	rm -r /root/go
 	cd
 
 	# Use dash instead of bash as default shell
@@ -63,17 +65,25 @@ install_server(){
 	npm i -g neovim npm-check-updates
 
 	# Adding user to wheel groups
-	usermod -aG wheel $USERNAME
+	usermod -aG wheel "$USERNAME"
 	usermod -aG wheel root
 }
 install_ihm(){
 	install_server
 	install_pkg i3 xorg-x11-xinit xset polybar picom feh alacritty xclip xorg-x11-server-Xorg python-xlib autokey-qt calibre i3lock \
 		torbrowser-launcher zathura zathura-pdf-mupdf python-devel libX11-devel libXext-devel libXft-devel libXinerama-devel ImageMagick \
-		libXres-devel tor
+		libXres-devel tor vlc dbus-daemon flatpak
+
+	# Enable the Flathub remote
+	flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+	# Installing spotify
+	flatpak install -y flathub com.spotify.Client
+	echo -e '#!/bin/sh\nflatpak run com.spotify.Client' > /usr/local/bin/spotify
+	chmod +x /usr/local/bin/spotify
 
 	# Installing ueberzugpp (fedora version pedantic ?)
-	dnf config-manager --add-repo https://download.opensuse.org/repositories/home:justkidding/Fedora_39/home:justkidding.repo
+	dnf config-manager --add-repo https://download.opensuse.org/repositories/home:justkidding/Fedora_40/home:justkidding.repo
 	install_pkg ueberzugpp
 
 	# Installing librewolf
@@ -81,19 +91,22 @@ install_ihm(){
 	dnf config-manager --add-repo https://rpm.librewolf.net
 	install_pkg librewolf
 
-	# Installing vlc
-	install_pkg https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm
-	install_pkg vlc
+	# Installing pulsemixer
+	git clone https://github.com/GeorgeFilipkin/pulsemixer.git /usr/local/src/pulsemixer
+	ln -sfv /usr/local/src/pulsemixer/pulsemixer /usr/local/bin/pulsemixer
 
 	# Getting the Hasklig font
 	LATEST_TAG=$(curl https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \" -f 4)
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/"$LATEST_TAG"/Hasklig.zip
+	wget https://github.com/ryanoasis/nerd-fonts/releases/download/"$LATEST_TAG"/Hasklig.zip
 	mkdir -p /usr/share/fonts/Hasklig
 	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
 	echo "$LATEST_TAG" > /usr/share/fonts/Hasklig/VERSION
 	rm Hasklig.zip
 }
 install_dotfiles(){
+	# Removing bash profile that blocks default .profile
+	rm -v ~/.bash_profile ~/.bash_logout
+
 	# Getting the dotfiles
 	mkdir ~/git
 	git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
@@ -103,11 +116,14 @@ install_dotfiles(){
 	./auto.sh "$1"
 	sudo bash auto.sh "$1"
 
+	# Installing pipx packages
+	bash -i -c 'pipx install dooit'
+
 	# Getting the wallpaper
 	mkdir ~/Images
 	cd ~/Images
-	wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
-	convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+	wget https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
+	magick convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
 	rm HD-Astronaut-Wallpaper.jpg
 	echo -e '#!/bin/sh\nfeh --bg-fill ~/Images/WanderingAstronaut.png' > ~/.fehbg
 	chmod +x ~/.fehbg
@@ -123,19 +139,12 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober xbacklight ntfs-3g wpa_supplicant pulseaudio bluez-tools pulseaudio-module-bluetooth xorg-x11-drv-intel \
-			xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda akmod-nvidia
-			# bumblebee-status-module-nvidia-prime ucode-intel nvidia-utils
-			curl https://raw.githubusercontent.com/GeorgeFilipkin/pulsemixer/master/pulsemixer > /usr/local/bin/pulsemixer && chmod +x /usr/local/bin/pulsemixer
-
-		# Allow vlc to use nvidia gpu
-		echo -e '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc
-		chmod +x /usr/bin/pvlc
+		install_pkg os-prober xbacklight ntfs-3g wpa_supplicant pulseaudio bluez-tools pulseaudio-module-bluetooth xorg-x11-drv-intel
 	;;
 esac
 
 # Installing the dotfiles
-su $USERNAME -c "install_dotfiles $PACKAGES"
+su "$USERNAME" -c "install_dotfiles $PACKAGES"
 
 # Removing the nopass option in doas
 sed -i '1s/nopass/persist/g' /etc/doas.conf

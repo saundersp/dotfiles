@@ -21,14 +21,16 @@
 # Confirm recap
 # Select yes to write changes
 # Select no to scan extra installation media
-# Select package manager
+# Select yes to configure the package manager
+# Select package manager mirror location
 # Select package mirrors : stay at the default deb.debian.org
-# Enter HTTP proxy
+# Enter HTTP proxy (leave blank if none)
 # Select no to participate in the package usage survey
 # Unselect everything in software selection
 # Reboot
 # Login as root
-# apt update && apt upgrade -y && apt install -y curl
+# Remove cdrom source in /etc/apt/sources.list
+# apt update && apt upgrade -y && apt install -y --no-install-recommends curl ca-certificates
 
 # Configuration (tweak to your liking)
 USERNAME=saundersp
@@ -55,17 +57,31 @@ install_pkg(){
 	apt install -y --no-install-recommends $@
 }
 install_server(){
-	install_pkg doas neofetch git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep htop man ranger tmux \
-		fd-find ccls dash docker docker-compose dos2unix gcc gdb highlight make man-db pkgconf progress flake8 python3-autopep8 \
-		python3-pynvim apt-file g++
+	install_pkg doas git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep btop man ranger tmux fd-find dash docker \
+		docker-compose dos2unix gcc gdb highlight make man-db pkgconf progress python3-pynvim apt-file g++ cmake ncdu pipx
 	ln -s /usr/bin/fdfind /usr/bin/fd
 	ln -s /usr/bin/python3 /usr/bin/python
 	ln -sf /bin/dash /bin/sh
 
-	# Installing neovim
-	wget -q --show-progress https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.deb -O /tmp/nvim-linux64.deb
-	install_pkg /tmp/nvim-linux64.deb
-	rm /tmp/nvim-linux64.deb
+	# Installing fastfetch from source
+	cd /usr/local/src
+	git clone --depth 1 https://github.com/fastfetch-cli/fastfetch.git
+	cd fastfetch
+	cmake -B build
+	cmake --build build --target fastfetch --target flashfetch -j "$(nproc)"
+	mv build/fastfetch /usr/local/bin/fastfetch
+	rm -r build
+
+	# Installing neovim dependencies
+	install_pkg gettext
+
+	# Installing neovim from source
+	cd /usr/local/src
+	git clone --depth 1 https://github.com/neovim/neovim.git
+	cd neovim
+	make CMAKE_BUILD_TYPE=Release -j "$(nproc)" -l "$(nproc)"
+	make install clean
+	rm -r build .deps
 	apt remove -y vim-common vim-tiny
 
 	# Enable the wheel group to use doas and allow users to poweroff and reboot
@@ -82,49 +98,59 @@ install_server(){
 	# Installing go
 	local GO_LINK=https://go.dev/dl/
 	local LATEST_GO_VERSION
-	LATEST_GO_VERSION=$(curl $GO_LINK?mode=json | grep version | sed 2,202000d | cut -d \" -f 4)
-	local GO_FILE=$LATEST_GO_VERSION.linux-$ARCH.tar.gz
+	LATEST_GO_VERSION=$(curl "$GO_LINK"?mode=json | grep version | sed 2,202000d | cut -d \" -f 4)
+	local GO_FILE="$LATEST_GO_VERSION".linux-"$ARCH".tar.gz
 	wget "$GO_LINK$GO_FILE"
 	tar -C /usr/local -xzf "$GO_FILE"
 	ln -s /usr/local/go/bin/go /usr/bin/go
 	rm "$GO_FILE"
 
-	# Compiling lazygit
-	cd /usr/local/src
-	git clone https://github.com/jesseduffield/lazygit.git
-	cd lazygit
+	# Installing lazygit dependencies
 	install_pkg libstdc++-11-dev
-	go install -buildvcs=false
-	mv /root/go/bin/lazygit /usr/bin/lazygit
 
-	# Compiling lazydocker
-	cd /usr/local/src
-	git clone https://github.com/jesseduffield/lazydocker.git
-	cd lazydocker
-	go install -buildvcs=false
-	mv /root/go/bin/lazydocker /usr/bin/lazydocker
+	# Compiling lazynpm and lazydocker
+	for package in git npm docker; do
+		if [ ! -d /usr/local/src/lazy"$package" ]; then
+			cd /usr/local/src
+			git clone --depth 1 https://github.com/jesseduffield/lazy"$package".git
+			cd lazy"$package"
+			go install -buildvcs=false
+			mv /root/go/bin/lazy"$package" /usr/local/bin/lazy"$package"
+		fi
+	done
+	cd
+
+	# Cleaning go cache files
+	rm -rf /root/go
 
 	# Installing npm dependencies
 	npm i -g neovim npm-check-updates
 }
 install_ihm(){
 	install_server
-	install_pkg picom xinit xserver-xorg-core x11-xserver-utils feh xclip vlc polybar xserver-xorg-input-kbd \
-		xserver-xorg-input-mouse xserver-xorg-input-libinput libxinerama-dev autokey-qt calibre filezilla wireguard-tools zathura \
-		imagemagick i3-wm patch libxft-dev libharfbuzz-dev ueberzug gnupg
+	install_pkg picom xinit xserver-xorg-core x11-xserver-utils feh xclip vlc polybar xserver-xorg-input-kbd xserver-xorg-input-mouse \
+		xserver-xorg-input-libinput libxinerama-dev autokey-qt calibre filezilla wireguard-tools zathura imagemagick i3-wm patch \
+		libxft-dev libharfbuzz-dev gnupg
 
 	wget -O- https://deb.librewolf.net/keyring.gpg | gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
 
-	tee /etc/apt/sources.list.d/librewolf.sources << EOF > /dev/null
-Types: deb
-URIs: https://deb.librewolf.net
-Suites: focal
-Components: main
-Architectures: amd64
-Signed-By: /usr/share/keyrings/librewolf.gpg
-EOF
+	install_pkg extrepo
+	extrepo enable librewolf
 	apt update
 	install_pkg librewolf
+
+	# Installing ueberzugpp dependencies
+	install_pkg libtbb-dev libxcb-image0-dev libxcb-res0-dev libopencv-dev libvips-dev libsixel-dev libchafa-dev
+
+	# Installing ueberzugpp from source
+	cd /usr/local/src
+	git clone --depth 1 https://github.com/jstkdng/ueberzugpp.git
+	cd ueberzugpp
+	cmake -DCMAKE_BUILD_TYPE=Release -B build
+	cmake --build build -j "$(nproc)"
+	mv /usr/local/src/ueberzugpp/build/ueberzugpp /usr/local/bin/ueberzugpp
+	mv /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug
+	rm -r build
 
 	# Getting the Hasklig font
 	LATEST_TAG=$(curl https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \" -f 4)
@@ -135,9 +161,12 @@ EOF
 	rm Hasklig.zip
 }
 install_dotfiles(){
+	# Installing pipx packages
+	pipx install dooit
+
 	# Getting the dotfiles
 	mkdir ~/git
-	git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
+	git clone --depth 1 https://github.com/saundersp/dotfiles.git ~/git/dotfiles
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
@@ -167,10 +196,6 @@ case $PACKAGES in
 		install_pkg os-prober xbacklight
 		# bumblebee-status-module-nvidia-prime ntfs-3g ucode-intel wpa_supplicant pulseaudio
 		# xf86-video-intel pulseaudio-module-bluetooth bluez nvidia nvidia-utils pulsemixer
-
-		# Allow vlc to use nvidia gpu
-		echo -e '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc
-		chmod +x /usr/bin/pvlc
 	;;
 esac
 

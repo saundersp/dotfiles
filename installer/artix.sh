@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Pre-setup steps :
 # Setup keymaps and timezone in menu
@@ -34,22 +34,22 @@ INIT_SYSTEM=openrc
 test ! -d /sys/firmware/efi/efivars && echo 'Missing UEFI vars, exiting...' && exit 1
 
 # Configuration checker
-test -z $DISK_PASSWORD && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
-test -z $ROOT_PASSWORD && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
-test -z $USER_PASSWORD && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
+test -z "$DISK_PASSWORD" && echo 'Enter DISK password : ' && read -r -s DISK_PASSWORD
+test -z "$ROOT_PASSWORD" && echo 'Enter ROOT password : ' && read -r -s ROOT_PASSWORD
+test -z "$USER_PASSWORD" && echo 'Enter USER password : ' && read -r -s USER_PASSWORD
 
 # Exit immediately if a command exits with a non-zero exit status
 set -e
 
 # List of disks
-BOOT_PARTITION=$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX
-ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
+BOOT_PARTITION="$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX"
+ROOT_PARTITION="$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX"
 
 # Partition the disks
 ### GPT partition table
 ### Disk 1 - +256M - Bootable - UEFI Boot partition
 ### Disk 2 - Root partition
-fdisk $DISK << EOF
+fdisk "$DISK" << EOF
 g
 n
 $BOOT_PARTITION_INDEX
@@ -66,19 +66,19 @@ w
 EOF
 
 # Encrypting the root partition
-echo -n "$DISK_PASSWORD" | cryptsetup luksFormat -v $ROOT_PARTITION
-echo -n "$DISK_PASSWORD" | cryptsetup open $ROOT_PARTITION $CRYPTED_DISK_NAME
+echo -n "$DISK_PASSWORD" | cryptsetup luksFormat -v "$ROOT_PARTITION"
+echo -n "$DISK_PASSWORD" | cryptsetup open "$ROOT_PARTITION" "$CRYPTED_DISK_NAME"
 
 # Formatting the partitions
-mkfs.vfat -n 'UEFI Boot' -F 32 $BOOT_PARTITION
-mkfs.ext4 -L Root /dev/mapper/$CRYPTED_DISK_NAME
+mkfs.vfat -n 'UEFI Boot' -F 32 "$BOOT_PARTITION"
+mkfs.ext4 -L Root /dev/mapper/"$CRYPTED_DISK_NAME"
 
 # Mounting the file systems
-mount /dev/mapper/$CRYPTED_DISK_NAME /mnt
-mount --mkdir $BOOT_PARTITION /mnt/boot
+mount /dev/mapper/"$CRYPTED_DISK_NAME" /mnt
+mount --mkdir "$BOOT_PARTITION" /mnt/boot
 
 # Creating and mounting the swap file
-fallocate -l $SWAP_SIZE /mnt/swap
+fallocate -l "$SWAP_SIZE" /mnt/swap
 chmod 0600 /mnt/swap
 chown root /mnt/swap
 mkswap /mnt/swap
@@ -101,7 +101,8 @@ install_pkg(){
 }
 install_server(){
 	install_pkg neovim lazygit fastfetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep \
-		btop ranger fd fakeroot make gcc pkgconf tmux docker docker-compose dos2unix gdb highlight progress python-pynvim
+		btop ranger fd fakeroot make gcc pkgconf tmux docker docker-compose dos2unix gdb highlight progress python-pynvim debugedit \
+		tree-sitter-cli ncdu python-pipx
 }
 install_ihm(){
 	install_server
@@ -111,8 +112,8 @@ install_ihm(){
 
 # Installing the init system
 case $INIT_SYSTEM in
-	openrc | runit | dinit | suite66) install_pkg base $KERNEL $INIT_SYSTEM elogind-$INIT_SYSTEM connman-$INIT_SYSTEM cryptsetup-$INIT_SYSTEM ;;
-	s6) install_pkg base $KERNEL s6-base elogind-s6 connman-s6 cryptsetup-s6 ;;
+	openrc | runit | dinit | suite66) install_pkg base "$KERNEL" "$INIT_SYSTEM" elogind-"$INIT_SYSTEM" connman-"$INIT_SYSTEM" cryptsetup-"$INIT_SYSTEM" ;;
+	s6) install_pkg base "$KERNEL" s6-base elogind-s6 connman-s6 cryptsetup-s6 ;;
 esac
 
 # Installing the common packages
@@ -129,15 +130,12 @@ case $PACKAGES in
 	laptop)
 		install_ihm
 		install_pkg os-prober xf86-video-intel nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth \
-			patch bluez-utils intel-ucode wpa_supplicant xorg-xbacklight bluez-$INIT_SYSTEM wireguard-tools
+			patch bluez-utils intel-ucode wpa_supplicant xorg-xbacklight bluez-"$INIT_SYSTEM" wireguard-tools
 		case $KERNEL in
 			linux) install_pkg nvidia ;;
 			linux-lts) install_pkg nvidia-lts ;;
-			*) install_pkg nvidia-dkms $KERNEL-headers ;;
+			*) install_pkg nvidia-dkms "$KERNEL"-headers ;;
 		esac
-
-		echo -e '#\!/bin/sh\nprime-run vlc' >> /mnt/usr/bin/pvlc
-		chmod +x /mnt/usr/bin/pvlc
 	;;
 esac
 
@@ -304,6 +302,8 @@ esac
 # Enabling all threads during makepkg
 sed -i \"s/^#MAKEFLAGS=\\\"-j2\\\"/MAKEFLAGS=\\\"-j\$(nproc)\\\"/g\" /etc/makepkg.conf
 sed -i \"s/^COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=\$(nproc))/g\" /etc/makepkg.conf
+# Fix AUR install to support doas instead of sudo
+sed -i 's/#PACMAN_AUTH=()/PACMAN_AUTH=(doas)/' /etc/makepkg.conf
 " > /mnt/root/install.sh
 chmod +x /mnt/root/install.sh
 artix-chroot /mnt /root/install.sh
@@ -334,6 +334,12 @@ aur_install(){
 case $PACKAGES in
 	minimal) ;;
 	server)
+		# Installing pipx packages
+		pipx install dooit
+
+		# Removing bash profile that blocks default .profile
+		rm -v ~/.bash_profile ~/.bash_logout
+
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
 		./auto.sh server
@@ -342,6 +348,12 @@ case $PACKAGES in
 		aur_install lazydocker
 	;;
 	virtual|laptop)
+		# Installing pipx packages
+		pipx install dooit
+
+		# Removing bash profile that blocks default .profile
+		rm -v ~/.bash_profile ~/.bash_logout
+
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
 		./auto.sh install
@@ -351,12 +363,13 @@ case $PACKAGES in
 		mkdir ~/Images
 		cd ~/Images
 		wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
-		convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+		magick convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
 		rm HD-Astronaut-Wallpaper.jpg
 		echo -e '#!/bin/sh\nfeh --bg-fill ~/Images/WanderingAstronaut.png' > ~/.fehbg
 		chmod +x ~/.fehbg
 
 		aur_install lazydocker
+		rm -rfv ~/go
 		aur_install librewolf-bin
 		curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | gpg --import -
 		aur_install spotify
@@ -366,12 +379,12 @@ esac
 # Removing the nopass option in doas
 sudo sed -i '1s/nopass/persist/g' /etc/doas.conf
 
-" > /mnt/home/$USERNAME/install.sh
-chmod +x /mnt/home/$USERNAME/install.sh
-artix-chroot /mnt /usr/bin/runuser -u $USERNAME /home/$USERNAME/install.sh
+" > /mnt/home/"$USERNAME"/install.sh
+chmod +x /mnt/home/"$USERNAME"/install.sh
+artix-chroot /mnt /usr/bin/runuser -u "$USERNAME" /home/"$USERNAME"/install.sh
 
 # Cleaning leftovers
-rm /mnt/root/install.sh /mnt/home/$USERNAME/install.sh "$0"
+rm /mnt/root/install.sh /mnt/home/"$USERNAME"/install.sh "$0"
 
 reboot
 

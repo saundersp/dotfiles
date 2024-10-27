@@ -4,7 +4,7 @@
 # login as root:voidlinux
 # loadkeys fr
 # If WiFi : wpa_supplicant https://docs.voidlinux.org/config/network/wpa_supplicant.html
-# xbps-install -Syu xbps curl
+# xbps-install -Sy curl openssl
 
 # Configuration (tweak to your liking)
 USERNAME=saundersp
@@ -39,8 +39,8 @@ test -z "$USER_PASSWORD" && echo 'Enter USER password : ' && read -r -s USER_PAS
 set -e
 
 # List of disks
-BOOT_PARTITION=$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX
-ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
+BOOT_PARTITION="$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX"
+ROOT_PARTITION="$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX"
 
 # Partition the disks
 ### GPT partition table
@@ -84,7 +84,7 @@ swapon /mnt/swap
 
 # install shortcut
 install_pkg(){
-	env XBPS_ARCH=$ARCH xbps-install -Sy -R "$MIRROR" -r /mnt $@
+	env XBPS_ARCH="$ARCH" xbps-install -Sy -R "$MIRROR" -r /mnt $@
 }
 
 install_pkg base-system opendoas grub-x86_64-efi efibootmgr cryptsetup which man-db sed connman dash << EOF
@@ -93,13 +93,30 @@ EOF
 
 install_server(){
 	install_pkg neovim lazygit lazydocker git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep btop ranger tmux \
-		docker dos2unix fd highlight gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers go
+		docker dos2unix fd highlight gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers go fastfetch \
+		python3-pipx
 }
 install_ihm(){
 	install_server
-	install_pkg picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc firefox polybar calibre filezilla zathura \
+	install_pkg picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc polybar calibre filezilla zathura \
 		zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch wireguard ImageMagick \
-		openssl-devel tbb-devel libxcb-devel xcb-util-image-devel libopencv-devel libvips-devel libsixel-devel chafa-devel
+		openssl-devel tbb-devel libxcb-devel xcb-util-image-devel libopencv-devel libvips-devel libsixel-devel chafa-devel \
+		flatpak pulseaudio pulsemixer
+
+	# Enable the Flathub remote
+	flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+	# Installing spotify
+	flatpak install -y flathub com.spotify.Client
+	echo -e '#!/bin/sh\nflatpak run com.spotify.Client' > /usr/local/bin/spotify
+	chmod +x /usr/local/bin/spotify
+
+	# Installing librewolf
+	echo 'repository=https://github.com/index-0/librewolf-void/releases/latest/download/' > /mnt/etc/xbps.d/20-librewolf.conf
+	env XBPS_ARCH="$ARCH" xbps-install -Sy -R "$MIRROR" -r /mnt << EOF
+y
+EOF
+	install_pkg librewolf
 }
 
 # Installing the platform specific packages
@@ -112,10 +129,8 @@ case $PACKAGES in
 	minimal) ;;
 	laptop)
 		install_ihm
-		install_pkg os-prober xf86-video-intel ntfs-3g pulseaudio pulsemixer wpa_supplicant xbacklight
-		env XBPS_ARCH=$ARCH xbps-install -Sy -R "$MIRROR"/nonfree -r /mnt nvidia intel-ucode
-		echo -e '#\!/usr/bin/env bash\nprime-run vlc' >> /mnt/usr/bin/pvlc
-		chmod +x /mnt/usr/bin/pvlc
+		install_pkg os-prober xf86-video-intel ntfs-3g wpa_supplicant xbacklight
+		env XBPS_ARCH="$ARCH" xbps-install -Sy -R "$MIRROR"/nonfree -r /mnt nvidia intel-ucode
 	;;
 esac
 
@@ -237,15 +252,7 @@ if [ '$PACKAGES' == 'laptop' ] || [ '$PACKAGES' == 'virtual' ] || [ '$PACKAGES' 
 	cd lazynpm
 	go install -buildvcs=false
 	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
-
-	# Installing fastfetch from source
-	cd /usr/local/src
-	git clone https://github.com/fastfetch-cli/fastfetch.git
-	cd fastfetch
-	cmake -B build
-	cmake --build build --target fastfetch --target flashfetch -j \$(nproc)
-	mv /usr/local/src/fastfetch/build/fastfetch /usr/local/bin/fastfetch
-	rm -r build
+	rm -r /root/go
 fi
 
 if [ '$PACKAGES' == 'laptop' ] || [ '$PACKAGES' == 'virtual' ]; then
@@ -280,12 +287,18 @@ fi
 case $PACKAGES in
 	minimal) ;;
 	server)
+		# Installing pipx packages
+		pipx install dooit
+
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
 		./auto.sh server
 		sudo bash auto.sh server
 	;;
 	virtual|laptop)
+		# Installing pipx packages
+		pipx install dooit
+
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
 		./auto.sh install
@@ -295,7 +308,7 @@ case $PACKAGES in
 		mkdir ~/Images
 		cd ~/Images
 		wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
-		convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+		magick convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
 		rm HD-Astronaut-Wallpaper.jpg
 		echo -e '#!/bin/sh\nfeh --bg-fill ~/Images/WanderingAstronaut.png' > ~/.fehbg
 		chmod +x ~/.fehbg

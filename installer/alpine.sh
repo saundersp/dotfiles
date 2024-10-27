@@ -39,8 +39,8 @@ test -z "$USER_PASSWORD" && echo 'Enter USER password : ' && read -r -s USER_PAS
 set -e
 
 # List of disks
-BOOT_PARTITION=$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX
-ROOT_PARTITION=$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX
+BOOT_PARTITION="$DISK$PARTITION_SEPARATOR$BOOT_PARTITION_INDEX"
+ROOT_PARTITION="$DISK$PARTITION_SEPARATOR$ROOT_PARTITION_INDEX"
 
 # Setting the timezone
 setup-timezone -z "$TIMEZONE"
@@ -89,7 +89,7 @@ echo "
 $BOOT_PARTITION /mnt/boot vfat defaults,noatime 0 2
 /dev/mapper/$CRYPTED_DISK_NAME /mnt ext4 defaults,noatime 0 1
 " >> /etc/fstab
-mount /dev/mapper/$CRYPTED_DISK_NAME
+mount /dev/mapper/"$CRYPTED_DISK_NAME"
 mkdir /mnt/boot
 mount "$BOOT_PARTITION"
 
@@ -126,7 +126,7 @@ install_server(){
 		py3-pip ripgrep btop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc man-pages \
 		mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev tmux lazydocker \
 		docker docker-compose dos2unix gdb highlight progress py3-pynvim ncdu cmake make elogind \
-		polkit-elogind
+		polkit-elogind fastfetch go tree-sitter-cli pipx
 
 	# Adding login manager
 	rc-update add elogind boot
@@ -153,17 +153,19 @@ EOF
 	# Creating custom packages source directory
 	mkdir /usr/local/src
 
-	# Installing fastfetch from source
+	# Installing lazynpm from source
 	cd /usr/local/src
-	git clone https://github.com/fastfetch-cli/fastfetch.git
-	cd fastfetch
-	cmake -B build
-	cmake --build build --target fastfetch --target flashfetch -j \"\$(nproc)\"
-	mv /usr/local/src/fastfetch/build/fastfetch /usr/local/bin/fastfetch
-	rm -r build
+	git clone https://github.com/jesseduffield/lazynpm.git
+	cd lazynpm
+	go install -buildvcs=false
+	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
+	rm -r /root/go
 
-	# Installing the dotfiles
+	# Setup user space
 	echo \"#!/bin/sh
+
+	# Installing pipx packages
+	pipx install dooit
 
 	# Getting the dotfiles
 	mkdir ~/git
@@ -212,8 +214,11 @@ install_ihm(){
 	adduser $USERNAME input
 	adduser $USERNAME video
 
-	# Installing the dotfiles
+	# Setup user space
 	echo \"#!/bin/sh
+
+	# Installing pipx packages
+	pipx install dooit
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
@@ -224,7 +229,7 @@ install_ihm(){
 	mkdir ~/Images
 	cd ~/Images
 	wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
-	convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+	magick convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
 	rm HD-Astronaut-Wallpaper.jpg
 	echo -e '#!/bin/sh\nfeh --bg-fill ~/Images/WanderingAstronaut.png' > ~/.fehbg
 	chmod +x ~/.fehbg
@@ -257,13 +262,7 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober xbacklight intel-ucode wpa_supplicant ntfs-3g linux-firmware-nvidia pulseaudio \
-					pulseaudio-bluez bluez pulsemixer
-		# bumblebee-status-module-nvidia-prime xf86-video-intel nvidia nvidia-utils
-
-		# Allow vlc to use nvidia gpu
-		echo -e '#\!/usr/bin/env bash\nprime-run vlc' > /usr/bin/pvlc
-		chmod +x /usr/bin/pvlc
+		install_pkg os-prober xbacklight intel-ucode wpa_supplicant ntfs-3g linux-firmware-nvidia pulseaudio pulseaudio-bluez bluez pulsemixer
 	;;
 esac
 

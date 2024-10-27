@@ -42,9 +42,9 @@ install_server(){
 	zypper addrepo -G https://download.opensuse.org/repositories/home:Dead_Mozay/openSUSE_Tumbleweed/home:Dead_Mozay.repo # For lazygit
 	zypper addrepo -G https://download.opensuse.org/repositories/home:lemmy04/openSUSE_Tumbleweed/home:lemmy04.repo       # For lazydocker
 	zypper refresh
-	install_pkg git fastfetch neovim unzip bash-completion nodejs-default npm-default python310 python310-pip ripgrep btop lazygit \
-		opendoas ranger lazydocker patch gcc gcc-c++ make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python310-neovim \
-		go ncdu
+	install_pkg git fastfetch neovim unzip bash-completion nodejs-default npm-default python312 python312-pip ripgrep btop lazygit \
+		opendoas ranger lazydocker patch gcc gcc-c++ make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python312-neovim \
+		go ncdu python312-pipx wireguard-tools
 
 	# Use dash instead of bash as default shell
 	ln -sf /bin/dash /bin/sh
@@ -67,16 +67,20 @@ install_server(){
 	cd
 
 	# Adding user to wheel groups
-	usermod -aG wheel $USERNAME
+	usermod -aG wheel "$USERNAME"
 	usermod -aG wheel root
 }
 install_ihm(){
 	install_server
-	zypper addrepo -G https://download.opensuse.org/repositories/home:zzndb001/openSUSE_Tumbleweed/home:zzndb001.repo # For librewolf
-	zypper refresh
 	install_pkg xinit xorg-x11-server xset polybar i3 picom feh xclip vlc xrandr xf86-input-libinput libX11-devel libXinerama-devel \
-		libXft-devel harfbuzz-devel ncurses-devel ueberzugpp python310-python-xlib calibre pkgconf filezilla i3lock zathura \
-		zathura-plugin-pdf-mupdf LibreWolf ImageMagick
+		libXft-devel harfbuzz-devel ncurses-devel ueberzugpp python312-python-xlib calibre pkgconf filezilla i3lock zathura \
+		zathura-plugin-pdf-mupdf ImageMagick python312-pulsemixer pulseaudio pulseaudio-utils spotify-client
+
+	# Installing librewolf
+	rpm --import https://rpm.librewolf.net/pubkey.gpg
+	zypper ar -ef https://rpm.librewolf.net librewolf
+	zypper refresh
+	install_pkg librewolf
 
 	# Adding missing c99 executable
 	printf '#!/bin/sh\n\nfl="-std=c99"\nfor opt; do\n  case "$opt" in\n\t-std=c99|-std=iso9899:1999) fl="";;\n\t-std=*) echo "`basename $0` called with non ISO C99 option $opt" >&2\texit 1;;\n\tesac\ndone\nexec gcc $fl ${1+"$@"}' > /usr/bin/c99
@@ -91,20 +95,23 @@ install_ihm(){
 	rm Hasklig.zip
 }
 install_dotfiles(){
+	# Installing pipx packages
+	pipx install dooit
+
 	# Getting the dotfiles
 	mkdir ~/git
 	git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles
-	./auto.sh $1
-	sudo bash auto.sh $1
+	./auto.sh "$1"
+	sudo bash auto.sh "$1"
 
 	# Getting the wallpaper
 	mkdir ~/Images
 	cd ~/Images
 	wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
-	convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+	magick convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
 	rm HD-Astronaut-Wallpaper.jpg
 	echo -e '#!/bin/sh\nfeh --bg-fill ~/Images/WanderingAstronaut.png' > ~/.fehbg
 	chmod +x ~/.fehbg
@@ -120,17 +127,13 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober xbacklight bumblebee-status-module-nvidia-prime ntfs-3g ucode-intel wpa_supplicant pulseaudio \
-					xf86-video-intel pulseaudio-module-bluetooth bluez wireguard-tools  #nvidia nvidia-utils pulsemixer
-
-		# Allow vlc to use nvidia gpu
-		printf '#\!/bin/sh\nprime-run vlc' > /usr/bin/pvlc
-		chmod +x /usr/bin/pvlc
+		install_pkg os-prober xbacklight bumblebee-status-module-nvidia-prime ntfs-3g ucode-intel wpa_supplicant xf86-video-intel \
+			pulseaudio-module-bluetooth bluez nvidia-driver
 	;;
 esac
 
 # Installing the dotfiles
-su $USERNAME -c "install_dotfiles $PACKAGES"
+su "$USERNAME" -c "install_dotfiles $PACKAGES"
 
 # Removing the nopass option in doas
 sed -i '1s/nopass/persist/g' /etc/doas.conf

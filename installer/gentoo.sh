@@ -313,7 +313,7 @@ install_server(){
 	emerge -q --noreplace app-misc/fastfetch app-editors/neovim sys-apps/which net-misc/wget app-arch/unzip app-shells/bash-completion \
 		net-libs/nodejs dev-lang/python sys-apps/ripgrep sys-apps/man-db dev-python/pip sys-process/btop dev-lang/go app-misc/tmux \
 		app-misc/ranger dev-python/pynvim app-portage/mirrorselect app-portage/pfl app-portage/gentoolkit sys-apps/fd sys-fs/ncdu \
-		app-portage/eix dev-vcs/lazygit app-containers/lazydocker
+		app-portage/eix dev-vcs/lazygit app-containers/lazydocker dev-python/pipx
 
 	# Update eix packages cache
 	eix-update
@@ -349,6 +349,9 @@ install_ihm(){
 	rm Hasklig.zip
 }
 install_dotfiles(){
+	# Installing pipx packages
+	pipx install dooit
+
 	# Getting the dotfiles
 	mkdir ~/git
 	git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
@@ -362,7 +365,7 @@ install_dotfiles(){
 	mkdir ~/Images
 	cd ~/Images
 	wget -q --show-progress https://www.pixelstalk.net/wp-content/uploads/2016/07/HD-Astronaut-Wallpaper.jpg
-	convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
+	magick convert -crop '2560x1440!+0+70' HD-Astronaut-Wallpaper.jpg WanderingAstronaut.png
 	rm HD-Astronaut-Wallpaper.jpg
 	echo -e '#!/bin/sh\nfeh --bg-fill ~/Images/WanderingAstronaut.png' > ~/.fehbg
 	chmod +x ~/.fehbg
