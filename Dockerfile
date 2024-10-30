@@ -26,7 +26,7 @@ RUN apt-get update \
 	feh=3.10.2-1 \
 	ripgrep=14.1.0-2 \
 	fd-find=10.2.0-1 \
-	fastfetch=2.27.1 \
+	fastfetch=2.28.0 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu1 \
 	rsync=3.3.0-1 \
@@ -70,7 +70,7 @@ RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazynpm /usr/local/bin/lazynpm \
 	&& rm -rv /usr/local/src/lazynpm
 
-RUN cargo install --locked difftastic@0.60.0 \
+RUN cargo install --locked difftastic@0.61.0 \
 	&& mv -v /root/.cargo/bin/difft /usr/local/bin/difft
 
 RUN apt-get remove -y golang-go cargo \
