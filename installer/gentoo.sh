@@ -139,7 +139,7 @@ case $PACKAGES in
 		echo 'USE=\"X bash-completion minimal elogind network threads -wifi -filecaps -caps\"' >> /etc/portage/make.conf
 		# Local flags
 		echo -e 'x11-misc/picom opengl -pcre -drm\nmedia-gfx/imagemagick jpeg\nx11-misc/polybar i3wm ipc network doc\nsys-boot/grub mount -themes -fonts
-x11-base/xorg-server -minimal\napp-alternatives/sh -bash dash\napp-emulation/virtualbox-guest-additions gui
+x11-base/xorg-server -minimal\napp-alternatives/sh -bash dash\nmedia-fonts/nerdfonts hasklig\napp-emulation/virtualbox-guest-additions gui
 
 # required by app-portage/pfl-3.2-r2::gentoo[network-cron]
 >=sys-apps/util-linux-2.38.1-r2 caps
@@ -169,7 +169,7 @@ x11-base/xorg-server -minimal\napp-alternatives/sh -bash dash\napp-emulation/vir
 		echo 'USE=\"X bash-completion minimal elogind pulseaudio network threads wifi -filecaps -caps\"' >> /etc/portage/make.conf
 		# Local flags
 		echo -e 'x11-misc/picom opengl -pcre -drm\nmedia-gfx/imagemagick jpeg\nx11-misc/polybar i3wm ipc network doc\nsys-boot/grub mount -themes -fonts
-x11-base/xorg-server -minimal\napp-alternatives/sh -bash dash'> /etc/portage/package.use
+x11-base/xorg-server -minimal\napp-alternatives/sh -bash dash\nmedia-fonts/nerdfonts hasklig'> /etc/portage/package.use
 		echo 'VIDEO_CARDS=\"intel nvidia\"' >> /etc/portage/make.conf
 	;;
 esac
@@ -313,7 +313,8 @@ install_server(){
 	emerge -q --noreplace app-misc/fastfetch app-editors/neovim sys-apps/which net-misc/wget app-arch/unzip app-shells/bash-completion \
 		net-libs/nodejs dev-lang/python sys-apps/ripgrep sys-apps/man-db dev-python/pip sys-process/btop dev-lang/go app-misc/tmux \
 		app-misc/ranger dev-python/pynvim app-portage/mirrorselect app-portage/pfl app-portage/gentoolkit sys-apps/fd sys-fs/ncdu \
-		app-portage/eix dev-vcs/lazygit app-containers/lazydocker dev-python/pipx
+		app-portage/eix dev-vcs/lazygit app-containers/lazydocker dev-python/pipx app-misc/kmon app-shells/fzf app-text/dos2unix \
+		dev-util/difftastic dev-util/tree-sitter-cli sys-apps/eza sys-apps/bat sys-apps/progress net-misc/tor
 
 	# Update eix packages cache
 	eix-update
@@ -334,19 +335,12 @@ install_ihm(){
 	install_server
 	emerge -q --noreplace x11-misc/picom x11-wm/i3 x11-apps/xinit x11-base/xorg-server x11-apps/xset media-gfx/feh \
 		x11-misc/polybar x11-apps/xrandr x11-misc/xclip x11-apps/setxkbmap app-eselect/eselect-repository \
-		x11-libs/libXinerama media-gfx/ueberzugpp media-gfx/imagemagick media-sound/pulsemixer
+		x11-libs/libXinerama media-gfx/ueberzugpp media-gfx/imagemagick media-sound/pulsemixer media-fonts/nerdfonts \
+		x11-misc/qt5ct gui-apps/qt6ct media-sound/pulseaudio media-video/vlc
 
 	eselect repository add librewolf git https://codeberg.org/librewolf/gentoo.git
 	emaint -r librewolf sync
 	#emerge -q --noreplace www-client/librewolf
-
-	# Getting the Hasklig font
-	LATEST_TAG=\$(curl https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \\\" -f 4)
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/\"\$LATEST_TAG\"/Hasklig.zip
-	mkdir /usr/share/fonts/Hasklig
-	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
-	echo \$LATEST_TAG > /usr/share/fonts/Hasklig/VERSION
-	rm Hasklig.zip
 }
 install_dotfiles(){
 	# Installing pipx packages
