@@ -149,9 +149,12 @@ case "$1" in
 		__updatepackages__ 'neovim' '__update_cmake__'
 
 		# https://github.com/deskflow/deskflow.git
-		# Dependencies : dev-build/cmake dev-util/pkgconf dev-libs/pugixml x11-libs/libnotify
+		# Dependencies : dev-build/cmake dev-util/pkgconf dev-libs/pugixml x11-libs/libnotify dev-libs/libportal dev-libs/libei
 		__update_deskflow__(){
-			cmake -DBUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -B build && cmake --build build -j "$(nproc)" && cp -v build/bin/deskflow* /usr/local/bin/ && rm -rf build
+			cmake -DBUILD_TESTS=OFF -DBUILD_INSTALLER=OFF -DCMAKE_BUILD_TYPE=Release -B build
+			cmake --build build -j "$(nproc)"
+			cp -v build/bin/deskflow* /usr/local/bin/
+			rm -rf build
 		}
 		__updatepackages__ 'deskflow' '__update_deskflow__'
 
