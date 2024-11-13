@@ -148,7 +148,7 @@ bindsym $mod+p sticky toggle
 bindsym $mod+b exec --no-startup-id polybar-msg cmd toggle
 
 # Screenshot button
-bindsym --release Print exec --no-startup-id "FILENAME=$(date +%H%M%S%d%m%Y); import /tmp/$FILENAME-screenshot.png; feh -d /tmp/$FILENAME-screenshot.png"
+bindsym --release Print exec --no-startup-id "FILENAME=$(date +%H%M%S%d%m%Y); magick import /tmp/$FILENAME-screenshot.png; feh -d /tmp/$FILENAME-screenshot.png"
 
 # change focus
 bindsym $mod+h focus left
