@@ -1267,8 +1267,8 @@ Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 nmap('<C-s>', '<cmd>w<CR>',													   'Save buffer shortcut')
 nmap({ '<C-F4>', '<F28>' }, '<cmd>tabclose!<CR>',										   'Close tab shortcut (keeps buffer open)')
-nmap('<C-S-h>', '<cmd>-tabmove<CR>',												   'Move the current tab to the left')
-nmap('<C-S-l>', '<cmd>+tabmove<CR>',												   'Move the current tab to the right')
+nmap({ '<C-S-h>', '<C-H>' }, '<cmd>-tabmove<CR>',										   'Move the current tab to the left')
+nmap({ '<C-S-l>', '<C-L>' }, '<cmd>+tabmove<CR>',										   'Move the current tab to the right')
 nmap({ '<S-F4>', '<F16>' }, '<cmd>bd<CR>',											   'Close buffer shortcut')
 nmap('<M-j>', '<cmd>resize -1<CR>',												   'Decrease buffer window horizontal size (M is the ALT modifier key)')
 nmap('<M-k>', '<cmd>resize +1<CR>',												   'Increase buffer window horizontal size (M is the ALT modifier key)')
