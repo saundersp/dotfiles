@@ -323,13 +323,18 @@ local lazy_plugins = {
 			vim.g.strip_whitespace_confirm  = 0	-- Disable the confirmation message on stripping white spaces
 		end
 	},
-	-- CSV file handling
-	{ 'chrisbra/csv.vim',
-		event = 'BufReadPre',
-		init = function()
-			vim.b.csv_arrange_align = 'lc.'		-- Left align when using ArrangeColumn in a csv file
-		end,
-		cmd = 'CSVTable'
+	-- Rainbow CSV
+	{ 'cameron-wags/rainbow_csv.nvim',
+		config = true,
+		ft = { 'csv', 'tsv', 'csv_semicolon', 'csv_whitespace', 'csv_pipe', 'rfc_csv', 'rfc_semicolon' },
+		cmd = { 'RainbowDelim', 'RainbowDelimSimple', 'RainbowDelimQuoted', 'RainbowMultiDelim' }
+	},
+	-- CSV better viewer
+	{ 'hat0uma/csvview.nvim',
+		--enabled = false,
+		ft = { 'csv', 'tsv', 'csv_semicolon', 'csv_whitespace', 'csv_pipe', 'rfc_csv', 'rfc_semicolon' },
+		opts = { view = { display_mode = 'border' } },
+		cmd = { 'CsvViewEnable', 'CsvViewDisable' }
 	},
 	-- LSP Configuration & Plugins
 	{ 'neovim/nvim-lspconfig',
