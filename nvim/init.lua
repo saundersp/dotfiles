@@ -336,6 +336,21 @@ local lazy_plugins = {
 		opts = { view = { display_mode = 'border' } },
 		cmd = { 'CsvViewEnable', 'CsvViewDisable' }
 	},
+	-- Faster LuaLS setup for Neovim
+	{ 'folke/lazydev.nvim',
+		ft = 'lua', -- only load on lua files
+		opts = {
+			library = {
+				-- See the configuration section for more details
+				-- Load luvit types when the `vim.uv` word is found
+				{ path = 'luvit-meta/library', words = { 'vim%.uv' } }
+			}
+		},
+		dependencies = {
+			-- Optional `vim.uv` typings
+			{ 'Bilal2453/luvit-meta', lazy = true }
+		}
+	},
 	-- LSP Configuration & Plugins
 	{ 'neovim/nvim-lspconfig',
 		event = { 'BufReadPost', 'BufNewFile' },
@@ -358,15 +373,12 @@ local lazy_plugins = {
 			capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 			-- Enable the following language servers with overriding configuration
-			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
+			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
 			local servers = {
 				lua_ls = {
 					Lua = {
 						runtime = { version = 'LuaJIT' },
-						workspace = {
-							checkThirdParty = false,
-							library = { '${3rd}/luv/library', unpack(vim.api.nvim_get_runtime_file('', true)) }
-						},
+						workspace = { checkThirdParty = false },
 						completion = { callSnippet = 'Replace' },
 						telemetry = { enable = false }
 					}
@@ -425,8 +437,6 @@ local lazy_plugins = {
 		dependencies = {
 			-- Automatically install LSPs to stdpath for neovim
 			'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim',
-			-- Additional lua configurations, make nvim stuff amazing
-			{ 'folke/neodev.nvim', opts = { library = { plugins = { 'nvim-dap-ui' }, types = true } } },
 			-- Auto completion functionalities
 			'hrsh7th/cmp-nvim-lsp'
 		}
@@ -685,9 +695,9 @@ local lazy_plugins = {
 					{ name = 'nvim_lsp' },
 					-- Snippets
 					{ name = 'luasnip' },
+					-- Only for neovim settings
+					{ name = 'lazydev', group_index = 0 },
 					-- Buffer words
-					{ name = 'buffer' }
-				}, {
 					{ name = 'buffer' }
 				})
 			})
