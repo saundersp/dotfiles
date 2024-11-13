@@ -89,9 +89,6 @@ bindsym $alt+F4 kill
 # start dmenu (a program launcher)
 bindsym $mod+d exec --no-startup-id dmenu_run -n -c -l 20
 
-# Start polybar
-exec_always --no-startup-id $XDG_CONFIG_HOME/polybar/launch.sh
-
 # Default workspaces names
 set $ws1 1
 set $ws2 2
@@ -251,3 +248,7 @@ mode "$mode_system" {
 	bindsym Escape mode "default"
 }
 bindsym $mod+Home mode "$mode_system"
+
+bar {
+	i3bar_command $XDG_CONFIG_HOME/polybar/launch.sh
+}
