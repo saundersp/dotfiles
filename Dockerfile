@@ -1,39 +1,36 @@
-FROM ubuntu:24.10
+FROM ubuntu:25.04
 
 RUN apt-get update \
-	&& apt-get install --no-install-recommends -y software-properties-common=0.102 \
-	&& add-apt-repository ppa:zhangsongcui3371/fastfetch \
-	&& apt-get update \
 	&& apt-get install --no-install-recommends -y \
 	gcc=4:14.1.0-2ubuntu1 \
 	g++=4:14.1.0-2ubuntu1 \
 	git=1:2.45.2-1ubuntu1 \
 	ca-certificates=20240203 \
-	neovim=0.9.5-7 \
-	nodejs=20.16.0+dfsg-1ubuntu1 \
-	pipx=1.6.0-1 \
-	curl=8.9.1-2ubuntu2 \
+	neovim=0.9.5-10 \
+	nodejs=20.18.0+dfsg-2 \
+	pipx=1.7.1-1 \
+	curl=8.9.1-2ubuntu3 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
 	ranger=1.9.3-5 \
 	cmake=3.30.3-1 \
 	make=4.3-4.1build2 \
-	pkg-config=1.8.1-3ubuntu1 \
+	pkgconf=1.8.1-4 \
 	bat=0.24.0-1build2 \
-	fzf=0.46.1-1 \
+	fzf=0.55.0-1 \
 	eza=0.19.2-2 \
 	ncdu=1.19-0.1 \
-	feh=3.10.2-1 \
-	ripgrep=14.1.0-2 \
+	feh=3.10.3-1 \
+	ripgrep=14.1.1-1 \
 	fd-find=10.2.0-1 \
-	fastfetch=2.28.0 \
+	fastfetch=2.29.0+dfsg-1 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu1 \
 	rsync=3.3.0-1 \
 	tmux=3.4-7 \
 	opendoas=6.8.2-1 \
 	cargo=1.80.1ubuntu2 \
-	golang-go=2:1.23~1
+	golang-go=2:1.23~2
 
 # More user friendly aliases
 RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
@@ -46,7 +43,7 @@ RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.6 --depth 1 /usr
 	libxcb-res0-dev=1.17.0-2 \
 	libvips-dev=8.15.2-2 \
 	libsixel-dev=1.10.3-3build1 \
-	libchafa-dev=1.14.0-1.1build1
+	libchafa-dev=1.14.5-1
 RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueberzugpp/ -B /usr/local/src/ueberzugpp/build \
 	&& cmake --build /usr/local/src/ueberzugpp/build -j "$(nproc)" \
 	&& mv -v /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug \
@@ -84,15 +81,14 @@ RUN apt-get remove -y golang-go cargo \
 
 USER saundersp
 
-RUN bash -i -c 'pipx install dooit==2.2.0'
+RUN bash -i -c 'pipx install dooit==3.0.3'
 
-# Copying local repository
-#WORKDIR /home/saundersp/dotfiles
-#COPY . .
-
-# Cloning remote repository
 WORKDIR /home/saundersp
+# Copying local repository
+#COPY . .
+# Cloning remote repository
 RUN git clone --depth=1 https://github.com/saundersp/dotfiles.git
+
 WORKDIR /home/saundersp/dotfiles
 
 RUN ./auto.sh s
