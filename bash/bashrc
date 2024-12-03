@@ -573,21 +573,21 @@ Available flags:
 	-h, h, help, --help		Show this help message'
 		__cmd_checker__ __get_display__
 		__get_display__(){
-			if ! __command_requirer_pkg__ '' dmenu x11-misc/dmenu; then
+			if ! __command_requirer_pkg__ '' rofi x11-misc/rofi; then
 				return 1
 			fi
-			xrandr | grep connected | awk "{ print \$1 }" | dmenu -p "$1 :" -l 20 -c
+			xrandr | grep connected | awk '{ print $1 }' | rofi -dmenu -p "$1 :" -l 5
 		}
 		case "$1" in
 			-e|e|extend|--extend)
-				if ! __command_requirer_pkg__ '' dmenu x11-misc/dmenu; then
+				if ! __command_requirer_pkg__ '' rofi x11-misc/rofi; then
 					return 1
 				fi
 				Primary="$(__get_display__ Primary)"
 				test -z "$Primary" && return 0
 				Secondary="$(__get_display__ Secondary)"
 				test -z "$Secondary" && return 0
-				mode="$(echo -e 'right-of\nleft-of\nabove\nbelow' | dmenu -p 'Mode :' -c -l 20)"
+				mode="$(echo -e 'right-of\nleft-of\nabove\nbelow' | rofi -dmenu -p 'Mode :' -l 4)"
 				test -z "$mode" && return 0
 				xrandr --output "$Secondary" --auto --"$mode" "$Primary"
 			;;
@@ -654,13 +654,13 @@ Available flags:
 			;;
 			loopoff) __paloopoff__ ;;
 			loop)
-				if ! __command_requirer_pkg__ '' dmenu x11-misc/dmenu; then
+				if ! __command_requirer_pkg__ '' rofi x11-misc/rofi; then
 					return 1
 				fi
 				__paloopoff__
-				source="$(pactl list sources | grep Na |  awk '{ print $2 }' | dmenu -p 'Source:' -c -l 10 )"
+				source="$(pactl list sources | grep Na |  awk '{ print $2 }' | rofi -dmenu -p 'Source:' -l 10 )"
 				test -z "$source" && return 0
-				sink="$(pactl list sinks | grep Na |  awk '{ print $2 }' | dmenu -p 'Sink:' -c -l 10 )"
+				sink="$(pactl list sinks | grep Na |  awk '{ print $2 }' | rofi -dmenu -p 'Sink:' -l 10 )"
 				test -z "$sink" && return 0
 				if [ -z "$2" ]; then
 					pactl load-module module-loopback sink="$sink" source="$source"

@@ -88,8 +88,6 @@ case "$1" in
 		# Dependencies : dev-lang/go app-text/pandoc
 		__updatepackages__ 'arduino-cli glow lazydocker lazygit lazynpm checkmake' 'go install'
 
-		# https://git.suckless.org/dmenu
-		# Dependencies : media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-libs/libXinerama x11-base/xorg-proto virtual/pkgconfig
 		# https://git.suckless.org/st
 		# Dependencies : sys-libs/ncurses media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-terms/st-terminfo x11-base/xorg-proto virtual/pkgconfig
 		__update_suckless__(){
@@ -100,7 +98,7 @@ case "$1" in
 			git pull
 			(cd "$PATCH_PATH" && ./patch.sh "$PACKAGE_NAME")
 		}
-		__updatepackages__ 'dmenu st' '__update_suckless__'
+		__updatepackages__ 'st' '__update_suckless__'
 
 		# https://github.com/b3nj5m1n/xdg-ninja.git
 		# Dependencies : app-shells/bash app-misc/jq

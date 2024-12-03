@@ -78,32 +78,6 @@ polybar.primary: mybackgroundalt
 polybar.secondary: mysecondary
 polybar.alert: myalert
 
-! =================================== dmenu =======================================
-! font or font set (default: monospace:size=10)
-dmenu.font: myfontmono:size=9:style=bold
-! normal background colour (default: #222)
-dmenu.background: mybackground
-! normal foreground colour (default: #bbb)
-dmenu.foreground : myforegroundalt
-!selected background colour (default: #005577)
-dmenu.selbackground : blue
-! selected foreground colour (default: #eee)
-dmenu.selforeground : myforegroundalt
-! selected sub text background colour (default: #ffc978)
-dmenu.selhighbackground: orange
-! selected sub text foreground colour (default: #005577)
-dmenu.selhighforeground: violet
-! normal sub text background colour (default: #ffc978)
-dmenu.normhighbackground: orange
-! normal sub text foreground colour (default: #222)
-dmenu.normhighforeground: mybackgroundalt
-! Multi-select background colour (default: #000)
-dmenu.outbackground: red
-! Multi-select foreground colour (default: #0ff)
-dmenu.outforeground: yellow
-! border width (default: 1)
-dmenu.border-width: 2
-
 ! =================================== st =======================================
 ! font or font set (default: Liberation Mono:pixelsize=12:antialias=true:autohint=true)
 st.font: myfontmono:size=9

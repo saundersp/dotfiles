@@ -86,8 +86,8 @@ bindsym $mod+Return exec --no-startup-id st
 # kill focused window
 bindsym $alt+F4 kill
 
-# start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id dmenu_run -n -c -l 20
+# start rofi (a program launcher)
+bindsym $mod+d exec --no-startup-id rofi -show drun
 
 # Default workspaces names
 set $ws1 1

@@ -78,7 +78,7 @@ else
 	ln -sf "$CURRENT_FOLDER"/updater.sh "$HOME"/updater.sh
 
 	if [ "$1" != '-s' ] && [ "$1" != 's' ] && [ "$1" != 'server' ] && [ "$1" != '--server' ]; then
-		PACKAGES='dmenu st'
+		PACKAGES='st'
 		for package in $PACKAGES; do
 			if [ ! -d /usr/local/src/"$package" ]; then
 				git clone git://git.suckless.org/"$package" /usr/local/src/"$package"
@@ -87,5 +87,3 @@ else
 		done
 	fi
 fi
-
-exit 0
