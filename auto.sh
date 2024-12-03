@@ -34,7 +34,8 @@ if [ "$1" = '-r' ] || [ "$1" = 'r' ] || [ "$1" = 'remove' ] || [ "$1" = '--remov
 	test -d "$FILENAME" && rm -rf "$FILENAME"
 elif [ "$(id -u)" -ne 0 ]; then
 	mkdir -p "$XDG_CONFIG_HOME"/nvim/autoload "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/git \
-		"$XDG_CONFIG_HOME"/fastfetch "$XDG_CONFIG_HOME"/dooit "$XDG_CONFIG_HOME"/espanso/config "$XDG_CONFIG_HOME"/espanso/match
+		"$XDG_CONFIG_HOME"/fastfetch "$XDG_CONFIG_HOME"/dooit "$XDG_CONFIG_HOME"/espanso/config "$XDG_CONFIG_HOME"/espanso/match \
+		"$XDG_CONFIG_HOME"/rofi
 
 	FILENAME="$XDG_CONFIG_HOME"/ranger/plugins/ranger_devicons
 	test ! -d "$FILENAME" && git clone https://github.com/alexanderjeurissen/ranger_devicons.git "$FILENAME"
