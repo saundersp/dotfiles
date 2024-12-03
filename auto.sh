@@ -25,7 +25,8 @@ if [ "$1" = '-r' ] || [ "$1" = 'r' ] || [ "$1" = 'remove' ] || [ "$1" = '--remov
 	rm -rf "$XDG_CONFIG_HOME"/nvim/init.lua "$XDG_CONFIG_HOME"/fastfetch/config.jsonc "$HOME"/.bashrc "$XDG_CONFIG_HOME"/git/config \
 		"$HOME"/.profile "$XDG_CONFIG_HOME"/i3/config "$HOME"/.xinitrc "$XDG_CONFIG_HOME"/X11/Xresources
 		"$XDG_CONFIG_HOME"/polybar/launch.sh "$XDG_CONFIG_HOME"/polybar/config.ini "$XDG_CONFIG_HOME"/polybar/scripts
-		"$XDG_CONFIG_HOME"/ranger/rc.conf "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux/tmux.conf "$XDG_CONFIG_HOME"/dooit/config.py
+		"$XDG_CONFIG_HOME"/ranger/rc.conf "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux/tmux.conf "$XDG_CONFIG_HOME"/dooit/config.py \
+		"$XDG_CONFIG_HOME"/espanso
 
 	FILENAME="$XDG_DATA_HOME"/nvim/lazy/lazy.nvim
 	test -d "$FILENAME" && rm -rf "$FILENAME"
@@ -45,6 +46,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 	ln -sf "$CURRENT_FOLDER"/git/config "$XDG_CONFIG_HOME"/git/config
 	ln -sf "$CURRENT_FOLDER"/tmux/tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
 	ln -sf "$CURRENT_FOLDER"/dooit/config.py "$XDG_CONFIG_HOME"/dooit/config.py
+	ln -sf "$CURRENT_FOLDER"/espanso "$XDG_CONFIG_HOME"/espanso
 
 	if [ "$1" = '-s' ] || [ "$1" = 's' ] || [ "$1" = 'server' ] || [ "$1" = '--server' ]; then
 		ln -sf "$CURRENT_FOLDER"/shell_profile/profile_server "$HOME"/.profile

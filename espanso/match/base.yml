@@ -1,0 +1,70 @@
+matches:
+  - trigger: ":date"
+    replace: "{{my_date}}"
+    vars:
+      - name: my_date
+        type: date
+        params:
+          format: "%m%d%H%M%Y.%S"
+
+  - trigger: ":curl"
+    replace: "date {{my_date}} && curl {{form1.fileurl}} --output installer.sh && chmod +x installer.sh && ./installer.sh"
+    vars:
+      - name: my_date
+        type: match
+        params:
+          trigger: ":date"
+      - name: form1
+        type: form
+        params:
+          layout: |
+            "Curl url: [[fileurl]]"
+
+  - trigger: ":wget"
+    replace: "date {{my_date}} && wget {{form1.fileurl}} -O installer.sh && chmod +x installer.sh && ./installer.sh"
+    vars:
+      - name: my_date
+        type: match
+        params:
+          trigger: ":date"
+      - name: form1
+        type: form
+        params:
+          layout: "Wget url: [[fileurl]]"
+
+  - trigger: ":nixos"
+    replace: "date {{my_date}} && curl {{form1.fileurl}} --output /mnt/etc/nixos/configuration.nix && nixos-install --no-root-passwd"
+    vars:
+      - name: my_date
+        type: match
+        params:
+          trigger: ":date"
+      - name: form1
+        type: form
+        params:
+          layout: "Curl url: [[fileurl]]"
+
+  - trigger: ":paste"
+    replace: "{{form1.content}}"
+    vars:
+      - name: form1
+        type: form
+        params:
+          layout: "Paste content: [[content]]"
+
+  - trigger: ":chroot"
+    replace: "cryptsetup open /dev/sda2 luks_root
+      && mount /dev/mapper/luks_root /mnt/gentoo
+      && mount /dev/sda1 /mnt/gentoo/boot
+      && mount -t proc /proc /mnt/gentoo/proc
+      && mount -R /sys /mnt/gentoo/sys
+      && mount --make-rslave /mnt/gentoo/sys
+      && mount -R /dev /mnt/gentoo/dev
+      && mount --make-rslave /mnt/gentoo/dev
+      && mount -B /run /mnt/gentoo/run
+      && mount --make-slave /mnt/gentoo/run
+      && chroot /mnt/gentoo
+      && umount -R /mnt/gentoo
+      && cryptsetup close luks_root
+      && reboot"
+
