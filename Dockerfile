@@ -4,15 +4,15 @@ RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
 	gcc=4:14.1.0-2ubuntu1 \
 	g++=4:14.1.0-2ubuntu1 \
-	git=1:2.45.2-1ubuntu1 \
+	git-svn=1:2.45.2-1.2ubuntu1 \
 	ca-certificates=20240203 \
 	neovim=0.9.5-10 \
 	nodejs=20.18.0+dfsg-2 \
 	pipx=1.7.1-1 \
-	curl=8.9.1-2ubuntu3 \
+	curl=8.11.0-1ubuntu2 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
-	ranger=1.9.3-5 \
+	ranger=1.9.4-1 \
 	cmake=3.30.3-1 \
 	make=4.3-4.1build2 \
 	pkgconf=1.8.1-4 \
@@ -23,7 +23,7 @@ RUN apt-get update \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
 	fd-find=10.2.0-1 \
-	fastfetch=2.29.0+dfsg-1 \
+	fastfetch=2.30.1+dfsg-1 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu1 \
 	rsync=3.3.0-1 \
@@ -47,25 +47,25 @@ RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.6 --depth 1 /usr
 RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueberzugpp/ -B /usr/local/src/ueberzugpp/build \
 	&& cmake --build /usr/local/src/ueberzugpp/build -j "$(nproc)" \
 	&& mv -v /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug \
-	&& rm -rv /usr/local/src/ueberzugpp
+	&& rm -r /usr/local/src/ueberzugpp
 
 RUN git clone --depth=1 -b v0.44.1 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
 WORKDIR /usr/local/src/lazygit
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazygit /usr/local/bin/lazygit \
-	&& rm -rv /usr/local/src/lazygit
+	&& rm -r /usr/local/src/lazygit
 
 RUN git clone --depth=1 -b v0.23.3 https://github.com/jesseduffield/lazydocker.git /usr/local/src/lazydocker
 WORKDIR /usr/local/src/lazydocker
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazydocker /usr/local/bin/lazydocker \
-	&& rm -rv /usr/local/src/lazydocker
+	&& rm -r /usr/local/src/lazydocker
 
 RUN git clone --depth=1 -b v0.1.4 https://github.com/jesseduffield/lazynpm.git /usr/local/src/lazynpm
 WORKDIR /usr/local/src/lazynpm
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazynpm /usr/local/bin/lazynpm \
-	&& rm -rv /usr/local/src/lazynpm
+	&& rm -r /usr/local/src/lazynpm
 
 RUN cargo install --locked difftastic@0.61.0 \
 	&& mv -v /root/.cargo/bin/difft /usr/local/bin/difft
@@ -73,15 +73,15 @@ RUN cargo install --locked difftastic@0.61.0 \
 RUN apt-get remove -y golang-go cargo \
 	&& apt-get autoremove -y \
 	&& apt-get autoclean -y \
-	&& rm -rv /var/lib/apt/lists/* \
-	&& rm -rv /root/go \
-	&& rm -rv /root/.cargo \
+	&& rm -r /var/lib/apt/lists/* \
+	&& rm -r /root/go \
+	&& rm -r /root/.cargo \
 	&& useradd -m saundersp \
 	&& rm -v "$(command -v vi)"
 
 USER saundersp
 
-RUN bash -i -c 'pipx install dooit==3.0.3'
+RUN bash -i -c 'pipx install dooit==3.0.4'
 
 WORKDIR /home/saundersp
 # Copying local repository
