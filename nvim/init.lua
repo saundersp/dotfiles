@@ -406,7 +406,7 @@ local lazy_plugins = {
 				texlab = {},
 				docker_compose_language_service = {},
 				marksman = {},
-				typst_lsp = {}
+				tinymist = {}
 			}
 
 			require('mason-lspconfig').setup({ ensure_installed = format_ensure_install(servers) })
