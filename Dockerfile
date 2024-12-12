@@ -13,11 +13,11 @@ RUN apt-get update \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
 	ranger=1.9.4-1 \
-	cmake=3.30.3-1 \
+	cmake=3.31.2-1 \
 	make=4.3-4.1build2 \
 	pkgconf=1.8.1-4 \
 	bat=0.24.0-1build2 \
-	fzf=0.55.0-1 \
+	fzf=0.56.3-1 \
 	eza=0.19.2-2 \
 	ncdu=1.19-0.1 \
 	feh=3.10.3-1 \
@@ -41,7 +41,7 @@ RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.6 --depth 1 /usr
 	libtbb-dev=2021.12.0-1ubuntu2 \
 	libxcb-image0-dev=0.4.0-2build1 \
 	libxcb-res0-dev=1.17.0-2 \
-	libvips-dev=8.15.2-2 \
+	libvips-dev=8.16.0-2 \
 	libsixel-dev=1.10.3-3build1 \
 	libchafa-dev=1.14.5-1
 RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueberzugpp/ -B /usr/local/src/ueberzugpp/build \
@@ -81,7 +81,7 @@ RUN apt-get remove -y golang-go cargo \
 
 USER saundersp
 
-RUN bash -i -c 'pipx install dooit==3.0.4'
+RUN bash -i -c 'pipx install dooit==3.1.0'
 
 WORKDIR /home/saundersp
 # Copying local repository
