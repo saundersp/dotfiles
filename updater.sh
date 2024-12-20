@@ -18,9 +18,9 @@ Available flags:
 	h, help, -h, --help			Which display this help message."
 
 case "$1" in
-	m|mod|-m|--mod) rg "=y" /usr/src/linux/.config | less ;;
+	m|mod|-m|--mod) rg "=y" /usr/src/linux/.config | rg -v '_HAVE_' | sed 's/CONFIG_//;s/=y//' | less ;;
 	f|fill|-f|--fill) rg 'is not set' /usr/src/linux/.config | sed 's/# CONFIG_//;s/ is not set//' | less ;;
-	e|empty|-e|--empty) rg '=y|=m' /usr/src/linux/.config | sed 's/CONFIG_//' | less ;;
+	e|empty|-e|--empty) rg '=y|=m' /usr/src/linux/.config | rg -v '_HAVE_' | sed 's/CONFIG_//' | less ;;
 	c|compare|-c|--compare) nvim -d /usr/src/linux/.config DEFAULT.config ;;
 	u|update|-u|--update)
 		cd /usr/src/linux
@@ -43,7 +43,6 @@ case "$1" in
 		fi
 		grub-mkconfig -o /boot/grub/grub.cfg
 		emerge -v @module-rebuild
-		cd
 	;;
 	p|packages|-p|--packages)
 		__updatepackages__(){
@@ -72,6 +71,7 @@ case "$1" in
 			unset __r__
 		}
 
+		OLD_PWD="$(pwd)"
 		cd /usr/local/src || exit 1
 
 		# https://github.com/arduino/arduino-cli.git
@@ -178,10 +178,9 @@ case "$1" in
 			fi
 		fi
 
-		cd ~
+		cd "$OLD_PWD"
 		GO_BIN_PATH="${GOPATH:-$HOME/go}/bin"
-		test "$(ls -A "$GO_BIN_PATH")" && mv -f "$GO_BIN_PATH"/* /usr/local/bin/
-		exit 0
+		test -d "$GO_BIN_PATH" && test "$(ls -A "$GO_BIN_PATH")" && mv -f "$GO_BIN_PATH"/* /usr/local/bin/ || exit 0
 	;;
 	ck|change-kernel|-ck|--change-kernel)
 		if [ -z "$2" ]; then
@@ -189,12 +188,10 @@ case "$1" in
 			exit 1
 		fi
 		TMP_FILE="$(mktemp)"
-		mv /usr/src/linux/.config "$TMP_FILE"
+		cp /usr/src/linux/.config "$TMP_FILE"
 		eselect kernel set "$2"
 		mv "$TMP_FILE" /usr/src/linux/.config
-		cd /usr/src/linux
-		make oldconfig
-		cd
+		(cd /usr/src/linux && make oldconfig)
 	;;
 	M|make|-M|--make)
 		cd /usr/src/linux
@@ -203,7 +200,6 @@ case "$1" in
 		else
 			make menuconfig
 		fi
-		cd
 	;;
 	s|sign|-s|--sign)
 		if [ -z "$2" ]; then
