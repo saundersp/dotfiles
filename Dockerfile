@@ -4,20 +4,20 @@ RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
 	gcc=4:14.1.0-2ubuntu1 \
 	g++=4:14.1.0-2ubuntu1 \
-	git-svn=1:2.45.2-1.2ubuntu1 \
+	git-svn=1:2.47.1-0ubuntu1 \
 	ca-certificates=20240203 \
 	neovim=0.9.5-10 \
 	nodejs=20.18.0+dfsg-2 \
 	pipx=1.7.1-1 \
-	curl=8.11.0-1ubuntu2 \
+	curl=8.11.1-1ubuntu1 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
 	ranger=1.9.4-1 \
 	cmake=3.31.2-1 \
-	make=4.3-4.1build2 \
+	make=4.4.1-1 \
 	pkgconf=1.8.1-4 \
 	bat=0.24.0-1build2 \
-	fzf=0.56.3-1 \
+	fzf=0.57.0-1 \
 	eza=0.19.2-2 \
 	ncdu=1.19-0.1 \
 	feh=3.10.3-1 \
@@ -26,7 +26,7 @@ RUN apt-get update \
 	fastfetch=2.30.1+dfsg-1 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu1 \
-	rsync=3.3.0-1 \
+	rsync=3.3.0+ds1-2 \
 	tmux=3.4-7 \
 	opendoas=6.8.2-1 \
 	cargo=1.80.1ubuntu2 \
@@ -55,7 +55,7 @@ RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazygit /usr/local/bin/lazygit \
 	&& rm -r /usr/local/src/lazygit
 
-RUN git clone --depth=1 -b v0.23.3 https://github.com/jesseduffield/lazydocker.git /usr/local/src/lazydocker
+RUN git clone --depth=1 -b v0.24.1 https://github.com/jesseduffield/lazydocker.git /usr/local/src/lazydocker
 WORKDIR /usr/local/src/lazydocker
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazydocker /usr/local/bin/lazydocker \
