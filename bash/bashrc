@@ -41,6 +41,7 @@ if command -v npm >> /dev/null; then
 	export NPM_CONFIG_TMP="$XDG_RUNTIME_DIR"/npm
 fi
 export KERAS_HOME="$XDG_STATE_HOME/keras"
+test -d "$HOME/.elan" && export PATH="$HOME/.elan/bin:$PATH"
 
 # Define colours
 LIGHTGRAY='\033[0;37m'
