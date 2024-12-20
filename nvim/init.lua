@@ -749,7 +749,7 @@ local lazy_plugins = {
 	-- Allow use of background jobs
 	{ 'tpope/vim-dispatch',
 		keys = {
-			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	 desc = 'Preview LaTeX document' },
+			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	 ft = { 'plaintex', 'tex', 'typst' }, desc = 'Preview LaTeX document' },
 			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		 desc = 'Make the default recipe in cwd (multi-jobs)' },
 			{ '<leader>mM', '<cmd>Make<CR>',			 desc = 'Make the default recipe in cwd' },
 			{ '<leader>ms', '<cmd>Start -wait=error make start<CR>', desc = 'Make the "start" recipe in cwd' },
@@ -1181,6 +1181,26 @@ local lazy_plugins = {
 		keys = {
 			{ 's', mode = { 'n', 'x', 'o' }, function() require('flash').jump() end,       desc = 'Flash' },
 			{ 'S', mode = { 'n', 'x', 'o' }, function() require('flash').treesitter() end, desc = 'Flash Treesitter' }
+		}
+	},
+	-- Neovim support for the Lean theorem prover
+	{ 'Julian/lean.nvim',
+		ft = { 'lean' },
+		opts = { infoview = { autoopen = false } },
+		dependencies = {
+			-- LSP Configuration & Plugins
+			'neovim/nvim-lspconfig',
+			-- Lua library functions
+			'nvim-lua/plenary.nvim',
+			-- you also will likely want nvim-cmp or some completion engine
+		},
+		keys = { { '<localleader>tp', '<cmd>LeanInfoviewToggle<CR>', ft = 'lean', desc = 'Preview LaTeX document' } },
+		cmds = {
+			'LeanAbbreviationsReverseLookup', 'LeanGoal', 'LeanGotoInfoview', 'LeanInfoviewAddPin', 'LeanInfoviewClearDiffPin',
+			'LeanInfoviewClearPins', 'LeanInfoviewDisableWidgets', 'LeanInfoviewEnableWidgets', 'LeanInfoviewPinTogglePause',
+			'LeanInfoviewSetDiffPin', 'LeanInfoviewToggle', 'LeanInfoviewToggleAutoDiffPin', 'LeanInfoviewToggleNoClearAutoDiffPin',
+			'LeanInfoviewViewOptions', 'LeanLineDiagnostics', 'LeanPlainDiagnostics', 'LeanPlainGoal', 'LeanPlainTermGoal',
+			'LeanRefreshFileDependencies', 'LeanRestartFile', 'LeanSorryFill', 'LeanTermGoal'
 		}
 	}
 }
