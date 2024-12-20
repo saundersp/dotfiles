@@ -26,10 +26,16 @@ command -v ipython >> /dev/null && export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
 command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
 command -v docker >> /dev/null && export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
+command -v opam >> /dev/null && export OPAMROOT="$XDG_DATA_HOME"/opam
 if command -v pipx >> /dev/null; then
 	export PIPX_BIN_DIR="$XDG_DATA_HOME/pipx/bin"
 	export PIPX_MAN_DIR="$XDG_DATA_HOME/pipx/man"
 	export PATH="$PIPX_BIN_DIR:$PATH"
+fi
+if command -v npm >> /dev/null; then
+	export NPM_CONFIG_INIT_MODULE="$XDG_CONFIG_HOME"/npm/config/npm-init.js
+	export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
+	export NPM_CONFIG_TMP="$XDG_RUNTIME_DIR"/npm
 fi
 
 # Define colours
