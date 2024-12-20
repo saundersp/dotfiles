@@ -111,15 +111,17 @@ set $ws10 10: 
 #exec --no-startup-id deskflow
 #exec --no-startup-id st -c pulsemixer -e pulsemixer
 #exec --no-startup-id st -c term_annex
+#set $ws9 9: 
 
 # StreamPc startup layout
 # nf-fa-music | nf-fa-microphone
 # set $ws1 1: |
 # nf-md-web
 # set $ws2 2: 󰖟
-## Spotify doesn't assign a class name on startup
+# Spotify doesn't assign a class name on startup
 #for_window [class="Spotify"] move to workspace $ws1
 #assign [class="discord"] workspace $ws1
+#assign [class="Signal"] workspace $ws1
 #assign [class="LibreWolf"] workspace $ws2
 #assign [class="pulsemixer"] workspace $ws10
 #assign [class="term_annex"] workspace $ws10
@@ -132,6 +134,7 @@ set $ws10 10: 
 #exec --no-startup-id qbittorrent-nox -d
 #exec --no-startup-id spotify
 #exec --no-startup-id discord
+#exec --no-startup-id signal-desktop
 
 # Laptop startup layout
 #for_window [class="pulsemixer"] move scratchpad
