@@ -7,7 +7,7 @@ RUN apt-get update \
 	git-svn=1:2.47.1-0ubuntu1 \
 	ca-certificates=20240203 \
 	neovim=0.9.5-10 \
-	nodejs=20.18.0+dfsg-2 \
+	nodejs=20.18.1+dfsg-1ubuntu1 \
 	pipx=1.7.1-1 \
 	curl=8.11.1-1ubuntu1 \
 	npm=9.2.0~ds1-3 \
@@ -19,7 +19,7 @@ RUN apt-get update \
 	bat=0.24.0-1build2 \
 	fzf=0.57.0-1 \
 	eza=0.19.2-2 \
-	ncdu=1.19-0.1 \
+	ncdu=1.21-1 \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
 	fd-find=10.2.0-1 \
