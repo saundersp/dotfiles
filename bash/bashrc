@@ -684,7 +684,7 @@ Available flags:
 fi
 
 command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
-test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after $HOME/"Calibre Library"/ linode:~/"Calibre Library"/'
+test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after $HOME/"Calibre Library"/ streampc:~/"Calibre Library"/'
 
 __cmd_checker__ pow
 pow(){
@@ -773,7 +773,7 @@ __help_me__(){
 	tprint_cmd 'pm' 'Pulsemixer shortcut'
 	tprint_cmd 'weather' 'Get current weather status'
 	print_cmd 'pow' 'CPU scaling governor helper'
-	tprint_cmd 'sync_books' "Sync calibre's books to the linode's VPS"
+	tprint_cmd 'sync_books' "Sync calibre's books to the StreamPC"
 	print_cmd '?' 'Print this reminder'
 
 	echo -e "${BOLD}\nBash bang shortcuts remainders :${NO_COLOUR}"
