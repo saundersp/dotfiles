@@ -519,6 +519,7 @@ update(){
 	command -v pac >> /dev/null && pac u && pac p
 	command -v ap >> /dev/null && ap u && ap p
 	(cd && ./updater.sh p)
+	command -v ncu >> /dev/null && npm update -g npm-check-updates
 	command -v nix-env >> /dev/null && nix-env -u
 	command -v pipx >> /dev/null && pipx upgrade-all
 }
