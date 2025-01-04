@@ -62,7 +62,7 @@ install_server(){
 	ln -s /usr/bin/doas /usr/bin/sudo
 
 	# Installing npm dependencies
-	npm i -g neovim npm-check-updates
+	npm i -g npm-check-updates
 
 	# Adding user to wheel groups
 	usermod -aG wheel "$USERNAME"

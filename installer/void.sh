@@ -158,7 +158,7 @@ rm -rf \$(find / -name *sudo*) /sbin/vi
 
 if [ '$PACKAGES' != 'minimal' ]; then
 	# Installing npm dependencies
-	npm i -g neovim npm-check-updates
+	npm i -g npm-check-updates
 fi
 
 if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then

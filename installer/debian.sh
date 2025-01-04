@@ -124,7 +124,7 @@ install_server(){
 	rm -rf /root/go
 
 	# Installing npm dependencies
-	npm i -g neovim npm-check-updates
+	npm i -g npm-check-updates
 }
 install_ihm(){
 	install_server
