@@ -66,10 +66,12 @@ elif [ "$(id -u)" -ne 0 ]; then
 		ln -sf "$CURRENT_FOLDER"/X11/Xresources "$XDG_CONFIG_HOME"/X11/Xresources
 	fi
 
-	nvim --headless -c 'Lazy sync' +q
-	nvim --headless -c TSUpdateSync +q
-	nvim --headless -c MasonUpdate +q
-	nvim --headless -c MasonUpdateAll -c 'autocmd User MasonUpdateAllComplete quitall'
+	if command -v nvim >> /dev/null; then
+		nvim --headless -c 'lua if vim.fn.exists(":Lazy") ~= 0 then vim.cmd("Lazy! sync") end' +qa
+		nvim --headless -c 'lua if vim.fn.exists(":MasonUpdate") ~= 0 then vim.cmd("MasonUpdate") end' +q
+		nvim --headless -c 'lua if vim.fn.exists(":MasonUpdateAll") ~= 0 then vim.cmd("MasonUpdateAll") else os.exit(0) end' -c 'autocmd User MasonUpdateAllComplete quitall'
+		nvim --headless -c 'lua if vim.fn.exists(":TSUpdateSync") ~= 0 then vim.cmd("TSUpdateSync") end' +q
+	fi
 else
 	mkdir -p "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/nvim "$XDG_CONFIG_HOME"/fastfetch
 
