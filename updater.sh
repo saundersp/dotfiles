@@ -151,7 +151,7 @@ case "$1" in
 		__update_deskflow__(){
 			cmake -DBUILD_TESTS=OFF -DBUILD_INSTALLER=OFF -DCMAKE_BUILD_TYPE=Release -B build
 			cmake --build build -j "$(nproc)"
-			cp -v build/bin/deskflow* /usr/local/bin/
+			mv -v build/bin/deskflow* /usr/local/bin/
 			rm -rf build
 		}
 		__updatepackages__ 'deskflow' '__update_deskflow__'
