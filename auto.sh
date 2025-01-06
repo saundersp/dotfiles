@@ -84,12 +84,7 @@ else
 	ln -sf "$CURRENT_FOLDER"/updater.sh "$HOME"/updater.sh
 
 	if [ "$1" != '-s' ] && [ "$1" != 's' ] && [ "$1" != 'server' ] && [ "$1" != '--server' ]; then
-		PACKAGES='st'
-		for package in $PACKAGES; do
-			if [ ! -d /usr/local/src/"$package" ]; then
-				git clone git://git.suckless.org/"$package" /usr/local/src/"$package"
-				(cd patches && ./patch.sh "$package")
-			fi
-		done
+		git clone git://git.suckless.org/st /usr/local/src/st
+		(cd patches && ./patch.sh st)
 	fi
 fi
