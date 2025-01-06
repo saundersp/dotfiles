@@ -40,7 +40,6 @@ elif [ "$(id -u)" -ne 0 ]; then
 	FILENAME="$XDG_CONFIG_HOME"/ranger/plugins/ranger_devicons
 	test ! -d "$FILENAME" && git clone https://github.com/alexanderjeurissen/ranger_devicons.git "$FILENAME"
 
-	ln -sf "$CURRENT_FOLDER"/nvim/init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
 	ln -sf "$CURRENT_FOLDER"/fastfetch/config.jsonc "$XDG_CONFIG_HOME"/fastfetch/config.jsonc
 	ln -sf "$CURRENT_FOLDER"/ranger/rc.conf "$XDG_CONFIG_HOME"/ranger/rc.conf
 	ln -sf "$CURRENT_FOLDER"/bash/bashrc "$HOME"/.bashrc
@@ -53,9 +52,11 @@ elif [ "$(id -u)" -ne 0 ]; then
 
 	if [ "$1" = '-s' ] || [ "$1" = 's' ] || [ "$1" = 'server' ] || [ "$1" = '--server' ]; then
 		ln -sf "$CURRENT_FOLDER"/shell_profile/profile_server "$HOME"/.profile
+		ln -sf "$CURRENT_FOLDER"/nvim/server_init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
 	else
 		mkdir -p "$XDG_CONFIG_HOME"/i3 "$XDG_CONFIG_HOME"/polybar "$XDG_CONFIG_HOME"/X11
 
+		ln -sf "$CURRENT_FOLDER"/nvim/init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
 		ln -sf "$CURRENT_FOLDER"/polybar/launch.sh "$XDG_CONFIG_HOME"/polybar/launch.sh
 		ln -sf "$CURRENT_FOLDER"/polybar/config.ini "$XDG_CONFIG_HOME"/polybar/config.ini
 		test ! -d "$XDG_CONFIG_HOME"/polybar/scripts && ln -sf "$CURRENT_FOLDER"/polybar/scripts "$XDG_CONFIG_HOME"/polybar/scripts
