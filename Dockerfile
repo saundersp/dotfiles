@@ -16,7 +16,7 @@ RUN apt-get update \
 	cmake=3.31.2-1 \
 	make=4.4.1-1 \
 	pkgconf=1.8.1-4 \
-	bat=0.24.0-1build2 \
+	bat=0.24.0-2 \
 	fzf=0.57.0-1 \
 	eza=0.19.2-2 \
 	ncdu=1.21-1 \
@@ -38,7 +38,7 @@ RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
 
 RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.6 --depth 1 /usr/local/src/ueberzugpp \
 	&& apt-get install --no-install-recommends -y \
-	libtbb-dev=2021.12.0-1ubuntu2 \
+	libtbb-dev=2022.0.0-1 \
 	libxcb-image0-dev=0.4.0-2build1 \
 	libxcb-res0-dev=1.17.0-2 \
 	libvips-dev=8.16.0-2 \
