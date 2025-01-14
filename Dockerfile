@@ -23,7 +23,7 @@ RUN apt-get update \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
 	fd-find=10.2.0-1 \
-	fastfetch=2.30.1+dfsg-1 \
+	fastfetch=2.34.0+dfsg+fakesync-1 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu1 \
 	rsync=3.3.0+ds1-2 \
@@ -49,7 +49,7 @@ RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueb
 	&& mv -v /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug \
 	&& rm -r /usr/local/src/ueberzugpp
 
-RUN git clone --depth=1 -b v0.44.1 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
+RUN git clone --depth=1 -b v0.45.0 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
 WORKDIR /usr/local/src/lazygit
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazygit /usr/local/bin/lazygit \
