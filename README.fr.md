@@ -1,11 +1,11 @@
 # @saundersp's dotfiles
 
-_Lisez ceci dans d'autres langues: [English](README.md)_
+_Lisez ceci dans d'autres langues : [English](README.md)_
 
-## Logiciels utilisés
+## Paquets utilisés
 
 - neovim : Unique fichier de configuration utilisateur init.lua, ainsi que la configuration root root_init.lua sans plugins
-- git : email et nom globaux, autorise certains dossier sûrs
+- git : email et nom globaux, autorise certains dossiers sûrs
 - bash : dossier shell_profile avec bashrc utilisateur et root.bashrc qui ne diffère que de l'helper AUR et les logiciels de bureau (X11)
 - tmux : Configuration utilisateur et root, la configuration root essayera de lire le niveau de batterie et de luminosité, l'utilisateur est plus minimal
 - fastfetch : Rendu très similaire à neofetch
@@ -65,9 +65,9 @@ Vous pouvez choisir n'importe quel fichier ou bloc de code, ou simplement utilis
 
 ## Scripts d'installation automatique && post-installation
 
-Ces scripts sont destinés à installer/rice une installation minimale de linux à partir de zéro et à mon goût.
+Ces scripts sont destinés à installer/rice une installation minimale de Linux à partir de zéro et à mon goût.
 
-Scripts d'installation automatique (celle-la incluent également une option d'installation minimale):
+Scripts d'installation automatique (celle-la inclut également une option d'installation minimale) :
 
 - Arch
 - Artix
