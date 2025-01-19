@@ -4,7 +4,7 @@ RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
 	gcc=4:14.1.0-2ubuntu1 \
 	g++=4:14.1.0-2ubuntu1 \
-	git-svn=1:2.47.1-0ubuntu1 \
+	git-svn=1:2.47.1-1ubuntu1 \
 	ca-certificates=20240203 \
 	neovim=0.9.5-10 \
 	nodejs=20.18.1+dfsg-1ubuntu1 \
@@ -23,9 +23,9 @@ RUN apt-get update \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
 	fd-find=10.2.0-1 \
-	fastfetch=2.34.0+dfsg+fakesync-1 \
+	fastfetch=2.34.1+dfsg-1 \
 	apt-file=3.3 \
-	wireguard-tools=1.0.20210914-1.1ubuntu1 \
+	wireguard-tools=1.0.20210914-1.1ubuntu2 \
 	rsync=3.3.0+ds1-2 \
 	tmux=3.4-7 \
 	opendoas=6.8.2-1 \
@@ -42,7 +42,7 @@ RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.6 --depth 1 /usr
 	libxcb-image0-dev=0.4.0-2build1 \
 	libxcb-res0-dev=1.17.0-2 \
 	libvips-dev=8.16.0-2 \
-	libsixel-dev=1.10.3-3build1 \
+	libsixel-dev=1.10.5-1 \
 	libchafa-dev=1.14.5-1
 RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueberzugpp/ -B /usr/local/src/ueberzugpp/build \
 	&& cmake --build /usr/local/src/ueberzugpp/build -j "$(nproc)" \
