@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # If not running interactively, don't do anything
-#[[ $- != *i* ]] && return
+[[ $- != *i* ]] && return
 
 # Set config and data folder for nvim, etc...
 export XDG_CONFIG_HOME="$HOME"/.XDG/config
@@ -20,18 +20,9 @@ fi
 command -v less >> /dev/null && export LESSHISTFILE="$XDG_STATE_HOME"/less_history
 command -v gradle >> /dev/null && export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
 command -v java >> /dev/null && export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
-command -v gpg >> /dev/null && export GNUPGHOME="$XDG_DATA_HOME"/gnupg
-command -v wine >> /dev/null && export WINEPREFIX="$XDG_DATA_HOME"/wine
-command -v ipython >> /dev/null && export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
 command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
 command -v docker >> /dev/null && export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
-command -v opam >> /dev/null && export OPAMROOT="$XDG_DATA_HOME"/opam
-if command -v pipx >> /dev/null; then
-	export PIPX_BIN_DIR="$XDG_DATA_HOME/pipx/bin"
-	export PIPX_MAN_DIR="$XDG_DATA_HOME/pipx/man"
-	export PATH="$PIPX_BIN_DIR:$PATH"
-fi
 if command -v npm >> /dev/null; then
 	export NPM_CONFIG_INIT_MODULE="$XDG_CONFIG_HOME"/npm/config/npm-init.js
 	export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
@@ -79,7 +70,7 @@ __cmd_checker__(){
 
 __cmd_checker__ __setprompt
 __setprompt() {
-	LAST_COMMAND="$?" # Must come first!
+	local LAST_COMMAND="$?" # Must come first!
 
 	PS1="\[${USER_COLOUR}\]┌──"
 	# Show error exit code if there is one
@@ -186,8 +177,6 @@ preview_csv(){
 	fi
 	(sed 's/,/ ,/g' | column -t -s "$DEL" | less -S -n) < "$1"
 }
-
-command -v fastfetch >> /dev/null && [[ $- == *i* ]] && fastfetch
 
 if command -v python >> /dev/null; then
 	USAGE="Python virtual environment helper
@@ -308,14 +297,14 @@ __command_requirer_pkg__(){
 if command -v pacman >> /dev/null; then
 	__cmd_checker__ __update_arch_mirrors__
 	__update_arch_mirrors__(){
-		MIRRORFILE=/etc/pacman.d/mirrorlist
+		local MIRRORFILE=/etc/pacman.d/mirrorlist
 		test "$(grep '^ID' /etc/os-release)" = 'ID=artix' && MIRRORFILE="$MIRRORFILE-arch"
 		reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
 	}
 
 	__cmd_checker__ pac
 	pac(){
-		USAGE='Pacman helper
+		local USAGE='Pacman helper
 Implemented by @saundersp
 
 USAGE: pac FLAG
@@ -340,7 +329,7 @@ fi
 if command -v emerge >> /dev/null; then
 	__cmd_checker__ em
 	em(){
-		USAGE="Portage's emerge helper
+		local USAGE="Portage's emerge helper
 Implemented by @saundersp
 
 USAGE: em FLAG
@@ -406,7 +395,7 @@ Available flags:
 				# Surely there is a better way to do this inline
 				__cmd_checker__ __r__
 				__r__(){
-					end="$1"
+					local end="$1"
 					for _ in $(seq 1 "$end") ; do
 						printf '%s' "$2";
 					done
@@ -465,10 +454,10 @@ command -v lazynpm >> /dev/null && alias lpm='lazynpm'
 if command -v ranger >> /dev/null; then
 	__cmd_checker__ ranger-cd
 	ranger-cd() {
-		tmp="$(mktemp -t 'ranger-cwd.XXXXXX')"
+		local tmp="$(mktemp -t 'ranger-cwd.XXXXXX')"
 		ranger --choosedir="$tmp"
 		if [ -f "$tmp" ]; then
-			dir="$(cat "$tmp")"
+			local dir="$(cat "$tmp")"
 			rm -f "$tmp" >> /dev/null
 			if [ "$dir" ] && [ "$dir" != "$(pwd)" ]; then
 				cd "$dir" || true
@@ -485,11 +474,11 @@ command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl d
 __cmd_checker__ pow
 pow(){
 	# The script assumes that all available cpus has the same governor
-	GOVERNORS_PATH=/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+	local GOVERNORS_PATH=/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 	test ! -f "$GOVERNORS_PATH" && echo 'CPU governors file unavailable' && return 1
-	MODES="$(cat "$GOVERNORS_PATH")"
+	local MODES="$(cat "$GOVERNORS_PATH")"
 
-	USAGE="CPU scaling governor helper
+	local USAGE="CPU scaling governor helper
 Implemented by @saundersp
 
 USAGE: pow FLAG
@@ -573,3 +562,6 @@ __help_me__(){
 }
 __cmd_checker__ '?'
 alias '?'='__help_me__'
+
+# Preprinting before shell prompt
+command -v fastfetch >> /dev/null && fastfetch
