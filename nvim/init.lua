@@ -16,6 +16,7 @@ local function map(mode, key, action, desc)
 		vim.keymap.set(mode, key, action, { silent = true, desc = desc })
 	end
 end
+
 --- Create a keybinding in normal mode
 ---@see vim.keymap.set
 ---@see map
@@ -23,6 +24,7 @@ end
 ---@param action function|string callback of the keybind
 ---@param desc string Description of the keybind
 local function nmap(key, action, desc) map('n', key, action, desc) end
+
 --- Create a keybinding in visual mode
 ---@see vim.keymap.set
 ---@see map
@@ -153,7 +155,11 @@ local lazy_plugins = {
 			sections = {
 				lualine_x = {
 					{
+						-- NOTE: Removes warning about not properly documented 'get' field
+						---@diagnostic disable-next-line: undefined-field
 						function() return require('noice').api.status.mode.get() end,
+						-- NOTE: Removes warning about not properly documented 'has' field
+						---@diagnostic disable-next-line: undefined-field
 						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
 						color = { fg = '#ce9178', gui = 'bold' }
 					},
@@ -178,8 +184,8 @@ local lazy_plugins = {
 			local gs = require('gitsigns')
 			gs.setup({})
 			require('scrollbar.handlers.gitsigns').setup()
-			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next Hunk (or change)')
-			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous Hunk (or change)')
+			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.nav_hunk('next') end end, 'Next Hunk (or change)')
+			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.nav_hunk('prev') end end, 'Previous Hunk (or change)')
 		end,
 		keys = {
 			{ '<leader>hp', '<cmd>Gitsigns preview_hunk<CR>',		     desc = 'Hunk preview' },
@@ -277,7 +283,11 @@ local lazy_plugins = {
 		init = function()
 			-- Hijack netrw without loading plugin
 			if vim.fn.argc(-1) == 1 then
-				local stat = vim.loop.fs_stat(vim.fn.argv(0))
+				local var = vim.fn.argv(0)
+				if type(var) == 'table' then
+					return
+				end
+				local stat = vim.loop.fs_stat(var)
 				if stat and stat.type == 'directory' then
 					require('neo-tree')
 				end
@@ -421,7 +431,10 @@ local lazy_plugins = {
 				tinymist = {}
 			}
 
-			require('mason-lspconfig').setup({ ensure_installed = format_ensure_install(servers) })
+			require('mason-lspconfig').setup({
+				ensure_installed = format_ensure_install(servers),
+				automatic_installation = false
+			})
 
 			for name, opts in pairs(servers) do
 				lspconfig[name].setup({
@@ -481,7 +494,10 @@ local lazy_plugins = {
 				}
 			}
 
-			require('mason-nvim-dap').setup({ ensure_installed = format_ensure_install(dap.adapters) })
+			require('mason-nvim-dap').setup({
+				ensure_installed = format_ensure_install(dap.adapters),
+				automatic_installation = false
+			})
 
 			local function select_exec(directory, callback)
 				local pickers = require('telescope.pickers')
@@ -508,7 +524,7 @@ local lazy_plugins = {
 						end)
 						return true
 					end
-				}):find()
+				}, {}):find()
 				return true
 			end
 
@@ -780,6 +796,8 @@ local lazy_plugins = {
 	{ 'nvim-treesitter/nvim-treesitter',
 		event = 'BufReadPost',
 		config = function()
+			-- NOTE: Removes warning about not properly marked as optional fields
+			---@diagnostic disable-next-line: missing-fields
 			require('nvim-treesitter.configs').setup({
 				-- Add languages to be installed here that you want installed for treesitter
 				ensure_installed = {
@@ -790,7 +808,9 @@ local lazy_plugins = {
 					-- Requires tree-sitter-cli
 					'latex'
 				},
-				highlight = { enable = true }
+				highlight = { enable = true },
+				sync_install = false,
+				auto_install = false
 			})
 		end,
 		cmd = {
@@ -1080,7 +1100,10 @@ local lazy_plugins = {
 				checkmake = { none_ls.builtins.diagnostics.checkmake }
 			}
 
-			require('mason-null-ls').setup({ ensure_installed = format_ensure_install(sources) })
+			require('mason-null-ls').setup({
+				ensure_installed = format_ensure_install(sources),
+				automatic_installation = false
+			})
 
 			none_ls.setup({
 				sources = reduce(sources, function(acc, _, source)
@@ -1217,6 +1240,8 @@ local lazy_plugins = {
 }
 
 local lazy = require('lazy')
+-- NOTE: Removes warning about not properly marked as optional fields
+---@diagnostic disable-next-line: missing-fields
 lazy.setup({
 	spec = lazy_plugins,
 	defaults = { lazy = true },
