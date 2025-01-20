@@ -183,15 +183,23 @@ command -v ncdu >> /dev/null && alias ncdu='ncdu --color=dark -t $(nproc)'
 # Simple command to preview csv files
 __cmd_checker__ preview_csv
 preview_csv(){
-	DEL=','
-	if [ -z "$1" ]|| [ "$1" = 'h' ]|| [ "$1" = '-h' ]|| [ "$1" = 'help' ]|| [ "$1" = '--help' ]; then
-		echo 'Usage: preview_csv filename.csv'
+	local DEL=','
+	if [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
+		echo 'Usage: preview_csv [-d|--delim <delim>] filename.csv'
 		return 0
-	elif [ ! -r "$1" ]; then
+	elif [ "$1" = '-d' ] || [ "$1" = '--delim' ]; then
+		if [ -z "$2" ]; then
+			echo 'Missing delimiter'
+			return 1
+		fi
+		DEL="$2"
+		shift 2
+	fi
+	if [ ! -r "$1" ]; then
 		echo "Can't read file $1"
 		return 1
 	fi
-	(sed 's/,/ ,/g' | column -t -s "$DEL" | less -S -n) < "$1"
+	(head -n 50 | column -t -s "$DEL" | less -S -n) < "$1"
 }
 
 if command -v python >> /dev/null; then
