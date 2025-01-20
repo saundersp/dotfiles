@@ -173,11 +173,11 @@ local lazy_plugins = {
 	},
 	-- Add the left column indicating git line status and preview window
 	{ 'lewis6991/gitsigns.nvim',
-		event = 'UIEnter',
+		event = 'VeryLazy',
 		config = function()
 			local gs = require('gitsigns')
 			gs.setup({})
-			require('scrollbar.handlers.gitsigns').setup({})
+			require('scrollbar.handlers.gitsigns').setup()
 			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next Hunk (or change)')
 			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous Hunk (or change)')
 		end,
@@ -328,7 +328,15 @@ local lazy_plugins = {
 			vim.g.better_whitespace_enabled = 1	-- Enable the plugin
 			vim.g.strip_whitespace_on_save  = 1	-- Remove trailing white spaces on save
 			vim.g.strip_whitespace_confirm  = 0	-- Disable the confirmation message on stripping white spaces
-		end
+		end,
+		cmd = {
+			'StripWhitespace', 'EnableStripWhitespaceOnSave', 'DisableStripWhitespaceOnSave', 'ToggleStripWhitespaceOnSave',
+			'EnableWhitespace', 'DisableWhitespace', 'ToggleWhitespace', 'NextTrailingWhitespace', 'PrevTrailingWhitespace'
+		},
+		keys = {
+			{ '[w', '<cmd>PrevTrailingWhitespace<CR>', desc = 'Jump to previous whitespace' },
+			{ ']w', '<cmd>NextTrailingWhitespace<CR>', desc = 'Jump to next whitespace' }
+		}
 	},
 	-- Rainbow CSV
 	{ 'cameron-wags/rainbow_csv.nvim',
@@ -338,7 +346,6 @@ local lazy_plugins = {
 	},
 	-- CSV better viewer
 	{ 'hat0uma/csvview.nvim',
-		--enabled = false,
 		ft = { 'csv', 'tsv', 'csv_semicolon', 'csv_whitespace', 'csv_pipe', 'rfc_csv', 'rfc_semicolon' },
 		opts = { view = { display_mode = 'border' } },
 		cmd = { 'CsvViewEnable', 'CsvViewDisable' }
@@ -754,7 +761,7 @@ local lazy_plugins = {
 	-- Allow use of background jobs
 	{ 'tpope/vim-dispatch',
 		keys = {
-			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	 ft = { 'plaintex', 'tex', 'typst' }, desc = 'Preview LaTeX document' },
+			{ '<localleader>tp', '<cmd>Dispatch! make preview<CR>',	 ft = { 'plaintex', 'tex', 'typst' }, desc = 'Preview LaTeX/typst document' },
 			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		 desc = 'Make the default recipe in cwd (multi-jobs)' },
 			{ '<leader>mM', '<cmd>Make<CR>',			 desc = 'Make the default recipe in cwd' },
 			{ '<leader>ms', '<cmd>Start -wait=error make start<CR>', desc = 'Make the "start" recipe in cwd' },
@@ -1120,7 +1127,7 @@ local lazy_plugins = {
 	},
 	-- Better navigation inside tmux
 	{ 'alexghergh/nvim-tmux-navigation',
-		event = 'VimEnter',
+		event = 'VeryLazy',
 		opts = { disable_when_zoomed = true },
 		keys = {
 			{ '<C-b>h', '<cmd>NvimTmuxNavigateLeft<CR>',  desc = 'Navigate to the left tmux pane if existent' },
@@ -1196,11 +1203,10 @@ local lazy_plugins = {
 			-- LSP Configuration & Plugins
 			'neovim/nvim-lspconfig',
 			-- Lua library functions
-			'nvim-lua/plenary.nvim',
-			-- you also will likely want nvim-cmp or some completion engine
+			'nvim-lua/plenary.nvim'
 		},
-		keys = { { '<localleader>tp', '<cmd>LeanInfoviewToggle<CR>', ft = 'lean', desc = 'Preview LaTeX document' } },
-		cmds = {
+		keys = { { '<localleader>tp', '<cmd>LeanInfoviewToggle<CR>', ft = 'lean', desc = "Toggle lean's info view" } },
+		cmd = {
 			'LeanAbbreviationsReverseLookup', 'LeanGoal', 'LeanGotoInfoview', 'LeanInfoviewAddPin', 'LeanInfoviewClearDiffPin',
 			'LeanInfoviewClearPins', 'LeanInfoviewDisableWidgets', 'LeanInfoviewEnableWidgets', 'LeanInfoviewPinTogglePause',
 			'LeanInfoviewSetDiffPin', 'LeanInfoviewToggle', 'LeanInfoviewToggleAutoDiffPin', 'LeanInfoviewToggleNoClearAutoDiffPin',
