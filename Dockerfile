@@ -5,7 +5,7 @@ RUN apt-get update \
 	gcc=4:14.1.0-2ubuntu1 \
 	g++=4:14.1.0-2ubuntu1 \
 	git-svn=1:2.47.1-1ubuntu1 \
-	ca-certificates=20240203 \
+	ca-certificates=20241223 \
 	neovim=0.9.5-10 \
 	nodejs=20.18.1+dfsg-1ubuntu1 \
 	pipx=1.7.1-1 \
@@ -13,11 +13,11 @@ RUN apt-get update \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
 	ranger=1.9.4-1 \
-	cmake=3.31.2-1 \
+	cmake=3.31.4-2 \
 	make=4.4.1-1 \
 	pkgconf=1.8.1-4 \
 	bat=0.24.0-2 \
-	fzf=0.57.0-1 \
+	fzf=0.58.0-1 \
 	eza=0.19.2-2 \
 	ncdu=1.21-1 \
 	feh=3.10.3-1 \
@@ -26,11 +26,12 @@ RUN apt-get update \
 	fastfetch=2.34.1+dfsg-1 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu2 \
-	rsync=3.3.0+ds1-2 \
+	rsync=3.3.0+ds1-4 \
 	tmux=3.4-7 \
 	opendoas=6.8.2-1 \
-	cargo=1.80.1ubuntu2 \
-	golang-go=2:1.23~2
+	cargo=1.83.0ubuntu1 \
+	golang-go=2:1.23~2 \
+	tree-sitter-cli=0.20.8-6
 
 # More user friendly aliases
 RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
@@ -76,14 +77,16 @@ RUN apt-get remove -y golang-go cargo \
 	&& rm -r /var/lib/apt/lists/* \
 	&& rm -r /root/go \
 	&& rm -r /root/.cargo \
-	&& useradd -m saundersp \
-	&& rm -v "$(command -v vi)"
+	&& useradd -m saundersp
 
 USER saundersp
 
 RUN bash -i -c 'pipx install dooit==3.1.0'
 
 WORKDIR /home/saundersp
+
+RUN rm -r .bash_logout .cache .local
+
 # Copying local repository
 #COPY . .
 # Cloning remote repository
