@@ -1337,6 +1337,13 @@ local lazy_plugins = {
 			-- 💫 Extensible UI for Neovim notifications and LSP progress messages.
 			'j-hui/fidget.nvim'
 		}
+	},
+	-- Preview Markdown in your modern browser with synchronised scrolling and flexible configuration.
+	{ 'iamcco/markdown-preview.nvim',
+		ft = 'markdown',
+		cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+		keys = { { '<localleader>mp', '<cmd>MarkdownPreviewToggle<CR>', ft = 'markdown', desc = 'Toggle Markdown previewer' } },
+		build = 'cd app && npx --yes yarn install'
 	}
 }
 
