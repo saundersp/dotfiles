@@ -16,6 +16,7 @@ local function map(mode, key, action, desc)
 		vim.keymap.set(mode, key, action, { silent = true, desc = desc })
 	end
 end
+
 --- Create a keybinding in normal mode
 ---@see vim.keymap.set
 ---@see map
@@ -23,6 +24,7 @@ end
 ---@param action function|string callback of the keybind
 ---@param desc string Description of the keybind
 local function nmap(key, action, desc) map('n', key, action, desc) end
+
 --- Create a keybinding in visual mode
 ---@see vim.keymap.set
 ---@see map
@@ -55,6 +57,7 @@ end
 -- General settings configuration
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 vim.cmd.colorscheme				('desert')									-- Set the colour scheme to a more readable one
+vim.o.termguicolors				= true										-- Enable 24-bit RGB colours in the terminal
 vim.o.listchars					= 'eol:󰌑,tab:󰌒 ,trail:•,extends:,precedes:,space:·,nbsp:󱁐'			-- List of whitespace characters replacement (see :h listchars) (using: nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
 vim.wo.list					= true										-- Enable replacement of listchars
 vim.wo.wrap					= false										-- Display long lines as just one line
@@ -85,14 +88,15 @@ vim.bo.undofile					= true										-- Enable undofile to save undo operations a
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
 Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   'Disable the tab expansion of spaces')
+vim.filetype.add({ extension = { rest = 'http' } })										-- Added custom filetype to http (REST API)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping configuration
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 nmap('<C-s>', '<cmd>w<CR>',													   'Save buffer shortcut')
 nmap({ '<C-F4>', '<F28>' }, '<cmd>tabclose!<CR>',										   'Close tab shortcut (keeps buffer open)')
-nmap('<C-S-h>', '<cmd>-tabmove<CR>',												   'Move the current tab to the left')
-nmap('<C-S-l>', '<cmd>+tabmove<CR>',												   'Move the current tab to the right')
+nmap({ '<C-S-h>', '<C-H>' }, '<cmd>-tabmove<CR>',										   'Move the current tab to the left')
+nmap({ '<C-S-l>', '<C-L>' }, '<cmd>+tabmove<CR>',										   'Move the current tab to the right')
 nmap({ '<S-F4>', '<F16>' }, '<cmd>bd<CR>',											   'Close buffer shortcut')
 nmap('<M-j>', '<cmd>resize -1<CR>',												   'Decrease buffer window horizontal size (M is the ALT modifier key)')
 nmap('<M-k>', '<cmd>resize +1<CR>',												   'Increase buffer window horizontal size (M is the ALT modifier key)')
@@ -117,3 +121,4 @@ nmap('<C-f>', '<C-f>zz',													   'Scroll window downwards in the buffer w
 nmap('<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file executable')
 nmap('<leader>fX', '<cmd>!chmod -x %<CR>',											   'Make the current file non executable')
 create_cmd('Settings', 'e $MYVIMRC', 												   'Edit Neovim config file')
+create_cmd('GetCmds', function(opts) vim.cmd('redir @"\ncomm ' .. opts.args .. '\nredir END\nput') end,				   'Get all the commands starting by ARG', 1)

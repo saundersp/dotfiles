@@ -809,7 +809,7 @@ local lazy_plugins = {
 					'bash', 'c', 'cpp', 'cuda', 'diff', 'haskell', 'html', 'javascript',
 					'jsdoc', 'json', 'jsonc', 'lua', 'luadoc', 'luap', 'markdown_inline',
 					'python', 'query', 'regex', 'toml', 'tsx', 'typescript', 'vim',
-					'vimdoc', 'xml', 'yaml', 'typst',
+					'vimdoc', 'xml', 'yaml', 'typst', 'http',
 					-- Requires tree-sitter-cli
 					'latex'
 				},
@@ -883,7 +883,6 @@ local lazy_plugins = {
 					{	'<leader>d',	group = 'Debugger' },
 					{	'<leader>s',	group = 'Search' },
 					{	'<leader>c',	group = 'Color picker' },
-					{	'<leader>W',	group = 'Workspace' },
 					{	'<leader>m',	group = 'Makefile scripts' },
 					{	'<leader>o',	group = 'External tools' },
 					{	'[',		group = 'prev' },
@@ -920,8 +919,7 @@ local lazy_plugins = {
 	-- Tool to install LSPs, DAPs, linters and formatters
 	{ 'williamboman/mason.nvim',
 		config = true,
-		keys = { { '<leader>mo', function() if package.loaded['telescope'] == nil then require('telescope') end vim.cmd('Mason') end,
-		desc = 'Open Mason manager' } },
+		keys = { { '<leader>mo', function() if package.loaded['telescope'] == nil then require('telescope') end vim.cmd('Mason') end, desc = 'Open Mason manager' } },
 		cmd = { 'Mason', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll', 'MasonLog' }
 	},
 	-- Easily update all Mason packages with one command
@@ -994,6 +992,8 @@ local lazy_plugins = {
 			'rcarriga/nvim-notify'
 		}
 	},
+	-- A fancy, configurable, notification manager for Neovim
+	{ 'rcarriga/nvim-notify', opts = { background_colour = '#000000' } },
 	-- Make folding look modern
 	{ 'kevinhwang91/nvim-ufo',
 		event = 'VeryLazy',
@@ -1377,6 +1377,7 @@ vim.bo.undofile					= true										-- Enable undofile to save undo operations a
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
 Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   'Disable the tab expansion of spaces')
+vim.filetype.add({ extension = { rest = 'http' } })										-- Added custom filetype to http (REST API)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping configuration
@@ -1414,3 +1415,4 @@ nmap('<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file e
 nmap('<leader>fX', '<cmd>!chmod -x %<CR>',											   'Make the current file non executable')
 create_cmd('Settings', 'e $MYVIMRC', 												   'Edit Neovim config file')
 create_cmd('EspansoEdit', 'e ' .. vim.fn.stdpath 'config' .. '/../espanso/match/base.yml',					   'Edit Espanso config file')
+create_cmd('GetCmds', function(opts) vim.cmd('redir @"\ncomm ' .. opts.args .. '\nredir END\nput') end,				   'Get all the commands starting by ARG', 1)

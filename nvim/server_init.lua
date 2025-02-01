@@ -104,7 +104,11 @@ local lazy_plugins = {
 			sections = {
 				lualine_x = {
 					{
+						-- NOTE: Removes warning about not properly documented 'get' field
+						---@diagnostic disable-next-line: undefined-field
 						function() return require('noice').api.status.mode.get() end,
+						-- NOTE: Removes warning about not properly documented 'has' field
+						---@diagnostic disable-next-line: undefined-field
 						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
 						color = { fg = '#ce9178', gui = 'bold' }
 					},
@@ -124,13 +128,13 @@ local lazy_plugins = {
 	},
 	-- Add the left column indicating git line status and preview window
 	{ 'lewis6991/gitsigns.nvim',
-		event = 'UIEnter',
+		event = 'VeryLazy',
 		config = function()
 			local gs = require('gitsigns')
 			gs.setup({})
-			require('scrollbar.handlers.gitsigns').setup({})
-			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.next_hunk() end end, 'Next Hunk (or change)')
-			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.prev_hunk() end end, 'Previous Hunk (or change)')
+			require('scrollbar.handlers.gitsigns').setup()
+			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.nav_hunk('next') end end, 'Next Hunk (or change)')
+			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.nav_hunk('prev') end end, 'Previous Hunk (or change)')
 		end,
 		keys = {
 			{ '<leader>hp', '<cmd>Gitsigns preview_hunk<CR>',		     desc = 'Hunk preview' },
@@ -179,7 +183,6 @@ local lazy_plugins = {
 			{ '<leader>sF', '<cmd>Telescope git_files<CR>',			    desc = 'Search git files' },
 			{ '<leader>sh', '<cmd>Telescope help_tags<CR>',			    desc = 'Search help' },
 			{ '<leader>sg', '<cmd>Telescope live_grep<CR>',			    desc = 'Search by grep' },
-			{ '<leader>sd', '<cmd>Telescope diagnostics<CR>',		    desc = 'Search diagnostics' },
 			{ '<leader>sk', '<cmd>Telescope keymaps<CR>',			    desc = 'Search keymaps' },
 			{ '<leader>sc', '<cmd>Telescope commands<CR>',			    desc = 'Search commands' },
 			{ '<leader>sb', '<cmd>Telescope buffers<CR>',			    desc = 'Search buffers' },
@@ -210,7 +213,11 @@ local lazy_plugins = {
 		init = function()
 			-- Hijack netrw without loading plugin
 			if vim.fn.argc(-1) == 1 then
-				local stat = vim.loop.fs_stat(vim.fn.argv(0))
+				local var = vim.fn.argv(0)
+				if type(var) == 'table' then
+					return
+				end
+				local stat = vim.loop.fs_stat(var)
 				if stat and stat.type == 'directory' then
 					require('neo-tree')
 				end
@@ -261,7 +268,15 @@ local lazy_plugins = {
 			vim.g.better_whitespace_enabled = 1	-- Enable the plugin
 			vim.g.strip_whitespace_on_save  = 1	-- Remove trailing white spaces on save
 			vim.g.strip_whitespace_confirm  = 0	-- Disable the confirmation message on stripping white spaces
-		end
+		end,
+		cmd = {
+			'StripWhitespace', 'EnableStripWhitespaceOnSave', 'DisableStripWhitespaceOnSave', 'ToggleStripWhitespaceOnSave',
+			'EnableWhitespace', 'DisableWhitespace', 'ToggleWhitespace', 'NextTrailingWhitespace', 'PrevTrailingWhitespace'
+		},
+		keys = {
+			{ '[w', '<cmd>PrevTrailingWhitespace<CR>', desc = 'Jump to previous whitespace' },
+			{ ']w', '<cmd>NextTrailingWhitespace<CR>', desc = 'Jump to next whitespace' }
+		}
 	},
 	-- Rainbow CSV
 	{ 'cameron-wags/rainbow_csv.nvim',
@@ -271,7 +286,6 @@ local lazy_plugins = {
 	},
 	-- CSV better viewer
 	{ 'hat0uma/csvview.nvim',
-		--enabled = false,
 		ft = { 'csv', 'tsv', 'csv_semicolon', 'csv_whitespace', 'csv_pipe', 'rfc_csv', 'rfc_semicolon' },
 		opts = { view = { display_mode = 'border' } },
 		cmd = { 'CsvViewEnable', 'CsvViewDisable' }
@@ -356,7 +370,6 @@ local lazy_plugins = {
 	-- Allow use of background jobs
 	{ 'tpope/vim-dispatch',
 		keys = {
-			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	 ft = { 'plaintex', 'tex', 'typst' }, desc = 'Preview LaTeX document' },
 			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		 desc = 'Make the default recipe in cwd (multi-jobs)' },
 			{ '<leader>mM', '<cmd>Make<CR>',			 desc = 'Make the default recipe in cwd' },
 			{ '<leader>ms', '<cmd>Start -wait=error make start<CR>', desc = 'Make the "start" recipe in cwd' },
@@ -371,17 +384,21 @@ local lazy_plugins = {
 	{ 'nvim-treesitter/nvim-treesitter',
 		event = 'BufReadPost',
 		config = function()
+			-- NOTE: Removes warning about not properly marked as optional fields
+			---@diagnostic disable-next-line: missing-fields
 			require('nvim-treesitter.configs').setup({
 				-- Add languages to be installed here that you want installed for treesitter
 				ensure_installed = {
 					'bash', 'c', 'cpp', 'cuda', 'diff', 'haskell', 'html', 'javascript',
 					'jsdoc', 'json', 'jsonc', 'lua', 'luadoc', 'luap', 'markdown_inline',
 					'python', 'query', 'regex', 'toml', 'tsx', 'typescript', 'vim',
-					'vimdoc', 'xml', 'yaml', 'typst',
+					'vimdoc', 'xml', 'yaml', 'typst', 'http',
 					-- Requires tree-sitter-cli
 					'latex'
 				},
-				highlight = { enable = true }
+				highlight = { enable = true },
+				sync_install = false,
+				auto_install = false
 			})
 		end,
 		cmd = {
@@ -428,7 +445,6 @@ local lazy_plugins = {
 					{	'<leader>h',	group = 'Git' },
 					{	'<leader>s',	group = 'Search' },
 					{	'<leader>c',	group = 'Color picker' },
-					{	'<leader>W',	group = 'Workspace' },
 					{	'<leader>m',	group = 'Makefile scripts' },
 					{	'<leader>o',	group = 'External tools' },
 					{	'[',		group = 'prev' },
@@ -445,9 +461,7 @@ local lazy_plugins = {
 		opts = { options = {
 			mode = 'tabs',
 			show_close_icon = false,
-			show_buffer_close_icons = false,
-			diagnostics = 'nvim_lsp',
-			diagnostics_indicator = function(count) return '(' .. count .. ')' end
+			show_buffer_close_icons = false
 		}},
 		cmd = {
 			'BufferLineCloseLeft', 'BufferLineCloseOthers', 'BufferLineCloseRight',
@@ -523,6 +537,8 @@ local lazy_plugins = {
 			'rcarriga/nvim-notify'
 		}
 	},
+	-- A fancy, configurable, notification manager for Neovim
+	{ 'rcarriga/nvim-notify', opts = { background_colour = '#000000' } },
 	-- Make folding look modern
 	{ 'kevinhwang91/nvim-ufo',
 		event = 'VeryLazy',
@@ -558,7 +574,7 @@ local lazy_plugins = {
 	},
 	-- Better navigation inside tmux
 	{ 'alexghergh/nvim-tmux-navigation',
-		event = 'VimEnter',
+		event = 'VeryLazy',
 		opts = { disable_when_zoomed = true },
 		keys = {
 			{ '<C-b>h', '<cmd>NvimTmuxNavigateLeft<CR>',  desc = 'Navigate to the left tmux pane if existent' },
@@ -682,6 +698,8 @@ local lazy_plugins = {
 }
 
 local lazy = require('lazy')
+-- NOTE: Removes warning about not properly marked as optional fields
+---@diagnostic disable-next-line: missing-fields
 lazy.setup({
 	spec = lazy_plugins,
 	defaults = { lazy = true },
@@ -713,7 +731,6 @@ nmap('<leader>lp', lazy.profile, 'Open lazy loading profiling results')
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General settings configuration
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-vim.o.mouse					= 'a'										-- Enable mouse mode (selection, scrolling etc.)
 vim.o.termguicolors				= true										-- Enable 24-bit RGB colours in the terminal
 vim.o.listchars					= 'eol:󰌑,tab:󰌒 ,trail:•,extends:,precedes:,space:·,nbsp:󱁐'			-- List of whitespace characters replacement (see :h listchars) (using: nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
 vim.wo.list					= true										-- Enable replacement of listchars
@@ -745,6 +762,7 @@ vim.bo.undofile					= true										-- Enable undofile to save undo operations a
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
 Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   'Disable the tab expansion of spaces')
+vim.filetype.add({ extension = { rest = 'http' } })										-- Added custom filetype to http (REST API)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping configuration
@@ -774,10 +792,7 @@ vmap('<C-K>', "<cmd>m '<0<CR>gv=gv",												   'Move the selected block upwa
 nmap('<C-u>', '<C-u>zz',													   'Scroll window upwards in the buffer while keeping cursor at the middle of the window')
 nmap('<C-d>', '<C-d>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
 nmap('<C-f>', '<C-f>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
-nmap('<leader>p', '"+p',													   'Paste the system clipboard after the cursor')
-nmap('<leader>P', '"+P',													   'Paste the system clipboard before the cursor')
-vmap('<leader>y', '"+y',													   'Yank into the system clipboard')
-nmap('<leader>y', '"+Y',													   'Yank the entire buffer into the system clipboard')
 nmap('<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file executable')
 nmap('<leader>fX', '<cmd>!chmod -x %<CR>',											   'Make the current file non executable')
 create_cmd('Settings', 'e $MYVIMRC', 												   'Edit Neovim config file')
+create_cmd('GetCmds', function(opts) vim.cmd('redir @"\ncomm ' .. opts.args .. '\nredir END\nput') end,				   'Get all the commands starting by ARG', 1)
