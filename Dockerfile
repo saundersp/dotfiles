@@ -12,8 +12,8 @@ RUN apt-get update \
 	curl=8.11.1-1ubuntu1 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
-	ranger=1.9.4-1 \
-	cmake=3.31.4-2 \
+	ranger=1.9.4-1ubuntu1 \
+	cmake=3.31.5-1 \
 	make=4.4.1-1 \
 	pkgconf=1.8.1-4 \
 	bat=0.24.0-2 \
@@ -50,7 +50,7 @@ RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueb
 	&& mv -v /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug \
 	&& rm -r /usr/local/src/ueberzugpp
 
-RUN git clone --depth=1 -b v0.45.0 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
+RUN git clone --depth=1 -b v0.45.2 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
 WORKDIR /usr/local/src/lazygit
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazygit /usr/local/bin/lazygit \
