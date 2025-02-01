@@ -428,7 +428,13 @@ local lazy_plugins = {
 				texlab = {},
 				docker_compose_language_service = {},
 				marksman = {},
-				tinymist = {}
+				tinymist = {},
+				ltex = {
+					-- Install package rather than using Mason
+					__skip_download = true,
+					-- LSP is handled by ltex_extra.nvim
+					__skip_setup = true
+				}
 			}
 
 			require('mason-lspconfig').setup({
@@ -437,10 +443,12 @@ local lazy_plugins = {
 			})
 
 			for name, opts in pairs(servers) do
-				lspconfig[name].setup({
-					capabilities = capabilities,
-					settings = opts
-				})
+				if opts.__skip_setup ~= true then
+					lspconfig[name].setup({
+						capabilities = capabilities,
+						settings = opts
+					})
+				end
 			end
 		end,
 		keys = {
@@ -1184,6 +1192,67 @@ local lazy_plugins = {
 			'LeanInfoviewSetDiffPin', 'LeanInfoviewToggle', 'LeanInfoviewToggleAutoDiffPin', 'LeanInfoviewToggleNoClearAutoDiffPin',
 			'LeanInfoviewViewOptions', 'LeanLineDiagnostics', 'LeanPlainDiagnostics', 'LeanPlainGoal', 'LeanPlainTermGoal',
 			'LeanRefreshFileDependencies', 'LeanRestartFile', 'LeanSorryFill', 'LeanTermGoal'
+		}
+	},
+	-- Provides external LTeX file handling (off-spec lsp) and other functions.
+	{ 'barreiroleo/ltex_extra.nvim',
+		ft = { 'markdown', 'plaintex', 'tex' },
+		config = function()
+			local function setup_ltex(lang)
+				local capabilities = vim.lsp.protocol.make_client_capabilities()
+				capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+
+				require('lspconfig')['ltex'].setup({
+					capabilities = capabilities,
+					on_attach = function(_, _)
+						require('ltex_extra').setup({
+							load_langs = { 'fr', 'en-GB' },
+							init_check = true,
+							path = vim.fn.stdpath 'config' .. '/spell/dictionaries',
+						})
+					end,
+					settings = {
+						ltex = {
+							configurationTarget = {
+								dictionary = 'user',
+								disabledRules = 'workspaceFolderExternalFile',
+								hiddenFalsePositives = 'workspaceFolderExternalFile'
+							},
+							language = lang
+						}
+					}
+				})
+			end
+
+			setup_ltex('fr')
+
+			local ltex_languages = {
+				'auto', 'ar', 'ast-ES', 'be-BY', 'br-FR', 'ca-ES', 'ca-ES-valencia',
+				'da-DK', 'de', 'de-AT', 'de-CH', 'de-DE', 'de-DE-x-simple-language',
+				'el-GR', 'en', 'en-AU', 'en-CA', 'en-GB', 'en-NZ', 'en-US', 'en-ZA',
+				'eo', 'es', 'es-AR', 'fa', 'fr', 'ga-IE', 'gl-ES', 'it', 'ja-JP',
+				'km-KH', 'nl', 'nl-BE', 'pl-PL', 'pt', 'pt-AO', 'pt-BR', 'pt-MZ',
+				'pt-PT', 'ro-RO', 'ru-RU', 'sk-SK', 'sl-SI', 'sv', 'ta-IN', 'tl-PH',
+				'uk-UA', 'zh-CN'
+			}
+
+			vim.api.nvim_create_user_command('LtexSwitchLang', function(args)
+				local splited_args = vim.split(args.args, ' ', { trimemtpy = true })
+				local ltex_clients = vim.lsp.get_clients({ bufnr = 0, name = 'ltex' })
+				for _, ltex_client in ipairs(ltex_clients) do
+					vim.lsp.stop_client(ltex_client.id, false)
+				end
+				setup_ltex(splited_args[1])
+			end, {
+				nargs = 1,
+				complete = function (ArgLead, _, _)
+					return vim.tbl_filter(function(el) return el:find(ArgLead, 1, true) end, ltex_languages)
+				end
+			})
+		end,
+		dependencies = {
+			-- LSP Configuration & Plugins
+			'neovim/nvim-lspconfig'
 		}
 	},
 	-- 🍿 A collection of small QoL plugins for Neovim

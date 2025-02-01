@@ -57,6 +57,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 		mkdir -p "$XDG_CONFIG_HOME"/i3 "$XDG_CONFIG_HOME"/polybar "$XDG_CONFIG_HOME"/X11
 
 		ln -sf "$CURRENT_FOLDER"/nvim/init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
+		ln -sf "$CURRENT_FOLDER"/nvim/spell "$XDG_CONFIG_HOME"/nvim/spell
 		ln -sf "$CURRENT_FOLDER"/polybar/launch.sh "$XDG_CONFIG_HOME"/polybar/launch.sh
 		ln -sf "$CURRENT_FOLDER"/polybar/config.ini "$XDG_CONFIG_HOME"/polybar/config.ini
 		test ! -d "$XDG_CONFIG_HOME"/polybar/scripts && ln -sf "$CURRENT_FOLDER"/polybar/scripts "$XDG_CONFIG_HOME"/polybar/scripts
