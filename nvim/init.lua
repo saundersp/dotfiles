@@ -150,7 +150,7 @@ local lazy_plugins = {
 					'dapui_scopes', 'dapui_console',
 					'dapui_stacks', 'dap-repl'
 				},
-				disabled_filetypes = { statusline = { 'alpha', 'neo-tree' } }
+				disabled_filetypes = { statusline = { 'snacks_dashboard', 'neo-tree' } }
 			},
 			sections = {
 				lualine_x = {
@@ -784,11 +784,7 @@ local lazy_plugins = {
 			{ '<leader>mt', '<cmd>Start -wait=always make test<CR>', desc = 'Make the "test" recipe in cwd' },
 			{ '<leader>mc', '<cmd>Make clean<CR>',			 desc = 'Make the "clean" recipe in cwd' },
 			{ '<leader>mC', '<cmd>Make mrproper<CR>',		 desc = 'Make the "mrproper" recipe in cwd' },
-			{ '<leader>md', '<cmd>Start docker compose build<CR>',	 desc = 'Build all "docker" compose tag in cwd' },
-			-- TUI programs
-			{ '<leader>og', '<cmd>Start lazygit<CR>',		 desc = 'Open Lazygit' },
-			{ '<leader>od', '<cmd>Start lazydocker<CR>',		 desc = 'Open Lazydocker' },
-			{ '<leader>on', '<cmd>Start lazynpm<CR>',		 desc = 'Open Lazynpm' }
+			{ '<leader>md', '<cmd>Start docker compose build<CR>',	 desc = 'Build all "docker" compose tag in cwd' }
 		},
 		cmd = { 'Dispatch', 'Make', 'Focus', 'Start', 'Spawn' }
 	},
@@ -928,60 +924,13 @@ local lazy_plugins = {
 			'williamboman/mason.nvim'
 		}
 	},
-	-- Greeter for neovim
-	{ 'goolord/alpha-nvim',
-		event = 'VimEnter',
-		config = function()
-			local startify = require('alpha.themes.startify')
-
-			startify.section.header.opts.position = 'center'
-			startify.section.header.val = {
-				"                        ...',;;:cccccccc:;,..",
-				"                    ..,;:cccc::::ccccclloooolc;'.",
-				"                 .',;:::;;;;:loodxk0kkxxkxxdocccc;;'..",
-				"               .,;;;,,;:coxldKNWWWMMMMWNNWWNNKkdolcccc:,.",
-				"            .',;;,',;lxo:...dXWMMMMMMMMNkloOXNNNX0koc:coo;.",
-				"         ..,;:;,,,:ldl'   .kWMMMWXXNWMMMMXd..':d0XWWN0d:;lkd,",
-				"       ..,;;,,'':loc.     lKMMMNl. .c0KNWNK:  ..';lx00X0l,cxo,.",
-				"     ..''....'cooc.       c0NMMX;   .l0XWN0;       ,ddx00occl:.",
-				"   ..'..  .':odc.         .x0KKKkolcld000xc.       .cxxxkkdl:,..",
-				" ..''..   ;dxolc;'         .lxx000kkxx00kc.      .;looolllol:'..",
-				"..'..    .':lloolc:,..       'lxkkkkk0kd,   ..':clc:::;,,;:;,'..",
-				"......   ....',;;;:ccc::;;,''',:loddol:,,;:clllolc:;;,'........",
-				"    .     ....'''',,,;;:cccccclllloooollllccc:c:::;,'..",
-				"            .......'',,,,,,,,;;::::ccccc::::;;;,,''...",
-				"              ...............''',,,;;;,,''''''......",
-				"                   ............................"
-			}
-
-			startify.section.top_buttons.val = {
-				startify.button('e', ' New file',    '<cmd>ene<CR>'),			-- nf-fa-file
-				startify.button('s', ' Settings',    '<cmd>Settings<CR>'),		-- nf-fa-cog
-				startify.button('E', ' Espanso',     '<cmd>EspansoEdit<CR>'),		-- nf-fa-keyboard
-				startify.button('f', '󰍉 Files',	      '<cmd>Telescope find_files<CR>'), -- nf-md-magnify
-				startify.button('g', '󰑑 Find string', '<cmd>Telescope live_grep<CR>'),	-- nf-md-regex
-				startify.button('t', '󰑑 Todos',	      '<cmd>TodoTelescope<CR>')		-- nf-md-regex
-			}
-
-			local tl = vim.o.showtabline
-			Autocmd('User', 'AlphaReady', function() vim.o.showtabline = 0 end, 'Disable tabline after alpha')
-			Autocmd('User', 'AlphaClosed', function() vim.o.showtabline = tl end, 'Enable tabline after alpha')
-			startify.config.opts.noautocmd = false
-
-			require('alpha').setup(startify.config)
-		end,
-		cmd = 'Alpha',
-		dependencies = {
-			-- Provides nerd fonts icons
-			'nvim-tree/nvim-web-devicons'
-		}
-	},
 	-- Add an extensible scrollbar
 	{ 'petertriho/nvim-scrollbar',
 		event = 'VeryLazy',
 		opts = {
 			show_in_active_only = true,
-			handlers = { gitsigns = true }
+			handlers = { gitsigns = true },
+			excluded_filetypes = { 'snacks_dashboard' }
 		},
 		cmd = { 'ScrollbarShow', 'ScrollbarHide', 'ScrollbarToggle' },
 		dependencies = {
@@ -1189,7 +1138,7 @@ local lazy_plugins = {
 			indent = { char = '│', tab_char = '│' },
 			exclude = {
 				filetypes = {
-					'alpha', 'help', 'neo-tree',
+					'help', 'neo-tree',
 					'lazy', 'mason', 'notify'
 				}
 			},
@@ -1236,6 +1185,59 @@ local lazy_plugins = {
 			'LeanInfoviewViewOptions', 'LeanLineDiagnostics', 'LeanPlainDiagnostics', 'LeanPlainGoal', 'LeanPlainTermGoal',
 			'LeanRefreshFileDependencies', 'LeanRestartFile', 'LeanSorryFill', 'LeanTermGoal'
 		}
+	},
+	-- 🍿 A collection of small QoL plugins for Neovim
+	{ 'folke/snacks.nvim',
+		event = 'BufEnter',
+		opts = {
+			dashboard = {
+				preset = {
+					header = table.concat({
+						"                        ...',;;:cccccccc:;,..",
+						"                    ..,;:cccc::::ccccclloooolc;'.",
+						"                 .',;:::;;;;:loodxk0kkxxkxxdocccc;;'..",
+						"               .,;;;,,;:coxldKNWWWMMMMWNNWWNNKkdolcccc:,.",
+						"            .',;;,',;lxo:...dXWMMMMMMMMNkloOXNNNX0koc:coo;.",
+						"         ..,;:;,,,:ldl'   .kWMMMWXXNWMMMMXd..':d0XWWN0d:;lkd,",
+						"       ..,;;,,'':loc.     lKMMMNl. .c0KNWNK:  ..';lx00X0l,cxo,.",
+						"     ..''....'cooc.       c0NMMX;   .l0XWN0;       ,ddx00occl:.",
+						"   ..'..  .':odc.         .x0KKKkolcld000xc.       .cxxxkkdl:,..",
+						" ..''..   ;dxolc;'         .lxx000kkxx00kc.      .;looolllol:'..",
+						"..'..    .':lloolc:,..       'lxkkkkk0kd,   ..':clc:::;,,;:;,'..",
+						"......   ....',;;;:ccc::;;,''',:loddol:,,;:clllolc:;;,'........",
+						"    .     ....'''',,,;;:cccccclllloooollllccc:c:::;,'..",
+						"            .......'',,,,,,,,;;::::ccccc::::;;;,,''...",
+						"              ...............''',,,;;;,,''''''......",
+						"                   ............................"
+					}, '\n'),
+					keys = {
+						{ icon = '', key = 'e', desc = 'New file', action = ':ene' },			  -- nf-fa-file
+						{ icon = '', key = 's', desc = 'Settings', action = ':Settings' },		  -- nf-fa-cog
+						{ icon = '', key = 'E', desc = 'Espanso', action = ':EspansoEdit' },		  -- nf-fa-keyboard
+						{ icon = '󰍉', key = 'f', desc = 'Files', action = ':Telescope find_files' },	  -- nf-md-magnify
+						{ icon = '󰑑', key = 'g', desc = 'Find string', action = ':Telescope live_grep' }, -- nf-md-regex
+						{ icon = '󰄬', key = 't', desc = 'Todos', action = ':TodoTelescope' },		  -- nf-md-regex
+						{ icon = '', key = 'q', desc = 'Quit', action = ':qa' }			  -- nf-md-regex
+					}
+				},
+				sections = {
+					{ pane = 2, section = 'header', align = 'left' },
+					{ pane = 2, title = "The honest philosopher seeks only the truth,\neven if it bears no comfort.", align = 'center', padding = 1 },
+					{ icon = '', title = 'Keymaps', section = 'keys', indent = 2, padding = 1 },
+					{ icon = '', title = 'Recent Files', section = 'recent_files', indent = 2, padding = 1 },
+					{ icon = '', title = 'Projects', section = 'projects', indent = 2, padding = 1 },
+					{ section = 'startup' }
+				}
+			},
+			lazygit = {}
+		},
+		keys = {
+			{ '<leader>og', function() require('snacks').lazygit() end,		 desc = 'Open Lazygit' },
+			{ '<leader>od', function() require('snacks').terminal('lazydocker') end, desc = 'Open lazydocker' },
+			{ '<leader>on', function() require('snacks').terminal('lazynpm') end,	 desc = 'Open lazynpm' },
+			{ '<leader>ob', function() require('snacks').terminal('btop') end,	 desc = 'Open btop' },
+			{ '<leader>ot', function() require('snacks').terminal() end,		 desc = 'Open terminal' }
+		}
 	}
 }
 
@@ -1250,29 +1252,17 @@ lazy.setup({
 		custom_keys = {
 			['<localleader>i'] = {
 				function(plug)
-					local bufnr = vim.api.nvim_create_buf(false, false)
-					local width = 120
-					local borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰' }
-					local content = vim.inspect(plug)
-					local contents = str_to_list(content)
-					local height = math.min(40, #contents)
+					local plug_config = str_to_list(vim.inspect(plug))
 
-					local win_id, _ = require('plenary.popup').create(bufnr, {
-						title = 'Configuration of ' .. plug.name,
-						line = math.floor((vim.o.lines - height) / 2),
-						col = math.floor((vim.o.columns - width) / 2),
-						minwidth = width,
-						minheight = height,
-						borderchars = borderchars
+					require('snacks').win({
+						text = plug_config,
+						width = 120,
+						height = math.min(40, #plug_config),
+						ft = 'lua',
+						border = 'rounded',
+						wo = { relativenumber = true, winbar = 'Configuration of ' .. plug.name },
+						bo = { buftype = 'nowrite', bufhidden = 'delete', modifiable = false }
 					})
-					vim.keymap.set({ 'n', 'v' }, 'q', function() vim.api.nvim_win_close(win_id, true) end, { silent = true, buffer = bufnr })
-
-					vim.api.nvim_set_option_value('number', true, { win = win_id })
-					vim.api.nvim_set_option_value('buftype', 'nowrite', { buf = bufnr })
-					vim.api.nvim_set_option_value('bufhidden', 'delete', { buf = bufnr })
-					vim.api.nvim_set_option_value('filetype', 'lua', { buf = bufnr })
-					vim.api.nvim_buf_set_lines(bufnr, 0, #content, false, contents)
-					vim.api.nvim_set_option_value('modifiable', false, { buf = bufnr })
 				end,
 				desc = 'Inspect Plugin'
 			}
