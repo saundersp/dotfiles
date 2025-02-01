@@ -1323,6 +1323,20 @@ local lazy_plugins = {
 			{ '<leader>ob', function() require('snacks').terminal('btop') end,	 desc = 'Open btop' },
 			{ '<leader>ot', function() require('snacks').terminal() end,		 desc = 'Open terminal' }
 		}
+	},
+	-- A very fast, powerful, extensible and asynchronous Neovim HTTP client written in Lua.
+	{ 'rest-nvim/rest.nvim',
+		keys = {
+			{ '<localleader>r', '<cmd>Rest run<CR>', ft = 'http', desc = 'Run the highlighted request' },
+			{ 'q', '<cmd>q<CR>', ft = 'rest_nvim_result', desc = 'FIX: Close the result window' }
+		},
+		cmd = 'Rest',
+		dependencies = {
+			-- Highlight, edit, and navigate code
+			'nvim-treesitter/nvim-treesitter',
+			-- 💫 Extensible UI for Neovim notifications and LSP progress messages.
+			'j-hui/fidget.nvim'
+		}
 	}
 }
 
@@ -1332,7 +1346,7 @@ local lazy = require('lazy')
 lazy.setup({
 	spec = lazy_plugins,
 	defaults = { lazy = true },
-	rocks = { enabled = false },
+	--rocks = { enabled = false }, -- NOTE: Needed for rest-nvim/rest.nvim
 	ui = {
 		custom_keys = {
 			['<localleader>i'] = {
