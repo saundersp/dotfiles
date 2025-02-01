@@ -1195,6 +1195,21 @@ local lazy_plugins = {
 			'LeanRefreshFileDependencies', 'LeanRestartFile', 'LeanSorryFill', 'LeanTermGoal'
 		}
 	},
+	-- A modern Vim and neovim filetype plugin for LaTeX files
+	{ 'lervag/vimtex',
+		ft = { 'plaintex', 'tex' },
+		config = function()
+			vim.g.vimtex_view_method = 'zathura'
+			vim.g.vimtex_compiler_latexmk = { aux_dir = 'out', out_dir = 'out', out2dir = 'out' }
+		end,
+		cmd = {
+			'VimtexClean', 'VimtexClearCache', 'VimtexCompile', 'VimtexCompileOutput', 'VimtexCompileSS',
+			'VimtexCompileSelected', 'VimtexContextMenu', 'VimtexCountLetters', 'VimtexCountWords',
+			'VimtexDocPackage', 'VimtexErrors', 'VimtexImapsList', 'VimtexInfo', 'VimtexLog', 'VimtexReload',
+			'VimtexReloadState', 'VimtexStatus', 'VimtexStop', 'VimtexStopAll', 'VimtexTocOpen',
+			'VimtexTocToggle', 'VimtexToggleMain', 'VimtexView', 'VimtexInverseSearch'
+		}
+	},
 	-- Provides external LTeX file handling (off-spec lsp) and other functions.
 	{ 'barreiroleo/ltex_extra.nvim',
 		ft = { 'markdown', 'plaintex', 'tex' },
