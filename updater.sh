@@ -105,16 +105,6 @@ case "$1" in
 		# Optional dependencies : app-misc/glow
 		__updatepackages__ 'xdg-ninja' 'ln -svf /usr/local/src/xdg-ninja/xdg-ninja.sh /usr/local/bin/xdg-ninja'
 
-		# https://github.com/ankitects/anki.git
-		# Dependencies : app-crypt/mit-krb5 dev-python/PyQt5 dev-python/PyQtWebEngine dev-python/httplib2 dev-python/beautifulsoup4 dev-python/decorator dev-python/jsonschema dev-python/markdown dev-python/requests dev-python/send2trash dev-python/nose dev-python/mock
-		__update_anki__(){
-			export RELEASE=1
-			./ninja bundle
-			test -f /usr/local/share/anki/uninstall.sh && sh /usr/local/share/anki/uninstall.sh
-			(cd out/bundle/std/ && ./install.sh) && rm -r out
-		}
-		__updatepackages__ 'anki' '__update_anki__'
-
 		# https://github.com/espanso/espanso.git
 		# Dependencies : dev-lang/rust x11-libs/wxGTK net-fs/samba
 		# https://github.com/veeso/termscp.git
@@ -146,22 +136,8 @@ case "$1" in
 		}
 		__updatepackages__ 'neovim' '__update_cmake__'
 
-		# https://github.com/deskflow/deskflow.git
-		# Dependencies : dev-build/cmake dev-util/pkgconf dev-libs/pugixml x11-libs/libnotify dev-libs/libportal dev-libs/libei
-		__update_deskflow__(){
-			cmake -DBUILD_TESTS=OFF -DBUILD_INSTALLER=OFF -DCMAKE_BUILD_TYPE=Release -B build
-			cmake --build build -j "$(nproc)"
-			mv -v build/bin/deskflow* /usr/local/bin/
-			rm -rf build
-		}
-		__updatepackages__ 'deskflow' '__update_deskflow__'
-
 		# https://github.com/ventoy/Ventoy
 		__updatepackages__ 'Ventoy' 'echo Ventoy updated, Please build then plug USB'
-
-		# https://github.com/arp242/find-cursor.git
-		# Dependencies : dev-build/make
-		__updatepackages__ 'find-cursor' 'make all install clean'
 
 		FONT_DIR=/usr/share/fonts/Hasklig
 		if [ -d "$FONT_DIR" ]; then
