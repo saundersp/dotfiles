@@ -460,10 +460,6 @@ local lazy_plugins = {
 			{ 'gK',		vim.lsp.buf.signature_help,  desc = 'LSP: Signature documentation' },
 			{ 'gD',		vim.lsp.buf.declaration,     desc = 'LSP: Goto declaration' },
 			{ '<leader>e',  vim.diagnostic.open_float,   desc = 'LSP: Show diagnostic error message' },
-			{ '<leader>ca', function()
-				if package.loaded['telescope'] == nil then require('telescope') end
-				return vim.lsp.buf.code_action() end,
-								     desc = 'LSP: Code action' },
 			{ '[d',		vim.diagnostic.goto_prev,    desc = 'LSP: Jump to previous diagnostics' },
 			{ ']d',		vim.diagnostic.goto_next,    desc = 'LSP: Jump to next diagnostics' },
 			{ '<leader>q',  vim.diagnostic.setloclist,   desc = 'LSP: Open diagnostic quickfix' }
@@ -473,7 +469,12 @@ local lazy_plugins = {
 			-- Automatically install LSPs to stdpath for neovim
 			'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim',
 			-- Auto completion functionalities
-			'hrsh7th/cmp-nvim-lsp'
+			'hrsh7th/cmp-nvim-lsp',
+			-- Fully customizable previewer for LSP code actions.
+			{ 'aznhe21/actions-preview.nvim',
+				config = true,
+				keys = { { '<leader>ca', function() require('actions-preview').code_actions() end, desc = 'LSP: Code action' }, }
+			}
 		}
 	},
 	-- Debugging purposes
