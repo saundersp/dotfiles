@@ -1324,26 +1324,23 @@ local lazy_plugins = {
 			{ '<leader>ot', function() require('snacks').terminal() end,		 desc = 'Open terminal' }
 		}
 	},
-	-- A very fast, powerful, extensible and asynchronous Neovim HTTP client written in Lua.
-	{ 'rest-nvim/rest.nvim',
-		keys = {
-			{ '<localleader>r', '<cmd>Rest run<CR>', ft = 'http', desc = 'Run the highlighted request' },
-			{ 'q', '<cmd>q<CR>', ft = 'rest_nvim_result', desc = 'FIX: Close the result window' }
-		},
-		cmd = 'Rest',
-		dependencies = {
-			-- Highlight, edit, and navigate code
-			'nvim-treesitter/nvim-treesitter',
-			-- 💫 Extensible UI for Neovim notifications and LSP progress messages.
-			'j-hui/fidget.nvim'
-		}
-	},
 	-- Preview Markdown in your modern browser with synchronised scrolling and flexible configuration.
 	{ 'iamcco/markdown-preview.nvim',
 		ft = 'markdown',
 		cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
 		keys = { { '<localleader>mp', '<cmd>MarkdownPreviewToggle<CR>', ft = 'markdown', desc = 'Toggle Markdown previewer' } },
 		build = 'cd app && npx --yes yarn install'
+	},
+	-- A minimal 🤏 HTTP-client 🐼 interface 🖥️ for Neovim ❤️.
+	{ 'mistweaverco/kulala.nvim',
+		config = true,
+		keys = {
+			{ '<localleader>rr', function() require('kulala').run() end, ft = 'http', desc = 'Run the current request' },
+			{ '<localleader>rR', function() require('kulala').run_all() end, ft = 'http', desc = 'Run all requests in the current buffer' },
+			{ '<localleader>rt', function() require('kulala').toggle_view() end, ft = 'http', desc = 'Toggle between the body and headers view of the last run request' },
+			{ ']r', function() require('kulala').jump_next() end, ft = 'http', desc = 'Jump to the next request' },
+			{ '[r', function() require('kulala').jump_prev() end, ft = 'http', desc = 'Jump to the previous request' }
+		}
 	}
 }
 
@@ -1353,7 +1350,7 @@ local lazy = require('lazy')
 lazy.setup({
 	spec = lazy_plugins,
 	defaults = { lazy = true },
-	--rocks = { enabled = false }, -- NOTE: Needed for rest-nvim/rest.nvim
+	rocks = { enabled = false },
 	ui = {
 		custom_keys = {
 			['<localleader>i'] = {
