@@ -88,7 +88,7 @@ WORKDIR /home/saundersp
 RUN rm -r .bash_logout .cache .local
 
 # Copying local repository
-#COPY . .
+# COPY --chown=saundersp:saundersp . dotfiles
 # Cloning remote repository
 RUN git clone --depth=1 https://github.com/saundersp/dotfiles.git
 
