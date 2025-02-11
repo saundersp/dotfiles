@@ -12,7 +12,6 @@ export XDG_RUNTIME_DIR="$HOME"/.XDG/runtime
 
 # Some global XDG variables
 command -v librewolf >> /dev/null && export BROWSER=librewolf
-command -v calibre >> /dev/null && export CALIBRE_USE_DARK_PALETTE=1
 if [ -d /opt/cuda ]; then
 	export CUDA_HOME=/opt/cuda
 	export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
