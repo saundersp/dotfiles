@@ -381,7 +381,7 @@ case $PACKAGES in
 	minimal) ;;
 	laptop)
 		install_ihm
-		emerge -q --noreplace x11-apps/xbacklight net-misc/connman net-wireless/wpa_supplicant net-vpn/wireguard-tools
+		emerge -q --noreplace app-misc/brightnessctl net-misc/connman net-wireless/wpa_supplicant net-vpn/wireguard-tools
 		su $USERNAME -c \"install_dotfiles $PACKAGES\"
 	;;
 esac

@@ -139,7 +139,7 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober xbacklight ntfs-3g wpa_supplicant pulseaudio bluez-tools pulseaudio-module-bluetooth xorg-x11-drv-intel
+		install_pkg os-prober brightnessctl ntfs-3g wpa_supplicant pulseaudio bluez-tools pulseaudio-module-bluetooth xorg-x11-drv-intel
 	;;
 esac
 

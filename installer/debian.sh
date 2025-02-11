@@ -193,7 +193,7 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober xbacklight
+		install_pkg os-prober brightnessctl
 		# bumblebee-status-module-nvidia-prime ntfs-3g ucode-intel wpa_supplicant pulseaudio
 		# xf86-video-intel pulseaudio-module-bluetooth bluez nvidia nvidia-utils pulsemixer
 	;;

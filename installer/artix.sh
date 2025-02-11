@@ -130,7 +130,7 @@ case $PACKAGES in
 	laptop)
 		install_ihm
 		install_pkg os-prober xf86-video-intel nvidia-utils nvidia-prime nvidia-settings ntfs-3g pulseaudio pulsemixer pulseaudio-bluetooth \
-			patch bluez-utils intel-ucode wpa_supplicant xorg-xbacklight bluez-"$INIT_SYSTEM" wireguard-tools
+			patch bluez-utils intel-ucode wpa_supplicant brightnessctl bluez-"$INIT_SYSTEM" wireguard-tools
 		case $KERNEL in
 			linux) install_pkg nvidia ;;
 			linux-lts) install_pkg nvidia-lts ;;

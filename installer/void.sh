@@ -129,7 +129,7 @@ case $PACKAGES in
 	minimal) ;;
 	laptop)
 		install_ihm
-		install_pkg os-prober xf86-video-intel ntfs-3g wpa_supplicant xbacklight
+		install_pkg os-prober xf86-video-intel ntfs-3g wpa_supplicant brightnessctl
 		env XBPS_ARCH="$ARCH" xbps-install -Sy -R "$MIRROR"/nonfree -r /mnt nvidia intel-ucode
 	;;
 esac

@@ -262,7 +262,7 @@ case $PACKAGES in
 	;;
 	laptop)
 		install_ihm
-		install_pkg os-prober xbacklight intel-ucode wpa_supplicant ntfs-3g linux-firmware-nvidia pulseaudio pulseaudio-bluez bluez pulsemixer
+		install_pkg os-prober brightnessctl intel-ucode wpa_supplicant ntfs-3g linux-firmware-nvidia pulseaudio pulseaudio-bluez bluez pulsemixer
 	;;
 esac
 
