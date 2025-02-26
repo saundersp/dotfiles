@@ -8,17 +8,16 @@ RUN apt-get update \
 	ca-certificates=20241223 \
 	neovim=0.9.5-10 \
 	nodejs=20.18.1+dfsg-1ubuntu2 \
-	pipx=1.7.1-1 \
-	curl=8.12.0+git20250209.89ed161+ds-1ubuntu1 \
+	curl=8.12.1-2ubuntu1 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
 	ranger=1.9.4-1ubuntu1 \
 	cmake=3.31.5-2ubuntu3 \
 	make=4.4.1-1 \
 	pkgconf=1.8.1-4 \
-	bat=0.24.0-2 \
-	fzf=0.60.0-1 \
-	eza=0.19.2-2 \
+	bat=0.24.0-2syncable1 \
+	fzf=0.60.1-1 \
+	eza=0.20.14-1build1 \
 	ncdu=1.21-2 \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
@@ -29,7 +28,7 @@ RUN apt-get update \
 	rsync=3.4.1-0syncable1 \
 	tmux=3.5a-3 \
 	opendoas=6.8.2-1 \
-	cargo=1.83.0ubuntu1 \
+	cargo=1.84.0ubuntu1 \
 	golang-go=2:1.24~2 \
 	tree-sitter-cli=0.20.8-6
 
@@ -39,7 +38,7 @@ RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
 
 RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.6 --depth 1 /usr/local/src/ueberzugpp \
 	&& apt-get install --no-install-recommends -y \
-	libtbb-dev=2022.0.0-1 \
+	libtbb-dev=2022.0.0-2 \
 	libxcb-image0-dev=0.4.0-2build1 \
 	libxcb-res0-dev=1.17.0-2 \
 	libvips-dev=8.16.0-2build1 \
@@ -50,7 +49,7 @@ RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueb
 	&& mv -v /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug \
 	&& rm -r /usr/local/src/ueberzugpp
 
-RUN git clone --depth=1 -b v0.46.0 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
+RUN git clone --depth=1 -b v0.47.2 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
 WORKDIR /usr/local/src/lazygit
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazygit /usr/local/bin/lazygit \
@@ -81,11 +80,7 @@ RUN apt-get remove -y golang-go cargo \
 
 USER saundersp
 
-RUN bash -i -c 'pipx install dooit==3.1.0'
-
 WORKDIR /home/saundersp
-
-RUN rm -r .bash_logout .cache .local
 
 # Copying local repository
 # COPY --chown=saundersp:saundersp . dotfiles
