@@ -41,7 +41,7 @@ install_server(){
 
 	install_pkg fastfetch neovim python3 python3-pip wget unzip bash-completion nodejs npm ripgrep btop opendoas git ranger tmux dash \
 		dnf-plugins-core docker-ce docker-ce-cli containerd.io docker-compose-plugin dos2unix fd-find gcc gcc-c++ gdb make highlight lazygit \
-		lazydocker man-db wireguard-tools patch pkgconf progress python3-neovim ncdu golang pipx
+		lazydocker man-db wireguard-tools patch pkgconf progress python3-neovim ncdu golang
 
 	# Compiling lazynpm
 	cd /usr/local/src
@@ -115,9 +115,6 @@ install_dotfiles(){
 	cd ~/git/dotfiles
 	./auto.sh "$1"
 	sudo bash auto.sh "$1"
-
-	# Installing pipx packages
-	bash -i -c 'pipx install dooit'
 
 	# Getting the wallpaper
 	mkdir ~/Images

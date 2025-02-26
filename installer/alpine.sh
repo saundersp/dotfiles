@@ -126,7 +126,7 @@ install_server(){
 		py3-pip ripgrep btop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc man-pages \
 		mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev tmux lazydocker \
 		docker docker-compose dos2unix gdb highlight progress py3-pynvim ncdu cmake make elogind \
-		polkit-elogind fastfetch go tree-sitter-cli pipx
+		polkit-elogind fastfetch go tree-sitter-cli
 
 	# Adding login manager
 	rc-update add elogind boot
@@ -163,9 +163,6 @@ EOF
 
 	# Setup user space
 	echo \"#!/bin/sh
-
-	# Installing pipx packages
-	pipx install dooit
 
 	# Getting the dotfiles
 	mkdir ~/git
@@ -216,9 +213,6 @@ install_ihm(){
 
 	# Setup user space
 	echo \"#!/bin/sh
-
-	# Installing pipx packages
-	pipx install dooit
 
 	# Enabling the dotfiles
 	cd ~/git/dotfiles

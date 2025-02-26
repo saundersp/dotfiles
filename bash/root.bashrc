@@ -518,7 +518,6 @@ update(){
 	(cd && ./updater.sh p)
 	command -v ncu >> /dev/null && npm update -g npm-check-updates
 	command -v nix-env >> /dev/null && nix-env -u
-	command -v pipx >> /dev/null && pipx upgrade-all
 }
 
 __cmd_checker__ __help_me__

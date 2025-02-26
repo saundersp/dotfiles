@@ -28,11 +28,6 @@ command -v ipython >> /dev/null && export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
 command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
 command -v docker >> /dev/null && export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
-if command -v pipx >> /dev/null; then
-	export PIPX_BIN_DIR="$XDG_DATA_HOME/pipx/bin"
-	export PIPX_MAN_DIR="$XDG_DATA_HOME/pipx/man"
-	export PATH="$PIPX_BIN_DIR:$PATH"
-fi
 if command -v npm >> /dev/null; then
 	export NPM_CONFIG_INIT_MODULE="$XDG_CONFIG_HOME"/npm/config/npm-init.js
 	export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
@@ -731,7 +726,6 @@ update(){
 	command -v ncu >> /dev/null && npm update -g npm-check-updates'
 	command -v aur >> /dev/null && aur u
 	command -v nix-env >> /dev/null && nix-env -u
-	command -v pipx >> /dev/null && pipx upgrade-all
 	command -v arduino-cli >> /dev/null && arduino-cli update && arduino-cli upgrade
 	if command -v nvim >> /dev/null; then
 		nvim --headless -c 'lua if vim.fn.exists(":Lazy") ~= 0 then vim.cmd("Lazy! update") end' +qa

@@ -93,8 +93,7 @@ EOF
 
 install_server(){
 	install_pkg neovim lazygit lazydocker git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep btop ranger tmux \
-		docker dos2unix fd highlight gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers go fastfetch \
-		python3-pipx
+		docker dos2unix fd highlight gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers go fastfetch
 }
 install_ihm(){
 	install_server
@@ -287,18 +286,12 @@ fi
 case $PACKAGES in
 	minimal) ;;
 	server)
-		# Installing pipx packages
-		pipx install dooit
-
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
 		./auto.sh server
 		sudo bash auto.sh server
 	;;
 	virtual|laptop)
-		# Installing pipx packages
-		pipx install dooit
-
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
 		./auto.sh install

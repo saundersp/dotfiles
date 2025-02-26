@@ -96,7 +96,7 @@ install_pkg(){
 install_server(){
 	install_pkg neovim lazygit fastfetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep \
 		btop ranger fd fakeroot make gcc pkgconf tmux docker docker-compose dos2unix gdb highlight progress python-pynvim debugedit \
-		tree-sitter-cli ncdu python-pipx
+		tree-sitter-cli ncdu
 }
 install_ihm(){
 	install_server
@@ -264,9 +264,6 @@ aur_install(){
 case $PACKAGES in
 	minimal) ;;
 	server)
-		# Installing pipx packages
-		pipx install dooit
-
 		# Removing bash profile that blocks default .profile
 		rm -v ~/.bash_profile ~/.bash_logout
 
@@ -278,9 +275,6 @@ case $PACKAGES in
 		aur_install lazydocker
 	;;
 	virtual|laptop)
-		# Installing pipx packages
-		pipx install dooit
-
 		# Removing bash profile that blocks default .profile
 		rm -v ~/.bash_profile ~/.bash_logout
 

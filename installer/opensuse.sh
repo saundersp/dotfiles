@@ -44,7 +44,7 @@ install_server(){
 	zypper refresh
 	install_pkg git fastfetch neovim unzip bash-completion nodejs-default npm-default python312 python312-pip ripgrep btop lazygit \
 		opendoas ranger lazydocker patch gcc gcc-c++ make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python312-neovim \
-		go ncdu python312-pipx wireguard-tools
+		go ncdu wireguard-tools
 
 	# Use dash instead of bash as default shell
 	ln -sf /bin/dash /bin/sh
@@ -95,9 +95,6 @@ install_ihm(){
 	rm Hasklig.zip
 }
 install_dotfiles(){
-	# Installing pipx packages
-	pipx install dooit
-
 	# Getting the dotfiles
 	mkdir ~/git
 	git clone https://github.com/saundersp/dotfiles.git ~/git/dotfiles
