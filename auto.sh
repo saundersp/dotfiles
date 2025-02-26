@@ -23,7 +23,7 @@ mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME" "$XDG_DATA_HOME" "$XDG_STATE_HOME"
 CURRENT_FOLDER=$(pwd)
 if [ "$1" = '-r' ] || [ "$1" = 'r' ] || [ "$1" = 'remove' ] || [ "$1" = '--remove' ]; then
 	rm -rf "$XDG_CONFIG_HOME"/nvim/init.lua "$XDG_CONFIG_HOME"/fastfetch/config.jsonc "$HOME"/.bashrc "$XDG_CONFIG_HOME"/git/config \
-		"$HOME"/.profile "$XDG_CONFIG_HOME"/i3/config "$HOME"/.xinitrc "$XDG_CONFIG_HOME"/X11/Xresources \
+		"$HOME"/.profile "$XDG_CONFIG_HOME"/i3/config "$HOME"/.xinitrc "$XDG_CONFIG_HOME"/X11/Xresources "$XDG_CONFIG_HOME"/zathura/zathurarc \
 		"$XDG_CONFIG_HOME"/polybar/launch.sh "$XDG_CONFIG_HOME"/polybar/config.ini "$XDG_CONFIG_HOME"/polybar/scripts \
 		"$XDG_CONFIG_HOME"/ranger/rc.conf "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux/tmux.conf \
 		"$XDG_CONFIG_HOME"/espanso/match/base.yml "$XDG_CONFIG_HOME"/espanso/config/default.yml "$XDG_CONFIG_HOME"/rofi/config.rasi
@@ -34,7 +34,8 @@ if [ "$1" = '-r' ] || [ "$1" = 'r' ] || [ "$1" = 'remove' ] || [ "$1" = '--remov
 	test -d "$FILENAME" && rm -rf "$FILENAME"
 elif [ "$(id -u)" -ne 0 ]; then
 	mkdir -p "$XDG_CONFIG_HOME"/nvim/autoload "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/git \
-		"$XDG_CONFIG_HOME"/fastfetch "$XDG_CONFIG_HOME"/espanso/config "$XDG_CONFIG_HOME"/espanso/match "$XDG_CONFIG_HOME"/rofi
+		"$XDG_CONFIG_HOME"/fastfetch "$XDG_CONFIG_HOME"/espanso/config "$XDG_CONFIG_HOME"/espanso/match "$XDG_CONFIG_HOME"/rofi \
+		"$XDG_CONFIG_HOME"/zathura
 
 	FILENAME="$XDG_CONFIG_HOME"/ranger/plugins/ranger_devicons
 	test ! -d "$FILENAME" && git clone https://github.com/alexanderjeurissen/ranger_devicons.git "$FILENAME"
@@ -64,6 +65,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 		ln -sf "$CURRENT_FOLDER"/espanso/config/default.yml "$XDG_CONFIG_HOME"/espanso/config/default.yml
 		ln -sf "$CURRENT_FOLDER"/espanso/match/base.yml "$XDG_CONFIG_HOME"/espanso/match/base.yml
 		ln -sf "$CURRENT_FOLDER"/rofi/config.rasi "$XDG_CONFIG_HOME"/rofi/config.rasi
+		ln -sf "$CURRENT_FOLDER"/zathura/zathurarc "$XDG_CONFIG_HOME"/zathura/zathurarc
 	fi
 
 	if command -v nvim >> /dev/null; then
