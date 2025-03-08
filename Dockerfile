@@ -4,20 +4,21 @@ RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
 	gcc=4:14.2.0-1ubuntu1 \
 	g++=4:14.2.0-1ubuntu1 \
-	git-svn=1:2.47.1-1ubuntu1 \
+	git-svn=1:2.48.1-0ubuntu1 \
 	ca-certificates=20241223 \
 	neovim=0.9.5-10 \
 	nodejs=20.18.1+dfsg-1ubuntu2 \
 	curl=8.12.1-2ubuntu1 \
+	btop=1.3.0-1 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
 	ranger=1.9.4-1ubuntu1 \
-	cmake=3.31.5-2ubuntu3 \
+	cmake=3.31.6-1ubuntu1 \
 	make=4.4.1-1 \
 	pkgconf=1.8.1-4 \
 	bat=0.24.0-2syncable1 \
 	fzf=0.60.1-1 \
-	eza=0.20.14-1build1 \
+	eza=0.20.23-1 \
 	ncdu=1.21-2 \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
@@ -49,7 +50,7 @@ RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueb
 	&& mv -v /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug \
 	&& rm -r /usr/local/src/ueberzugpp
 
-RUN git clone --depth=1 -b v0.47.2 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
+RUN git clone --depth=1 -b v0.48.0 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
 WORKDIR /usr/local/src/lazygit
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazygit /usr/local/bin/lazygit \
