@@ -16,9 +16,9 @@ RUN apt-get update \
 	cmake=3.31.6-1ubuntu1 \
 	make=4.4.1-1 \
 	pkgconf=1.8.1-4 \
-	bat=0.24.0-2syncable1 \
+	bat=0.24.0-4 \
 	fzf=0.60.3-1 \
-	eza=0.20.23-1 \
+	eza=0.20.24-1 \
 	ncdu=1.21-2 \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
