@@ -92,7 +92,7 @@ case "$1" in
 		# Dependencies : sys-libs/ncurses media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-terms/st-terminfo x11-base/xorg-proto virtual/pkgconfig
 		__update_suckless__(){
 			cd --
-			PATCH_PATH=$(dirname "$(realpath $0)")/patches
+			PATCH_PATH=$(dirname "$(realpath "$0")")/patches
 			cd -
 			(cd "$PATCH_PATH" && ./patch.sh "$PACKAGE_NAME" clean)
 			git pull
@@ -112,9 +112,7 @@ case "$1" in
 		# https://github.com/typst/typst.git
 		# Dependencies : dev-lang/rust
 		__update_rust__(){
-			cargo build --profile release
-			mv -f target/release/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME"
-			rm -r target
+			cargo build --profile release && mv -f target/release/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME" && rm -r target
 		}
 		__updatepackages__ 'espanso termscp typst' '__update_rust__'
 
@@ -132,7 +130,7 @@ case "$1" in
 		# https://github.com/neovim/neovim.git
 		# Dependencies : dev-build/cmake dev-build/ninja app-arch/unzip net-misc/curl sys-devel/gettext sys-devel/gcc
 		__update_cmake__(){
-			make CMAKE_BUILD_TYPE=Release -j $(nproc) -l $(nproc) && make install clean && rm -rf build .deps
+			make CMAKE_BUILD_TYPE=Release -j "$(nproc)" -l "$(nproc)" && make install clean && rm -rf build .deps
 		}
 		__updatepackages__ 'neovim' '__update_cmake__'
 
@@ -172,6 +170,7 @@ case "$1" in
 	M|make|-M|--make)
 		cd /usr/src/linux
 		if [ -n "$2" ]; then
+			# shellcheck disable=2086
 			make $2
 		else
 			make menuconfig
