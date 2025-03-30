@@ -1247,6 +1247,7 @@ local lazy_plugins = {
 		config = function()
 			vim.g.vimtex_view_method = 'zathura'
 			vim.g.vimtex_compiler_latexmk = { aux_dir = 'out', out_dir = 'out', out2dir = 'out' }
+			vim.g.vimtex_compiler_latexmk_engines = { _ = '-xelatex --shell-escape' } -- NOTE Override default engine
 		end,
 		cmd = {
 			'VimtexClean', 'VimtexClearCache', 'VimtexCompile', 'VimtexCompileOutput', 'VimtexCompileSS',
