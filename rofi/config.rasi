@@ -8,8 +8,8 @@ configuration {
 	display-ssh:		" SSH";
 	drun-display-format:	"{name}";
 	window-format:		"{w} · {c} · {t}";
-	kb-mode-next:		"Alt+l";
-	kb-mode-previous:	"Alt+h";
+	kb-mode-next:		"Alt+Meta+l";
+	kb-mode-previous:	"Alt+Meta+h";
 }
 
 * {
