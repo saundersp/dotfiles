@@ -1,50 +1,19 @@
-! NOTE: How to apply Xresources :
-! Dependencies: xorg-xrdb
-! xrdb .Xresources
-
-! Darkplus colour palette
-! normal:
-!   black:    '#000000'
-!   red:      '#e8341c'
-!   green:    '#68c256'
-!   yellow:   '#f2d42c'
-!   blue:     '#1c98e8'
-!   magenta:  '#8e69c9'
-!   cyan:     '#1c98e8'
-!   white:    '#bababa'
-
-! bright:
-!   black:    '#666666'
-!   red:      '#e05a4f'
-!   green:    '#77b869'
-!   yellow:   '#efd64b'
-!   blue:     '#387cd3'
-!   magenta:  '#957bbe'
-!   cyan:     '#3d97e2'
-!   white:    '#bababa'
-
 ! Code dark colour palette
-#define black           #1e1e1e
-#define gray            #808080
-#define light_blue      #9cdcfe
-#define blue            #569cd6
-#define blue_green      #4ec9b0
-#define green           #608b4e
-#define light_green     #b5cea8
-#define yellow          #dcdcaa
-#define yellow_orange   #ce9178
-#define orange          #d7ba7d
-#define light_red       #d16969
+#define black           #1f1f1f
 #define red             #f44747
-#define pink            #c586c0
-#define violet          #646695
-#define mybackground    #222324
+#define green           #608b4e
+#define yellow          #dcdcaa
+#define blue            #569cd6
+#define magenta         #c678dd
+#define light_blue      #56b6c2
+#define light_gray      #d4d4d4
+#define gray            #808080
+
+#define mybackground    black
 #define mybackgroundalt #444444
-#define myforeground    #bababa
-#define myforegroundalt #dfdfdf
-#define myprimary       #ddb52a
-#define mysecondary     #d60053
-#define myalert         #bd2c40
+#define myforeground    light_gray
+#define myforegroundalt #bababa
+
 #define myfont Hasklug Nerd Font
 #define myfontmono Hasklug Nerd Font Mono
 
@@ -68,25 +37,23 @@ i3wm.smart-gaps: off
 
 ! ================================= Polybar ======================================
 polybar.height: 17pt
-polybar.padding-right: 2
-polybar.font: myfont:size=9:style=bold
+polybar.font: myfontmono:size=10:style=bold:antialias=true:autohint=true
 polybar.background: mybackground
 polybar.background-alt: mybackgroundalt
 polybar.foreground: myforeground
 polybar.foreground-alt: myforegroundalt
 polybar.primary: mybackgroundalt
-polybar.secondary: mysecondary
-polybar.alert: myalert
+polybar.alert: red
 
 ! =================================== st =======================================
 ! font or font set (default: Liberation Mono:pixelsize=12:antialias=true:autohint=true)
-st.font: myfontmono:size=9
+st.font: myfontmono:size=8:antialias=true:autohint=true
 ! default: gray90
 st.foreground: myforeground
 ! default: black
 st.background: mybackground
 ! default: #ccc
-st.cursorColor: myforegroundalt
+st.cursorColor: myforeground
 ! default: #555
 st.reverse-cursor: #555
 ! Default TERM value (default: st-256color)
@@ -110,21 +77,20 @@ st.cwscale: 1.0
 ! default: 1.0
 st.chscale: 1.0
 ! Terminal normal colours (default: black red3 green3 yellow3 blue2 magenta3 cyan3 gray90)
-st.color0: #000000
-st.color1: #e8341c
-st.color2: #68c256
-st.color3: #f2d42c
-st.color4: #1c98e8
-st.color5: #8e69c9
-st.color6: #1c98e8
-st.color7: #bababa
+st.color0: black
+st.color1: red
+st.color2: green
+st.color3: yellow
+st.color4: blue
+st.color5: magenta
+st.color6: light_blue
+st.color7: light_gray
 ! Terminal bright colours (default: gray50 red green yellow #5c5cff magenta cyan white)
-st.color8:  #666666
-st.color9:  #e05a4f
-st.color10: #77b869
-st.color11: #efd64b
-st.color12: #387cd3
-st.color13: #957bbe
-st.color14: #3d97e2
-st.color15: #bababa
-
+st.color8:  gray
+st.color9:  red
+st.color10: green
+st.color11: yellow
+st.color12: blue
+st.color13: magenta
+st.color14: light_blue
+st.color15: light_gray
