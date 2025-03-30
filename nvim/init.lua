@@ -712,6 +712,30 @@ local lazy_plugins = {
 			local cmp = require('cmp')
 			require('luasnip.loaders.from_vscode').lazy_load()
 			local luasnip = require('luasnip')
+			local s = luasnip.snippet
+			local t = luasnip.text_node
+			local i = luasnip.insert_node
+
+			-- NOTE: Snippets for my notebook
+			luasnip.add_snippets('tex', {
+				s(":exo", {
+					t({'\\begin{exercise_sq}', '\t'}),
+					i(0),
+					t({'', '\\end{exercise_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
+					t({'', '\\end{proof}', ''}),
+				}),
+				s(":theo", {
+					t({'\\begin{theorem_sq}', '\t'}),
+					i(0),
+					t({'', '\\end{theorem_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
+					t({'', '\\end{proof}', ''}),
+				}),
+				s(":def", {
+					t({'\\begin{definition_sq}', '\t'}),
+					i(0),
+					t({'', '\\end{definition_sq}'}),
+				})
+			})
 
 			cmp.setup({
 				snippet = {
