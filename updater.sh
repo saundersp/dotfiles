@@ -112,7 +112,7 @@ case "$1" in
 		# https://github.com/typst/typst.git
 		# Dependencies : dev-lang/rust
 		__update_rust__(){
-			cargo build --profile release && mv -f target/release/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME" && rm -r target
+			cargo build --release --locked && mv -f target/release/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME" && rm -r target
 		}
 		__updatepackages__ 'espanso termscp typst' '__update_rust__'
 
