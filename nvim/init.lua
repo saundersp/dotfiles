@@ -498,6 +498,11 @@ local lazy_plugins = {
 					__package_name = 'python',
 					type = 'executable',
 					command = 'debugpy-adapter'
+				},
+				bashdb = {
+					__package_name = 'bash',
+					type = 'executable',
+					command = 'bash-debug-adapter'
 				}
 			}
 
@@ -563,10 +568,29 @@ local lazy_plugins = {
 				cwd = '${workspaceFolder}'
 			}
 
+			local BASHDB_DIR = require('mason-registry').get_package('bash-debug-adapter'):get_install_path() .. '/extension/bashdb_dir'
+
 			dap.configurations = {
 				c = { default_c_config },
 				cpp = { default_c_config },
 				cuda = { default_c_config },
+				sh = {
+					{
+						type = 'bashdb',
+						request = 'launch',
+						name = 'Launch file',
+						program = '${file}',
+						cwd = '${fileDirname}',
+						pathBashdb = BASHDB_DIR .. '/bashdb',
+						pathBashdbLib = BASHDB_DIR,
+						pathBash = 'bash',
+						pathCat = 'cat',
+						pathMkfifo = 'mkfifo',
+						pathPkill = 'pkill',
+						env = {},
+						args = {}
+					}
+				},
 				python = {
 					{
 						type = 'debugpy',
