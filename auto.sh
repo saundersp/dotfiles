@@ -25,23 +25,19 @@ if [ "$1" = '-r' ] || [ "$1" = 'r' ] || [ "$1" = 'remove' ] || [ "$1" = '--remov
 	rm -rf "$XDG_CONFIG_HOME"/nvim/init.lua "$XDG_CONFIG_HOME"/fastfetch/config.jsonc "$HOME"/.bashrc "$XDG_CONFIG_HOME"/git/config \
 		"$HOME"/.profile "$XDG_CONFIG_HOME"/i3/config "$HOME"/.xinitrc "$XDG_CONFIG_HOME"/X11/Xresources "$XDG_CONFIG_HOME"/zathura/zathurarc \
 		"$XDG_CONFIG_HOME"/polybar/launch.sh "$XDG_CONFIG_HOME"/polybar/config.ini "$XDG_CONFIG_HOME"/polybar/scripts \
-		"$XDG_CONFIG_HOME"/ranger/rc.conf "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux/tmux.conf \
+		"$XDG_CONFIG_HOME"/yazi/yazi.toml "$XDG_CONFIG_HOME"/yazi/theme.toml "$XDG_CONFIG_HOME"/tmux/tmux.conf \
 		"$XDG_CONFIG_HOME"/espanso/match/base.yml "$XDG_CONFIG_HOME"/espanso/config/default.yml "$XDG_CONFIG_HOME"/rofi/config.rasi
 
 	FILENAME="$XDG_DATA_HOME"/nvim/lazy/lazy.nvim
 	test -d "$FILENAME" && rm -rf "$FILENAME"
-	FILENAME="$XDG_CONFIG_HOME"/ranger/plugins/ranger_devicons
-	test -d "$FILENAME" && rm -rf "$FILENAME"
 elif [ "$(id -u)" -ne 0 ]; then
-	mkdir -p "$XDG_CONFIG_HOME"/nvim/autoload "$XDG_CONFIG_HOME"/ranger/plugins "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/git \
+	mkdir -p "$XDG_CONFIG_HOME"/nvim/autoload "$XDG_CONFIG_HOME"/yazi "$XDG_CONFIG_HOME"/tmux "$XDG_CONFIG_HOME"/git \
 		"$XDG_CONFIG_HOME"/fastfetch "$XDG_CONFIG_HOME"/espanso/config "$XDG_CONFIG_HOME"/espanso/match "$XDG_CONFIG_HOME"/rofi \
 		"$XDG_CONFIG_HOME"/zathura
 
-	FILENAME="$XDG_CONFIG_HOME"/ranger/plugins/ranger_devicons
-	test ! -d "$FILENAME" && git clone https://github.com/alexanderjeurissen/ranger_devicons.git "$FILENAME"
-
 	ln -sf "$CURRENT_FOLDER"/fastfetch/config.jsonc "$XDG_CONFIG_HOME"/fastfetch/config.jsonc
-	ln -sf "$CURRENT_FOLDER"/ranger/rc.conf "$XDG_CONFIG_HOME"/ranger/rc.conf
+	ln -sf "$CURRENT_FOLDER"/yazi/yazi.toml "$XDG_CONFIG_HOME"/yazi/yazi.toml
+	ln -sf "$CURRENT_FOLDER"/yazi/theme.toml "$XDG_CONFIG_HOME"/yazi/theme.toml
 	ln -sf "$CURRENT_FOLDER"/bash/bashrc "$HOME"/.bashrc
 	ln -sf "$CURRENT_FOLDER"/git/config "$XDG_CONFIG_HOME"/git/config
 	ln -sf "$CURRENT_FOLDER"/tmux/tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf

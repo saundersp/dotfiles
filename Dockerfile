@@ -12,7 +12,6 @@ RUN apt-get update \
 	btop=1.3.0-1 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
-	ranger=1.9.4-1ubuntu1 \
 	cmake=3.31.6-1ubuntu1 \
 	make=4.4.1-1 \
 	pkgconf=1.8.1-4 \
@@ -70,6 +69,12 @@ RUN go install -buildvcs=false \
 
 RUN cargo install --locked difftastic@0.63.0 \
 	&& mv -v /root/.cargo/bin/difft /usr/local/bin/difft
+
+RUN git clone --depth=1 -b v25.3.2 https://github.com/sxyazi/yazi.git /usr/local/src/yazi
+WORKDIR /usr/local/src/yazi
+RUN cargo build --release --locked \
+	&& mv target/release/yazi /usr/local/bin/yazi \
+	&& rm -r /usr/local/src/yazi
 
 RUN apt-get remove -y golang-go cargo \
 	&& apt-get autoremove -y \

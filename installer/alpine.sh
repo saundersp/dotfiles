@@ -124,7 +124,7 @@ install_pkg(){
 install_server(){
 	install_pkg neovim doas lazygit git wget unzip openssh bash-completion nodejs npm python3 \
 		py3-pip ripgrep btop gcc python3-dev musl-dev g++ bash curl cryptsetup mandoc man-pages \
-		mandoc-apropos less less-doc ranger libx11-dev libxft-dev fd libxext-dev tmux lazydocker \
+		mandoc-apropos less less-doc yazi libx11-dev libxft-dev fd libxext-dev tmux lazydocker \
 		docker docker-compose dos2unix gdb highlight progress py3-pynvim ncdu cmake make elogind \
 		polkit-elogind fastfetch go tree-sitter-cli
 

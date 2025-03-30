@@ -92,7 +92,7 @@ install_pkg base-system opendoas grub-x86_64-efi efibootmgr cryptsetup which man
 EOF
 
 install_server(){
-	install_pkg neovim lazygit lazydocker git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep btop ranger tmux \
+	install_pkg neovim lazygit lazydocker git wget unzip openssh bash-completion nodejs python3 python3-pip ripgrep btop yazi tmux \
 		docker dos2unix fd highlight gcc gdb xtools docker-compose progress python3-neovim ncdu cmake make Vulkan-Headers go fastfetch
 }
 install_ihm(){

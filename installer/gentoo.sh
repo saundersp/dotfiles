@@ -312,7 +312,7 @@ install_server(){
 
 	emerge -q --noreplace app-misc/fastfetch app-editors/neovim sys-apps/which net-misc/wget app-arch/unzip app-shells/bash-completion \
 		net-libs/nodejs dev-lang/python sys-apps/ripgrep sys-apps/man-db dev-python/pip sys-process/btop dev-lang/go app-misc/tmux \
-		app-misc/ranger dev-python/pynvim app-portage/mirrorselect app-portage/pfl app-portage/gentoolkit sys-apps/fd sys-fs/ncdu \
+		app-misc/yazi dev-python/pynvim app-portage/mirrorselect app-portage/pfl app-portage/gentoolkit sys-apps/fd sys-fs/ncdu \
 		app-portage/eix dev-vcs/lazygit app-containers/lazydocker app-misc/kmon app-shells/fzf app-text/dos2unix \
 		dev-util/difftastic dev-util/tree-sitter-cli sys-apps/eza sys-apps/bat sys-apps/progress net-misc/tor
 

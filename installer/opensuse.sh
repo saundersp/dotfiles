@@ -43,7 +43,7 @@ install_server(){
 	zypper addrepo -G https://download.opensuse.org/repositories/home:lemmy04/openSUSE_Tumbleweed/home:lemmy04.repo       # For lazydocker
 	zypper refresh
 	install_pkg git fastfetch neovim unzip bash-completion nodejs-default npm-default python312 python312-pip ripgrep btop lazygit \
-		opendoas ranger lazydocker patch gcc gcc-c++ make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python312-neovim \
+		opendoas yazi lazydocker patch gcc gcc-c++ make fd tmux ccls dash docker docker-compose dos2unix gdb highlight python312-neovim \
 		go ncdu wireguard-tools
 
 	# Use dash instead of bash as default shell
