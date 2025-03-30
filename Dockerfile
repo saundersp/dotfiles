@@ -67,8 +67,11 @@ RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazynpm /usr/local/bin/lazynpm \
 	&& rm -r /usr/local/src/lazynpm
 
-RUN cargo install --locked difftastic@0.63.0 \
-	&& mv -v /root/.cargo/bin/difft /usr/local/bin/difft
+RUN git clone --depth=1 -b 0.63.0 https://github.com/Wilfred/difftastic.git /usr/local/src/difftastic
+WORKDIR /usr/local/src/difftastic
+RUN cargo build --release --locked \
+	&& mv target/release/difft /usr/local/bin/difft \
+	&& rm -r /usr/local/src/difftastic
 
 RUN git clone --depth=1 -b v25.3.2 https://github.com/sxyazi/yazi.git /usr/local/src/yazi
 WORKDIR /usr/local/src/yazi
