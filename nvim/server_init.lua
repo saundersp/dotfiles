@@ -84,12 +84,11 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 local lazy_plugins = {
-	-- Install the vscode's codedark theme
-	{ 'ShermanDevers/codedark.nvim',
+	-- Neovim/Vim color scheme inspired by Dark+ and Light+ theme in Visual Studio Code
+	{ 'Mofiqul/vscode.nvim',
 		priority = 1000,
 		init = function()
 			require('vscode').load()
-			vim.g.colors_name = 'codedark' -- Fix lualine theme deduction
 		end
 	},
 	-- Add a fancy bottom bar with details
@@ -97,8 +96,7 @@ local lazy_plugins = {
 		event = 'UIEnter',
 		opts = {
 			options = {
-				-- Special theme keyword to automatically load theme based on colourscheme
-				theme = 'auto',
+				theme = 'onedark',
 				disabled_filetypes = { statusline = { 'snacks_dashboard', 'neo-tree' } }
 			},
 			sections = {
@@ -110,11 +108,11 @@ local lazy_plugins = {
 						-- NOTE: Removes warning about not properly documented 'has' field
 						---@diagnostic disable-next-line: undefined-field
 						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
-						color = { fg = '#ce9178', gui = 'bold' }
+						color = { gui = 'bold' }
 					},
 					{
 						'selectioncount',
-						color = { fg = '#787878', gui = 'bold' }
+						color = { gui = 'bold' }
 					}
 				}
 			}
