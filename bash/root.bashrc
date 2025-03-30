@@ -20,6 +20,7 @@ fi
 command -v less >> /dev/null && export LESSHISTFILE="$XDG_STATE_HOME"/less_history
 command -v gradle >> /dev/null && export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
 command -v java >> /dev/null && export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
+command -v python >> /dev/null && export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
 command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
 command -v docker >> /dev/null && export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo

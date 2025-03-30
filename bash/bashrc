@@ -24,6 +24,7 @@ command -v java >> /dev/null && export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=
 command -v gpg >> /dev/null && export GNUPGHOME="$XDG_DATA_HOME"/gnupg
 command -v qt6ct >> /dev/null && export QT_QPA_PLATFORMTHEME='qt6ct'
 command -v wine >> /dev/null && export WINEPREFIX="$XDG_DATA_HOME"/wine
+command -v python >> /dev/null && export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
 command -v ipython >> /dev/null && export IPYTHONDIR="$XDG_CONFIG_HOME"/ipython
 command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
 command -v docker >> /dev/null && export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
