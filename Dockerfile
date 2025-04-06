@@ -15,7 +15,7 @@ RUN apt-get update \
 	cmake=3.31.6-1ubuntu1 \
 	make=4.4.1-1 \
 	pkgconf=1.8.1-4 \
-	bat=0.24.0-4 \
+	bat=0.25.0-2 \
 	fzf=0.60.3-1 \
 	eza=0.20.24-1 \
 	ncdu=1.21-2 \
