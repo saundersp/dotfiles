@@ -356,7 +356,7 @@ Available flags:
 	-h, h, help, --help		Show this help message."
 		case "$1" in
 			-s|s|sync|--sync) sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
-			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uUDv --keep-going=y @world && emerge -v @preserved-rebuild && dispatch-conf' ;;
+			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uNUDv --keep-going=y @world && emerge -v @preserved-rebuild && dispatch-conf' ;;
 			-l|l|list|--list) cat /var/lib/portage/world ;;
 			-q|q|query|--query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
 			-c|c|clean|--clean) __command_requirer_pkg__ 'sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && find /var/tmp/portage -mindepth 1 -delete"' eclean app-portage/gentoolkit ;;
@@ -487,7 +487,8 @@ pow(){
 	# The script assumes that all available cpus has the same governor
 	local GOVERNORS_PATH=/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 	test ! -f "$GOVERNORS_PATH" && echo 'CPU governors file unavailable' && return 1
-	local MODES="$(cat "$GOVERNORS_PATH")"
+	local MODES
+	MODES="$(cat "$GOVERNORS_PATH")"
 
 	local USAGE="CPU scaling governor helper
 Implemented by @saundersp
