@@ -121,7 +121,7 @@ format = '\[[$symbol$version]($style)\]'
 style = 'dimmed yellow italic bold'
 
 [python]
-format = '\[[${symbol}${pyenv_prefix}(${version})]($style)\]'
+format = '\[[${symbol}(${version})( \($virtualenv\))]($style)\]'
 symbol = ' '
 style = 'bold bright-yellow'
 detect_files = ['requirements.txt']
