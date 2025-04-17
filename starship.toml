@@ -1,0 +1,137 @@
+######################
+### Prompt options ###
+######################
+
+add_newline = false
+continuation_prompt = "[>](dimmed white)"
+format = """
+┌──$status\\($time\\)─\\($username[@](purple)$hostname\\)─\\($directory\\) \
+$git_branch $jobs$cmd_duration$fill\
+$c$cmake$haskell$java$lua$nodejs$package$python$rlang$rust$typst\
+$git_state$git_commit$git_metrics
+└─$character
+"""
+
+###############
+### Modules ###
+###############
+
+[character]
+format = '$symbol '
+success_symbol = '❯'
+error_symbol = '[❯](bold red)'
+
+[cmd_duration]
+format = '\[[⏱ $duration]($style)\]'
+
+[directory]
+truncation_length = 5
+truncation_symbol = '…/'
+read_only = ' 🔒'
+style = 'yellow'
+format = '[$path]($style)[$read_only]($read_only_style)'
+repo_root_style = 'bold italic yellow'
+repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)'
+
+[fill]
+symbol = ' '
+
+[git_branch]
+format = "\\[[ $branch(:$remote_branch)]($style)\\]"
+symbol = '[△](bold italic bright-blue)'
+style = 'bright-blue'
+truncation_symbol = '⋯'
+truncation_length = 11
+ignore_branches = []
+only_attached = true
+
+[git_commit]
+format= '\[[$hash$tag]($style)\]'
+tag_symbol = ' 🔖'
+tag_disabled = false
+
+[git_state]
+cherry_pick = '[🍒 PICKING](bold red)'
+format = '\[[$state( $progress_current/$progress_total)]($style)\]'
+
+[git_metrics]
+format = '\[([▴$added]($added_style))/([▿$deleted]($deleted_style))\]'
+added_style = 'italic dimmed green'
+deleted_style = 'italic dimmed red'
+disabled = false
+
+[hostname]
+format = '[$hostname$ssh_symbol]($style)'
+style = 'purple'
+ssh_symbol = ' 🌐'
+ssh_only = false
+
+[jobs]
+format = '[\($symbol $number\)]($style)'
+style = 'bold white'
+symbol = '[▶](blue italic)'
+
+[status]
+pipestatus = true
+pipestatus_separator = ''
+pipestatus_format = "${pipestatus}"
+success_style = 'bold green'
+format = "\\([$symbol$common_meaning Exit Code $status]($style)\\)\n├──"
+map_symbol = true
+disabled = false
+
+[time]
+disabled = false
+format = '[$time]($style)'
+time_format = '%I:%M:%S•%p'
+style = 'bold blue'
+
+[username]
+style_user = 'purple'
+format = '[$user]($style)'
+show_always = true
+
+########################
+### Languages/Extras ###
+########################
+
+[c]
+symbol = '󰙱/󰙱++ '
+format = '\[[$symbol($version(-$name))]($style)\]'
+detect_extensions = ['c', 'cpp', 'h', 'hpp']
+
+[cmake]
+format = '\[[$symbol($version)]($style)\]'
+
+[haskell]
+format = '\[[$symbol($version)]($style)\]'
+
+[java]
+format = '\[[$symbol($version)]($style)\]'
+
+[lua]
+format = '\[[$symbol($version)]($style)\]'
+
+[nodejs]
+format = '\[[$symbol($version)]($style)\]'
+detect_files = ['package.json', 'package-lock.json', 'yarn.lock']
+
+[package]
+format = '\[[$symbol$version]($style)\]'
+style = 'dimmed yellow italic bold'
+
+[python]
+format = '\[[${symbol}${pyenv_prefix}(${version})]($style)\]'
+symbol = ' '
+style = 'bold bright-yellow'
+detect_files = ['requirements.txt']
+detect_folders = ['.venv']
+
+[rlang]
+format = '\[[$symbol$version]($style)\]'
+
+[rust]
+format = '\[[$symbol($version)]($style)\]'
+
+[typst]
+format = '\[[$symbol($version)]($style)\]'

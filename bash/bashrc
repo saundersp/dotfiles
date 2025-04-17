@@ -76,6 +76,11 @@ __cmd_checker__(){
 	done
 }
 
+if command -v starship >> /dev/null; then
+	export STARSHIP_CACHE="$XDG_CACHE_HOME"/starship
+	export STARSHIP_CONFIG="$XDG_CONFIG_HOME"/starship.toml
+	eval "$(starship init bash)"
+else
 __cmd_checker__ __setprompt
 __setprompt() {
 	local LAST_COMMAND="$?" # Must come first!
@@ -117,6 +122,7 @@ __setprompt() {
 	PS4="\[${USER_COLOUR}\]+\[${NO_COLOUR}\] "
 }
 PROMPT_COMMAND='__setprompt' # Will run function every time a command is entered
+fi
 
 HISTCONTROL=ignoreboth                         # Don't put duplicate lines or lines starting with space in the history
 HISTSIZE='' HISTFILESIZE=''                    # Infinite history
