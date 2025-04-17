@@ -76,26 +76,26 @@ __setprompt() {
 	PS1="\[${USER_COLOUR}\]┌──"
 	# Show error exit code if there is one
 	if [ $LAST_COMMAND != 0 ]; then
-		PS1="$PS1(\[${LIGHTRED}\]ERROR\[${USER_COLOUR}\])-(\[${RED}\]Exit Code \[${LIGHTRED}\]${LAST_COMMAND}\[${USER_COLOUR}\])\n├──"
+		PS1="$PS1(\[${LIGHTRED}\]ERROR\[${USER_COLOUR}\])─(\[${RED}\]Exit Code \[${LIGHTRED}\]${LAST_COMMAND}\[${USER_COLOUR}\])\n├──"
 	fi
 
 	# Time
-	PS1="$PS1(\[${LIGHTBLUE}\]$(date +%I:%M:%S•%p)\[${USER_COLOUR}\])-"
+	PS1="$PS1(\[${LIGHTBLUE}\]$(date +%I:%M:%S•%p)\[${USER_COLOUR}\])─"
 
 	# User and hostname
 	PS1="$PS1(\[${MAGENTA}\]\u@\h"
 
 	# Current directory
-	PS1="$PS1\[${USER_COLOUR}\])-(\[${BROWN}\]\w\[${USER_COLOUR}\])"
+	PS1="$PS1\[${USER_COLOUR}\])─(\[${BROWN}\]\w\[${USER_COLOUR}\])"
 
 	# Git branch
-	PS1="$PS1\[${BLUE}\]$(git branch 2>>/dev/null | sed -n 's/\* \(.*\)/ ( \1)/p')"
+	PS1="$PS1 [\[${BLUE}\]$(git branch 2>>/dev/null | sed -n 's/\* \(.*\)/ \1/p')\[${USER_COLOUR}\]]"
 
 	# Python virtual environment
 	PS1="$PS1\[${YELLOW}\]$(test -n "$VIRTUAL_ENV" >> /dev/null && echo ' ( venv)')"
 
 	# Skip to the next line
-	PS1="$PS1\r\n\[${USER_COLOUR}\]└─>\[${NO_COLOUR}\] "
+	PS1="$PS1\r\n\[${USER_COLOUR}\]└─❯\[${NO_COLOUR}\] "
 
 	# Window title
 	PS1="$PS1\[\033]0;\u@\h (\w)\007\]"
