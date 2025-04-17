@@ -30,7 +30,8 @@ RUN apt-get update \
 	opendoas=6.8.2-1 \
 	cargo=1.84.0ubuntu1 \
 	golang-go=2:1.24~2 \
-	tree-sitter-cli=0.20.8-6
+	tree-sitter-cli=0.20.8-6 \
+	starship=1.22.1-2
 
 # More user friendly aliases
 RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
@@ -49,7 +50,7 @@ RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueb
 	&& mv -v /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug \
 	&& rm -r /usr/local/src/ueberzugpp
 
-RUN git clone --depth=1 -b v0.48.0 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
+RUN git clone --depth=1 -b v0.49.0 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
 WORKDIR /usr/local/src/lazygit
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazygit /usr/local/bin/lazygit \
@@ -73,7 +74,7 @@ RUN cargo build --release --locked \
 	&& mv target/release/difft /usr/local/bin/difft \
 	&& rm -r /usr/local/src/difftastic
 
-RUN git clone --depth=1 -b v25.3.2 https://github.com/sxyazi/yazi.git /usr/local/src/yazi
+RUN git clone --depth=1 -b v25.4.8 https://github.com/sxyazi/yazi.git /usr/local/src/yazi
 WORKDIR /usr/local/src/yazi
 RUN cargo build --release --locked \
 	&& mv target/release/yazi /usr/local/bin/yazi \
