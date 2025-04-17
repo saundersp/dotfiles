@@ -1,0 +1,4 @@
+[manager]
+append_keymap = [
+	{ on = ["$", "g" ], run = "shell --block lazygit", desc = "Open Lazygit on the current directory" }
+]

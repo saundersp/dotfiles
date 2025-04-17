@@ -25,7 +25,7 @@ if [ "$1" = '-r' ] || [ "$1" = 'r' ] || [ "$1" = 'remove' ] || [ "$1" = '--remov
 	rm -rf "$XDG_CONFIG_HOME"/nvim/init.lua "$XDG_CONFIG_HOME"/fastfetch/config.jsonc "$HOME"/.bashrc "$XDG_CONFIG_HOME"/git/config \
 		"$HOME"/.profile "$XDG_CONFIG_HOME"/i3/config "$HOME"/.xinitrc "$XDG_CONFIG_HOME"/X11/Xresources "$XDG_CONFIG_HOME"/zathura/zathurarc \
 		"$XDG_CONFIG_HOME"/polybar/launch.sh "$XDG_CONFIG_HOME"/polybar/config.ini "$XDG_CONFIG_HOME"/polybar/scripts \
-		"$XDG_CONFIG_HOME"/yazi/yazi.toml "$XDG_CONFIG_HOME"/yazi/theme.toml "$XDG_CONFIG_HOME"/tmux/tmux.conf \
+		"$XDG_CONFIG_HOME"/yazi/yazi.toml "$XDG_CONFIG_HOME"/yazi/theme.toml "$XDG_CONFIG_HOME"/yazi/keymap.toml "$XDG_CONFIG_HOME"/tmux/tmux.conf \
 		"$XDG_CONFIG_HOME"/espanso/match/base.yml "$XDG_CONFIG_HOME"/espanso/config/default.yml "$XDG_CONFIG_HOME"/rofi/config.rasi
 
 	FILENAME="$XDG_DATA_HOME"/nvim/lazy/lazy.nvim
@@ -38,6 +38,7 @@ elif [ "$(id -u)" -ne 0 ]; then
 	ln -sf "$CURRENT_FOLDER"/fastfetch/config.jsonc "$XDG_CONFIG_HOME"/fastfetch/config.jsonc
 	ln -sf "$CURRENT_FOLDER"/yazi/yazi.toml "$XDG_CONFIG_HOME"/yazi/yazi.toml
 	ln -sf "$CURRENT_FOLDER"/yazi/theme.toml "$XDG_CONFIG_HOME"/yazi/theme.toml
+	ln -sf "$CURRENT_FOLDER"/yazi/keymap.toml "$XDG_CONFIG_HOME"/yazi/keymap.toml
 	ln -sf "$CURRENT_FOLDER"/bash/bashrc "$HOME"/.bashrc
 	ln -sf "$CURRENT_FOLDER"/git/config "$XDG_CONFIG_HOME"/git/config
 	ln -sf "$CURRENT_FOLDER"/tmux/tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
