@@ -101,10 +101,12 @@ __setprompt() {
 	PS1="$PS1\[${USER_COLOUR}\])─(\[${BROWN}\]\w\[${USER_COLOUR}\])"
 
 	# Git branch
-	PS1="$PS1 [\[${BLUE}\]$(git branch 2>>/dev/null | sed -n 's/\* \(.*\)/ \1/p')\[${USER_COLOUR}\]]"
+	local BRANCH
+	BRANCH=$(git branch 2>>/dev/null | sed -n 's/\* \(.*\)/ \1/p')
+	test -n "$BRANCH" && PS1="$PS1 [\[${BLUE}\]${BRANCH}\[${USER_COLOUR}\]]"
 
 	# Python virtual environment
-	PS1="$PS1\[${YELLOW}\]$(test -n "$VIRTUAL_ENV" >> /dev/null && echo ' ( venv)')"
+	test -n "$VIRTUAL_ENV" && PS1="$PS1 [\[${YELLOW}\] venv\[${USER_COLOUR}\]]"
 
 	# Skip to the next line
 	PS1="$PS1\r\n\[${USER_COLOUR}\]└─❯\[${NO_COLOUR}\] "
