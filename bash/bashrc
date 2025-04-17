@@ -139,13 +139,13 @@ fi
 
 # Enable fzf functionalities
 if command -v fzf >> /dev/null; then
+	export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"'
+  --color=fg:#cccccc,fg+:#cccccc,bg:#1e1e1e,bg+:#444444
+  --color=hl:#37b378,hl+:#396ec7,info:#396ec7,marker:#396ec7
+  --color=prompt:#396ec7,spinner:#396ec7,pointer:#396ec7,header:#37b378
+  --color=border:#666666,label:#396ec7,query:#444444'
 	# CTRL-T, CTRL-R, and ALT-C
 	eval "$(fzf --bash)"
-	export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"'
-  --color=fg:#d4d4d4,fg+:#d4d4d4,bg:#1f1f1f,bg+:#222222
-  --color=hl:#608b4e,hl+:#569CD6,info:#569CD6,marker:#569CD6
-  --color=prompt:#569CD6,spinner:#569CD6,pointer:#569CD6,header:#608b4e
-  --color=border:#808080,label:#569CD6,query:#d4d4d4'
 fi
 
 # Enable autocompletion as superuser

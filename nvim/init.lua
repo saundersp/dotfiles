@@ -142,7 +142,6 @@ local lazy_plugins = {
 		event = 'UIEnter',
 		opts = {
 			options = {
-				theme = 'onedark',
 				ignore_focus = {
 					'dapui_watches', 'dapui_breakpoints',
 					'dapui_scopes', 'dapui_console',

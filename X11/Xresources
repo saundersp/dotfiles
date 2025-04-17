@@ -1,21 +1,28 @@
-! Code dark colour palette
-#define black           #1f1f1f
-#define red             #f44747
-#define green           #608b4e
-#define yellow          #dcdcaa
-#define blue            #569cd6
-#define magenta         #c678dd
-#define light_blue      #56b6c2
-#define light_gray      #d4d4d4
-#define gray            #808080
+#define black             #000000
+#define red               #c62f37
+#define green             #37b378
+#define yellow            #e2e822
+#define blue              #396ec7
+#define magenta           #b835bc
+#define cyan              #3ba7cc
+#define white             #cccccc
 
-#define mybackground    black
-#define mybackgroundalt #444444
-#define myforeground    light_gray
-#define myforegroundalt #bababa
+#define bright_black      #666666
+#define bright_red        #e94a51
+#define bright_green      #45d38a
+#define bright_yellow     #f2f84a
+#define bright_blue       #4e8ae9
+#define bright_magenta    #d26ad6
+#define bright_cyan       #49b7da
+#define bright_white      #e5e5e5
 
-#define myfont Hasklug Nerd Font
-#define myfontmono Hasklug Nerd Font Mono
+#define mybackground      #1e1e1e
+#define mybackground_alt  #444444
+#define myforeground      #cccccc
+#define myforeground_alt  #666666
+
+#define myfont            Hasklug Nerd Font
+#define myfontmono        Hasklug Nerd Font Mono
 
 ! Smaller X11 cursor (default: 24 by Adwaita icons)
 Xcursor.size: 16
@@ -27,8 +34,8 @@ i3wm.force-xinerama: no
 i3wm*border: black
 i3wm*backgr: mybackground
 i3wm*text: myforeground
-i3wm.cf.backgr: mybackgroundalt
-i3wm.cf.text: myforegroundalt
+i3wm.cf.backgr: mybackground_alt
+i3wm.cf.text: myforeground_alt
 i3wm.font: myfontmono
 i3wm.font-size: 9
 i3wm.inner-gaps: 3
@@ -37,12 +44,12 @@ i3wm.smart-gaps: off
 
 ! ================================= Polybar ======================================
 polybar.height: 17pt
-polybar.font: myfontmono:size=10:style=bold:antialias=true:autohint=true
+polybar.font: myfont:size=10:style=bold:antialias=true:autohint=true
 polybar.background: mybackground
-polybar.background-alt: mybackgroundalt
+polybar.background-alt: mybackground_alt
 polybar.foreground: myforeground
-polybar.foreground-alt: myforegroundalt
-polybar.primary: mybackgroundalt
+polybar.foreground-alt: myforeground_alt
+polybar.primary: mybackground_alt
 polybar.alert: red
 
 ! =================================== st =======================================
@@ -83,14 +90,14 @@ st.color2: green
 st.color3: yellow
 st.color4: blue
 st.color5: magenta
-st.color6: light_blue
-st.color7: light_gray
+st.color6: cyan
+st.color7: white
 ! Terminal bright colours (default: gray50 red green yellow #5c5cff magenta cyan white)
-st.color8:  gray
-st.color9:  red
-st.color10: green
-st.color11: yellow
-st.color12: blue
-st.color13: magenta
-st.color14: light_blue
-st.color15: light_gray
+st.color8:  bright_black
+st.color9:  bright_red
+st.color10: bright_green
+st.color11: bright_yellow
+st.color12: bright_blue
+st.color13: bright_magenta
+st.color14: bright_cyan
+st.color15: bright_white

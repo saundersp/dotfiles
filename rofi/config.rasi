@@ -13,12 +13,12 @@ configuration {
 }
 
 * {
-	background:	#222324;
+	background:	#1e1e1e;
 	background-alt: #444444;
-	foreground:	#bababa;
-	selected:	#569cd6;
-	active:		#4ec9b0;
-	urgent:		#bd2c40;
+	foreground:	#cccccc;
+	selected:	#396ec7;
+	active:		#37b378;
+	urgent:		#c62f37;
 
 	border-colour:			var(selected);
 	handle-colour:			var(selected);
