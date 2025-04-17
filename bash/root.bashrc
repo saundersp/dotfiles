@@ -480,7 +480,7 @@ fi
 
 __cmd_checker__ cb && alias cb='clear && exec bash'
 
-command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
+command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in'
 
 __cmd_checker__ pow
 pow(){

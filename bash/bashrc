@@ -696,7 +696,7 @@ Available flags:
 	command -v pulsemixer >> /dev/null && alias pm='pulsemixer'
 fi
 
-command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in/valbonne'
+command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in'
 test -d "$HOME/Calibre Library" && command -v rsync >> /dev/null && __cmd_checker__ sync_books && alias sync_books='rsync -uvrP --delete-after $HOME/"Calibre Library"/ streampc:~/"Calibre Library"/'
 
 __cmd_checker__ pow
