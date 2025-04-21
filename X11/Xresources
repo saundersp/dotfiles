@@ -48,7 +48,6 @@ polybar.font: myfont:size=10:style=bold:antialias=true:autohint=true
 polybar.background: mybackground
 polybar.background-alt: mybackground_alt
 polybar.foreground: myforeground
-polybar.foreground-alt: myforeground_alt
 polybar.primary: mybackground_alt
 polybar.alert: red
 
