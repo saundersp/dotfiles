@@ -106,7 +106,7 @@ case "$1" in
 		__updatepackages__ 'xdg-ninja' 'ln -svf /usr/local/src/xdg-ninja/xdg-ninja.sh /usr/local/bin/xdg-ninja'
 
 		# https://github.com/espanso/espanso.git
-		# Dependencies : dev-lang/rust x11-libs/wxGTK net-fs/samba
+		# Dependencies : dev-lang/rust sys-apps/dbus net-fs/samba
 		# https://github.com/veeso/termscp.git
 		# Dependencies : dev-lang/rust dev-util/pkgconf dev-libs/openssl
 		# https://github.com/typst/typst.git
