@@ -57,7 +57,7 @@ install_pkg(){
 	apt install -y --no-install-recommends $@
 }
 install_server(){
-	install_pkg doas git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep btop man ranger tmux fd-find dash docker \
+	install_pkg doas git wget unzip bash-completion nodejs npm python3 python3-pip ripgrep btop man yazi tmux fd-find dash docker \
 		docker-compose dos2unix gcc gdb highlight make man-db pkgconf progress python3-pynvim apt-file g++ cmake ncdu
 	ln -s /usr/bin/fdfind /usr/bin/fd
 	ln -s /usr/bin/python3 /usr/bin/python
