@@ -549,7 +549,6 @@ __help_me__(){
 	tprint_cmd 'pac' 'Pacman helper'
 	tprint_cmd 'em' "Portage's emerge helper"
 	tprint_cmd 'ap' "APT's helper"
-	tprint_cmd 'xclip' 'Copy/Paste (with -o) from STDOUT to clipboard'
 	tprint_cmd 'vpn' 'Easily enable a secure VPN connection'
 	tprint_cmd 'vpn_off' 'Easily disable a VPN connection'
 	tprint_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
