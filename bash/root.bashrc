@@ -24,11 +24,7 @@ command -v python >> /dev/null && export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python
 command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
 command -v docker >> /dev/null && export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
-if command -v npm >> /dev/null; then
-	export NPM_CONFIG_INIT_MODULE="$XDG_CONFIG_HOME"/npm/config/npm-init.js
-	export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
-	export NPM_CONFIG_TMP="$XDG_RUNTIME_DIR"/npm
-fi
+command -v npm >> /dev/null && export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
 
 # Define colours
 #LIGHTGRAY='\033[0;37m'
