@@ -62,12 +62,6 @@ RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazydocker /usr/local/bin/lazydocker \
 	&& rm -r /usr/local/src/lazydocker
 
-RUN git clone --depth=1 -b v0.1.4 https://github.com/jesseduffield/lazynpm.git /usr/local/src/lazynpm
-WORKDIR /usr/local/src/lazynpm
-RUN go install -buildvcs=false \
-	&& mv -v /root/go/bin/lazynpm /usr/local/bin/lazynpm \
-	&& rm -r /usr/local/src/lazynpm
-
 RUN git clone --depth=1 -b 0.63.0 https://github.com/Wilfred/difftastic.git /usr/local/src/difftastic
 WORKDIR /usr/local/src/difftastic
 RUN cargo build --release --locked \

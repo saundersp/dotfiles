@@ -244,16 +244,6 @@ ln -s /etc/sv/dhcpcd /etc/runit/runsvdir/default/
 # Creating custom packages source directory
 mkdir /usr/local/src
 
-if [ '$PACKAGES' == 'laptop' ] || [ '$PACKAGES' == 'virtual' ] || [ '$PACKAGES' == 'server' ]; then
-	# Installing lazynpm from source
-	cd /usr/local/src
-	git clone https://github.com/jesseduffield/lazynpm.git
-	cd lazynpm
-	go install -buildvcs=false
-	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
-	rm -r /root/go
-fi
-
 if [ '$PACKAGES' == 'laptop' ] || [ '$PACKAGES' == 'virtual' ]; then
 	# Installing ueberzugpp from source
 	cd /usr/local/src

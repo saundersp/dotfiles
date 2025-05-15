@@ -81,12 +81,10 @@ case "$1" in
 		# https://github.com/jesseduffield/lazydocker.git
 		# Dependencies : dev-lang/go app-containers/docker
 		# https://github.com/jesseduffield/lazygit.git
-		# Dependencies : dev-lang/go dev-vcs/git
-		# https://github.com/jesseduffield/lazynpm.git
 		# Dependencies : dev-lang/go net-libs/nodejs
 		# https://github.com/mrtazz/checkmake.git
 		# Dependencies : dev-lang/go app-text/pandoc
-		__updatepackages__ 'arduino-cli glow lazydocker lazygit lazynpm checkmake' 'go install'
+		__updatepackages__ 'arduino-cli glow lazydocker lazygit checkmake' 'go install'
 
 		# https://git.suckless.org/st
 		# Dependencies : sys-libs/ncurses media-libs/fontconfig x11-libs/libX11 x11-libs/libXft x11-terms/st-terminfo x11-base/xorg-proto virtual/pkgconfig

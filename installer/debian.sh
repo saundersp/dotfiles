@@ -108,8 +108,8 @@ install_server(){
 	# Installing lazygit dependencies
 	install_pkg libstdc++-11-dev
 
-	# Compiling lazynpm and lazydocker
-	for package in git npm docker; do
+	# Compiling lazygit and lazydocker
+	for package in git docker; do
 		if [ ! -d /usr/local/src/lazy"$package" ]; then
 			cd /usr/local/src
 			git clone --depth 1 https://github.com/jesseduffield/lazy"$package".git

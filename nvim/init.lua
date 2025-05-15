@@ -1365,7 +1365,6 @@ local lazy_plugins = {
 		keys = {
 			{ '<leader>og', function() require('snacks').lazygit() end,		 desc = 'Open Lazygit' },
 			{ '<leader>od', function() require('snacks').terminal('lazydocker') end, desc = 'Open lazydocker' },
-			{ '<leader>on', function() require('snacks').terminal('lazynpm') end,	 desc = 'Open lazynpm' },
 			{ '<leader>ob', function() require('snacks').terminal('btop') end,	 desc = 'Open btop' },
 			{ '<leader>ot', function() require('snacks').terminal() end,		 desc = 'Open terminal' }
 		}

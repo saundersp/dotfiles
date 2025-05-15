@@ -25,7 +25,6 @@ _Lisez ceci dans d'autres langues : [English](README.md)_
 - bluez-utils
 - lazygit
 - lazydocker
-- laznpm
 - difftastic
 
 ### Bureau seulement

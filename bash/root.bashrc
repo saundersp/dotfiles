@@ -460,7 +460,6 @@ fi
 command -v wg-quick >> /dev/null && alias vpn='wg-quick up wg0' && alias vpn_off='wg-quick down wg0'
 command -v lazygit >> /dev/null && alias lg='lazygit'
 command -v lazydocker >> /dev/null && alias ldo='lazydocker'
-command -v lazynpm >> /dev/null && alias lpm='lazynpm'
 
 if command -v yazi >> /dev/null; then
 	__cmd_checker__ yazi-cd
@@ -555,7 +554,6 @@ __help_me__(){
 	tprint_cmd 'vpn_off' 'Easily disable a VPN connection'
 	tprint_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 	tprint_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
-	tprint_cmd 'lpm' 'Shortcut to lazynpm, a fancy CLI npm interface'
 	tprint_cmd 'yazi-cd' 'Modded yazi to changed pwd on exit' '/ C-o'
 	tprint_cmd 'hdmi' 'HDMI connection helper script'
 	print_cmd 'cb' 'Shortcut to clear && exec bash'

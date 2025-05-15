@@ -153,14 +153,6 @@ EOF
 	# Creating custom packages source directory
 	mkdir /usr/local/src
 
-	# Installing lazynpm from source
-	cd /usr/local/src
-	git clone https://github.com/jesseduffield/lazynpm.git
-	cd lazynpm
-	go install -buildvcs=false
-	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
-	rm -r /root/go
-
 	# Setup user space
 	echo \"#!/bin/sh
 

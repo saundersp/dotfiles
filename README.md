@@ -25,7 +25,6 @@ _Read this in other languages: [Français](README.fr.md)_
 - bluez-utils
 - lazygit
 - lazydocker
-- laznpm
 - difftastic
 
 ### Desktop only

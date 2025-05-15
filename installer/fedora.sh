@@ -43,15 +43,6 @@ install_server(){
 		dnf-plugins-core docker-ce docker-ce-cli containerd.io docker-compose-plugin dos2unix fd-find gcc gcc-c++ gdb make highlight lazygit \
 		lazydocker man-db wireguard-tools patch pkgconf progress python3-neovim ncdu golang
 
-	# Compiling lazynpm
-	cd /usr/local/src
-	git clone https://github.com/jesseduffield/lazynpm.git
-	cd lazynpm
-	go install -buildvcs=false
-	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
-	rm -r /root/go
-	cd
-
 	# Use dash instead of bash as default shell
 	ln -sf /bin/dash /bin/sh
 

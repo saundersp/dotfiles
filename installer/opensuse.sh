@@ -58,14 +58,6 @@ install_server(){
 	# Installing npm dependencies
 	npm i -g npm-check-updates
 
-	# Compiling lazynpm
-	cd /usr/local/src
-	git clone https://github.com/jesseduffield/lazynpm.git
-	cd lazynpm
-	go install -buildvcs=false
-	mv /root/go/bin/lazynpm /usr/local/bin/lazynpm
-	cd
-
 	# Adding user to wheel groups
 	usermod -aG wheel "$USERNAME"
 	usermod -aG wheel root
