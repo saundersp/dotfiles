@@ -138,7 +138,7 @@ case $PACKAGES in
 		# Global flags
 		echo 'USE=\"X bash-completion minimal elogind network threads -wifi -filecaps -caps\"' >> /etc/portage/make.conf
 		# Local flags
-		echo -e 'x11-misc/picom opengl -pcre -drm\nmedia-gfx/imagemagick jpeg\nx11-misc/polybar i3wm ipc network doc\nsys-boot/grub mount -themes -fonts
+		echo -e 'x11-misc/rofi drun windowmode\nx11-misc/picom opengl -pcre -drm\nmedia-gfx/imagemagick jpeg\nx11-misc/polybar i3wm ipc network doc\nsys-boot/grub mount -themes -fonts
 x11-base/xorg-server -minimal\napp-alternatives/sh -bash dash\nmedia-fonts/nerdfonts hasklig\napp-emulation/virtualbox-guest-additions gui
 
 # required by app-portage/pfl-3.2-r2::gentoo[network-cron]
@@ -168,7 +168,7 @@ x11-base/xorg-server -minimal\napp-alternatives/sh -bash dash\nmedia-fonts/nerdf
 		# Global flags
 		echo 'USE=\"X bash-completion minimal elogind pulseaudio network threads wifi -filecaps -caps\"' >> /etc/portage/make.conf
 		# Local flags
-		echo -e 'x11-misc/picom opengl -pcre -drm\nmedia-gfx/imagemagick jpeg\nx11-misc/polybar i3wm ipc network doc\nsys-boot/grub mount -themes -fonts
+		echo -e 'x11-misc/rofi drun windowmode\nx11-misc/picom opengl -pcre -drm\nmedia-gfx/imagemagick jpeg\nx11-misc/polybar i3wm ipc network doc\nsys-boot/grub mount -themes -fonts
 x11-base/xorg-server -minimal\napp-alternatives/sh -bash dash\nmedia-fonts/nerdfonts hasklig'> /etc/portage/package.use
 		echo 'VIDEO_CARDS=\"intel nvidia\"' >> /etc/portage/make.conf
 	;;
@@ -336,7 +336,7 @@ install_ihm(){
 	emerge -q --noreplace x11-misc/picom x11-wm/i3 x11-apps/xinit x11-base/xorg-server x11-apps/xset media-gfx/feh \
 		x11-misc/polybar x11-apps/xrandr x11-misc/xclip x11-apps/setxkbmap app-eselect/eselect-repository \
 		x11-libs/libXinerama media-gfx/ueberzugpp media-gfx/imagemagick media-sound/pulsemixer media-fonts/nerdfonts \
-		x11-misc/qt5ct gui-apps/qt6ct media-sound/pulseaudio media-video/vlc
+		x11-misc/qt5ct gui-apps/qt6ct media-sound/pulseaudio media-video/mpv x11-misc/rofi
 
 	eselect repository add librewolf git https://codeberg.org/librewolf/gentoo.git
 	emaint -r librewolf sync

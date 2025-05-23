@@ -64,7 +64,7 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg xinit xorg-x11-server xset polybar i3 picom feh xclip vlc xrandr xf86-input-libinput libX11-devel libXinerama-devel \
+	install_pkg xinit xorg-x11-server xset polybar i3 picom feh xclip mpv xrandr xf86-input-libinput libX11-devel libXinerama-devel \
 		libXft-devel harfbuzz-devel ncurses-devel ueberzugpp python312-python-xlib calibre pkgconf filezilla i3lock zathura \
 		zathura-plugin-pdf-mupdf ImageMagick python312-pulsemixer pulseaudio pulseaudio-utils spotify-client
 

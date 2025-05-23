@@ -178,10 +178,11 @@ EOF
 }
 install_ihm(){
 	install_server
-	install_pkg picom xinit xset feh xclip librewolf vlc setxkbmap patch i3wm polybar harfbuzz-dev \
+	install_pkg picom xinit xset feh xclip librewolf mpv setxkbmap patch i3wm polybar harfbuzz-dev \
 		libxinerama-dev xorg-server filezilla i3lock wireguard-tools pkgconf zathura zathura-pdf-mupdf \
 		xf86-input-libinput eudev udev-init-scripts udev-init-scripts-openrc imagemagick libxres-dev \
-		xrandr openssl-dev onetbb-dev xcb-util-image-dev opencv-dev libsixel-dev chafa-dev vips-dev
+		xrandr openssl-dev onetbb-dev xcb-util-image-dev opencv-dev libsixel-dev chafa-dev vips-dev \
+		font-hasklig-nerd rofi
 
 	# Installing ueberzugpp from source
 	cd /usr/local/src
@@ -227,14 +228,6 @@ install_ihm(){
 	cd /home/$USERNAME/git/dotfiles
 	./auto.sh remove
 	./auto.sh install
-
-	# Getting the Hasklig font
-	LATEST_TAG=\$(curl https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \\\" -f 4)
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/\"\$LATEST_TAG\"/Hasklig.zip
-	mkdir /usr/share/fonts/Hasklig
-	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
-	echo \$LATEST_TAG > /usr/share/fonts/Hasklig/VERSION
-	rm Hasklig.zip
 }
 
 # Installing the platform specific packages

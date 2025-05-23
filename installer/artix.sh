@@ -89,7 +89,7 @@ sed -i 's/^#Color/Color/g;s/^#Para/Para/g' /etc/pacman.conf
 
 # Adding Arch linux mirrors
 pacman -Sy --noconfirm --needed artix-archlinux-support
-echo -e '\n# Arch\n[extra]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[community]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[multilib]\nInclude = /etc/pacman.d/mirrorlist-arch' >> /etc/pacman.conf
+echo -e '\n# Arch\n[extra]\nInclude = /etc/pacman.d/mirrorlist-arch\n\n[multilib]\nInclude = /etc/pacman.d/mirrorlist-arch' >> /etc/pacman.conf
 
 # Settings faster pacman arch mirrors
 pacman -Sy --noconfirm --needed reflector
@@ -106,8 +106,8 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg picom i3-wm xorg-xinit xorg-server xorg-xset feh xclip vlc polybar ueberzug patch calibre filezilla i3lock zathura \
-		zathura-pdf-mupdf imagemagick tor
+	install_pkg picom i3-wm xorg-xinit xorg-server xorg-xset feh xclip mpv polybar ueberzug patch calibre filezilla i3lock zathura \
+		zathura-pdf-mupdf imagemagick tor rofi otf-hasklig-nerd
 }
 
 # Installing the init system
@@ -160,16 +160,6 @@ rm -rf \$(find / -name *sudo*) /sbin/vi
 if [ '$PACKAGES' != 'minimal' ]; then
 	# Installing npm dependencies
 	npm i -g npm-check-updates
-fi
-
-if [[ '$PACKAGES' == 'laptop' || '$PACKAGES' == 'virtual' ]]; then
-	# Getting the Hasklig font
-	LATEST_TAG=\$(curl https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep tag_name | cut -d \\\" -f 4)
-	wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/\"\$LATEST_TAG\"/Hasklig.zip
-	mkdir -p /usr/share/fonts/Hasklig
-	unzip -q Hasklig.zip -d /usr/share/fonts/Hasklig
-	echo \$LATEST_TAG > /usr/share/fonts/Hasklig/VERSION
-	rm Hasklig.zip
 fi
 
 # Set the time zone

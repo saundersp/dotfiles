@@ -128,9 +128,9 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg picom xinit xserver-xorg-core x11-xserver-utils feh xclip vlc polybar xserver-xorg-input-kbd xserver-xorg-input-mouse \
+	install_pkg picom xinit xserver-xorg-core x11-xserver-utils feh xclip mpv polybar xserver-xorg-input-kbd xserver-xorg-input-mouse \
 		xserver-xorg-input-libinput libxinerama-dev autokey-qt calibre filezilla wireguard-tools zathura imagemagick i3-wm patch \
-		libxft-dev libharfbuzz-dev gnupg
+		libxft-dev libharfbuzz-dev gnupg rofi
 
 	wget -O- https://deb.librewolf.net/keyring.gpg | gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
 

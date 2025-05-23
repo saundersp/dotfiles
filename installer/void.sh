@@ -97,7 +97,7 @@ install_server(){
 }
 install_ihm(){
 	install_server
-	install_pkg picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh vlc polybar calibre filezilla zathura \
+	install_pkg picom i3-gaps i3lock xorg-minimal xset setxkbmap xrandr xrdb feh mpv polybar calibre filezilla zathura \
 		zathura-pdf-mupdf libX11-devel libXft-devel libXinerama-devel pkg-config harfbuzz-devel patch wireguard ImageMagick \
 		openssl-devel tbb-devel libxcb-devel xcb-util-image-devel libopencv-devel libvips-devel libsixel-devel chafa-devel \
 		flatpak pulseaudio pulsemixer

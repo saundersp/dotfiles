@@ -63,7 +63,7 @@ install_ihm(){
 	install_server
 	install_pkg i3 xorg-x11-xinit xset polybar picom feh alacritty xclip xorg-x11-server-Xorg python-xlib autokey-qt calibre i3lock \
 		torbrowser-launcher zathura zathura-pdf-mupdf python-devel libX11-devel libXext-devel libXft-devel libXinerama-devel ImageMagick \
-		libXres-devel tor vlc dbus-daemon flatpak
+		libXres-devel tor mpv dbus-daemon flatpak
 
 	# Enable the Flathub remote
 	flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
