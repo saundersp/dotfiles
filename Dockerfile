@@ -50,7 +50,7 @@ RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueb
 	&& mv -v /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug \
 	&& rm -r /usr/local/src/ueberzugpp
 
-RUN git clone --depth=1 -b v0.50.0 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
+RUN git clone --depth=1 -b v0.51.1 https://github.com/jesseduffield/lazygit.git /usr/local/src/lazygit
 WORKDIR /usr/local/src/lazygit
 RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazygit /usr/local/bin/lazygit \
