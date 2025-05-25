@@ -115,7 +115,7 @@ end
 -- Plugin enabler
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
 	local out = vim.fn.system({ 'git', 'clone', '--filter=blob:none', '--branch=stable', 'https://github.com/folke/lazy.nvim.git', lazypath })
 	if vim.v.shell_error ~= 0 then
 		vim.api.nvim_echo({ { 'Failed to clone lazy.nvim:\n', 'ErrorMsg' }, { out, 'WarningMsg' }, { '\nPress any key to exit...' } }, true, {})
@@ -131,22 +131,13 @@ vim.g.maplocalleader = ' '
 
 local lazy_plugins = {
 	-- Neovim/Vim color scheme inspired by Dark+ and Light+ theme in Visual Studio Code
-	{ 'Mofiqul/vscode.nvim',
-		priority = 1000,
-		init = function()
-			require('vscode').load()
-		end
-	},
+	{ 'Mofiqul/vscode.nvim', init = function() require('vscode').load() end },
 	-- Add a fancy bottom bar with details
 	{ 'nvim-lualine/lualine.nvim',
 		event = 'UIEnter',
 		opts = {
 			options = {
-				ignore_focus = {
-					'dapui_watches', 'dapui_breakpoints',
-					'dapui_scopes', 'dapui_console',
-					'dapui_stacks', 'dap-repl'
-				},
+				ignore_focus = { 'dapui_watches', 'dapui_breakpoints', 'dapui_scopes', 'dapui_console', 'dapui_stacks', 'dap-repl' },
 				disabled_filetypes = { statusline = { 'snacks_dashboard', 'neo-tree' } }
 			},
 			sections = {
@@ -160,10 +151,7 @@ local lazy_plugins = {
 						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
 						color = { gui = 'bold' }
 					},
-					{
-						'selectioncount',
-						color = { gui = 'bold' }
-					}
+					{ 'selectioncount', color = { gui = 'bold' } }
 				}
 			}
 		},
@@ -284,7 +272,7 @@ local lazy_plugins = {
 				if type(var) == 'table' then
 					return
 				end
-				local stat = vim.loop.fs_stat(var)
+				local stat = vim.uv.fs_stat(var)
 				if stat and stat.type == 'directory' then
 					require('neo-tree')
 				end
@@ -661,7 +649,7 @@ local lazy_plugins = {
 						require('dap').toggle_breakpoint(cond)
 					end
 				end,						       desc = 'Debug toggle conditional breakpoint' },
-			{ '<F5>',	 '<cmd>DapContinue<CR>',		       desc = 'Debug Continue' },
+			{ '<F5>',	'<cmd>DapContinue<CR>',			       desc = 'Debug Continue' },
 			{ '<leader>dc', '<cmd>DapContinue<CR>',			       desc = 'Debug Continue' },
 			{ '<leader>dC', function() require('dap').run_to_cursor() end, desc = 'Debug run to Cursor' },
 			{ '<F10>',	'<cmd>DapStepOver<CR>',			       desc = 'Debug Step Next' },
@@ -695,10 +683,7 @@ local lazy_plugins = {
 			-- Adds virtual text support to nvim-dap. nvim-treesitter is used to find variable definitions
 			{ 'theHamsta/nvim-dap-virtual-text',
 				config = true,
-				cmd = {
-					'DapVirtualTextDisable', 'DapVirtualTextEnable',
-					'DapVirtualTextForceRefresh', 'DapVirtualTextToggle'
-				}
+				cmd = { 'DapVirtualTextDisable', 'DapVirtualTextEnable', 'DapVirtualTextForceRefresh', 'DapVirtualTextToggle' }
 			},
 			-- A library for asynchronous IO (for nvim-dap-ui)
 			'nvim-neotest/nvim-nio'
@@ -717,19 +702,19 @@ local lazy_plugins = {
 
 			-- NOTE: Snippets for my notebook
 			luasnip.add_snippets('tex', {
-				s(":exo", {
+				s(':exo', {
 					t({'\\begin{exercise_sq}', '\t'}),
 					i(0),
 					t({'', '\\end{exercise_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
 					t({'', '\\end{proof}', ''}),
 				}),
-				s(":theo", {
+				s(':theo', {
 					t({'\\begin{theorem_sq}', '\t'}),
 					i(0),
 					t({'', '\\end{theorem_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
 					t({'', '\\end{proof}', ''}),
 				}),
-				s(":def", {
+				s(':def', {
 					t({'\\begin{definition_sq}', '\t'}),
 					i(0),
 					t({'', '\\end{definition_sq}'}),
@@ -1353,7 +1338,7 @@ local lazy_plugins = {
 				},
 				sections = {
 					{ pane = 2, section = 'header', align = 'left' },
-					{ pane = 2, title = "The honest philosopher seeks only the truth,\neven if it bears no comfort.", align = 'center', padding = 1 },
+					{ pane = 2, title = 'The honest philosopher seeks only the truth,\neven if it bears no comfort.', align = 'center', padding = 1 },
 					{ icon = '', title = 'Keymaps', section = 'keys', indent = 2, padding = 1 },
 					{ icon = '', title = 'Recent Files', section = 'recent_files', indent = 2, padding = 1 },
 					{ icon = '', title = 'Projects', section = 'projects', indent = 2, padding = 1 },

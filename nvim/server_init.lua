@@ -69,7 +69,7 @@ end
 -- Plugin enabler
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
 	local out = vim.fn.system({ 'git', 'clone', '--filter=blob:none', '--branch=stable', 'https://github.com/folke/lazy.nvim.git', lazypath })
 	if vim.v.shell_error ~= 0 then
 		vim.api.nvim_echo({ { 'Failed to clone lazy.nvim:\n', 'ErrorMsg' }, { out, 'WarningMsg' }, { '\nPress any key to exit...' } }, true, {})
@@ -85,18 +85,12 @@ vim.g.maplocalleader = ' '
 
 local lazy_plugins = {
 	-- Neovim/Vim color scheme inspired by Dark+ and Light+ theme in Visual Studio Code
-	{ 'Mofiqul/vscode.nvim',
-		priority = 1000,
-		init = function()
-			require('vscode').load()
-		end
-	},
+	{ 'Mofiqul/vscode.nvim', init = function() require('vscode').load() end },
 	-- Add a fancy bottom bar with details
 	{ 'nvim-lualine/lualine.nvim',
 		event = 'UIEnter',
 		opts = {
 			options = {
-				theme = 'onedark',
 				disabled_filetypes = { statusline = { 'snacks_dashboard', 'neo-tree' } }
 			},
 			sections = {
@@ -110,10 +104,7 @@ local lazy_plugins = {
 						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
 						color = { gui = 'bold' }
 					},
-					{
-						'selectioncount',
-						color = { gui = 'bold' }
-					}
+					{ 'selectioncount', color = { gui = 'bold' } }
 				}
 			}
 		},
@@ -215,7 +206,7 @@ local lazy_plugins = {
 				if type(var) == 'table' then
 					return
 				end
-				local stat = vim.loop.fs_stat(var)
+				local stat = vim.uv.fs_stat(var)
 				if stat and stat.type == 'directory' then
 					require('neo-tree')
 				end
@@ -676,7 +667,7 @@ local lazy_plugins = {
 				},
 				sections = {
 					{ pane = 2, section = 'header', align = 'left' },
-					{ pane = 2, title = "The honest philosopher seeks only the truth,\neven if it bears no comfort.", align = 'center', padding = 1 },
+					{ pane = 2, title = 'The honest philosopher seeks only the truth,\neven if it bears no comfort.', align = 'center', padding = 1 },
 					{ icon = '', title = 'Keymaps', section = 'keys', indent = 2, padding = 1 },
 					{ icon = '', title = 'Recent Files', section = 'recent_files', indent = 2, padding = 1 },
 					{ icon = '', title = 'Projects', section = 'projects', indent = 2, padding = 1 },
