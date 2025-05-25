@@ -563,7 +563,7 @@ local lazy_plugins = {
 				cwd = '${workspaceFolder}'
 			}
 
-			local BASHDB_DIR = require('mason-registry').get_package('bash-debug-adapter'):get_install_path() .. '/extension/bashdb_dir'
+			local BASHDB_DIR = vim.fn.expand('$MASON/packages/bash-debug-adapter/extension/bashdb_dir')
 
 			dap.configurations = {
 				c = { default_c_config },
