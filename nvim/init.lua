@@ -678,8 +678,9 @@ local lazy_plugins = {
 			-- Debugging purposes
 			{ 'mfussenegger/nvim-dap',
 				cmd = {
-					'DapContinue', 'DapLoadLaunchJSON', 'DapRestartFrame', 'DapSetLogLevel', 'DapShowLog',
-					'DapStepInto', 'DapStepOut', 'DapStepOver', 'DapTerminate', 'DapToggleBreakpoint', 'DapToggleRepl'
+					'DapClearBreakpoints', 'DapContinue', 'DapDisconnect', 'DapEval', 'DapNew', 'DapPause', 'DapRestartFrame',
+					'DapSetLogLevel', 'DapShowLog', 'DapStepInto', 'DapStepOut', 'DapStepOver', 'DapTerminate', 'DapToggleBreakpoint',
+					'DapToggleRepl'
 				}
 			},
 			-- Tool to install LSPs, DAPs, linters and formatters
@@ -718,6 +719,18 @@ local lazy_plugins = {
 					t({'\\begin{theorem_sq}', '\t'}),
 					i(0),
 					t({'', '\\end{theorem_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
+					t({'', '\\end{proof}', ''}),
+				}),
+				s(':prop', {
+					t({'\\begin{prop_sq}', '\t'}),
+					i(0),
+					t({'', '\\end{prop_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
+					t({'', '\\end{proof}', ''}),
+				}),
+				s(':coro', {
+					t({'\\begin{corollary_sq}', '\t'}),
+					i(0),
+					t({'', '\\end{corollary_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
 					t({'', '\\end{proof}', ''}),
 				}),
 				s(':def', {
