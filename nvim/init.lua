@@ -414,7 +414,7 @@ local lazy_plugins = {
 				},
 				cmake = {},
 				bashls = {},
-				pyright = {},
+				ruff = {},
 				texlab = {},
 				docker_compose_language_service = {},
 				marksman = {},
@@ -483,11 +483,9 @@ local lazy_plugins = {
 			local dap = require('dap')
 
 			dap.adapters = {
-				cpptools = {
-					id = 'cppdbg',
-					__package_name = 'cppdbg',
+				codelldb = {
 					type = 'executable',
-					command = 'OpenDebugAD7'
+					command = 'codelldb'
 				},
 				debugpy = {
 					__package_name = 'python',
@@ -538,7 +536,7 @@ local lazy_plugins = {
 			local default_c_config
 			default_c_config = {
 				name = 'Launch file',
-				type = 'cpptools',
+				type = 'codelldb',
 				request = 'launch',
 				program = function()
 					local cwd = './'
