@@ -93,6 +93,8 @@ RUN git clone --depth=1 https://github.com/saundersp/dotfiles.git
 
 WORKDIR /home/saundersp/dotfiles
 
-RUN ./auto.sh s
+# Using neovim profile with LSP support
+RUN cp nvim/init.lua nvim/server_init.lua \
+	&& ./auto.sh s
 
 ENTRYPOINT ["bash"]
