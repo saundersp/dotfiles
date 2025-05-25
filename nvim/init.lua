@@ -377,7 +377,6 @@ local lazy_plugins = {
 			})
 		end,
 		config = function()
-			local lspconfig = require('lspconfig')
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
@@ -385,19 +384,25 @@ local lazy_plugins = {
 			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
 			local servers = {
 				lua_ls = {
-					Lua = {
-						runtime = { version = 'LuaJIT' },
-						workspace = { checkThirdParty = false },
-						completion = { callSnippet = 'Replace' },
-						telemetry = { enable = false }
-					}
+					settings = {
+						Lua = {
+							runtime = { version = 'LuaJIT' },
+							workspace = { checkThirdParty = false },
+							completion = { callSnippet = 'Replace' },
+							telemetry = { enable = false }
+						}
+					},
+					-- LSP is handled by lazydev.nvim
+					__skip_setup = true
 				},
 				clangd = {
 					-- Install package rather than using Mason
 					-- https://clangd.llvm.org/installation.html
 					__skip_download = true,
-					CompileFlags = {
-						add = { '-I/opt/cuda/targets/x86_64-linux/include' }
+					settings = {
+						CompileFlags = {
+							add = { '-I/opt/cuda/targets/x86_64-linux/include' }
+						}
 					}
 				},
 				ts_ls = {},
@@ -430,25 +435,27 @@ local lazy_plugins = {
 
 			for name, opts in pairs(servers) do
 				if opts.__skip_setup ~= true then
-					lspconfig[name].setup({
-						capabilities = capabilities,
-						settings = opts
-					})
+					local server_config = { capabilities = capabilities }
+					if opts.filetypes then server_config.filetypes = opts.filetypes end
+					if opts.settings then server_config.settings = { [name] = opts.settings } end
+					if opts.on_init then server_config.on_init = opts.on_init end
+					vim.lsp.config(name, server_config)
+					vim.lsp.enable(name)
 				end
 			end
 		end,
 		keys = {
-			{ '<leader>rn', vim.lsp.buf.rename,	     desc = 'LSP: Rename' },
-			{ 'gd',		vim.lsp.buf.definition,	     desc = 'LSP: Goto definition' },
-			{ 'gI',		vim.lsp.buf.implementation,  desc = 'LSP: Goto implementation' },
-			{ '<leader>D',  vim.lsp.buf.type_definition, desc = 'LSP: Type definition' },
-			{ 'K',		vim.lsp.buf.hover,	     desc = 'LSP: Hover documentation' },
-			{ 'gK',		vim.lsp.buf.signature_help,  desc = 'LSP: Signature documentation' },
-			{ 'gD',		vim.lsp.buf.declaration,     desc = 'LSP: Goto declaration' },
-			{ '<leader>e',  vim.diagnostic.open_float,   desc = 'LSP: Show diagnostic error message' },
-			{ '[d',		vim.diagnostic.goto_prev,    desc = 'LSP: Jump to previous diagnostics' },
-			{ ']d',		vim.diagnostic.goto_next,    desc = 'LSP: Jump to next diagnostics' },
-			{ '<leader>q',  vim.diagnostic.setloclist,   desc = 'LSP: Open diagnostic quickfix' }
+			{ '<leader>rn', vim.lsp.buf.rename,				    desc = 'LSP: Rename' },
+			{ 'gd',		vim.lsp.buf.definition,				    desc = 'LSP: Goto definition' },
+			{ 'gI',		vim.lsp.buf.implementation,			    desc = 'LSP: Goto implementation' },
+			{ '<leader>D',  vim.lsp.buf.type_definition,			    desc = 'LSP: Type definition' },
+			{ 'K',		vim.lsp.buf.hover,				    desc = 'LSP: Hover documentation' },
+			{ 'gK',		vim.lsp.buf.signature_help,			    desc = 'LSP: Signature documentation' },
+			{ 'gD',		vim.lsp.buf.declaration,			    desc = 'LSP: Goto declaration' },
+			{ '<leader>e',  vim.diagnostic.open_float,			    desc = 'LSP: Show diagnostic error message' },
+			{ '[d',		function() vim.diagnostic.jump({ count = -1 }) end, desc = 'LSP: Jump to previous diagnostics' },
+			{ ']d',		function() vim.diagnostic.jump({ count =  1 }) end, desc = 'LSP: Jump to next diagnostics' },
+			{ '<leader>q',  vim.diagnostic.setloclist,			    desc = 'LSP: Open diagnostic quickfix' }
 		},
 		cmd = { 'LspInfo', 'LspInstall', 'LspLog', 'LspRestart', 'LspStart', 'LspStop', 'LspUninstall' },
 		dependencies = {
