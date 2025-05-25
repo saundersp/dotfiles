@@ -373,8 +373,6 @@ local lazy_plugins = {
 	{ 'nvim-treesitter/nvim-treesitter',
 		event = 'BufReadPost',
 		config = function()
-			-- NOTE: Removes warning about not properly marked as optional fields
-			---@diagnostic disable-next-line: missing-fields
 			require('nvim-treesitter.configs').setup({
 				-- Add languages to be installed here that you want installed for treesitter
 				ensure_installed = {
@@ -386,6 +384,8 @@ local lazy_plugins = {
 					'latex'
 				},
 				highlight = { enable = true },
+				modules = {},
+				ignore_install = {},
 				sync_install = false,
 				auto_install = false
 			})
