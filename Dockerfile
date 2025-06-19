@@ -22,10 +22,10 @@ RUN apt-get update \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
 	fd-find=10.2.0-1 \
-	fastfetch=2.40.4+dfsg-1ubuntu1 \
+	fastfetch=2.45.0+dfsg-0ubuntu1 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu2 \
-	rsync=3.4.1+ds1-3 \
+	rsync=3.4.1+ds1-4 \
 	tmux=3.5a-3 \
 	opendoas=6.8.2-1 \
 	rustup=1.27.1-3 \
@@ -39,7 +39,7 @@ RUN apt-get update \
 RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
 	&& ln -s "$(command -v doas)" /usr/bin/sudo
 
-RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.6 --depth 1 /usr/local/src/ueberzugpp \
+RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.7 --depth 1 /usr/local/src/ueberzugpp \
 	&& apt-get install --no-install-recommends -y \
 	libtbb-dev=2022.1.0-1 \
 	libxcb-image0-dev=0.4.0-2build1 \
