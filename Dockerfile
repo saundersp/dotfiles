@@ -22,7 +22,7 @@ RUN apt-get update \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
 	fd-find=10.2.0-1 \
-	fastfetch=2.45.0+dfsg-0ubuntu1 \
+	fastfetch=2.46.0+dfsg-0ubuntu1 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu2 \
 	rsync=3.4.1+ds1-4 \
@@ -58,7 +58,7 @@ RUN go install -buildvcs=false \
 	&& mv -v /root/go/bin/lazydocker /usr/local/bin/lazydocker \
 	&& rm -r /usr/local/src/lazydocker
 
-RUN git clone --depth=1 -b 0.63.0 https://github.com/Wilfred/difftastic.git /usr/local/src/difftastic
+RUN git clone --depth=1 -b 0.64.0 https://github.com/Wilfred/difftastic.git /usr/local/src/difftastic
 WORKDIR /usr/local/src/difftastic
 RUN cargo build --release --locked \
 	&& mv target/release/difft /usr/local/bin/difft \
