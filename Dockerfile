@@ -8,7 +8,7 @@ RUN apt-get update \
 	ca-certificates=20250419 \
 	neovim=0.10.4-8build2 \
 	nodejs=20.19.2+dfsg-1 \
-	curl=8.13.0-5ubuntu1 \
+	curl=8.14.1-1ubuntu2 \
 	btop=1.3.2-0.1 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
