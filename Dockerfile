@@ -33,7 +33,7 @@ RUN apt-get update \
 	tree-sitter-cli=0.22.6-6 \
 	starship=1.22.1-5 \
 	lazygit=0.50.0+ds1-1 \
-	&& rustup default 1.87.0
+	&& rustup default 1.88.0
 
 # More user friendly aliases
 RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
