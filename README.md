@@ -64,21 +64,7 @@ Either pick any wanted files, code blocks, or just use the auto.sh script.
 
 ## Installers && post-installers
 
-These scripts are meant to install/rice a minimal Linux installation from scratch to my liking.
-
-Installers (these also include a minimal installation option):
-
-- Arch
-- Artix
-- Alpine
-- Gentoo
-- Void
-
-Post-installers :
-
-- Debian
-- Fedora
-- OpenSUSE
+These scripts are meant to install and rice an Artix or Gentoo Linux installation from scratch to my liking.
 
 ## Custom kernel configs
 

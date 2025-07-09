@@ -64,21 +64,7 @@ Vous pouvez choisir n'importe quel fichier ou bloc de code, ou simplement utilis
 
 ## Scripts d'installation automatique && post-installation
 
-Ces scripts sont destinés à installer/rice une installation minimale de Linux à partir de zéro et à mon goût.
-
-Scripts d'installation automatique (celle-la inclut également une option d'installation minimale) :
-
-- Arch
-- Artix
-- Alpine
-- Gentoo
-- Void
-
-Scripts post-installation :
-
-- Debian
-- Fedora
-- OpenSUSE
+Ces scripts sont destinés à installer et personnaliser une installation Artix ou Gentoo à partir de zéro et à mon goût.
 
 ## Configuration de kernel custom
 
