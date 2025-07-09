@@ -355,7 +355,7 @@ case $PACKAGES in
 		aur_install lazydocker
 		rm -rfv ~/go
 		aur_install librewolf-bin
-		curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | gpg --import -
+		curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | gpg --import -
 		aur_install spotify
 	;;
 esac
