@@ -102,7 +102,7 @@ install_pkg(){
 install_server(){
 	install_pkg neovim lazygit fastfetch git wget unzip openssh bash-completion reflector rsync nodejs npm python python-pip ripgrep \
 		btop yazi fd fakeroot make gcc pkgconf tmux docker docker-compose dos2unix gdb highlight progress python-pynvim debugedit \
-		tree-sitter-cli ncdu
+		tree-sitter-cli ncdu eza starship
 }
 install_ihm(){
 	install_server
