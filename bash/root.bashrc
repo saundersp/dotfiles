@@ -302,13 +302,6 @@ __command_requirer_pkg__(){
 }
 
 if command -v pacman >> /dev/null; then
-	__cmd_checker__ __update_arch_mirrors__
-	__update_arch_mirrors__(){
-		local MIRRORFILE=/etc/pacman.d/mirrorlist
-		test "$(grep '^ID' /etc/os-release)" = 'ID=artix' && MIRRORFILE="$MIRRORFILE-arch"
-		reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
-	}
-
 	__cmd_checker__ pac
 	pac(){
 		local USAGE='Pacman helper
@@ -324,7 +317,14 @@ Available flags:
 		case "$1" in
 			-u|u|update|--update) pacman -Syu ;;
 			-l|l|list|--list) pacman -Qe ;;
-			-m|m|mirrors|--mirrors) __command_requirer_pkg__ __update_arch_mirrors__ reflector reflector ;;
+			-m|m|mirrors|--mirrors)
+				if ! __command_requirer_pkg__ '' reflector reflector; then
+					return 1
+				fi
+				local MIRRORFILE=/etc/pacman.d/mirrorlist
+				test "$(grep '^ID' /etc/os-release)" = 'ID=artix' && MIRRORFILE="$MIRRORFILE-arch"
+				reflector -a 48 -c "$(curl -s ifconfig.io/country_code)" -f 5 -l 20 --sort rate --save "$MIRRORFILE"
+				;;
 			-p|p|prune|--prune) pacman -Qtdq | pacman -Rns - ;;
 			-h|h|help|--help) echo "$USAGE" ;;
 			*) echo "$USAGE" && return 1 ;;
