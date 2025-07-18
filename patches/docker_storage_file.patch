@@ -1,0 +1,27 @@
+--- /etc/init.d/docker.bak	2025-05-17 13:03:22.348455139 +0200
++++ /etc/init.d/docker	2025-05-17 13:04:33.351142354 +0200
+@@ -22,9 +22,17 @@
+ }
+ 
+ start_pre() {
++	loop_file=$(losetup --show -f /mnt/games/DockerDataImage)
++	mount "$loop_file" /mnt/games/DockerData
+ 	checkpath -f -m 0644 -o root:docker "$DOCKER_LOGFILE"
+ }
+ 
++stop_post() {
++	loop_file=$(losetup -j /mnt/games/DockerDataImage | cut -d : -f 1)
++	umount "$loop_file"
++	losetup -D "$loop_file"
++}
++
+ reload() {
+ 	ebegin "Reloading ${RC_SVCNAME}"
+ 	start-stop-daemon --signal HUP --pidfile "${pidfile}"
+--- /etc/docker/daemon.json.bak	2025-07-18 15:12:00.698419817 +0200
++++ /etc/docker/daemon.json	2025-05-16 11:50:28.293101256 +0200
+@@ -0,0 +1,4 @@
++{
++	"storage-driver": "overlay2",
++	"data-root": "/mnt/games/DockerData"
++}
