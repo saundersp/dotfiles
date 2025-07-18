@@ -12,7 +12,6 @@ bluetooth_print() {
 			device_info=$(bluetoothctl info "$device")
 
 			if echo "$device_info" | grep -q 'Connected: yes'; then
-				device_alias=$(echo "$device_info" | awk '/Alias/ { print $2 }')
 				device_power=$(echo "$device_info" | grep -Po 'Battery Percentage: 0x\w{0,2} \(\K\d{1,3}')
 
 				if [ $counter -gt 0 ]; then
@@ -21,10 +20,10 @@ bluetooth_print() {
 
 				if [ -z "$device_power" ]; then
 					# nf-md-battery_alert
-					printf ' %s 󰂃' "$device_alias"
+					printf ' '
 				else
 					# nf-md-battery_bluetooth_variant
-					printf ' %s 󰥉 %s%%' "$device_alias" "$device_power"
+					printf ' %s%%' "$device_power"
 				fi
 
 				counter=$((counter + 1))
