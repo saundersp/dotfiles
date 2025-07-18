@@ -55,7 +55,7 @@ cherry_pick = '[🍒 PICKING](bold red)'
 format = '\[[$state( $progress_current/$progress_total)]($style)\]'
 
 [git_metrics]
-format = '\[([▴$added]($added_style))/([▿$deleted]($deleted_style))\]'
+format = '(\[([▴$added]($added_style))/([▿$deleted]($deleted_style))\] )'
 added_style = 'italic dimmed green'
 deleted_style = 'italic dimmed red'
 disabled = false
