@@ -32,7 +32,7 @@ RUN apt-get update \
 	golang-go=2:1.24~2 \
 	tree-sitter-cli=0.22.6-6 \
 	starship=1.22.1-5 \
-	lazygit=0.50.0+ds1-1 \
+	lazygit=0.53.0+ds1-1 \
 	&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 50 \
 	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 50 \
 	&& update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-15 50 \
