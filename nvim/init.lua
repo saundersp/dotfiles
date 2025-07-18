@@ -362,7 +362,7 @@ local lazy_plugins = {
 	},
 	-- LSP Configuration & Plugins
 	{ 'neovim/nvim-lspconfig',
-		event = { 'BufReadPost', 'BufNewFile' },
+		event = { 'BufReadPre', 'BufNewFile' },
 		init = function()
 			vim.diagnostic.config({
 				signs = {
