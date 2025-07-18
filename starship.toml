@@ -3,7 +3,7 @@
 ######################
 
 add_newline = false
-continuation_prompt = "[>](dimmed white)"
+continuation_prompt = "[❯ ](dimmed white)"
 format = """
 ┌──$status\\($time\\)─\\($username[@](purple)$hostname\\)─\\($directory\\) \
 $git_branch $jobs$cmd_duration$fill\
