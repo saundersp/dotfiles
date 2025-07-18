@@ -2,8 +2,8 @@ FROM ubuntu:25.10
 
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
-	gcc=4:14.2.0-1ubuntu1 \
-	g++=4:14.2.0-1ubuntu1 \
+	gcc-15=15.1.0-8ubuntu1 \
+	g++-15=15.1.0-8ubuntu1 \
 	git-svn=1:2.50.0-1ubuntu2 \
 	ca-certificates=20250419 \
 	neovim=0.10.4-8build2 \
@@ -33,6 +33,10 @@ RUN apt-get update \
 	tree-sitter-cli=0.22.6-6 \
 	starship=1.22.1-5 \
 	lazygit=0.50.0+ds1-1 \
+	&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 50 \
+	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 50 \
+	&& update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-15 50 \
+	&& update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-15 50 \
 	&& rustup default 1.88.0
 
 # More user friendly aliases
