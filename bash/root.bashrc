@@ -22,7 +22,10 @@ command -v gradle >> /dev/null && export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradl
 command -v java >> /dev/null && export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 command -v python >> /dev/null && export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
 command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
-command -v docker >> /dev/null && export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+if command -v docker >> /dev/null; then
+	export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+	docker compose >> /dev/null && export COMPOSE_BAKE=true
+fi
 command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
 command -v npm >> /dev/null && export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
 
