@@ -1,22 +1,77 @@
 {
 	"$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+	"logo": {
+		"source": "aperture",
+		"padding": { "left": 1, "right": 2 }
+	},
+	"display": {
+		"separator": "│",
+		"constants": [
+			"\u001b[58C", // Used to move separator 58 units to the right
+			"──────────", // Second column width
+			"──────────────", // Third pre-column width
+			"─────────────────────" // Third after-column width
+		],
+		"color": { "keys": "default" },
+		"percent": { "color": { "green": "default", "yellow": "default", "red": "default" } },
+		"key": { "width": 18 }
+		// "showErrors": true // Enable for debug
+	},
 	"modules": [
-		"Title",
-		"Separator",
-		"OS",
-		"Board",
-		"Chassis",
-		"Kernel",
-		"Host",
-		"Bios",
-		"Packages",
-		"Shell",
-		"Display",
-		"WM",
-		"LM",
-		"Terminal",
-		"CPU",
-		"GPU",
-		"Locale"
+		{ "type": "custom", "format": "" }, // Act as a top padding
+		{
+			"type": "custom",
+			// {#1} is equivalent to `\u001b[1m`. {#} is equivalent to `\u001b[m`
+			"format": "┌───┬{$2}┬{$3}┤ {#1}Hardware Information{#} ├{$4}┐"
+		},
+		{
+			"type": "cpu",
+			"key": "│  │ CPU      │ {$1}",
+			"format": "{name} {#2}[{cores-physical}C/{cores-logical}T] [{freq-max}]"
+		},
+		{
+			"type": "gpu",
+			"key": "│ 󰾲 │ GPU      │ {$1}",
+			"driverSpecific": true,
+			"format": "{name} {#2}[{core-count}C] [{frequency}] [{dedicated-total}]"
+		},
+		{
+			"type": "display",
+			"key": "│ 󰍹 │ Display  │ {$1}",
+			"format": "{name} {#2}[{width}x{height}] [{refresh-rate}hz]"
+		},
+		{
+			"type": "sound",
+			"key": "│  │ Sound    │ {$1}",
+			"format": "{name} {#2}[{volume-percentage}{#2}]"
+		},
+		{ "type": "custom", "format": "├───┼{$2}┼{$3}┤ {#1}Software Information{#} ├{$4}┤" },
+		{
+			"type": "os",
+			"key": "│  │ OS       │ {$1}",
+			"format": "{pretty-name} {#2}[{arch}]"
+		},
+		{
+			"type": "kernel",
+			"key": "│  │ Kernel   │ {$1}",
+			"format": "{sysname} {#2}[v{release}]"
+		},
+		{ "type": "packages", "key": "│ 󰏖 │ Packages │ {$1}" },
+		{
+			"type": "wm",
+			"key": "│  │ WM       │ {$1}",
+			"format": "{process-name} {#2}[{protocol-name}] [v{version}]"
+		},
+		{
+			"type": "shell",
+			"key": "│  │ Shell    │ {$1}",
+			"format": "{process-name} {#2}[v{version}]"
+		},
+		{
+			"type": "terminal",
+			"key": "│  │ Terminal │ {$1}",
+			"format": "{pretty-name} {#2}[v{version}]"
+		},
+		{ "type": "custom", "format": "└───┴{$2}┴{$3}────────────────────────{$4}┘" }
 	]
 }
