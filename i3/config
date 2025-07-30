@@ -122,12 +122,12 @@ set $ws10 10: 
 #for_window [class="Spotify"] move to workspace $ws1
 #assign [class="discord"] workspace $ws1
 #assign [class="Signal"] workspace $ws1
-#assign [class="LibreWolf"] workspace $ws2
+#assign [class="Wasistlos"] workspace $ws2
+#assign [class="librewolf"] workspace $ws2
 #assign [class="pulsemixer"] workspace $ws10
 #assign [class="term_annex"] workspace $ws10
 #assign [class="qBittorrent"] workspace $ws10
 #assign [class="Deskflow"] workspace $ws10
-#assign [class="Nextcloud"] workspace $ws10
 #exec --no-startup-id deskflow
 #exec --no-startup-id st -c pulsemixer -e pulsemixer
 #exec --no-startup-id st -c term_annex
@@ -135,6 +135,7 @@ set $ws10 10: 
 #exec --no-startup-id spotify
 #exec --no-startup-id discord
 #exec --no-startup-id signal-desktop
+#exec --no-startup-id WasIstLos
 
 # Laptop startup layout
 #for_window [class="pulsemixer"] move scratchpad
