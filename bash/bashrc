@@ -38,6 +38,7 @@ if command -v adb >> /dev/null; then
 	export ANDROID_USER_HOME="$XDG_DATA_HOME"/android
 	alias adb='HOME="$XDG_DATA_HOME"/android adb'
 fi
+command -v node >> /dev/null && export NODE_REPL_HISTORY="$XDG_STATE_HOME"/node_repl_history
 export KERAS_HOME="$XDG_STATE_HOME/keras"
 test -d "$HOME/.elan" && export PATH="$HOME/.elan/bin:$PATH"
 
