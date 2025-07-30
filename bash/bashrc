@@ -34,6 +34,10 @@ fi
 command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
 command -v npm >> /dev/null && export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
 command -v scilab >> /dev/null && export SCIHOME="$XDG_STATE_HOME"/scilab
+if command -v adb >> /dev/null; then
+	export ANDROID_USER_HOME="$XDG_DATA_HOME"/android
+	alias adb='HOME="$XDG_DATA_HOME"/android adb'
+fi
 export KERAS_HOME="$XDG_STATE_HOME/keras"
 test -d "$HOME/.elan" && export PATH="$HOME/.elan/bin:$PATH"
 
