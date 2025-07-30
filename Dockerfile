@@ -22,7 +22,7 @@ RUN apt-get update \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
 	fd-find=10.2.0-1 \
-	fastfetch=2.48.0+dfsg-0ubuntu1 \
+	fastfetch=2.48.1+dfsg-0ubuntu1 \
 	apt-file=3.3 \
 	wireguard-tools=1.0.20210914-1.1ubuntu2 \
 	rsync=3.4.1+ds1-4 \
