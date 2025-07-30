@@ -189,6 +189,7 @@ command -v egrep >> /dev/null && alias egrep='egrep --color=auto'
 command -v diff >> /dev/null && alias diff='diff --color=auto'
 command -v ip >> /dev/null && alias ip='ip --color=auto'
 command -v wget >> /dev/null && alias wget='wget --hsts-file=$XDG_DATA_HOME/wget-hsts'
+command -v nvidia-settings >> /dev/null && alias nvidia-settings='nvidia-settings --config=$XDG_CONFIG_HOME/nvidia/settings'
 # Replace default cat command
 command -v bat >> /dev/null && alias cat='bat --tabs=8'
 command -v ncdu >> /dev/null && alias ncdu='ncdu --color=dark -t $(nproc)'
