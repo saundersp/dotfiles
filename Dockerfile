@@ -2,8 +2,8 @@ FROM ubuntu:25.10
 
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
-	gcc-15=15.1.0-8ubuntu1 \
-	g++-15=15.1.0-8ubuntu1 \
+	gcc-15=15.1.0-11ubuntu1 \
+	g++-15=15.1.0-11ubuntu1 \
 	git-svn=1:2.50.0-1ubuntu2 \
 	ca-certificates=20250419 \
 	neovim=0.10.4-8build2 \
