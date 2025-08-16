@@ -1,6 +1,6 @@
 --- /etc/init.d/docker.bak	2025-05-17 13:03:22.348455139 +0200
 +++ /etc/init.d/docker	2025-05-17 13:04:33.351142354 +0200
-@@ -22,9 +22,17 @@
+@@ -22,9 +22,19 @@
  }
  
  start_pre() {
@@ -11,8 +11,10 @@
  
 +stop_post() {
 +	loop_file=$(losetup -j /mnt/games/DockerDataImage | cut -d : -f 1)
-+	umount "$loop_file"
-+	losetup -D "$loop_file"
++	for dev in $loop_file; do
++		umount "$dev"
++		losetup -d "$dev"
++	done
 +}
 +
  reload() {
