@@ -24,8 +24,8 @@ RUN apt-get update \
 	fd-find=10.2.0-1 \
 	fastfetch=2.49.0+dfsg-1 \
 	apt-file=3.3 \
-	wireguard-tools=1.0.20210914-1.1ubuntu2 \
 	rsync=3.4.1+ds1-5 \
+	wireguard-tools=1.0.20210914-3ubuntu1 \
 	tmux=3.5a-3 \
 	opendoas=6.8.2-1 \
 	rustup=1.27.1-3 \
