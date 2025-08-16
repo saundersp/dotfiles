@@ -12,7 +12,7 @@ RUN apt-get update \
 	btop=1.3.2-0.1 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
-	cmake=3.31.6-2ubuntu1 \
+	cmake=3.31.6-2ubuntu4 \
 	make-guile=4.4.1-2 \
 	pkgconf=1.8.1-4 \
 	bat=0.25.0-2 \
