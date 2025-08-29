@@ -2,12 +2,12 @@ FROM ubuntu:25.10
 
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
-	gcc-15=15.1.0-11ubuntu1 \
-	g++-15=15.1.0-11ubuntu1 \
-	git-svn=1:2.50.0-1ubuntu2 \
+	gcc-15=15.2.0-1ubuntu1 \
+	g++-15=15.2.0-1ubuntu1 \
+	git-svn=1:2.50.1-0.1ubuntu2 \
 	ca-certificates=20250419 \
 	neovim=0.10.4-8build2 \
-	nodejs=20.19.2+dfsg-1 \
+	nodejs=20.19.4+dfsg-1 \
 	curl=8.14.1-1ubuntu2 \
 	btop=1.3.2-0.1 \
 	npm=9.2.0~ds1-3 \
@@ -24,20 +24,20 @@ RUN apt-get update \
 	fd-find=10.2.0-1 \
 	fastfetch=2.49.0+dfsg-1 \
 	apt-file=3.3 \
-	wireguard-tools=1.0.20210914-3ubuntu1 \
+	wireguard-tools=1.0.20210914-3ubuntu2 \
 	rsync=3.4.1+ds1-5ubuntu1 \
 	tmux=3.5a-3 \
 	opendoas=6.8.2-1 \
 	rustup=1.27.1-3 \
 	golang-go=2:1.24~2 \
 	tree-sitter-cli=0.22.6-6 \
-	starship=1.22.1-5 \
+	starship=1.22.1-6 \
 	lazygit=0.53.0+ds1-1 \
 	&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 50 \
 	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 50 \
 	&& update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-15 50 \
 	&& update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-15 50 \
-	&& rustup default 1.88.0
+	&& rustup default 1.89.0
 
 # More user friendly aliases
 RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
