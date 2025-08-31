@@ -210,12 +210,9 @@ local lazy_plugins = {
 			local actions = require('telescope.actions')
 			telescope.setup({
 				defaults = { mappings = { i = { ['<c-d>'] = actions.delete_buffer } } },
-				extensions = {
-					['ui-select'] = { require('telescope.themes').get_cursor({}) },
-					media_files = { filetypes = { 'png', 'svg', 'webp', 'jpg', 'jpeg' } }
-				}
+				extensions = { ['ui-select'] = { require('telescope.themes').get_cursor({}) } }
 			})
-			vim.tbl_map(telescope.load_extension, { 'ui-select', 'noice', 'dap', 'media_files' })
+			vim.tbl_map(telescope.load_extension, { 'ui-select', 'noice', 'dap' })
 		end,
 		keys = {
 			{ 'gr',		'<cmd>Telescope lsp_references<CR>',		    desc = 'LSP: Goto references' },
@@ -229,7 +226,6 @@ local lazy_plugins = {
 			{ '<leader>sk', '<cmd>Telescope keymaps<CR>',			    desc = 'Search keymaps' },
 			{ '<leader>sc', '<cmd>Telescope commands<CR>',			    desc = 'Search commands' },
 			{ '<leader>sb', '<cmd>Telescope buffers<CR>',			    desc = 'Search buffers' },
-			{ '<leader>sm', '<cmd>Telescope media_files<CR>',		    desc = 'Search media files' },
 			{ '<leader>ss', '<cmd>Telescope resume<CR>',			    desc = 'Search resume' },
 			{ '<leader>st', '<cmd>TodoTelescope keywords=TODO,FIX<CR>',	    desc = 'Search todos' },
 			{ '<leader>sN', '<cmd>Telescope noice<CR>',			    desc = 'Search Noice messages' },
@@ -255,11 +251,7 @@ local lazy_plugins = {
 			-- Extension to integrate nvim-dap
 			'nvim-telescope/telescope-dap.nvim',
 			-- LSP Configuration & Plugins
-			'neovim/nvim-lspconfig',
-			-- Extension to preview media files using Ueberzug
-			'nvim-telescope/telescope-media-files.nvim',
-			-- [WIP] Popup API from vim in Neovim (needed for telescope-media-files). Will eventually be merged upstream
-			'nvim-lua/popup.nvim'
+			'neovim/nvim-lspconfig'
 		}
 	},
 	-- Edit the filesystem like a buffer
