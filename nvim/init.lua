@@ -298,18 +298,6 @@ local lazy_plugins = {
 			{ ']w', '<cmd>NextTrailingWhitespace<CR>', desc = 'Jump to next whitespace' }
 		}
 	},
-	-- Rainbow CSV
-	{ 'cameron-wags/rainbow_csv.nvim',
-		config = true,
-		ft = { 'csv', 'tsv', 'csv_semicolon', 'csv_whitespace', 'csv_pipe', 'rfc_csv', 'rfc_semicolon' },
-		cmd = { 'RainbowDelim', 'RainbowDelimSimple', 'RainbowDelimQuoted', 'RainbowMultiDelim' }
-	},
-	-- CSV better viewer
-	{ 'hat0uma/csvview.nvim',
-		ft = { 'csv', 'tsv', 'csv_semicolon', 'csv_whitespace', 'csv_pipe', 'rfc_csv', 'rfc_semicolon' },
-		opts = { view = { display_mode = 'border' } },
-		cmd = { 'CsvViewEnable', 'CsvViewDisable' }
-	},
 	-- Faster LuaLS setup for Neovim
 	{ 'folke/lazydev.nvim',
 		ft = 'lua', -- only load on lua files
