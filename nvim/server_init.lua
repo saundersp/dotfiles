@@ -91,7 +91,7 @@ local lazy_plugins = {
 		event = 'UIEnter',
 		opts = {
 			options = {
-				disabled_filetypes = { statusline = { 'snacks_dashboard', 'neo-tree' } }
+				disabled_filetypes = { statusline = { 'snacks_dashboard' } }
 			},
 			sections = {
 				lualine_x = {
@@ -194,41 +194,6 @@ local lazy_plugins = {
 			'folke/noice.nvim',
 			-- A fancy, configurable, notification manager for Neovim
 			'rcarriga/nvim-notify'
-		}
-	},
-	-- Neovim plugin to manage the file system and other tree like structures
-	{ 'nvim-neo-tree/neo-tree.nvim',
-		branch = 'v3.x',
-		init = function()
-			-- Hijack netrw without loading plugin
-			if vim.fn.argc(-1) == 1 then
-				local var = vim.fn.argv(0)
-				if type(var) == 'table' then
-					return
-				end
-				local stat = vim.uv.fs_stat(var)
-				if stat and stat.type == 'directory' then
-					require('neo-tree')
-				end
-			end
-		end,
-		opts = {
-			close_if_last_window = true,
-			window = { position = 'current' },
-			filesystem = {
-				follow_current_file = { enabled = true },
-				use_libuv_file_watcher = true
-			}
-		},
-		keys = { { '<C-p>', '<cmd>Neotree toggle reveal<CR>', desc = 'Open Neotree file manager' } },
-		cmd = 'Neotree',
-		dependencies = {
-			-- Lua library functions
-			'nvim-lua/plenary.nvim',
-			-- Provides nerd fonts icons
-			'nvim-tree/nvim-web-devicons',
-			-- UI Component Library for Neovim
-			'MunifTanjim/nui.nvim'
 		}
 	},
 	-- Edit the filesystem like a buffer
@@ -600,12 +565,7 @@ local lazy_plugins = {
 		event = 'VeryLazy',
 		opts = {
 			indent = { char = '│', tab_char = '│' },
-			exclude = {
-				filetypes = {
-					'help', 'neo-tree',
-					'lazy', 'mason', 'notify'
-				}
-			},
+			exclude = { filetypes = { 'help', 'lazy', 'mason', 'notify' } },
 			scope = {
 				highlight = {
 					'RainbowDelimiterRed', 'RainbowDelimiterYellow',
