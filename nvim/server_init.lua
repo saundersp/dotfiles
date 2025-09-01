@@ -206,14 +206,11 @@ local lazy_plugins = {
 			'nvim-tree/nvim-web-devicons'
 		}
 	},
-	-- Library of 40+ independent Lua modules improving overall Neovim (version 0.8 and higher) experience with minimal effort
-	{ 'echasnovski/mini.nvim',
+	-- Neovim Lua plugin to align text interactively. Part of 'mini.nvim' library.
+	{ 'nvim-mini/mini.align',
 		version = false,
 		event = 'VeryLazy',
-		config = function()
-			-- add the vmap gl<SYMBOL> to vertical align to the given symbol
-			require('mini.align').setup({ mappings = { start = 'gl', start_with_preview = 'gL' } })
-		end
+		opts = { mappings = { start = 'gl', start_with_preview = 'gL' } }
 	},
 	-- Automatic white spaces trimming
 	{ 'ntpeters/vim-better-whitespace',
