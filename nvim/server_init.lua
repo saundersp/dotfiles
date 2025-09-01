@@ -381,13 +381,13 @@ local lazy_plugins = {
 			spec = {
 				{
 					mode = { 'n', 'v' },
-					{	'<leader>h',	group = 'Git' },
-					{	'<leader>s',	group = 'Search' },
-					{	'<leader>c',	group = 'Color picker' },
-					{	'<leader>m',	group = 'Makefile scripts' },
-					{	'<leader>o',	group = 'External tools' },
-					{	'[',		group = 'prev' },
-					{	']',		group = 'next' }
+					{ '<leader>h', group = 'Git' },
+					{ '<leader>s', group = 'Search' },
+					{ '<leader>c', group = 'Color picker' },
+					{ '<leader>m', group = 'Makefile scripts' },
+					{ '<leader>o', group = 'External tools' },
+					{ '[',	       group = 'prev' },
+					{ ']',	       group = 'next' }
 				}
 			}
 		},
@@ -464,10 +464,8 @@ local lazy_plugins = {
 			{ '<leader>nl', '<cmd>Noice last<CR>',	  'Show the last notification in a popup' }
 		},
 		cmd = {
-			'Noice', 'NoiceConfig', 'NoiceDebug', 'NoiceDisable',
-			'NoiceDismiss', 'NoiceEnable', 'NoiceErrors', 'NoiceHistory',
-			'NoiceLast', 'NoiceLog', 'NoiceRoutes', 'NoiceStats',
-			'NoiceTelescope', 'NoiceViewstats'
+			'Noice', 'NoiceConfig', 'NoiceDebug', 'NoiceDisable', 'NoiceDismiss', 'NoiceEnable', 'NoiceErrors',
+			'NoiceHistory', 'NoiceLast', 'NoiceLog', 'NoiceRoutes', 'NoiceStats', 'NoiceTelescope', 'NoiceViewstats'
 		},
 		dependencies = {
 			-- UI Component Library for Neovim
@@ -482,10 +480,7 @@ local lazy_plugins = {
 	{ 'kevinhwang91/nvim-ufo',
 		event = 'VeryLazy',
 		opts = { provider_selector = function() return { 'treesitter', 'indent' } end },
-		cmd = {
-			'UfoEnable', 'UfoDisable', 'UfoInspect', 'UfoAttach',
-			'UfoDetach', 'UfoEnableFold', 'UfoDisableFold'
-		},
+		cmd = { 'UfoEnable', 'UfoDisable', 'UfoInspect', 'UfoAttach', 'UfoDetach', 'UfoEnableFold', 'UfoDisableFold' },
 		dependencies = {
 			-- Porting Promise & Async from JavaScript to Lua
 			'kevinhwang91/promise-async'
@@ -553,10 +548,8 @@ local lazy_plugins = {
 			exclude = { filetypes = { 'help', 'lazy', 'mason', 'notify' } },
 			scope = {
 				highlight = {
-					'RainbowDelimiterRed', 'RainbowDelimiterYellow',
-					'RainbowDelimiterBlue', 'RainbowDelimiterOrange',
-					'RainbowDelimiterGreen', 'RainbowDelimiterViolet',
-					'RainbowDelimiterCyan'
+					'RainbowDelimiterRed', 'RainbowDelimiterYellow', 'RainbowDelimiterBlue', 'RainbowDelimiterOrange',
+					'RainbowDelimiterGreen', 'RainbowDelimiterViolet', 'RainbowDelimiterCyan'
 				}
 			}
 		},

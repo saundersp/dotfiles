@@ -869,15 +869,15 @@ local lazy_plugins = {
 			spec = {
 				{
 					mode = { 'n', 'v' },
-					{	'<leader>a',	group = 'Arduino' },
-					{	'<leader>h',	group = 'Git' },
-					{	'<leader>d',	group = 'Debugger' },
-					{	'<leader>s',	group = 'Search' },
-					{	'<leader>c',	group = 'Color picker' },
-					{	'<leader>m',	group = 'Makefile scripts' },
-					{	'<leader>o',	group = 'External tools' },
-					{	'[',		group = 'prev' },
-					{	']',		group = 'next' }
+					{ '<leader>a', group = 'Arduino' },
+					{ '<leader>h', group = 'Git' },
+					{ '<leader>d', group = 'Debugger' },
+					{ '<leader>s', group = 'Search' },
+					{ '<leader>c', group = 'Color picker' },
+					{ '<leader>m', group = 'Makefile scripts' },
+					{ '<leader>o', group = 'External tools' },
+					{ '[',	       group = 'prev' },
+					{ ']',	       group = 'next' }
 				}
 			}
 		},
@@ -971,10 +971,8 @@ local lazy_plugins = {
 			{ '<leader>nl', '<cmd>Noice last<CR>',	  'Show the last notification in a popup' }
 		},
 		cmd = {
-			'Noice', 'NoiceConfig', 'NoiceDebug', 'NoiceDisable',
-			'NoiceDismiss', 'NoiceEnable', 'NoiceErrors', 'NoiceHistory',
-			'NoiceLast', 'NoiceLog', 'NoiceRoutes', 'NoiceStats',
-			'NoiceTelescope', 'NoiceViewstats'
+			'Noice', 'NoiceConfig', 'NoiceDebug', 'NoiceDisable', 'NoiceDismiss', 'NoiceEnable', 'NoiceErrors',
+			'NoiceHistory', 'NoiceLast', 'NoiceLog', 'NoiceRoutes', 'NoiceStats', 'NoiceTelescope', 'NoiceViewstats'
 		},
 		dependencies = {
 			-- UI Component Library for Neovim
@@ -989,10 +987,7 @@ local lazy_plugins = {
 	{ 'kevinhwang91/nvim-ufo',
 		event = 'VeryLazy',
 		opts = { provider_selector = function() return { 'treesitter', 'indent' } end },
-		cmd = {
-			'UfoEnable', 'UfoDisable', 'UfoInspect', 'UfoAttach',
-			'UfoDetach', 'UfoEnableFold', 'UfoDisableFold'
-		},
+		cmd = { 'UfoEnable', 'UfoDisable', 'UfoInspect', 'UfoAttach', 'UfoDetach', 'UfoEnableFold', 'UfoDisableFold' },
 		dependencies = {
 			-- Porting Promise & Async from JavaScript to Lua
 			'kevinhwang91/promise-async'
@@ -1139,10 +1134,8 @@ local lazy_plugins = {
 			exclude = { filetypes = { 'help', 'lazy', 'mason', 'notify' } },
 			scope = {
 				highlight = {
-					'RainbowDelimiterRed', 'RainbowDelimiterYellow',
-					'RainbowDelimiterBlue', 'RainbowDelimiterOrange',
-					'RainbowDelimiterGreen', 'RainbowDelimiterViolet',
-					'RainbowDelimiterCyan'
+					'RainbowDelimiterRed', 'RainbowDelimiterYellow', 'RainbowDelimiterBlue', 'RainbowDelimiterOrange',
+					'RainbowDelimiterGreen', 'RainbowDelimiterViolet', 'RainbowDelimiterCyan'
 				}
 			}
 		},
@@ -1174,11 +1167,10 @@ local lazy_plugins = {
 		},
 		keys = { { '<localleader>tp', '<cmd>LeanInfoviewToggle<CR>', ft = 'lean', desc = "Toggle lean's info view" } },
 		cmd = {
-			'LeanAbbreviationsReverseLookup', 'LeanGoal', 'LeanGotoInfoview', 'LeanInfoviewAddPin', 'LeanInfoviewClearDiffPin',
-			'LeanInfoviewClearPins', 'LeanInfoviewDisableWidgets', 'LeanInfoviewEnableWidgets', 'LeanInfoviewPinTogglePause',
-			'LeanInfoviewSetDiffPin', 'LeanInfoviewToggle', 'LeanInfoviewToggleAutoDiffPin', 'LeanInfoviewToggleNoClearAutoDiffPin',
-			'LeanInfoviewViewOptions', 'LeanLineDiagnostics', 'LeanPlainDiagnostics', 'LeanPlainGoal', 'LeanPlainTermGoal',
-			'LeanRefreshFileDependencies', 'LeanRestartFile', 'LeanSorryFill', 'LeanTermGoal'
+			'LeanAbbreviationsReverseLookup', 'LeanGoal', 'LeanGotoInfoview', 'LeanInfoviewAddPin', 'LeanInfoviewClearDiffPin', 'LeanInfoviewClearPins',
+			'LeanInfoviewDisableWidgets', 'LeanInfoviewEnableWidgets', 'LeanInfoviewPinTogglePause', 'LeanInfoviewSetDiffPin', 'LeanInfoviewToggle',
+			'LeanInfoviewToggleAutoDiffPin', 'LeanInfoviewToggleNoClearAutoDiffPin', 'LeanInfoviewViewOptions', 'LeanLineDiagnostics', 'LeanPlainDiagnostics',
+			'LeanPlainGoal', 'LeanPlainTermGoal', 'LeanRefreshFileDependencies', 'LeanRestartFile', 'LeanSorryFill', 'LeanTermGoal'
 		}
 	},
 	-- A modern Vim and neovim filetype plugin for LaTeX files
@@ -1190,11 +1182,10 @@ local lazy_plugins = {
 			vim.g.vimtex_compiler_latexmk_engines = { _ = '-xelatex --shell-escape' } -- NOTE Override default engine
 		end,
 		cmd = {
-			'VimtexClean', 'VimtexClearCache', 'VimtexCompile', 'VimtexCompileOutput', 'VimtexCompileSS',
-			'VimtexCompileSelected', 'VimtexContextMenu', 'VimtexCountLetters', 'VimtexCountWords',
-			'VimtexDocPackage', 'VimtexErrors', 'VimtexImapsList', 'VimtexInfo', 'VimtexLog', 'VimtexReload',
-			'VimtexReloadState', 'VimtexStatus', 'VimtexStop', 'VimtexStopAll', 'VimtexTocOpen',
-			'VimtexTocToggle', 'VimtexToggleMain', 'VimtexView', 'VimtexInverseSearch'
+			'VimtexClean', 'VimtexClearCache', 'VimtexCompile', 'VimtexCompileOutput', 'VimtexCompileSS', 'VimtexCompileSelected', 'VimtexContextMenu',
+			'VimtexCountLetters', 'VimtexCountWords', 'VimtexDocPackage', 'VimtexErrors', 'VimtexImapsList', 'VimtexInfo', 'VimtexLog', 'VimtexReload',
+			'VimtexReloadState', 'VimtexStatus', 'VimtexStop', 'VimtexStopAll', 'VimtexTocOpen', 'VimtexTocToggle', 'VimtexToggleMain', 'VimtexView',
+			'VimtexInverseSearch'
 		}
 	},
 	-- Provides external LTeX file handling (off-spec lsp) and other functions.
@@ -1230,12 +1221,9 @@ local lazy_plugins = {
 			setup_ltex('fr')
 
 			local ltex_languages = {
-				'auto', 'ar', 'ast-ES', 'be-BY', 'br-FR', 'ca-ES', 'ca-ES-valencia',
-				'da-DK', 'de', 'de-AT', 'de-CH', 'de-DE', 'de-DE-x-simple-language',
-				'el-GR', 'en', 'en-AU', 'en-CA', 'en-GB', 'en-NZ', 'en-US', 'en-ZA',
-				'eo', 'es', 'es-AR', 'fa', 'fr', 'ga-IE', 'gl-ES', 'it', 'ja-JP',
-				'km-KH', 'nl', 'nl-BE', 'pl-PL', 'pt', 'pt-AO', 'pt-BR', 'pt-MZ',
-				'pt-PT', 'ro-RO', 'ru-RU', 'sk-SK', 'sl-SI', 'sv', 'ta-IN', 'tl-PH',
+				'auto', 'ar', 'ast-ES', 'be-BY', 'br-FR', 'ca-ES', 'ca-ES-valencia', 'da-DK', 'de', 'de-AT', 'de-CH', 'de-DE', 'de-DE-x-simple-language',
+				'el-GR', 'en', 'en-AU', 'en-CA', 'en-GB', 'en-NZ', 'en-US', 'en-ZA', 'eo', 'es', 'es-AR', 'fa', 'fr', 'ga-IE', 'gl-ES', 'it', 'ja-JP',
+				'km-KH', 'nl', 'nl-BE', 'pl-PL', 'pt', 'pt-AO', 'pt-BR', 'pt-MZ', 'pt-PT', 'ro-RO', 'ru-RU', 'sk-SK', 'sl-SI', 'sv', 'ta-IN', 'tl-PH',
 				'uk-UA', 'zh-CN'
 			}
 
