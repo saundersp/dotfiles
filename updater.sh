@@ -57,16 +57,18 @@ case "$1" in
 					#echo "Package $PACKAGE_NAME not installed, skipping..."
 					continue
 				fi
-				cd "$PACKAGE_NAME" || continue
-				env printf "┌$(__r__ 40 ─)┐\n"
-				env printf "│ %-38s │\n" "$PACKAGE_NAME"
-				env printf "└$(__r__ 40 '─')┘\n"
-				if [ "$(git pull)" = 'Already up to date.' ]; then
-					echo 'Already up to date'
-				else
+				test ! -d "$PACKAGE_NAME" && continue
+				OLDPATH=$(pwd)
+				cd "$PACKAGE_NAME"
+				PULL_LOG=$(script -q /dev/null -c 'git pull')
+				if [ "$PULL_LOG" != "$(env printf 'Already up to date.\r\n')" ]; then
+					env printf "┌$(__r__ 40 ─)┐\n"
+					env printf "│ %-38s │\n" "$PACKAGE_NAME"
+					env printf "└$(__r__ 40 '─')┘\n"
+					echo "$PULL_LOG"
 					$2
 				fi
-				cd ..
+				cd "$OLDPATH"
 			done
 			unset __r__
 		}
