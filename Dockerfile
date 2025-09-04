@@ -4,7 +4,7 @@ RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
 	gcc-15=15.2.0-1ubuntu1 \
 	g++-15=15.2.0-1ubuntu1 \
-	git-svn=1:2.50.1-0.1ubuntu2 \
+	git-svn=1:2.51.0-1ubuntu1 \
 	ca-certificates=20250419 \
 	neovim=0.10.4-8build2 \
 	nodejs=20.19.4+dfsg-1 \
