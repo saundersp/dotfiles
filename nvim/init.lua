@@ -320,7 +320,7 @@ local lazy_plugins = {
 		end,
 		config = function()
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+			capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
 
 			-- Enable the following language servers with overriding configuration
 			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
@@ -404,7 +404,7 @@ local lazy_plugins = {
 			-- Automatically install LSPs to stdpath for neovim
 			'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim',
 			-- Auto completion functionalities
-			'hrsh7th/cmp-nvim-lsp',
+			'saghen/blink.cmp',
 			-- Fully customizable previewer for LSP code actions.
 			{ 'aznhe21/actions-preview.nvim',
 				config = true,
@@ -638,140 +638,61 @@ local lazy_plugins = {
 			'nvim-neotest/nvim-nio'
 		}
 	},
-	-- Autocompletion
-	{ 'hrsh7th/nvim-cmp',
+	-- Performant, batteries-included completion plugin for Neovim
+	{ 'saghen/blink.cmp',
 		event = 'InsertEnter',
-		config = function()
-			local cmp = require('cmp')
-			require('luasnip.loaders.from_vscode').lazy_load()
-			local luasnip = require('luasnip')
-			local s = luasnip.snippet
-			local t = luasnip.text_node
-			local i = luasnip.insert_node
-
-			-- NOTE: Snippets for my notebook
-			luasnip.add_snippets('tex', {
-				s(':exo', {
-					t({'\\begin{exercise_sq}', '\t'}),
-					i(0),
-					t({'', '\\end{exercise_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-					t({'', '\\end{proof}', ''}),
-				}),
-				s(':theo', {
-					t({'\\begin{theorem_sq}', '\t'}),
-					i(0),
-					t({'', '\\end{theorem_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-					t({'', '\\end{proof}', ''}),
-				}),
-				s(':prop', {
-					t({'\\begin{prop_sq}', '\t'}),
-					i(0),
-					t({'', '\\end{prop_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-					t({'', '\\end{proof}', ''}),
-				}),
-				s(':coro', {
-					t({'\\begin{corollary_sq}', '\t'}),
-					i(0),
-					t({'', '\\end{corollary_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-					t({'', '\\end{proof}', ''}),
-				}),
-				s(':def', {
-					t({'\\begin{definition_sq}', '\t'}),
-					i(0),
-					t({'', '\\end{definition_sq}'}),
-				})
-			})
-
-			cmp.setup({
-				snippet = {
-					expand = function(args)
-						luasnip.lsp_expand(args.body)
-					end
-				},
-				window = {
-					completion = cmp.config.window.bordered(),
-					documention = cmp.config.window.bordered()
-				},
-				mapping = cmp.mapping.preset.insert({
-					['<C-d>'] = cmp.mapping.scroll_docs(-4),
-					['<C-f>'] = cmp.mapping.scroll_docs(4),
-					['<C-Space>'] = cmp.mapping.complete(),
-					['<C-e>'] = cmp.mapping.abort(),
-					['<CR>'] = cmp.mapping.confirm({
-						behavior = cmp.ConfirmBehavior.Replace,
-						select = true
-					}),
-					['<Tab>'] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						else
-							fallback()
-						end
-					end, { 'i', 's' }),
-					['<S-Tab>'] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_prev_item()
-						elseif luasnip.jumpable(-1) then
-							luasnip.jump(-1)
-						else
-							fallback()
-						end
-					end, { 'i', 's' })
-				}),
-				sources = cmp.config.sources({
-					-- LSP completion
-					{ name = 'nvim_lsp' },
-					-- Snippets
-					{ name = 'luasnip' },
-					-- Only for neovim settings
-					{ name = 'lazydev', group_index = 0 },
-					-- Buffer words
-					{ name = 'buffer' }
-				})
-			})
-
-			-- `/` cmdline setup.
-			cmp.setup.cmdline('/', {
-				mapping = cmp.mapping.preset.cmdline(),
-				sources = {
-					{ name = 'buffer' }
-				}
-			})
-
-			-- `:` cmdline setup.
-			cmp.setup.cmdline(':', {
-				mapping = cmp.mapping.preset.cmdline(),
-				sources = cmp.config.sources({
-					{ name = 'path' }
-				}, {
-					{
-						name = 'cmdline',
-						option = {
-							ignore_cmds = { 'Man', '!' }
-						}
-					}
-				})
-			})
-
-			local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-			cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-		end,
-		cmd = 'CmpStatus',
+		version = '1.*',
+		---@module 'blink.cmp'
+		---@type blink.cmp.Config
+		opts = {
+			snippets = { preset = 'luasnip' },
+			completion = { accept = { auto_brackets = { enabled = true } } }
+		},
+		opts_extend = { 'sources.default' },
 		dependencies = {
-			-- Automatic pairs of ( [ { insertion
-			{ 'windwp/nvim-autopairs', config = true },
-			-- nvim-cmp source for neovim builtin LSP client
-			'hrsh7th/cmp-nvim-lsp',
-			-- nvim-cmp source for buffer words
-			'hrsh7th/cmp-buffer',
-			-- nvim-cmp source for vim's cmdline
-			'hrsh7th/cmp-cmdline',
-			-- Snippet Engine for Neovim written in Lua
-			'L3MON4D3/LuaSnip',
-			-- luasnip completion source for nvim-cmp
-			'saadparwaiz1/cmp_luasnip'
+			-- Autopairs for neovim written in lua
+			{ 'windwp/nvim-autopairs', opts = { check_ts = true, enable_check_bracket_line = false } },
+			--·Snippet·Engine·for·Neovim·written·in·Lua
+			{ 'L3MON4D3/LuaSnip', config = function ()
+				require('luasnip.loaders.from_vscode').lazy_load()
+				local luasnip = require('luasnip')
+				local s = luasnip.snippet
+				local t = luasnip.text_node
+				local i = luasnip.insert_node
+
+				-- NOTE: Snippets for my notebook
+				luasnip.add_snippets('tex', {
+						s(':exo', {
+							t({'\\begin{exercise_sq}', '\t'}),
+							i(0),
+							t({'', '\\end{exercise_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
+							t({'', '\\end{proof}', ''}),
+						}),
+						s(':theo', {
+							t({'\\begin{theorem_sq}', '\t'}),
+							i(0),
+							t({'', '\\end{theorem_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
+							t({'', '\\end{proof}', ''}),
+						}),
+						s(':prop', {
+							t({'\\begin{prop_sq}', '\t'}),
+							i(0),
+							t({'', '\\end{prop_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
+							t({'', '\\end{proof}', ''}),
+						}),
+						s(':coro', {
+							t({'\\begin{corollary_sq}', '\t'}),
+							i(0),
+							t({'', '\\end{corollary_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
+							t({'', '\\end{proof}', ''}),
+						}),
+						s(':def', {
+							t({'\\begin{definition_sq}', '\t'}),
+							i(0),
+							t({'', '\\end{definition_sq}'}),
+						})
+				})
+			end }
 		}
 	},
 	-- Allow use of background jobs
@@ -1194,7 +1115,7 @@ local lazy_plugins = {
 		config = function()
 			local function setup_ltex(lang)
 				local capabilities = vim.lsp.protocol.make_client_capabilities()
-				capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+				capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
 
 				require('lspconfig')['ltex'].setup({
 					capabilities = capabilities,

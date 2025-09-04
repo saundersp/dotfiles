@@ -229,81 +229,17 @@ local lazy_plugins = {
 			{ ']w', '<cmd>NextTrailingWhitespace<CR>', desc = 'Jump to next whitespace' }
 		}
 	},
-	-- Autocompletion
-	{ 'hrsh7th/nvim-cmp',
+	-- Performant, batteries-included completion plugin for Neovim
+	{ 'saghen/blink.cmp',
 		event = 'InsertEnter',
-		config = function()
-			local cmp = require('cmp')
-
-			cmp.setup({
-				window = {
-					completion = cmp.config.window.bordered(),
-					documention = cmp.config.window.bordered()
-				},
-				mapping = cmp.mapping.preset.insert({
-					['<C-d>'] = cmp.mapping.scroll_docs(-4),
-					['<C-f>'] = cmp.mapping.scroll_docs(4),
-					['<C-Space>'] = cmp.mapping.complete(),
-					['<C-e>'] = cmp.mapping.abort(),
-					['<CR>'] = cmp.mapping.confirm({
-						behavior = cmp.ConfirmBehavior.Replace,
-						select = true
-					}),
-					['<Tab>'] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						else
-							fallback()
-						end
-					end, { 'i', 's' }),
-					['<S-Tab>'] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_prev_item()
-						else
-							fallback()
-						end
-					end, { 'i', 's' })
-				}),
-				sources = cmp.config.sources({
-					-- Buffer words
-					{ name = 'buffer' }
-				})
-			})
-
-			-- `/` cmdline setup.
-			cmp.setup.cmdline('/', {
-				mapping = cmp.mapping.preset.cmdline(),
-				sources = {
-					{ name = 'buffer' }
-				}
-			})
-
-			-- `:` cmdline setup.
-			cmp.setup.cmdline(':', {
-				mapping = cmp.mapping.preset.cmdline(),
-				sources = cmp.config.sources({
-					{ name = 'path' }
-				}, {
-					{
-						name = 'cmdline',
-						option = {
-							ignore_cmds = { 'Man', '!' }
-						}
-					}
-				})
-			})
-
-			local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-			cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-		end,
-		cmd = 'CmpStatus',
+		version = '1.*',
+		---@module 'blink.cmp'
+		---@type blink.cmp.Config
+		opts = { completion = { accept = { auto_brackets = { enabled = true } } } },
+		opts_extend = { 'sources.default' },
 		dependencies = {
-			-- Automatic pairs of ( [ { insertion
-			{ 'windwp/nvim-autopairs', config = true },
-			-- nvim-cmp source for buffer words
-			'hrsh7th/cmp-buffer',
-			-- nvim-cmp source for vim's cmdline
-			'hrsh7th/cmp-cmdline'
+			-- Autopairs for neovim written in lua
+			{ 'windwp/nvim-autopairs', opts = { check_ts = true, enable_check_bracket_line = false } }
 		}
 	},
 	-- Allow use of background jobs
