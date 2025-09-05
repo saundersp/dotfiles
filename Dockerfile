@@ -2,13 +2,13 @@ FROM ubuntu:25.10
 
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
-	gcc-15=15.2.0-1ubuntu1 \
-	g++-15=15.2.0-1ubuntu1 \
+	gcc-15=15.2.0-2ubuntu1 \
+	g++-15=15.2.0-2ubuntu1 \
 	git-svn=1:2.51.0-1ubuntu1 \
 	ca-certificates=20250419 \
 	neovim=0.10.4-8build2 \
 	nodejs=20.19.4+dfsg-1 \
-	curl=8.14.1-1ubuntu2 \
+	curl=8.14.1-1ubuntu3 \
 	btop=1.3.2-0.1 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
