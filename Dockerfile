@@ -24,10 +24,8 @@ RUN apt-get update \
 	fd-find=10.2.0-1 \
 	fastfetch=2.49.0+dfsg-1 \
 	apt-file=3.3 \
-	wireguard-tools=1.0.20210914-3ubuntu2 \
 	rsync=3.4.1+ds1-5ubuntu1 \
 	tmux=3.5a-3 \
-	opendoas=6.8.2-1 \
 	rustup=1.27.1-3 \
 	golang-go=2:1.24~2 \
 	tree-sitter-cli=0.22.6-6 \
@@ -40,8 +38,7 @@ RUN apt-get update \
 	&& rustup default 1.89.0
 
 # More user friendly aliases
-RUN ln -s "$(command -v fdfind)" /usr/bin/fd \
-	&& ln -s "$(command -v doas)" /usr/bin/sudo
+RUN ln -s "$(command -v fdfind)" /usr/bin/fd
 
 RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.7 --depth 1 /usr/local/src/ueberzugpp \
 	&& apt-get install --no-install-recommends -y \
