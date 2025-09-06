@@ -717,7 +717,7 @@ local lazy_plugins = {
 					'bash', 'c', 'cpp', 'cuda', 'diff', 'haskell', 'html', 'javascript',
 					'jsdoc', 'json', 'jsonc', 'lua', 'luadoc', 'luap', 'markdown_inline',
 					'python', 'query', 'regex', 'toml', 'tsx', 'typescript', 'vim',
-					'vimdoc', 'xml', 'yaml', 'typst', 'http',
+					'vimdoc', 'xml', 'yaml', 'typst', 'http', 'glsl',
 					-- Requires tree-sitter-cli
 					'latex'
 				},
