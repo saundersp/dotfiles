@@ -419,6 +419,11 @@ local lazy_plugins = {
 	-- Make folding look modern
 	{ 'kevinhwang91/nvim-ufo',
 		event = 'VeryLazy',
+		init = function()
+			vim.o.foldcolumn = '1'
+			vim.o.foldlevel = 99
+			vim.o.foldlevelstart = 99
+		end,
 		opts = { provider_selector = function() return { 'treesitter', 'indent' } end },
 		cmd = { 'UfoEnable', 'UfoDisable', 'UfoInspect', 'UfoAttach', 'UfoDetach', 'UfoEnableFold', 'UfoDisableFold' },
 		dependencies = {
