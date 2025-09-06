@@ -1263,6 +1263,15 @@ lazy.setup({
 		}
 	}
 })
+-- NOTE Temporary fix for winborder in lazy.nvim window
+-- Remove when this PR is merged : https://github.com/folke/lazy.nvim/pull/1957
+-- Remove when this issue is solved : https://github.com/folke/lazy.nvim/issues/1951
+vim.api.nvim_create_autocmd('FileType', {
+	pattern = 'lazy_backdrop',
+	callback = function(ctx) vim.api.nvim_win_set_config(vim.fn.win_findbuf(ctx.buf)[1], { border = 'none' }) end,
+	group = vim.api.nvim_create_augroup('lazynvim-fix', { clear = true }),
+	desc = 'User: fix backdrop for lazy window',
+})
 nmap('<leader>lo', lazy.home,	 'Open Lazy plugin manager main menu')
 nmap('<leader>lp', lazy.profile, 'Open lazy loading profiling results')
 
@@ -1296,6 +1305,7 @@ vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in b
 vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/.venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
 vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor
+vim.o.winborder					= 'rounded'									-- Defines the default border style of floating windows
 Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', { 'typst', 'python' },	function() vim.o.expandtab = false; vim.bo.tabstop = 8; vim.bo.shiftwidth = 8; vim.bo.softtabstop = 8 end, 'Disable the tab expansion of spaces')
 vim.filetype.add({ extension = { rest = 'http', shader = 'glsl' } })								-- Added custom filetype to http (REST API)
