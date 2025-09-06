@@ -324,14 +324,6 @@ local lazy_plugins = {
 			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
 			local servers = {
 				lua_ls = {
-					settings = {
-						Lua = {
-							runtime = { version = 'LuaJIT' },
-							workspace = { checkThirdParty = false },
-							completion = { callSnippet = 'Replace' },
-							telemetry = { enable = false }
-						}
-					},
 					-- LSP is handled by lazydev.nvim
 					__skip_setup = true
 				},
@@ -340,8 +332,10 @@ local lazy_plugins = {
 					-- https://clangd.llvm.org/installation.html
 					__skip_download = true,
 					settings = {
-						CompileFlags = {
-							add = { '-I/opt/cuda/targets/x86_64-linux/include' }
+						clangd = {
+							CompileFlags = {
+								add = { '-I/opt/cuda/targets/x86_64-linux/include' }
+							}
 						}
 					}
 				},
@@ -354,7 +348,19 @@ local lazy_plugins = {
 				},
 				cmake = {},
 				bashls = {},
-				ruff = {},
+				ruff = {
+					init_options = {
+						settings = {
+							configuration = {
+								['line-length'] = 150,
+								format = {
+									['quote-style'] = 'single',
+									['indent-style'] = 'tab'
+								}
+							}
+						}
+					}
+				},
 				texlab = {},
 				docker_compose_language_service = {},
 				marksman = {},
@@ -373,12 +379,11 @@ local lazy_plugins = {
 				automatic_enable = true
 			})
 
-			for name, opts in pairs(servers) do
-				if opts.__skip_setup ~= true then
-					local server_config = { capabilities = capabilities }
-					if opts.filetypes then server_config.filetypes = opts.filetypes end
-					if opts.settings then server_config.settings = { [name] = opts.settings } end
-					if opts.on_init then server_config.on_init = opts.on_init end
+			for name, server_config in pairs(servers) do
+				if server_config.__skip_setup ~= true then
+					server_config.__skip_download = nil
+					server_config.__skip_setup = nil
+					server_config.capabilities = capabilities
 					vim.lsp.config(name, server_config)
 					vim.lsp.enable(name)
 				end
