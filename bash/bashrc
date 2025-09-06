@@ -671,13 +671,13 @@ Available flags:
 			moff) __moff__ ;;
 			m)
 				__moff__
-				pactl load-module module-native-protocol-tcp listen=10.10.158.1 auth-ip-acl=10.10.158.2
+				pactl load-module module-native-protocol-tcp listen=10.10.159.1 auth-ip-acl=10.10.159.2
 			;;
 			soff) __soff__ ;;
 			s)
 				__soff__
-				pactl load-module module-tunnel-sink-new server=10.10.158.1
-				pactl load-module module-tunnel-source server=10.10.158.1
+				pactl load-module module-tunnel-sink-new server=10.10.159.1
+				pactl load-module module-tunnel-source server=10.10.159.1
 			;;
 			loopoff) __paloopoff__ ;;
 			loop)
