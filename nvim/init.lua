@@ -1100,7 +1100,7 @@ local lazy_plugins = {
 	},
 	-- Provides external LTeX file handling (off-spec lsp) and other functions
 	{ 'barreiroleo/ltex_extra.nvim',
-		ft = { 'markdown', 'plaintex', 'tex' },
+		ft = { 'markdown', 'plaintex', 'tex', 'typst' },
 		config = function()
 			local function setup_ltex(lang)
 				local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -1124,7 +1124,8 @@ local lazy_plugins = {
 							},
 							language = lang
 						}
-					}
+					},
+					filetypes = { 'markdown', 'plaintex', 'tex', 'typst' }
 				})
 			end
 
@@ -1224,6 +1225,24 @@ local lazy_plugins = {
 			{ '<leader>rt', function() require('kulala').toggle_view() end, ft = 'http', desc = 'Toggle between the body and headers view of the last run request' },
 			{ ']r', function() require('kulala').jump_next() end, ft = 'http', desc = 'Jump to the next request' },
 			{ '[r', function() require('kulala').jump_prev() end, ft = 'http', desc = 'Jump to the previous request' }
+		}
+	},
+	-- Low latency typst preview for Neovim
+	{ 'chomosuke/typst-preview.nvim',
+		ft = 'typst',
+		opts = {
+			dependencies_bin = {
+				['tinymist'] = 'tinymist' -- Use tinymist from mason
+			}
+		},
+		keys = { { '<leader>tp', '<cmd>TypstPreviewToggle<CR>', ft = { 'typst' }, desc = 'Preview typst document' } },
+		cmd = {
+			'TypstPreview', 'TypstPreviewFollowCursor', 'TypstPreviewFollowCursorToggle', 'TypstPreviewNoFollowCursor',
+			'TypstPreviewStop', 'TypstPreviewSyncCursor', 'TypstPreviewToggle', 'TypstPreviewUpdate'
+		},
+		dependencies = {
+			-- Tool to install LSPs, DAPs, linters and formatters
+			'williamboman/mason.nvim'
 		}
 	}
 }
