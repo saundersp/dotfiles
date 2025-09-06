@@ -930,24 +930,7 @@ local lazy_plugins = {
 			local none_ls = require('null-ls')
 
 			-- See available configs at : https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md
-			-- And even additional configs at : https://github.com/nvimtools/none-ls-extras.nvim/
 			local sources = {
-				autopep8 = {
-					require('none-ls.formatting.autopep8').with({
-						extra_args = {
-							'--max-line-length=150',
-							'--ignore=E101,E11,E111,E121,E127,E128,E129,E301,E302,E402,E704,E265,E251,E305,E731,E122,E123,W191'
-						}
-					})
-				},
-				flake8 = {
-					require('none-ls.diagnostics.flake8').with({
-						extra_args = {
-							'--max-line-length=150',
-							'--ignore=W191,E302,E704,E101,E128,E265,E251,E301,E305,E731'
-						}
-					})
-				},
 				markdownlint = {
 					none_ls.builtins.formatting.markdownlint,
 					none_ls.builtins.diagnostics.markdownlint.with({
@@ -993,8 +976,6 @@ local lazy_plugins = {
 		dependencies = {
 			-- Add additional LSP, linters and formatters not provided by williamboman/mason-lspconfig
 			{ 'nvimtools/none-ls.nvim', cmd = { 'NullLsLog', 'NullLsInfo' } },
-			-- Adding extra sources not included in none-ls
-			'nvimtools/none-ls-extras.nvim',
 			-- Shellcheck diagnostics and code-actions sources for none-ls.nvim
 			'gbprod/none-ls-shellcheck.nvim',
 			-- Lua library functions
