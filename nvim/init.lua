@@ -365,7 +365,7 @@ local lazy_plugins = {
 				docker_compose_language_service = {},
 				marksman = {},
 				tinymist = {},
-				ltex = {
+				ltex_plus = {
 					-- Install package rather than using Mason
 					__skip_download = true,
 					-- LSP is handled by ltex_extra.nvim
@@ -1106,7 +1106,7 @@ local lazy_plugins = {
 				local capabilities = vim.lsp.protocol.make_client_capabilities()
 				capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
 
-				require('lspconfig')['ltex'].setup({
+				require('lspconfig')['ltex_plus'].setup({
 					capabilities = capabilities,
 					on_attach = function(_, _)
 						require('ltex_extra').setup({
