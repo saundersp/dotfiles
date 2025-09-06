@@ -594,13 +594,11 @@ nmap('<leader>lp', lazy.profile, 'Open lazy loading profiling results')
 -- General settings configuration
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 vim.o.termguicolors				= true										-- Enable 24-bit RGB colours in the terminal
-vim.o.listchars					= 'eol:󰌑,tab:󰌒 ,trail:•,extends:,precedes:,space:·,nbsp:󱁐'			-- List of whitespace characters replacement (see :h listchars) (using: nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
+vim.o.listchars					= 'tab:󰌒 ,lead:•,trail:•,extends:,precedes:,nbsp:󱁐'				-- List of whitespace characters replacement (see :h listchars) (using: nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
 vim.wo.list					= true										-- Enable replacement of listchars
 vim.wo.wrap					= false										-- Display long lines as just one line
 vim.bo.fileencoding				= 'UTF-8'									-- The encoding written to file
 vim.bo.iskeyword				= vim.bo.iskeyword .. ',-'							-- treat dash separated words as a word text object
-vim.bo.tabstop					= 8										-- Set the width of a tab
-vim.bo.shiftwidth				= 8										-- Change the number of space characters inserted for indentation
 vim.bo.softtabstop				= 8										-- Change the number of space characters inserted for indentation
 vim.bo.smartindent				= true										-- Does smart autoindenting when starting a new line
 vim.wo.number					= true										-- Line numbers
@@ -608,7 +606,6 @@ vim.wo.relativenumber				= true										-- Relative number (enabled after numbe
 vim.wo.cursorline				= true										-- Enable highlighting of the current line
 vim.wo.cursorcolumn				= true										-- Enable highlighting of the current column
 vim.o.showtabline				= 2										-- Always show top files tabs
-vim.wo.foldlevel				= 99										-- Fold are open when you first open a file
 vim.o.visualbell				= true										-- Disable bell noise
 vim.o.splitbelow				= true										-- Horizontal splits will automatically be below
 vim.o.splitright				= true										-- Vertical splits will automatically be to the right
@@ -621,10 +618,10 @@ vim.o.wildmode					= 'longest,list,full'								-- Enable autocompletion in COMM
 vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
 vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/.venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
 vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
-vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor.
+vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor
 Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
-Autocmd('Filetype', 'python',			function() vim.o.expandtab = false end,						   'Disable the tab expansion of spaces')
-vim.filetype.add({ extension = { rest = 'http' } })										-- Added custom filetype to http (REST API)
+Autocmd('Filetype', { 'typst', 'python' },	function() vim.o.expandtab = false; vim.bo.tabstop = 8; vim.bo.shiftwidth = 8; vim.bo.softtabstop = 8 end, 'Disable the tab expansion of spaces')
+vim.filetype.add({ extension = { rest = 'http', shader = 'glsl' } })								-- Added custom filetype to http (REST API)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping configuration
