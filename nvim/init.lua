@@ -169,7 +169,11 @@ local lazy_plugins = {
 			local gs = require('gitsigns')
 			gs.setup({})
 			require('scrollbar.handlers.gitsigns').setup()
+			-- NOTE: Removes warning about not properly documented 'nav_hunk' method
+			---@diagnostic disable-next-line: param-type-mismatch
 			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.nav_hunk('next') end end, 'Next Hunk (or change)')
+			-- NOTE: Removes warning about not properly documented 'nav_hunk' method
+			---@diagnostic disable-next-line: param-type-mismatch
 			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.nav_hunk('prev') end end, 'Previous Hunk (or change)')
 		end,
 		keys = {
@@ -264,7 +268,7 @@ local lazy_plugins = {
 			'nvim-tree/nvim-web-devicons'
 		}
 	},
-	-- Neovim Lua plugin to align text interactively. Part of 'mini.nvim' library.
+	-- Neovim Lua plugin to align text interactively. Part of 'mini.nvim' library
 	{ 'nvim-mini/mini.align',
 		version = false,
 		event = 'VeryLazy',
@@ -289,14 +293,8 @@ local lazy_plugins = {
 	},
 	-- Faster LuaLS setup for Neovim
 	{ 'folke/lazydev.nvim',
-		ft = 'lua', -- only load on lua files
-		opts = {
-			library = {
-				-- See the configuration section for more details
-				-- Load luvit types when the `vim.uv` word is found
-				{ path = 'luvit-meta/library', words = { 'vim%.uv' } }
-			}
-		},
+		ft = 'lua',
+		opts = { library = { { path = 'luvit-meta/library', words = { 'vim%.uv' } } } },
 		dependencies = {
 			-- Optional `vim.uv` typings
 			{ 'Bilal2453/luvit-meta', lazy = true }
@@ -405,7 +403,7 @@ local lazy_plugins = {
 			'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim',
 			-- Auto completion functionalities
 			'saghen/blink.cmp',
-			-- Fully customizable previewer for LSP code actions.
+			-- Fully customizable previewer for LSP code actions
 			{ 'aznhe21/actions-preview.nvim',
 				config = true,
 				keys = { { '<leader>ca', function() require('actions-preview').code_actions() end, desc = 'LSP: Code action' }, }
@@ -1109,7 +1107,7 @@ local lazy_plugins = {
 			'VimtexInverseSearch'
 		}
 	},
-	-- Provides external LTeX file handling (off-spec lsp) and other functions.
+	-- Provides external LTeX file handling (off-spec lsp) and other functions
 	{ 'barreiroleo/ltex_extra.nvim',
 		ft = { 'markdown', 'plaintex', 'tex' },
 		config = function()
@@ -1219,14 +1217,14 @@ local lazy_plugins = {
 			{ '<leader>ot', function() require('snacks').terminal() end,		 desc = 'Open terminal' }
 		}
 	},
-	-- Preview Markdown in your modern browser with synchronised scrolling and flexible configuration.
+	-- Preview Markdown in your modern browser with synchronised scrolling and flexible configuration
 	{ 'iamcco/markdown-preview.nvim',
 		ft = 'markdown',
 		cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
 		keys = { { '<localleader>mp', '<cmd>MarkdownPreviewToggle<CR>', ft = 'markdown', desc = 'Toggle Markdown previewer' } },
 		build = 'cd app && npx --yes yarn install'
 	},
-	-- A minimal 🤏 HTTP-client 🐼 interface 🖥️ for Neovim ❤️.
+	-- A minimal 🤏 HTTP-client 🐼 interface 🖥️ for Neovim ❤️
 	{ 'mistweaverco/kulala.nvim',
 		config = true,
 		keys = {
@@ -1240,8 +1238,6 @@ local lazy_plugins = {
 }
 
 local lazy = require('lazy')
--- NOTE: Removes warning about not properly marked as optional fields
----@diagnostic disable-next-line: missing-fields
 lazy.setup({
 	spec = lazy_plugins,
 	defaults = { lazy = true },

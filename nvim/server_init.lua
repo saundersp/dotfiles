@@ -122,7 +122,11 @@ local lazy_plugins = {
 			local gs = require('gitsigns')
 			gs.setup({})
 			require('scrollbar.handlers.gitsigns').setup()
+			-- NOTE: Removes warning about not properly documented 'nav_hunk' method
+			---@diagnostic disable-next-line: param-type-mismatch
 			nmap(']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.nav_hunk('next') end end, 'Next Hunk (or change)')
+			-- NOTE: Removes warning about not properly documented 'nav_hunk' method
+			---@diagnostic disable-next-line: param-type-mismatch
 			nmap('[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.nav_hunk('prev') end end, 'Previous Hunk (or change)')
 		end,
 		keys = {
@@ -206,7 +210,7 @@ local lazy_plugins = {
 			'nvim-tree/nvim-web-devicons'
 		}
 	},
-	-- Neovim Lua plugin to align text interactively. Part of 'mini.nvim' library.
+	-- Neovim Lua plugin to align text interactively. Part of 'mini.nvim' library
 	{ 'nvim-mini/mini.align',
 		version = false,
 		event = 'VeryLazy',
@@ -560,8 +564,6 @@ local lazy_plugins = {
 }
 
 local lazy = require('lazy')
--- NOTE: Removes warning about not properly marked as optional fields
----@diagnostic disable-next-line: missing-fields
 lazy.setup({
 	spec = lazy_plugins,
 	defaults = { lazy = true },
