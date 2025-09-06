@@ -575,7 +575,7 @@ lazy.setup({
 	rocks = { enabled = false },
 	ui = {
 		custom_keys = {
-			['<localleader>i'] = {
+			['<leader>i'] = {
 				function(plug)
 					local plug_config = str_to_list(vim.inspect(plug))
 

@@ -696,7 +696,7 @@ local lazy_plugins = {
 	-- Allow use of background jobs
 	{ 'tpope/vim-dispatch',
 		keys = {
-			{ '<localleader>tp', '<cmd>Dispatch! make preview<CR>',	 ft = { 'plaintex', 'tex', 'typst' }, desc = 'Preview LaTeX/typst document' },
+			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	 ft = { 'plaintex', 'tex' }, desc = 'Preview LaTeX document' },
 			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		 desc = 'Make the default recipe in cwd (multi-jobs)' },
 			{ '<leader>mM', '<cmd>Make<CR>',			 desc = 'Make the default recipe in cwd' },
 			{ '<leader>ms', '<cmd>Start -wait=error make start<CR>', desc = 'Make the "start" recipe in cwd' },
@@ -1089,7 +1089,7 @@ local lazy_plugins = {
 			-- Lua library functions
 			'nvim-lua/plenary.nvim'
 		},
-		keys = { { '<localleader>tp', '<cmd>LeanInfoviewToggle<CR>', ft = 'lean', desc = "Toggle lean's info view" } },
+		keys = { { '<leader>tp', '<cmd>LeanInfoviewToggle<CR>', ft = 'lean', desc = "Toggle lean's info view" } },
 		cmd = {
 			'LeanAbbreviationsReverseLookup', 'LeanGoal', 'LeanGotoInfoview', 'LeanInfoviewAddPin', 'LeanInfoviewClearDiffPin', 'LeanInfoviewClearPins',
 			'LeanInfoviewDisableWidgets', 'LeanInfoviewEnableWidgets', 'LeanInfoviewPinTogglePause', 'LeanInfoviewSetDiffPin', 'LeanInfoviewToggle',
@@ -1226,16 +1226,16 @@ local lazy_plugins = {
 	{ 'iamcco/markdown-preview.nvim',
 		ft = 'markdown',
 		cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-		keys = { { '<localleader>mp', '<cmd>MarkdownPreviewToggle<CR>', ft = 'markdown', desc = 'Toggle Markdown previewer' } },
+		keys = { { '<leader>mp', '<cmd>MarkdownPreviewToggle<CR>', ft = 'markdown', desc = 'Toggle Markdown previewer' } },
 		build = 'cd app && npx --yes yarn install'
 	},
 	-- A minimal 🤏 HTTP-client 🐼 interface 🖥️ for Neovim ❤️
 	{ 'mistweaverco/kulala.nvim',
 		config = true,
 		keys = {
-			{ '<localleader>rr', function() require('kulala').run() end, ft = 'http', desc = 'Run the current request' },
-			{ '<localleader>rR', function() require('kulala').run_all() end, ft = 'http', desc = 'Run all requests in the current buffer' },
-			{ '<localleader>rt', function() require('kulala').toggle_view() end, ft = 'http', desc = 'Toggle between the body and headers view of the last run request' },
+			{ '<leader>rr', function() require('kulala').run() end, ft = 'http', desc = 'Run the current request' },
+			{ '<leader>rR', function() require('kulala').run_all() end, ft = 'http', desc = 'Run all requests in the current buffer' },
+			{ '<leader>rt', function() require('kulala').toggle_view() end, ft = 'http', desc = 'Toggle between the body and headers view of the last run request' },
 			{ ']r', function() require('kulala').jump_next() end, ft = 'http', desc = 'Jump to the next request' },
 			{ '[r', function() require('kulala').jump_prev() end, ft = 'http', desc = 'Jump to the previous request' }
 		}
@@ -1249,7 +1249,7 @@ lazy.setup({
 	rocks = { enabled = false },
 	ui = {
 		custom_keys = {
-			['<localleader>i'] = {
+			['<leader>i'] = {
 				function(plug)
 					local plug_config = str_to_list(vim.inspect(plug))
 
