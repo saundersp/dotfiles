@@ -21,11 +21,11 @@ RUN apt-get update \
 	ncdu=1.22-1 \
 	feh=3.10.3-1 \
 	ripgrep=14.1.1-1 \
-	fd-find=10.2.0-1 \
+	fd-find=10.3.0-1 \
 	fastfetch=2.49.0+dfsg-1 \
 	apt-file=3.3 \
 	rsync=3.4.1+ds1-5ubuntu1 \
-	tmux=3.5a-3 \
+	tmux=3.5a-3build1 \
 	rustup=1.27.1-3 \
 	golang-go=2:1.24~2 \
 	tree-sitter-cli=0.22.6-6 \
