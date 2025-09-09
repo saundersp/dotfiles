@@ -1,14 +1,21 @@
 FROM ubuntu:25.10
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 RUN apt-get update \
+	&& apt-get install --no-install-recommends -y \
+	ca-certificates=20250419 \
+	curl=8.14.1-1ubuntu3 \
+	gpg=2.4.8-2ubuntu1 \
+	&& echo 'deb http://download.opensuse.org/repositories/home:/justkidding/xUbuntu_25.04/ /' | tee /etc/apt/sources.list.d/home:justkidding.list \
+	&& curl -fsSL https://download.opensuse.org/repositories/home:justkidding/xUbuntu_25.04/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/home_justkidding.gpg \
+	&& apt-get update \
 	&& apt-get install --no-install-recommends -y \
 	gcc-15=15.2.0-2ubuntu1 \
 	g++-15=15.2.0-2ubuntu1 \
 	git-svn=1:2.51.0-1ubuntu1 \
-	ca-certificates=20250419 \
 	neovim=0.10.4-8build2 \
 	nodejs=20.19.4+dfsg-1 \
-	curl=8.14.1-1ubuntu3 \
 	btop=1.3.2-0.1 \
 	npm=9.2.0~ds1-3 \
 	unzip=6.0-28ubuntu6 \
@@ -31,47 +38,21 @@ RUN apt-get update \
 	tree-sitter-cli=0.22.6-6 \
 	starship=1.22.1-6 \
 	lazygit=0.53.0+ds1-1 \
+	ueberzugpp=2.9.7 \
 	&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 50 \
 	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 50 \
 	&& update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-15 50 \
 	&& update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-15 50 \
-	&& rustup default 1.89.0
-
-# More user friendly aliases
-RUN ln -s "$(command -v fdfind)" /usr/bin/fd
-
-RUN git clone https://github.com/jstkdng/ueberzugpp.git -b v2.9.7 --depth 1 /usr/local/src/ueberzugpp \
-	&& apt-get install --no-install-recommends -y \
-	libtbb-dev=2022.1.0-1 \
-	libxcb-image0-dev=0.4.0-2build1 \
-	libxcb-res0-dev=1.17.0-2 \
-	libvips-dev=8.16.1-1 \
-	libsixel-dev=1.10.5-1 \
-	libchafa-dev=1.14.5-1
-RUN cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_OPENCV=OFF -S /usr/local/src/ueberzugpp/ -B /usr/local/src/ueberzugpp/build \
-	&& cmake --build /usr/local/src/ueberzugpp/build -j "$(nproc)" \
-	&& mv -v /usr/local/src/ueberzugpp/build/ueberzug /usr/local/bin/ueberzug \
-	&& rm -r /usr/local/src/ueberzugpp
-
-RUN git clone --depth=1 -b v0.24.1 https://github.com/jesseduffield/lazydocker.git /usr/local/src/lazydocker
-WORKDIR /usr/local/src/lazydocker
-RUN go install -buildvcs=false \
-	&& mv -v /root/go/bin/lazydocker /usr/local/bin/lazydocker \
-	&& rm -r /usr/local/src/lazydocker
-
-RUN git clone --depth=1 -b 0.64.0 https://github.com/Wilfred/difftastic.git /usr/local/src/difftastic
-WORKDIR /usr/local/src/difftastic
-RUN cargo build --release --locked \
-	&& mv target/release/difft /usr/local/bin/difft \
-	&& rm -r /usr/local/src/difftastic
-
-RUN git clone --depth=1 -b v25.5.31 https://github.com/sxyazi/yazi.git /usr/local/src/yazi
-WORKDIR /usr/local/src/yazi
-RUN cargo build --release --locked \
-	&& mv target/release/yazi /usr/local/bin/yazi \
-	&& rm -r /usr/local/src/yazi
-
-RUN apt-get remove -y golang-go rustup \
+	&& rustup default 1.89.0 \
+	&& ln -s "$(command -v fdfind)" /usr/bin/fd \
+	&& ln -s "$(command -v batcat)" /usr/bin/bat \
+	&& go install github.com/jesseduffield/lazydocker@v0.24.1 \
+	&& mv /root/go/bin/lazydocker /usr/bin/lazydocker \
+	&& cargo install --locked difftastic@0.64.0 \
+	&& mv /root/.cargo/bin/difft /usr/bin/difft \
+	&& cargo install --locked yazi-fm@25.5.31 \
+	&& mv /root/.cargo/bin/yazi /usr/bin/yazi \
+	&& apt-get remove -y golang-go rustup \
 	&& apt-get autoremove -y \
 	&& apt-get autoclean -y \
 	&& rm -r /var/lib/apt/lists/* /root/go /root/.cargo /root/.rustup /root/.cache /root/.config \
