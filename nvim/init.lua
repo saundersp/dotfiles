@@ -345,7 +345,7 @@ local lazy_plugins = {
 					__skip_download = true,
 					filetypes = { 'haskell', 'lhaskell', 'cabal' }
 				},
-				cmake = {},
+				neocmake = {},
 				bashls = {},
 				ruff = {
 					init_options = {
@@ -362,6 +362,7 @@ local lazy_plugins = {
 				},
 				texlab = {},
 				docker_compose_language_service = {},
+				dockerls = {},
 				marksman = {},
 				tinymist = {},
 				ltex_plus = {
@@ -369,7 +370,9 @@ local lazy_plugins = {
 					__skip_download = true,
 					-- LSP is handled by ltex_extra.nvim
 					__skip_setup = true
-				}
+				},
+				jsonls = {},
+				glsl_analyzer = {}
 			}
 
 			require('mason-lspconfig').setup({
@@ -548,47 +551,6 @@ local lazy_plugins = {
 			local open_callback = function() require('dapui').open(); require('nvim-dap-virtual-text').enable() end
 			dap.listeners.before.attach.dapui_config = open_callback
 			dap.listeners.before.launch.dapui_config = open_callback
-
-			--- NOTE Temporary function to jump to next/previous breakpoint
-			--- It uses an unstable API and therefore can break at any point
-			--- See : https://github.com/mfussenegger/nvim-dap/issues/792
-			--- Function credits to @chrisgrieser
-			---@param dir 'next'|'prev'
-			local function gotoBreakpoint(dir)
-				local breakpoints = require('dap.breakpoints').get()
-				if #breakpoints == 0 then
-					vim.notify('No breakpoints set', vim.log.levels.WARN)
-					return
-				end
-				local points = {}
-				for bufnr, buffer in pairs(breakpoints) do
-					for _, point in ipairs(buffer) do
-						table.insert(points, { bufnr = bufnr, line = point.line })
-					end
-				end
-
-				local current = {
-					bufnr = vim.api.nvim_get_current_buf(),
-					line = vim.api.nvim_win_get_cursor(0)[1]
-				}
-
-				local nextPoint
-				for i = 1, #points do
-					local isAtBreakpointI = points[i].bufnr == current.bufnr and points[i].line == current.line
-					if isAtBreakpointI then
-						local nextIdx = dir == 'next' and i + 1 or i - 1
-						if nextIdx > #points then nextIdx = 1 end
-						if nextIdx == 0 then nextIdx = #points end
-						nextPoint = points[nextIdx]
-						break
-					end
-				end
-				if not nextPoint then nextPoint = points[1] end
-
-				vim.cmd(('buffer +%s %s'):format(nextPoint.line, nextPoint.bufnr))
-			end
-			nmap(']b', function() gotoBreakpoint('next') end, 'Go to the next breakpoint')
-			nmap('[b', function() gotoBreakpoint('prev') end, 'Go to the previous breakpoint')
 		end,
 		keys = {
 			{ '<F9>',	'<cmd>DapToggleBreakpoint<CR>',		       desc = 'Debug toggle Breakpoint' },
@@ -637,7 +599,15 @@ local lazy_plugins = {
 				cmd = { 'DapVirtualTextDisable', 'DapVirtualTextEnable', 'DapVirtualTextForceRefresh', 'DapVirtualTextToggle' }
 			},
 			-- A library for asynchronous IO (for nvim-dap-ui)
-			'nvim-neotest/nvim-nio'
+			'nvim-neotest/nvim-nio',
+			--- NOTE Temporary plugin to jump to next/previous breakpoint
+			--- See : https://github.com/mfussenegger/nvim-dap/issues/792
+			{ 'ofirgall/goto-breakpoints.nvim',
+				keys = {
+					{ ']b', function() require('goto-breakpoints').next() end, desc = 'Go to the next breakpoint' },
+					{ '[b', function() require('goto-breakpoints').prev() end, desc = 'Go to the previous breakpoint' }
+				}
+			}
 		}
 	},
 	-- Performant, batteries-included completion plugin for Neovim
