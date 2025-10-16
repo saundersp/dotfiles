@@ -110,10 +110,12 @@ case "$1" in
 		# Dependencies : dev-lang/rust dev-util/pkgconf dev-libs/openssl
 		# https://github.com/typst/typst.git
 		# Dependencies : dev-lang/rust
+		# https://github.com/sxyazi/yazi.git
+		# Dependencies : dev-lang/rust
 		__update_rust__(){
 			cargo build --release --locked && mv -f target/release/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME" && rm -r target
 		}
-		__updatepackages__ 'espanso termscp typst' '__update_rust__'
+		__updatepackages__ 'espanso termscp typst yazi' '__update_rust__'
 
 		# https://github.com/logisim-evolution/logisim-evolution.git
 		# Dependencies : dev-java/openjdk:1.8
