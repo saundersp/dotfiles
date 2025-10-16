@@ -25,7 +25,6 @@ case "$1" in
 	u|update|-u|--update)
 		cd /usr/src/linux
 		NPROC=$(nproc)
-		make modules_prepare
 		if command -v distcc >> /dev/null; then
 			DISTCC_PROC=$(distcc-config --get-hosts | grep -Po '/(\d)' | sed 's./..' | paste -sd + | bc)
 			if ! distcc-config --get-hosts | grep -Pq 'localhost/\d'; then
