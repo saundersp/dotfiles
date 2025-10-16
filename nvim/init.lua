@@ -1212,6 +1212,57 @@ local lazy_plugins = {
 			-- Tool to install LSPs, DAPs, linters and formatters
 			'williamboman/mason.nvim'
 		}
+	},
+	-- NeoVim lua plugin that annotates source code with profiling information from perf, LuaJIT, or other profilers
+	{ 't-troebst/perfanno.nvim',
+		-- ft = { 'c', 'cpp', 'lua', 'python' },
+		config = function()
+			require('perfanno').setup()
+			local telescope = require('telescope')
+			local actions = telescope.extensions.perfanno.actions
+			telescope.setup({
+				extensions = {
+					perfanno = {
+						-- Special mappings in the telescope finders
+						mappings = {
+							['i'] = {
+								['<C-h>'] = actions.hottest_callers,
+								['<C-l>'] = actions.hottest_callees
+							},
+							['n'] = {
+								['gu'] = actions.hottest_callers,
+								['gd'] = actions.hottest_callees
+							}
+						}
+					}
+				}
+			})
+		end,
+		keys = {
+			{ '<leader>plf', '<cmd>PerfLoadFlat<CR>' },
+			{ '<leader>plg', '<cmd>PerfLoadCallGraph<CR>' },
+			{ '<leader>plo', '<cmd>PerfLoadFlameGraph<CR>' },
+			{ '<leader>pe',  '<cmd>PerfPickEvent<CR>' },
+			{ '<leader>pa',  '<cmd>PerfAnnotate<CR>' },
+			{ '<leader>pf',  '<cmd>PerfAnnotateFunction<CR>' },
+			{ '<leader>pa',  '<cmd>PerfAnnotateSelection<CR>', mode = 'v' },
+			{ '<leader>pt',  '<cmd>PerfToggleAnnotations<CR>' },
+			{ '<leader>ph',  '<cmd>PerfHottestLines<CR>' },
+			{ '<leader>ps',  '<cmd>PerfHottestSymbols<CR>' },
+			{ '<leader>pc',  '<cmd>PerfHottestCallersFunction<CR>' },
+			{ '<leader>pc',  '<cmd>PerfHottestCallersSelection<CR>', mode = 'v' }
+		},
+		cmd = {
+			'PerfAnnotate', 'PerfAnnotateFunction', 'PerfAnnotateSelection', 'PerfCacheDelete',
+			'PerfCacheLoad', 'PerfCacheSave', 'PerfCycleFormat', 'PerfHottestCallersFunction',
+			'PerfHottestCallersSelection', 'PerfHottestLines', 'PerfHottestSymbols', 'PerfLoadCallGraph',
+			'PerfLoadFlameGraph', 'PerfLoadFlat', 'PerfLuaProfileStart', 'PerfLuaProfileStop',
+			'PerfPickEvent', 'PerfToggleAnnotations'
+		},
+		dependencies = {
+			-- Add fuzzy finder to files, command and more
+			'nvim-telescope/telescope.nvim'
+		}
 	}
 }
 
@@ -1317,7 +1368,7 @@ vmap('<C-K>', "<cmd>m '<0<CR>gv=gv",												   'Move the selected block upwa
 nmap('<C-u>', '<C-u>zz',													   'Scroll window upwards in the buffer while keeping cursor at the middle of the window')
 nmap('<C-d>', '<C-d>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
 nmap('<C-f>', '<C-f>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
-nmap('<leader>p', '"+p',													   'Paste the system clipboard after the cursor')
+nmap('<leader>pp', '"+p',													   'Paste the system clipboard after the cursor')
 nmap('<leader>P', '"+P',													   'Paste the system clipboard before the cursor')
 vmap('<leader>y', '"+y',													   'Yank into the system clipboard')
 nmap('<leader>y', '"+Y',													   'Yank the entire buffer into the system clipboard')
