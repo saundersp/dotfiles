@@ -117,6 +117,13 @@ case "$1" in
 		}
 		__updatepackages__ 'espanso termscp typst yazi' '__update_rust__'
 
+		# git://g.blicky.net/ncdu.git
+		# Dependencies : dev-lang/zig
+		__update_zig__(){
+		│       zig build --release=fast && mv zig-out/bin/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME" && rm -r .zig-cache zig-out
+		}
+		__updatepackages__ 'ncdu' '__update_zig__'
+
 		# https://github.com/logisim-evolution/logisim-evolution.git
 		# Dependencies : dev-java/openjdk:1.8
 		__update_gradle_app__(){
