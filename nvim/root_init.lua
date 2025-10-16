@@ -84,7 +84,7 @@ vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/.venv/*,*/package-l
 vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor
 vim.o.winborder					= 'rounded'									-- Defines the default border style of floating windows
-Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
+Autocmd('Filetype', { 'plaintex', 'tex', 'typst' }, function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', { 'typst', 'python' },	function() vim.o.expandtab = false; vim.bo.tabstop = 8; vim.bo.shiftwidth = 8; vim.bo.softtabstop = 8 end, 'Disable the tab expansion of spaces')
 vim.filetype.add({ extension = { rest = 'http', shader = 'glsl' } })								-- Added custom filetype to http (REST API)
 

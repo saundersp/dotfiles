@@ -260,7 +260,7 @@ local lazy_plugins = {
 	},
 	-- Edit the filesystem like a buffer
 	{ 'stevearc/oil.nvim',
-		opts = { default_file_explorer = false },
+		opts = {},
 		keys = { { '<C-n>', '<cmd>Oil<CR>', desc = 'Open Oil file manager' } },
 		cmd = 'Oil',
 		dependencies = {
@@ -270,7 +270,6 @@ local lazy_plugins = {
 	},
 	-- Neovim Lua plugin to align text interactively. Part of 'mini.nvim' library
 	{ 'nvim-mini/mini.align',
-		version = false,
 		event = 'VeryLazy',
 		opts = { mappings = { start = 'gl', start_with_preview = 'gL' } }
 	},
@@ -669,30 +668,30 @@ local lazy_plugins = {
 							t({'\\begin{exercise_sq}', '\t'}),
 							i(0),
 							t({'', '\\end{exercise_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-							t({'', '\\end{proof}', ''}),
+							t({'', '\\end{proof}', ''})
 						}),
 						s(':theo', {
 							t({'\\begin{theorem_sq}', '\t'}),
 							i(0),
 							t({'', '\\end{theorem_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-							t({'', '\\end{proof}', ''}),
+							t({'', '\\end{proof}', ''})
 						}),
 						s(':prop', {
 							t({'\\begin{prop_sq}', '\t'}),
 							i(0),
 							t({'', '\\end{prop_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-							t({'', '\\end{proof}', ''}),
+							t({'', '\\end{proof}', ''})
 						}),
 						s(':coro', {
 							t({'\\begin{corollary_sq}', '\t'}),
 							i(0),
 							t({'', '\\end{corollary_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-							t({'', '\\end{proof}', ''}),
+							t({'', '\\end{proof}', ''})
 						}),
 						s(':def', {
 							t({'\\begin{definition_sq}', '\t'}),
 							i(0),
-							t({'', '\\end{definition_sq}'}),
+							t({'', '\\end{definition_sq}'})
 						})
 				})
 			end }
@@ -971,7 +970,7 @@ local lazy_plugins = {
 				end)
 			})
 		end,
-		keys = { { '<leader>gf', vim.lsp.buf.format, desc = 'Format the document' } },
+		keys = { { '<leader>gf', vim.lsp.buf.format, mode = { 'n', 'v', }, desc = 'Format the document' } },
 		cmd = { 'NullLsInstall', 'NoneLsInstall', 'NullLsUninstall', 'NoneLsUninstall' },
 		dependencies = {
 			-- Add additional LSP, linters and formatters not provided by williamboman/mason-lspconfig
@@ -1004,7 +1003,6 @@ local lazy_plugins = {
 	},
 	-- Better navigation inside tmux
 	{ 'alexghergh/nvim-tmux-navigation',
-		event = 'VeryLazy',
 		opts = { disable_when_zoomed = true },
 		keys = {
 			{ '<C-b>h', '<cmd>NvimTmuxNavigateLeft<CR>',  desc = 'Navigate to the left tmux pane if existent' },
@@ -1058,7 +1056,6 @@ local lazy_plugins = {
 	},
 	-- Navigate code with search labels, enhanced character motions and Treesitter integration
 	{ 'folke/flash.nvim',
-		event = 'VeryLazy',
 		config = true,
 		keys = {
 			{ 's', mode = { 'n', 'x', 'o' }, function() require('flash').jump() end,       desc = 'Flash' },
@@ -1106,13 +1103,13 @@ local lazy_plugins = {
 				local capabilities = vim.lsp.protocol.make_client_capabilities()
 				capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
 
-				require('lspconfig')['ltex_plus'].setup({
+				vim.lsp.config('ltex_plus', {
 					capabilities = capabilities,
 					on_attach = function(_, _)
 						require('ltex_extra').setup({
 							load_langs = { 'fr', 'en-GB' },
 							init_check = true,
-							path = vim.fn.stdpath 'config' .. '/spell/dictionaries',
+							path = vim.fn.stdpath 'config' .. '/spell/dictionaries'
 						})
 					end,
 					settings = {
@@ -1127,6 +1124,7 @@ local lazy_plugins = {
 					},
 					filetypes = { 'markdown', 'plaintex', 'tex', 'typst' }
 				})
+				vim.lsp.enable('ltex_plus')
 			end
 
 			setup_ltex('fr')
@@ -1253,6 +1251,7 @@ lazy.setup({
 	defaults = { lazy = true },
 	rocks = { enabled = false },
 	ui = {
+		border = { '╭', '─', '╮', '│', '╯', '─', '╰', '│' },
 		custom_keys = {
 			['<leader>i'] = {
 				function(plug)
@@ -1280,7 +1279,7 @@ vim.api.nvim_create_autocmd('FileType', {
 	pattern = 'lazy_backdrop',
 	callback = function(ctx) vim.api.nvim_win_set_config(vim.fn.win_findbuf(ctx.buf)[1], { border = 'none' }) end,
 	group = vim.api.nvim_create_augroup('lazynvim-fix', { clear = true }),
-	desc = 'User: fix backdrop for lazy window',
+	desc = 'User: fix backdrop for lazy window'
 })
 nmap('<leader>lo', lazy.home,	 'Open Lazy plugin manager main menu')
 nmap('<leader>lp', lazy.profile, 'Open lazy loading profiling results')
@@ -1316,7 +1315,7 @@ vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/.venv/*,*/package-l
 vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor
 vim.o.winborder					= 'rounded'									-- Defines the default border style of floating windows
-Autocmd('Filetype', { 'plaintex', 'tex' },	function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
+Autocmd('Filetype', { 'plaintex', 'tex', 'typst' }, function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
 Autocmd('Filetype', { 'typst', 'python' },	function() vim.o.expandtab = false; vim.bo.tabstop = 8; vim.bo.shiftwidth = 8; vim.bo.softtabstop = 8 end, 'Disable the tab expansion of spaces')
 vim.filetype.add({ extension = { rest = 'http', shader = 'glsl' } })								-- Added custom filetype to http (REST API)
 
