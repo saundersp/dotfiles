@@ -5,23 +5,23 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
 	ca-certificates=20250419 \
-	curl=8.14.1-1ubuntu3 \
-	gpg=2.4.8-2ubuntu1 \
+	curl=8.14.1-2ubuntu1 \
+	gpg=2.4.8-2ubuntu2 \
 	&& echo 'deb http://download.opensuse.org/repositories/home:/justkidding/xUbuntu_25.04/ /' | tee /etc/apt/sources.list.d/home:justkidding.list \
 	&& curl -fsSL https://download.opensuse.org/repositories/home:justkidding/xUbuntu_25.04/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/home_justkidding.gpg \
 	&& apt-get update \
 	&& apt-get install --no-install-recommends -y \
-	gcc-15=15.2.0-2ubuntu1 \
-	g++-15=15.2.0-2ubuntu1 \
+	gcc-15=15.2.0-4ubuntu4 \
+	g++-15=15.2.0-4ubuntu4 \
 	git-svn=1:2.51.0-1ubuntu1 \
 	neovim=0.10.4-8build2 \
 	nodejs=20.19.4+dfsg-1 \
 	btop=1.3.2-0.1 \
 	npm=9.2.0~ds1-3 \
-	unzip=6.0-28ubuntu6 \
-	cmake=3.31.6-2ubuntu4 \
+	unzip=6.0-28ubuntu7 \
+	cmake=3.31.6-2ubuntu6 \
 	make-guile=4.4.1-2 \
-	pkgconf=1.8.1-4 \
+	pkgconf=1.8.1-4build1 \
 	bat=0.25.0-2 \
 	fzf=0.60.3-1 \
 	eza=0.21.0-1 \
@@ -43,7 +43,7 @@ RUN apt-get update \
 	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 50 \
 	&& update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-15 50 \
 	&& update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-15 50 \
-	&& rustup default 1.89.0 \
+	&& rustup default 1.90.0 \
 	&& ln -s "$(command -v fdfind)" /usr/bin/fd \
 	&& ln -s "$(command -v batcat)" /usr/bin/bat \
 	&& go install github.com/jesseduffield/lazydocker@v0.24.1 \
