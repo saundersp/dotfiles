@@ -23,6 +23,7 @@ error_symbol = '[❯](bold red)'
 
 [cmd_duration]
 format = '\[[⏱ $duration]($style)\]'
+min_time_to_notify = 2
 
 [directory]
 truncation_length = 5
