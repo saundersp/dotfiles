@@ -589,8 +589,6 @@ local lazy_plugins = {
 					'DapToggleRepl'
 				}
 			},
-			-- Tool to install LSPs, DAPs, linters and formatters
-			'williamboman/mason.nvim',
 			-- A UI for nvim-dap
 			{ 'rcarriga/nvim-dap-ui', config = true },
 			-- Adds virtual text support to nvim-dap. nvim-treesitter is used to find variable definitions
