@@ -71,7 +71,7 @@ WORKDIR /home/saundersp/dotfiles
 
 # Using neovim profile with LSP support
 RUN cp nvim/init.lua nvim/server_init.lua \
-	&& ./auto.sh s \
+	&& ./auto.sh server \
 	&& rm -r /home/saundersp/.npm /home/saundersp/.bash_logout /home/saundersp/.XDG/cache/yarn
 
 ENTRYPOINT ["bash"]

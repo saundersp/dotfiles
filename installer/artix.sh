@@ -340,8 +340,8 @@ case $PACKAGES in
 
 		# Enabling the dotfiles
 		cd ~/git/dotfiles
-		./auto.sh install
-		sudo bash auto.sh install
+		./auto.sh desktop
+		sudo bash auto.sh desktop
 
 		# Getting the wallpaper
 		mkdir ~/Images

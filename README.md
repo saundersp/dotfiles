@@ -49,7 +49,7 @@ Either pick any wanted files, code blocks, or just use the auto.sh script.
 
 ```bash
 # Default Linux as user (some dotfiles differ if installed as root)
-./auto.sh install
+./auto.sh desktop
 # For the minimal, terminal only, dotfiles
 ./auto.sh server
 ```
@@ -57,8 +57,6 @@ Either pick any wanted files, code blocks, or just use the auto.sh script.
 ### Uninstallation
 
 ```bash
-./auto.sh remove
-# Alternative
 ./auto.sh uninstall
 ```
 

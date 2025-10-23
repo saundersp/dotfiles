@@ -369,17 +369,17 @@ case $PACKAGES in
 		emerge -q --noreplace app-emulation/virtualbox-guest-additions
 		rc-update add virtualbox-guest-additions default
 		usermod -aG vboxguest $USERNAME
-		su $USERNAME -c \"install_dotfiles $PACKAGES\"
+		su $USERNAME -c \"install_dotfiles desktop\"
 	;;
 	server)
 		install_server
-		su $USERNAME -c \"install_dotfiles $PACKAGES\"
+		su $USERNAME -c \"install_dotfiles server\"
 		;;
 	minimal) ;;
 	laptop)
 		install_ihm
 		emerge -q --noreplace app-misc/brightnessctl net-misc/connman net-wireless/wpa_supplicant net-vpn/wireguard-tools
-		su $USERNAME -c \"install_dotfiles $PACKAGES\"
+		su $USERNAME -c \"install_dotfiles desktop\"
 	;;
 esac
 

@@ -49,7 +49,7 @@ Vous pouvez choisir n'importe quel fichier ou bloc de code, ou simplement utilis
 
 ```bash
 # Installation par défaut sur Linux en tant qu'utilisateur (certains fichiers différent s'ils sont installés en tant que root)
-./auto.sh install
+./auto.sh desktop
 # Pour la version minimale, uniquement en mode terminal
 ./auto.sh server
 ```
@@ -57,8 +57,6 @@ Vous pouvez choisir n'importe quel fichier ou bloc de code, ou simplement utilis
 ### Désinstallation
 
 ```bash
-./auto.sh remove
-# Alternative
 ./auto.sh uninstall
 ```
 
