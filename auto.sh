@@ -78,6 +78,7 @@ case $1 in
 			pkg_link espanso "$XDG_CONFIG_HOME"/espanso
 			pkg_link git "$XDG_CONFIG_HOME"/git
 			pkg_link i3 "$XDG_CONFIG_HOME"/i3
+			pkg_link kitty "$XDG_CONFIG_HOME"/kitty
 			pkg_link picom "$XDG_CONFIG_HOME"
 			pkg_link polybar "$XDG_CONFIG_HOME"/polybar
 			pkg_link rofi "$XDG_CONFIG_HOME"/rofi
@@ -160,6 +161,7 @@ case $1 in
 			"$XDG_CONFIG_HOME"/fastfetch \
 			"$XDG_CONFIG_HOME"/git \
 			"$XDG_CONFIG_HOME"/i3 \
+			"$XDG_CONFIG_HOME"/kitty \
 			"$XDG_CONFIG_HOME"/nvim \
 			"$XDG_DATA_HOME"/nvim/lazy \
 			"$XDG_CONFIG_HOME"/picom \

@@ -81,7 +81,7 @@ bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set 5%+
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id st
+bindsym $mod+Return exec --no-startup-id kitty
 
 # kill focused window
 bindsym $alt+F4 kill
