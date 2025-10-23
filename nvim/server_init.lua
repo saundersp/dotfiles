@@ -164,7 +164,7 @@ local lazy_plugins = {
 			{ '<leader>sc', '<cmd>Telescope commands<CR>',			    desc = 'Search commands' },
 			{ '<leader>sb', '<cmd>Telescope buffers<CR>',			    desc = 'Search buffers' },
 			{ '<leader>ss', '<cmd>Telescope resume<CR>',			    desc = 'Search resume' },
-			{ '<leader>st', '<cmd>TodoTelescope keywords=TODO,FIX<CR>',	    desc = 'Search todos' },
+			{ '<leader>st', '<cmd>TodoTelescope<CR>',			    desc = 'Search todos' },
 			{ '<leader>sN', '<cmd>Telescope noice<CR>',			    desc = 'Search Noice messages' },
 			{ '<leader>sn', '<cmd>Telescope notify<CR>',			    desc = 'Search notifications (powered by notify)' }
 		},
@@ -451,11 +451,7 @@ local lazy_plugins = {
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim',
 		event = 'VeryLazy',
-		opts = {
-			signs = false,
-			highlight = { pattern = '.*<(KEYWORDS)\\s*[: ]' },
-			search = { pattern = '\\b(KEYWORDS)[: ]' }
-		},
+		opts = {},
 		keys = {
 			{ ']t', function() require('todo-comments').jump_next() end, desc = 'Next todo comment' },
 			{ '[t', function() require('todo-comments').jump_prev() end, desc = 'Previous todo comment' }
@@ -576,7 +572,7 @@ lazy.setup({
 		}
 	}
 })
--- NOTE Temporary fix for winborder in lazy.nvim window
+-- NOTE: Temporary fix for winborder in lazy.nvim window
 -- Remove when this PR is merged : https://github.com/folke/lazy.nvim/pull/1957
 -- Remove when this issue is solved : https://github.com/folke/lazy.nvim/issues/1951
 vim.api.nvim_create_autocmd('FileType', {

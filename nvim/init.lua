@@ -215,7 +215,7 @@ local lazy_plugins = {
 			{ '<leader>sc', '<cmd>Telescope commands<CR>',			    desc = 'Search commands' },
 			{ '<leader>sb', '<cmd>Telescope buffers<CR>',			    desc = 'Search buffers' },
 			{ '<leader>ss', '<cmd>Telescope resume<CR>',			    desc = 'Search resume' },
-			{ '<leader>st', '<cmd>TodoTelescope keywords=TODO,FIX<CR>',	    desc = 'Search todos' },
+			{ '<leader>st', '<cmd>TodoTelescope<CR>',			    desc = 'Search todos' },
 			{ '<leader>sN', '<cmd>Telescope noice<CR>',			    desc = 'Search Noice messages' },
 			{ '<leader>sn', '<cmd>Telescope notify<CR>',			    desc = 'Search notifications (powered by notify)' },
 			{ '<leader>dh', '<cmd>Telescope dap commands<CR>',		    desc = 'Dap search commands' },
@@ -582,7 +582,7 @@ local lazy_plugins = {
 			},
 			-- A library for asynchronous IO (for nvim-dap-ui)
 			'nvim-neotest/nvim-nio',
-			--- NOTE Temporary plugin to jump to next/previous breakpoint
+			--- NOTE: Temporary plugin to jump to next/previous breakpoint
 			--- See : https://github.com/mfussenegger/nvim-dap/issues/792
 			{ 'ofirgall/goto-breakpoints.nvim',
 				keys = {
@@ -970,11 +970,7 @@ local lazy_plugins = {
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim',
 		event = 'VeryLazy',
-		opts = {
-			signs = false,
-			highlight = { pattern = '.*<(KEYWORDS)\\s*[: ]' },
-			search = { pattern = '\\b(KEYWORDS)[: ]' }
-		},
+		opts = {},
 		keys = {
 			{ ']t', function() require('todo-comments').jump_next() end, desc = 'Next todo comment' },
 			{ '[t', function() require('todo-comments').jump_prev() end, desc = 'Previous todo comment' }
@@ -1038,7 +1034,7 @@ local lazy_plugins = {
 		config = function()
 			vim.g.vimtex_view_method = 'zathura'
 			vim.g.vimtex_compiler_latexmk = { aux_dir = 'out', out_dir = 'out', out2dir = 'out' }
-			vim.g.vimtex_compiler_latexmk_engines = { _ = '-xelatex --shell-escape' } -- NOTE Override default engine
+			vim.g.vimtex_compiler_latexmk_engines = { _ = '-xelatex --shell-escape' } -- NOTE: Override default engine
 		end,
 		cmd = {
 			'VimtexClean', 'VimtexClearCache', 'VimtexCompile', 'VimtexCompileOutput', 'VimtexCompileSS', 'VimtexCompileSelected', 'VimtexContextMenu',
@@ -1275,7 +1271,7 @@ lazy.setup({
 		}
 	}
 })
--- NOTE Temporary fix for winborder in lazy.nvim window
+-- NOTE: Temporary fix for winborder in lazy.nvim window
 -- Remove when this PR is merged : https://github.com/folke/lazy.nvim/pull/1957
 -- Remove when this issue is solved : https://github.com/folke/lazy.nvim/issues/1951
 vim.api.nvim_create_autocmd('FileType', {
