@@ -1,34 +1,5 @@
 #!/usr/bin/env bash
 
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
-
-# Set config and data folder for nvim, etc...
-export XDG_CONFIG_HOME="$HOME"/.XDG/config
-export XDG_CACHE_HOME="$HOME"/.XDG/cache
-export XDG_DATA_HOME="$HOME"/.XDG/data
-export XDG_STATE_HOME="$HOME"/.XDG/state
-export XDG_RUNTIME_DIR="$HOME"/.XDG/runtime
-
-# Some global XDG variables
-if [ -d /opt/cuda ]; then
-	export CUDA_HOME=/opt/cuda
-	export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
-fi
-
-# Set extras dotfiles location to clean home (xdg-ninja)
-command -v less >> /dev/null && export LESSHISTFILE="$XDG_STATE_HOME"/less_history
-command -v gradle >> /dev/null && export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
-command -v java >> /dev/null && export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
-command -v python >> /dev/null && export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
-command -v go >> /dev/null && export GOPATH="$XDG_DATA_HOME"/go
-if command -v docker >> /dev/null; then
-	export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
-	docker compose >> /dev/null && export COMPOSE_BAKE=true
-fi
-command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
-command -v npm >> /dev/null && export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
-
 # Define colours
 #LIGHTGRAY='\033[0;37m'
 #WHITE='\033[1;37m'
@@ -127,6 +98,7 @@ stty -ixon                                     # Disable ctrl-s and ctrl-q.
 shopt -s histappend                            # Append to the history file, don't overwrite it
 shopt -s cdspell dirspell                      # Minor error corrections on directories/files names
 shopt -s expand_aliases                        # Enable the alias keyword
+alias bash='bash -l'                           # Enabling login by default
 
 # Enable programmable completion features script by GNU (https://github.com/scop/bash-completion)
 if [ -f /usr/share/bash-completion/bash_completion ]; then . /usr/share/bash-completion/bash_completion
@@ -379,8 +351,8 @@ Available flags:
 	-b, b, board, --board		Show the latest sync timestamp of the repositories.
 	-h, h, help, --help		Show this help message."
 		case "$1" in
-			-s|s|sync|--sync) sh -c 'emerge --sync && command -v eix >> /dev/null && eix-update && eix-remote update' ;;
-			-u|u|update|--update) sh -c 'command -v haskell-updater >> /dev/null && haskell-updater; emerge -uNUDv --keep-going=y @world && emerge -v @preserved-rebuild && dispatch-conf' ;;
+			-s|s|sync|--sync) env bash -l -c 'emerge --sync && cmd_check eix && eix-update && eix-remote update' ;;
+			-u|u|update|--update) env bash -l -c 'cmd_check haskell-updater && haskell-updater; emerge -uNUDv --keep-going=y @world && emerge -v @preserved-rebuild && dispatch-conf' ;;
 			-l|l|list|--list) cat /var/lib/portage/world ;;
 			-q|q|query|--query) __command_requirer_pkg__ e-file e-file app-portage/pfl "$2" ;;
 			-c|c|clean|--clean) __command_requirer_pkg__ 'sh -c "eclean -d packages && eclean -d distfiles && echo \"Deleting portage temporary files\" && find /var/tmp/portage -mindepth 1 -delete"' eclean app-portage/gentoolkit ;;
