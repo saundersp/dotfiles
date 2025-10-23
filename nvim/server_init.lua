@@ -244,30 +244,31 @@ local lazy_plugins = {
 	},
 	-- Highlight, edit, and navigate code
 	{ 'nvim-treesitter/nvim-treesitter',
+		branch = 'main',
+		lazy = false,
 		event = 'BufReadPost',
 		config = function()
-			require('nvim-treesitter.configs').setup({
+			local languages = {
 				-- Add languages to be installed here that you want installed for treesitter
-				ensure_installed = {
-					'bash', 'c', 'cpp', 'cuda', 'diff', 'haskell', 'html', 'javascript',
-					'jsdoc', 'json', 'jsonc', 'lua', 'luadoc', 'luap', 'markdown_inline',
-					'python', 'query', 'regex', 'toml', 'tsx', 'typescript', 'vim',
-					'vimdoc', 'xml', 'yaml', 'typst', 'http', 'glsl',
-					-- Requires tree-sitter-cli
-					'latex'
-				},
-				highlight = { enable = true },
-				modules = {},
-				ignore_install = {},
-				sync_install = false,
-				auto_install = false
+				'bash', 'c', 'cpp', 'cuda', 'diff', 'haskell', 'html', 'javascript',
+				'jsdoc', 'json', 'jsonc', 'lua', 'luadoc', 'luap', 'markdown_inline',
+				'python', 'query', 'regex', 'toml', 'tsx', 'typescript', 'vim',
+				'vimdoc', 'xml', 'yaml', 'typst', 'http', 'glsl', 'arduino',
+				-- Requires tree-sitter-cli
+				'latex'
+			}
+			require('nvim-treesitter').install(languages):wait(300000)
+			-- Enabling highlighting
+			vim.api.nvim_create_autocmd('FileType', {
+				pattern = languages,
+				callback = function() vim.treesitter.start() end,
 			})
+			-- Enabling folds
+			vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+			-- Enabling indentation
+			vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 		end,
-		cmd = {
-			'TSBufDisable', 'TSBufEnable', 'TSBufToggle', 'TSConfigInfo', 'TSDisable', 'TSEditQuery',
-			'TSEditQueryUserAfter', 'TSEnable', 'TSInstall', 'TSInstallFromGrammar', 'TSInstallInfo',
-			'TSInstallSync', 'TSModuleInfo', 'TSToggle', 'TSUninstall', 'TSUpdate', 'TSUpdateSync'
-		}
+		cmd = { 'TSInstall', 'TSInstallFromGrammar', 'TSUpdate', 'TSUninstall', 'TSLog' }
 	},
 	-- Shows the context of the currently visible buffer contents
 	{ 'nvim-treesitter/nvim-treesitter-context',
