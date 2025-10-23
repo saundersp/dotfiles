@@ -17,22 +17,6 @@ local function map(mode, key, action, desc)
 	end
 end
 
---- Create a keybinding in normal mode
----@see vim.keymap.set
----@see map
----@param key string|string[] key or key aliases to bind
----@param action function|string callback of the keybind
----@param desc string Description of the keybind
-local function nmap(key, action, desc) map('n', key, action, desc) end
-
---- Create a keybinding in visual mode
----@see vim.keymap.set
----@see map
----@param key string|string[] key or key aliases to bind
----@param action function|string callback of the keybind
----@param desc string Description of the keybind
-local function vmap(key, action, desc) map('v', key, action, desc) end
-
 --- Create an automatic callback when a Neovim event occur
 ---@see vim.api.nvim_create_autocmd
 ---@param events string|string[] EventType
@@ -91,32 +75,30 @@ vim.filetype.add({ extension = { rest = 'http', shader = 'glsl' } })								-- A
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Key mapping configuration
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-nmap('<C-s>', '<cmd>w<CR>',													   'Save buffer shortcut')
-nmap({ '<C-F4>', '<F28>' }, '<cmd>tabclose!<CR>',										   'Close tab shortcut (keeps buffer open)')
-nmap({ '<C-S-h>', '<C-H>' }, '<cmd>-tabmove<CR>',										   'Move the current tab to the left')
-nmap({ '<C-S-l>', '<C-L>' }, '<cmd>+tabmove<CR>',										   'Move the current tab to the right')
-nmap({ '<S-F4>', '<F16>' }, '<cmd>bd<CR>',											   'Close buffer shortcut')
-nmap('<M-j>', '<cmd>resize -1<CR>',												   'Decrease buffer window horizontal size (M is the ALT modifier key)')
-nmap('<M-k>', '<cmd>resize +1<CR>',												   'Increase buffer window horizontal size (M is the ALT modifier key)')
-nmap('<M-h>', '<cmd>vertical resize -1<CR>',											   'Decrease buffer window vertical size (M is the ALT modifier key)')
-nmap('<M-l>', '<cmd>vertical resize +1<CR>',											   'Increase buffer window vertical size (M is the ALT modifier key)')
+map('n', '<C-s>', '<cmd>w<CR>',													   'Save buffer shortcut')
+map('n', { '<C-S-h>', '<C-H>' }, '<cmd>-tabmove<CR>',										   'Move the current tab to the left')
+map('n', { '<C-S-l>', '<C-L>' }, '<cmd>+tabmove<CR>',										   'Move the current tab to the right')
+map('n', '<M-j>', '<cmd>resize -1<CR>',												   'Decrease buffer window horizontal size (M is the ALT modifier key)')
+map('n', '<M-k>', '<cmd>resize +1<CR>',												   'Increase buffer window horizontal size (M is the ALT modifier key)')
+map('n', '<M-h>', '<cmd>vertical resize -1<CR>',										   'Decrease buffer window vertical size (M is the ALT modifier key)')
+map('n', '<M-l>', '<cmd>vertical resize +1<CR>',										   'Increase buffer window vertical size (M is the ALT modifier key)')
 map('t', '<Esc>', '<C-\\><C-n>',												   'Fix terminal exit button')
-nmap({ '<C-m>', '<CR>' }, '<cmd>noh<CR>',											   'Clear the highlighting of :set hlsearch (<C-M> == <CR> in st)')
-nmap('<C-z>', '<Nop>',														   'Disable the suspend signal')
-vmap('<', '<gv',														   'Shift the selection one indent to the right')
-vmap('>', '>gv',														   'Shift the selection one indent to the left')
-nmap('<F2>', '<cmd>set invpaste paste?<CR>',											   'Toggle clipboard pasting')
-nmap('<C-J>', 'ddp',														   'Move the current line down')
-nmap('<C-K>', 'ddkkp',														   'Move the current line up')
-nmap('gb', '<cmd>bnext<CR>',													   'Go to the next buffer in buffer list')
-nmap('gB', '<cmd>bprevious<CR>',												   'Go to the previous buffer in buffer list')
-nmap('J', 'mzJ`z',														   'Keep the cursor at the same position when joining lines')
-vmap('<C-J>', "<cmd>m '>+1<CR>gv=gv",												   'Move the selected block downwards while keeping target indentation')
-vmap('<C-K>', "<cmd>m '<0<CR>gv=gv",												   'Move the selected block upwards while keeping target indentation')
-nmap('<C-u>', '<C-u>zz',													   'Scroll window upwards in the buffer while keeping cursor at the middle of the window')
-nmap('<C-d>', '<C-d>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
-nmap('<C-f>', '<C-f>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
-nmap('<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file executable')
-nmap('<leader>fX', '<cmd>!chmod -x %<CR>',											   'Make the current file non executable')
+map('n', { '<C-m>', '<CR>' }, '<cmd>noh<CR>',											   'Clear the highlighting of :set hlsearch (<C-M> == <CR> in st)')
+map('n', '<C-z>', '<Nop>',													   'Disable the suspend signal')
+map('v', '<', '<gv',														   'Shift the selection one indent to the right')
+map('v', '>', '>gv',														   'Shift the selection one indent to the left')
+map('n', '<C-J>', 'ddp',													   'Move the current line down')
+map('n', '<C-K>', 'ddkkp',													   'Move the current line up')
+map('n', 'gb', '<cmd>bnext<CR>',												   'Go to the next buffer in buffer list')
+map('n', 'gB', '<cmd>bprevious<CR>',												   'Go to the previous buffer in buffer list')
+map('n', 'J', 'mzJ`z',														   'Keep the cursor at the same position when joining lines')
+map('v', '<C-J>', "<cmd>m '>+1<CR>gv=gv",											   'Move the selected block downwards while keeping target indentation')
+map('v', '<C-K>', "<cmd>m '<0<CR>gv=gv",											   'Move the selected block upwards while keeping target indentation')
+map('n', '<C-u>', '<C-u>zz',													   'Scroll window upwards in the buffer while keeping cursor at the middle of the window')
+map('n', '<C-d>', '<C-d>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
+map('n', '<C-f>', '<C-f>zz',													   'Scroll window downwards in the buffer while keeping cursor at the middle of the window')
+map('n', '<leader>fx', '<cmd>!chmod +x %<CR>',											   'Make the current file executable')
+map('n', '<leader>fX', '<cmd>!chmod -x %<CR>',											   'Make the current file non executable')
+map('n', '<leader>dg', '<cmd>diffput<CR>',											   'Copy the difference')
 create_cmd('Settings', 'e $MYVIMRC', 												   'Edit Neovim config file')
 create_cmd('GetCmds', function(opts) vim.cmd('redir @"\ncomm ' .. opts.args .. '\nredir END\nput') end,				   'Get all the commands starting by ARG', 1)
