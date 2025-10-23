@@ -617,33 +617,33 @@ local lazy_plugins = {
 				-- NOTE: Snippets for my notebook
 				luasnip.add_snippets('tex', {
 						s(':exo', {
-							t({'\\begin{exercise_sq}', '\t'}),
+							t({ '\\begin{exercise_sq}', '\t' }),
 							i(0),
-							t({'', '\\end{exercise_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-							t({'', '\\end{proof}', ''})
+							t({ '', '\\end{exercise_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO: Complete proof' }),
+							t({ '', '\\end{proof}', '' })
 						}),
 						s(':theo', {
-							t({'\\begin{theorem_sq}', '\t'}),
+							t({ '\\begin{theorem_sq}', '\t' }),
 							i(0),
-							t({'', '\\end{theorem_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-							t({'', '\\end{proof}', ''})
+							t({ '', '\\end{theorem_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO: Complete proof'}),
+							t({ '', '\\end{proof}', '' })
 						}),
 						s(':prop', {
-							t({'\\begin{prop_sq}', '\t'}),
+							t({ '\\begin{prop_sq}', '\t' }),
 							i(0),
-							t({'', '\\end{prop_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-							t({'', '\\end{proof}', ''})
+							t({ '', '\\end{prop_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO: Complete proof' }),
+							t({ '', '\\end{proof}', '' })
 						}),
 						s(':coro', {
-							t({'\\begin{corollary_sq}', '\t'}),
+							t({ '\\begin{corollary_sq}', '\t' }),
 							i(0),
-							t({'', '\\end{corollary_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO Complete proof'}),
-							t({'', '\\end{proof}', ''})
+							t({ '', '\\end{corollary_sq}', '', '\\begin{proof}', '\t\\lipsum[2]', '\t% TODO: Complete proof' }),
+							t({ '', '\\end{proof}', '' })
 						}),
 						s(':def', {
-							t({'\\begin{definition_sq}', '\t'}),
+							t({ '\\begin{definition_sq}', '\t' }),
 							i(0),
-							t({'', '\\end{definition_sq}'})
+							t({ '', '\\end{definition_sq}' })
 						})
 				})
 			end }
@@ -711,15 +711,15 @@ local lazy_plugins = {
 	-- Arduino commands
 	{ 'stevearc/vim-arduino',
 		keys = {
-			{ '<leader>aa', '<cmd>ArduinoAttach<CR>',	    desc = 'Arduino: Attach board' },
-			{ '<leader>av', '<cmd>ArduinoVerify<CR>',	    desc = 'Arduino: Verify sketch' },
-			{ '<leader>au', '<cmd>ArduinoUpload<CR>',	    desc = 'Arduino: Upload sketch' },
-			{ '<leader>ad', '<cmd>ArduinoUploadAndSerial<CR>',  desc = 'Arduino: Upload and serial' },
-			{ '<leader>ab', '<cmd>ArduinoChooseBoard<CR>',	    desc = 'Arduino: Choose board' },
-			{ '<leader>ap', '<cmd>ArduinoChooseProgrammer<CR>', desc = 'Arduino: Choose programmer' },
-			{ '<leader>aP', '<cmd>ArduinoChoosePort<CR>',	    desc = 'Arduino: Choose port' },
-			{ '<leader>as', '<cmd>ArduinoSerial<CR>',	    desc = 'Arduino: Serial' },
-			{ '<leader>ai', '<cmd>ArduinoInfo<CR>',		    desc = 'Arduino: Info' }
+			{ '<leader>aa', '<cmd>ArduinoAttach<CR>',	    ft = 'arduino', desc = 'Arduino: Attach board' },
+			{ '<leader>av', '<cmd>ArduinoVerify<CR>',	    ft = 'arduino', desc = 'Arduino: Verify sketch' },
+			{ '<leader>au', '<cmd>ArduinoUpload<CR>',	    ft = 'arduino', desc = 'Arduino: Upload sketch' },
+			{ '<leader>ad', '<cmd>ArduinoUploadAndSerial<CR>',  ft = 'arduino', desc = 'Arduino: Upload and serial' },
+			{ '<leader>ab', '<cmd>ArduinoChooseBoard<CR>',	    ft = 'arduino', desc = 'Arduino: Choose board' },
+			{ '<leader>ap', '<cmd>ArduinoChooseProgrammer<CR>', ft = 'arduino', desc = 'Arduino: Choose programmer' },
+			{ '<leader>aP', '<cmd>ArduinoChoosePort<CR>',	    ft = 'arduino', desc = 'Arduino: Choose port' },
+			{ '<leader>as', '<cmd>ArduinoSerial<CR>',	    ft = 'arduino', desc = 'Arduino: Serial' },
+			{ '<leader>ai', '<cmd>ArduinoInfo<CR>',		    ft = 'arduino', desc = 'Arduino: Info' }
 		},
 		cmd = {
 			'ArduinoAttach', 'ArduinoVerify', 'ArduinoUpload', 'ArduinoUploadAndSerial',
@@ -1012,7 +1012,7 @@ local lazy_plugins = {
 	},
 	-- Neovim support for the Lean theorem prover
 	{ 'Julian/lean.nvim',
-		ft = { 'lean' },
+		ft = 'lean',
 		opts = { infoview = { autoopen = false } },
 		dependencies = {
 			-- LSP Configuration & Plugins
@@ -1047,6 +1047,7 @@ local lazy_plugins = {
 	{ 'barreiroleo/ltex_extra.nvim',
 		ft = { 'markdown', 'plaintex', 'tex', 'typst' },
 		config = function()
+			local ltex_extra = require('ltex_extra')
 			local function setup_ltex(lang)
 				local capabilities = vim.lsp.protocol.make_client_capabilities()
 				capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
@@ -1054,7 +1055,7 @@ local lazy_plugins = {
 				vim.lsp.config('ltex_plus', {
 					capabilities = capabilities,
 					on_attach = function(_, _)
-						require('ltex_extra').setup({
+						ltex_extra.setup({
 							load_langs = { 'fr', 'en-GB' },
 							init_check = true,
 							path = vim.fn.stdpath 'config' .. '/spell/dictionaries'
@@ -1157,7 +1158,7 @@ local lazy_plugins = {
 	},
 	-- Preview Markdown in your modern browser with synchronised scrolling and flexible configuration
 	{ 'iamcco/markdown-preview.nvim',
-		ft = 'markdown',
+		-- ft = 'markdown',
 		cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
 		keys = { { '<leader>mp', '<cmd>MarkdownPreviewToggle<CR>', ft = 'markdown', desc = 'Toggle Markdown previewer' } },
 		build = 'cd app && npx --yes yarn install'
@@ -1175,7 +1176,7 @@ local lazy_plugins = {
 	},
 	-- Low latency typst preview for Neovim
 	{ 'chomosuke/typst-preview.nvim',
-		ft = 'typst',
+		-- ft = 'typst',
 		opts = {
 			dependencies_bin = {
 				['tinymist'] = 'tinymist' -- Use tinymist from mason
