@@ -23,20 +23,22 @@ cmd_check(){
 }
 
 link(){
-	ln -sfv "$(pwd)"/"$1" "$2"
+	ln --force --no-dereference --verbose --symbolic "$(pwd)"/"$1" "$2"
 }
 
 pkg_link(){
-	if [ -z "$3" ]; then
-		cmd_check "$1" && link "$1" "$2"
-	else
-		cmd_check "$1" && link "$2" "$3"
+	if cmd_check "$1"; then
+		if [ -z "$3" ]; then
+			 link "$1" "$2"
+		else
+			link "$2" "$3"
+		fi
 	fi
 }
 
 case $1 in
 	desktop|--desktop) # Desktop version of the dotfiles
-		mkdir -pv \
+		mkdir --parents --verbose \
 			"$XDG_CONFIG_HOME" \
 			"$XDG_CACHE_HOME" \
 			"$XDG_DATA_HOME" \
@@ -48,7 +50,7 @@ case $1 in
 		pkg_link starship starship.toml "$XDG_CONFIG_HOME"/starship.toml
 		pkg_link yazi "$XDG_CONFIG_HOME"/yazi
 
-		if [ "$(id -u)" -eq 0 ]; then
+		if [ "$(id --user)" -eq 0 ]; then
 			# Only root configuration files
 
 			link shell_profile/root.profile "$HOME"/.profile
@@ -57,12 +59,12 @@ case $1 in
 			pkg_link bash bash/root.bashrc "$HOME"/.bashrc
 
 			if cmd_check nvim; then
-				mkdir -v "$XDG_CONFIG_HOME"/nvim
+				mkdir --parents --verbose "$XDG_CONFIG_HOME"/nvim
 				link nvim/root_init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
 			fi
 
 			if cmd_check tmux; then
-				mkdir -v "$XDG_CONFIG_HOME"/tmux
+				mkdir --parents --verbose "$XDG_CONFIG_HOME"/tmux
 				link tmux/root.tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
 			fi
 
@@ -87,24 +89,23 @@ case $1 in
 			pkg_link zathura "$XDG_CONFIG_HOME"/zathura
 
 			if cmd_check nvim; then
-				mkdir -v "$XDG_CONFIG_HOME"/nvim
+				mkdir --parents --verbose "$XDG_CONFIG_HOME"/nvim
 				link nvim/init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
 				link nvim/spell "$XDG_CONFIG_HOME"/nvim/spell
 				nvim --headless -c 'lua vim.cmd("Lazy! sync")' +qa
 				nvim --headless -c 'lua vim.cmd("MasonUpdate")' +q
 				nvim --headless -c 'lua vim.cmd("MasonUpdateAll")' -c 'autocmd User MasonUpdateAllComplete quitall'
-				nvim --headless -c 'lua vim.cmd("TSInstallSync! " .. (table.concat(require("nvim-treesitter.configs").get_ensure_installed_parsers(), " ")))' +q
 				nvim --headless -c 'lua vim.cmd("TypstPreviewUpdate")' +q
 			fi
 
 			if cmd_check tmux; then
-				mkdir -v "$XDG_CONFIG_HOME"/tmux
+				mkdir --parents --verbose "$XDG_CONFIG_HOME"/tmux
 				link tmux/tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
 			fi
 		fi
 	;;
 	server|--server) # Server version of the dotfiles
-		mkdir -pv \
+		mkdir --parents --verbose \
 			"$XDG_CONFIG_HOME" \
 			"$XDG_CACHE_HOME" \
 			"$XDG_DATA_HOME" \
@@ -116,7 +117,7 @@ case $1 in
 		pkg_link starship starship.toml "$XDG_CONFIG_HOME"/starship.toml
 		pkg_link yazi "$XDG_CONFIG_HOME"/yazi
 
-		if [ "$(id -u)" -eq 0 ]; then
+		if [ "$(id --user)" -eq 0 ]; then
 			# Only root configuration files
 
 			link shell_profile/root.profile "$HOME"/.profile
@@ -125,12 +126,12 @@ case $1 in
 			pkg_link bash bash/root.bashrc "$HOME"/.bashrc
 
 			if cmd_check nvim; then
-				mkdir -v "$XDG_CONFIG_HOME"/nvim
+				mkdir --parents --verbose "$XDG_CONFIG_HOME"/nvim
 				link nvim/root_init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
 			fi
 
 			if cmd_check tmux; then
-				mkdir -v "$XDG_CONFIG_HOME"/tmux
+				mkdir --parents --verbose "$XDG_CONFIG_HOME"/tmux
 				link tmux/root.tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
 			fi
 		else
@@ -142,14 +143,13 @@ case $1 in
 			pkg_link git "$XDG_CONFIG_HOME"/git
 
 			if cmd_check nvim; then
-				mkdir -v "$XDG_CONFIG_HOME"/nvim
+				mkdir --parents --verbose "$XDG_CONFIG_HOME"/nvim
 				link nvim/server_init.lua "$XDG_CONFIG_HOME"/nvim/init.lua
 				nvim --headless -c 'lua vim.cmd("Lazy! sync")' +qa
-				nvim --headless -c 'lua vim.cmd("TSInstallSync! " .. (table.concat(require("nvim-treesitter.configs").get_ensure_installed_parsers(), " ")))' +q
 			fi
 
 			if cmd_check tmux; then
-				mkdir -v "$XDG_CONFIG_HOME"/tmux
+				mkdir --parents --verbose "$XDG_CONFIG_HOME"/tmux
 				link tmux/tmux.conf "$XDG_CONFIG_HOME"/tmux/tmux.conf
 			fi
 		fi
