@@ -56,16 +56,24 @@ ITALIC='\033[3m'
 #UNDERLINED='\033[4m'
 #BLINKING='\033[5m'
 
-command -v "$1" >> /dev/null && echo 'Command checker has replaced __cmd_checker__ !'
+command -v cmd_check > /dev/null && echo 'Command cmd_check has replaced !'
+cmd_check(){
+	command -v "$1" > /dev/null
+}
+
+cmd_check __cmd_checker__ && echo 'Command __cmd_checker__ has replaced !'
 __cmd_checker__(){
+	local code=0
 	while [ -n "$1" ]; do
-		if command -v "$1" >> /dev/null; then
+		if cmd_check "$1"; then
+			code=$((code + 1))
 			echo "Command $1 has been replaced !"
 		#else
 		#	echo "Command $1 has not been replaced !"
 		fi
 		shift
 	done
+	return "$code"
 }
 
 __cmd_checker__ __setprompt
@@ -125,16 +133,10 @@ if [ -f /usr/share/bash-completion/bash_completion ]; then . /usr/share/bash-com
 elif [ -f /etc/bash_completion ]; then . /etc/bash_completion
 fi
 
-# Enable fzf functionalities
-if command -v fzf >> /dev/null; then
-	# CTRL-T, CTRL-R, and ALT-C
-	eval "$(fzf --bash)"
-fi
-
 # Add better human readability by default to common commands
-command -v df >> /dev/null && alias df='df -h'
-command -v free >> /dev/null && alias free='free -h'
-command -v mkdir >> /dev/null && alias mkdir='mkdir -p'
+cmd_check df && alias df='df -h'
+cmd_check free && alias free='free -h'
+cmd_check mkdir && alias mkdir='mkdir -p'
 
 # Colourful man page
 export LESS_TERMCAP_mb=$'\E[1;31m'  # begin blink
@@ -145,26 +147,47 @@ export LESS_TERMCAP_se=$'\E[0m'     # reset reverse video
 export LESS_TERMCAP_us=$'\E[1;32m'  # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'     # reset underline
 
-if command -v eza >> /dev/null; then
+if cmd_check eza; then
 	alias ls='eza -h --color=auto --group-directories-first'
 	__cmd_checker__ ll
 	alias ll='eza -hlas size --git --color=auto --group-directories-first'
-elif command -v ls >> /dev/null; then
+elif cmd_check ls; then
 	alias ls='ls -h --color=auto --group-directories-first'
 	__cmd_checker__ ll
 	alias ll='ls -hlas --color=auto --group-directories-first'
 fi
-command -v gdb >> /dev/null && alias gdb='gdb -q'
-command -v cuda-gdb >> /dev/null && alias cuda-gdb='cuda-gdb -q'
-command -v grep >> /dev/null && alias grep='grep --color=auto'
-command -v fgrep >> /dev/null && alias fgrep='fgrep --color=auto'
-command -v egrep >> /dev/null && alias egrep='egrep --color=auto'
-command -v diff >> /dev/null && alias diff='diff --color=auto'
-command -v ip >> /dev/null && alias ip='ip --color=auto'
-command -v wget >> /dev/null && alias wget='wget --hsts-file=$XDG_DATA_HOME/wget-hsts'
-# Replace default cat command
-command -v bat >> /dev/null && alias cat='bat --tabs=8'
-command -v ncdu >> /dev/null && alias ncdu='ncdu --color=dark -t $(nproc)'
+cmd_check gdb && alias gdb='gdb -q'
+cmd_check cuda-gdb && alias cuda-gdb='cuda-gdb -q'
+cmd_check grep && alias grep='grep --color=auto'
+cmd_check fgrep && alias fgrep='fgrep --color=auto'
+cmd_check egrep && alias egrep='egrep --color=auto'
+cmd_check diff && alias diff='diff --color=auto'
+cmd_check ip && alias ip='ip --color=auto'
+cmd_check bat && alias cat='bat --tabs=8'
+cmd_check ncdu && alias ncdu='ncdu --color=dark -t $(nproc)'
+
+if cmd_check fzf; then
+	export FZF_DEFAULT_OPTS='--walker-skip .git,node_modules,build,dosdevices,drive_c'
+
+	export FZF_CTRL_R_OPTS='--bind esc:print-query'
+
+	FZF_CTRL_T_OPTS='--walker=file,dir,follow'
+	if cmd_check bat; then
+		export FZF_CTRL_T_OPTS="$FZF_CTRL_T_OPTS --preview 'head -n 30 {} | bat --tabs=8 -n --color=always'"
+	else
+		export FZF_CTRL_T_OPTS="$FZF_CTRL_T_OPTS --preview 'head -n 30 {} | cat -n'"
+	fi
+
+	FZF_ALT_C_OPTS='--walker=dir,follow'
+	if cmd_check eza; then
+		export FZF_ALT_C_OPTS="$FZF_ALT_C_OPTS --preview 'eza --tree --colour=always {}'"
+	else
+		export FZF_ALT_C_OPTS="$FZF_ALT_C_OPTS --preview 'ls {}'"
+	fi
+
+	# CTRL-T, CTRL-R, and ALT-C
+	eval "$(fzf --bash)"
+fi
 
 # Simple command to preview csv files
 __cmd_checker__ preview_csv
@@ -188,7 +211,7 @@ preview_csv(){
 	(head -n 50 | column -t -s "$DEL" | less -S -n) < "$1"
 }
 
-if command -v python >> /dev/null; then
+if cmd_check python; then
 	USAGE="Python virtual environment helper
 Implemented by @saundersp
 
@@ -288,23 +311,23 @@ Available flags:
 	}
 fi
 
-if command -v nvim >> /dev/null; then
-	export EDITOR=nvim
+if cmd_check nvim; then
+	test -z "$EDITOR" && export EDITOR=nvim
 	__cmd_checker__ vid vi
-	command -v nvim >> /dev/null && alias vid='nvim -d' && alias vi='nvim'
+	alias vid='nvim -d' && alias vi='nvim'
 fi
 
 # Little helper for missing packages
 __cmd_checker__ __command_requirer_pkg__
 __command_requirer_pkg__(){
-	if command -v "$2" >> /dev/null; then
+	if cmd_check "$2"; then
 			bash -c "$1 $4"
 		else
 			echo "This command requires $2 from \"$3\" installed" && return 1
 	fi
 }
 
-if command -v pacman >> /dev/null; then
+if cmd_check pacman; then
 	__cmd_checker__ pac
 	pac(){
 		local USAGE='Pacman helper
@@ -336,7 +359,7 @@ Available flags:
 
 fi
 
-if command -v emerge >> /dev/null; then
+if cmd_check emerge; then
 	__cmd_checker__ em
 	em(){
 		local USAGE="Portage's emerge helper
@@ -432,7 +455,7 @@ Available flags:
 	}
 fi
 
-if command -v apt-get >> /dev/null; then
+if cmd_check apt-get; then
 	__cmd_checker__ ap
 	ap(){
 		USAGE="APT's helper
@@ -456,31 +479,11 @@ Available flags:
 	}
 fi
 
-command -v wg-quick >> /dev/null && alias vpn='wg-quick up wg0' && alias vpn_off='wg-quick down wg0'
-command -v lazygit >> /dev/null && alias lg='lazygit'
-command -v lazydocker >> /dev/null && alias ldo='lazydocker'
-
-if command -v yazi >> /dev/null; then
-	__cmd_checker__ yazi-cd
-	yazi-cd() {
-		local tmp
-		tmp="$(mktemp -t 'yazi-cwd.XXXXXX')"
-		yazi --cwd-file="$tmp"
-		if [ -f "$tmp" ]; then
-			local dir
-			dir="$(cat "$tmp")"
-			rm -f "$tmp" >> /dev/null
-			if [ "$dir" ] && [ "$dir" != "$(pwd)" ]; then
-				cd "$dir" || true
-			fi
-		fi
-	}
-	bind '"\C-o":"\C-wyazi-cd\C-m"'
-fi
+cmd_check lazygit && alias lg='lazygit'
+cmd_check lazydocker && alias ldo='lazydocker'
 
 __cmd_checker__ cb && alias cb='clear && exec bash'
 
-command -v curl >> /dev/null && __cmd_checker__ weather && alias weather='curl de.wttr.in'
 
 __cmd_checker__ pow
 pow(){
@@ -516,12 +519,12 @@ Available flags:
 
 __cmd_checker__ update
 update(){
-	command -v em >> /dev/null && em s && em u && em p && em c
-	command -v pac >> /dev/null && pac u && pac p
-	command -v ap >> /dev/null && ap u && ap p
+	cmd_check em && em s && em u && em p && em c
+	cmd_check pac && pac u && pac p
+	cmd_check ap && ap u && ap p
 	(cd && ./updater.sh p)
-	command -v ncu >> /dev/null && npm update -g npm-check-updates
-	command -v nix-env >> /dev/null && nix-env -u
+	cmd_check ncu && npm update -g npm-check-updates
+	cmd_check nix-env && nix-env -u
 }
 
 __cmd_checker__ __help_me__
@@ -533,7 +536,7 @@ __help_me__(){
 
 	__cmd_checker__ tprint_cmd
 	tprint_cmd(){
-		if command -v "$1" >> /dev/null; then
+		if cmd_check "$1"; then
 			print_cmd "$1 $3" "$2"
 		#else
 		#	printf "\055 ${ITALIC}%-32s${NO_COLOUR} : ${BOLD}This command isn't enabled${NO_COLOUR}\n" "$1"
@@ -548,8 +551,6 @@ __help_me__(){
 	tprint_cmd 'pac' 'Pacman helper'
 	tprint_cmd 'em' "Portage's emerge helper"
 	tprint_cmd 'ap' "APT's helper"
-	tprint_cmd 'vpn' 'Easily enable a secure VPN connection'
-	tprint_cmd 'vpn_off' 'Easily disable a VPN connection'
 	tprint_cmd 'lg' 'Shortcut to lazygit, a fancy CLI git interface'
 	tprint_cmd 'ldo' 'Shortcut to lazydocker, a fancy CLI docker interface'
 	tprint_cmd 'yazi-cd' 'Modded yazi to changed pwd on exit' '/ C-o'
@@ -557,7 +558,6 @@ __help_me__(){
 	print_cmd 'cb' 'Shortcut to clear && exec bash'
 	tprint_cmd 'pa' 'Pulseaudio modules helper script'
 	tprint_cmd 'pm' 'Pulsemixer shortcut'
-	tprint_cmd 'weather' 'Get current weather status'
 	print_cmd 'pow' 'CPU scaling governor helper'
 	print_cmd '?' 'Print this reminder'
 
@@ -572,5 +572,28 @@ __help_me__(){
 __cmd_checker__ '?'
 alias '?'='__help_me__'
 
-# Preprinting before shell prompt
-command -v fastfetch >> /dev/null && fastfetch
+# If not running interactively, don't print anything
+if [[ $- == *i* ]]; then
+	if cmd_check yazi; then
+		__cmd_checker__ yazi-cd
+		yazi-cd() {
+			local tmp
+			tmp="$(mktemp -t 'yazi-cwd.XXXXXX')"
+			yazi --cwd-file="$tmp"
+			if [ -f "$tmp" ]; then
+				local dir
+				dir="$(cat "$tmp")"
+				rm -f "$tmp" >> /dev/null
+				if [ "$dir" ] && [ "$dir" != "$(pwd)" ]; then
+					cd "$dir" || true
+				fi
+			fi
+		}
+		bind '"\C-o":"\C-wyazi-cd\C-m"'
+	fi
+
+	# Preprinting before shell prompt
+	if cmd_check fastfetch; then
+		fastfetch
+	fi
+fi
