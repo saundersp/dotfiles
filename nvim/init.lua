@@ -653,8 +653,7 @@ local lazy_plugins = {
 	{ 'tpope/vim-dispatch',
 		keys = {
 			{ '<leader>tp', '<cmd>Dispatch! make preview<CR>',	 ft = { 'plaintex', 'tex' }, desc = 'Preview LaTeX document' },
-			{ '<leader>mm', '<cmd>Make -j $(nproc)<CR>',		 desc = 'Make the default recipe in cwd (multi-jobs)' },
-			{ '<leader>mM', '<cmd>Make<CR>',			 desc = 'Make the default recipe in cwd' },
+			{ '<leader>mm', '<cmd>Make -k -j $(nproc)<CR>',		 desc = 'Make the default recipe in cwd' },
 			{ '<leader>ms', '<cmd>Start -wait=error make start<CR>', desc = 'Make the "start" recipe in cwd' },
 			{ '<leader>mt', '<cmd>Start -wait=always make test<CR>', desc = 'Make the "test" recipe in cwd' },
 			{ '<leader>mc', '<cmd>Make clean<CR>',			 desc = 'Make the "clean" recipe in cwd' },
