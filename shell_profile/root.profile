@@ -32,7 +32,7 @@ if test -f "$HOME"/.bashrc; then
 	. "$HOME"/.bashrc
 fi
 
-if [ -z "$SSH_CONNECTION" ] && [ -z "$TMUX" ] && [ -z "$DISPLAY" ] || [ "$XDG_VTNR" = 8 ] || [ "$(tty)" = /dev/tty1 ]; then
+if [ "$(tty)" = /dev/tty1 ]; then
 	if command -v tmux >> /dev/null; then
 		tmux
 	fi

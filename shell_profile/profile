@@ -45,7 +45,7 @@ if test -f "$HOME"/.bashrc; then
 	. "$HOME"/.bashrc
 fi
 
-if [ -z "$SSH_CONNECTION" ] && [ -z "$TMUX" ] && [ ! "$DISPLAY" ] || [ "$XDG_VTNR" = 8 ] || [ "$(tty)" = /dev/tty1 ]; then
+if [ "$(tty)" = /dev/tty1 ]; then
 	if command -v startx > /dev/null; then
 		startx
 	fi
