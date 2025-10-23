@@ -592,7 +592,8 @@ map('n', '<leader>lp', lazy.profile, 'Open lazy loading profiling results')
 -- General settings configuration
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 vim.o.termguicolors				= true										-- Enable 24-bit RGB colours in the terminal
-vim.o.listchars					= 'tab:󰌒 ,lead:•,trail:•,extends:,precedes:,nbsp:󱁐'				-- List of whitespace characters replacement (see :h listchars) (using: nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
+vim.opt.listchars				= { tab = '󰌒 ', lead = '•', trail = '•', extends = '', precedes = '',
+							nbsp = '󱁐' }								-- List of whitespace characters replacement (see =h listchars) (using= nf-md-keyboard_return nf-md-keyboard_tab Bullet nf-cod-chevron_right nf-cod-chevron_left Interpunct nf-md-keyboard_space)
 vim.wo.list					= true										-- Enable replacement of listchars
 vim.wo.wrap					= false										-- Display long lines as just one line
 vim.bo.fileencoding				= 'UTF-8'									-- The encoding written to file
@@ -607,19 +608,22 @@ vim.o.showtabline				= 2										-- Always show top files tabs
 vim.o.visualbell				= true										-- Disable bell noise
 vim.o.splitbelow				= true										-- Horizontal splits will automatically be below
 vim.o.splitright				= true										-- Vertical splits will automatically be to the right
-vim.o.completeopt				= 'menuone,noselect'								-- Add LSP complete popup menu
+vim.opt.completeopt				= { 'menuone', 'noselect' }							-- Add LSP complete popup menu
 vim.wo.signcolumn				= 'yes:1'									-- Draw the signcolumn with 1 fixed space width
 vim.o.title					= true										-- Change the window's title to the opened file name and directory
 vim.o.updatetime				= 200										-- Time before CursorHold triggers
 vim.bo.swapfile					= false										-- Disable swapfile usage
-vim.o.wildmode					= 'longest,list,full'								-- Enable autocompletion in COMMAND mode
-vim.bo.formatoptions				= vim.o.formatoptions .. 'r'							-- Add asterisks in block comments
-vim.o.wildignore				= '*.o,*.obj,*/node_modules/*,*/.git/*,*/.venv/*,*/package-lock.json'		-- Ignore files in fuzzy finder
+vim.opt.wildmode				= { 'longest', 'list', 'full' }							-- Enable autocompletion in COMMAND mode
+vim.opt.formatoptions				:append('r')									-- Add asterisks in block comments
+vim.opt.wildignore				= { '*.o', '*.obj', '*/node_modules/*', '*/.git/*', '*/.venv/*',
+							'*/package-lock.json' }							-- Ignore files in fuzzy finder
 vim.bo.undofile					= true										-- Enable undofile to save undo operations after exit
 vim.o.scrolloff					= 8										-- Minimal number of screen lines to keep above and below the cursor
 vim.o.winborder					= 'rounded'									-- Defines the default border style of floating windows
-Autocmd('Filetype', { 'plaintex', 'tex', 'typst' }, function() vim.o.wrap = true end,						   'Enable wrapping only for LaTeX files')
-Autocmd('Filetype', { 'typst', 'python' },	function() vim.o.expandtab = false; vim.bo.tabstop = 8; vim.bo.shiftwidth = 8; vim.bo.softtabstop = 8 end, 'Disable the tab expansion of spaces')
+Autocmd('Filetype', { 'plaintex', 'tex', 'typst' }, function() vim.o.wrap = true end,						  'Enable wrapping only for LaTeX and Typst files')
+Autocmd('Filetype', { 'python', 'arduino' }, function() vim.o.expandtab = false; vim.bo.tabstop = 8; vim.bo.shiftwidth = 8
+							vim.bo.softtabstop = 8 end,						  'Disable the tab expansion of spaces')
+Autocmd('Filetype', 'typst', function() vim.o.expandtab = false; vim.bo.shiftwidth = 8; vim.bo.softtabstop = 8 end,		  'Disable the tab expansion of spaces')
 vim.filetype.add({ extension = { rest = 'http', shader = 'glsl' } })								-- Added custom filetype to http (REST API)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
