@@ -197,7 +197,19 @@ local lazy_plugins = {
 			local telescope = require('telescope')
 			local actions = require('telescope.actions')
 			telescope.setup({
-				defaults = { mappings = { i = { ['<c-d>'] = actions.delete_buffer } } },
+				defaults = {
+					mappings = {
+						i = {
+							['<c-d>'] = actions.delete_buffer,
+							['<C-h>'] = 'which_key'
+						}
+					}
+				},
+				pickers = {
+					find_files = {
+						find_command = { 'fd', '--type', 'f', '--strip-cwd-prefix' }
+					}
+				},
 				extensions = { ['ui-select'] = { require('telescope.themes').get_cursor({}) } }
 			})
 			vim.tbl_map(telescope.load_extension, { 'ui-select', 'noice', 'dap' })
@@ -239,7 +251,9 @@ local lazy_plugins = {
 			-- Extension to integrate nvim-dap
 			'nvim-telescope/telescope-dap.nvim',
 			-- LSP Configuration & Plugins
-			'neovim/nvim-lspconfig'
+			'neovim/nvim-lspconfig',
+			-- Display a popup with possible key bindings of the command you started typing
+			'folke/which-key.nvim'
 		}
 	},
 	-- Edit the filesystem like a buffer
