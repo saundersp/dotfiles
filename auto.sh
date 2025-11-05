@@ -47,6 +47,10 @@ case $1 in
 
 		# Common configuration files
 		pkg_link fastfetch "$XDG_CONFIG_HOME"/fastfetch
+		if cmd_check lazygit; then
+			mkdir --parents --verbose "$XDG_CONFIG_HOME"/lazygit
+			link lazygit/config.yml "$XDG_CONFIG_HOME"/lazygit/config.yml
+		fi
 		if cmd_check lazydocker; then
 			mkdir --parents --verbose "$XDG_CONFIG_HOME"/lazydocker
 			link lazydocker/config.yml "$XDG_CONFIG_HOME"/lazydocker/config.yml
@@ -118,6 +122,10 @@ case $1 in
 
 		# Common configuration files
 		pkg_link fastfetch "$XDG_CONFIG_HOME"/fastfetch
+		if cmd_check lazygit; then
+			mkdir --parents --verbose "$XDG_CONFIG_HOME"/lazygit
+			link lazygit/config.yml "$XDG_CONFIG_HOME"/lazygit/config.yml
+		fi
 		if cmd_check lazydocker; then
 			mkdir --parents --verbose "$XDG_CONFIG_HOME"/lazydocker
 			link lazydocker/config.yml "$XDG_CONFIG_HOME"/lazydocker/config.yml
@@ -170,6 +178,7 @@ case $1 in
 			"$XDG_CONFIG_HOME"/git \
 			"$XDG_CONFIG_HOME"/i3 \
 			"$XDG_CONFIG_HOME"/kitty \
+			"$XDG_CONFIG_HOME"/lazygit/config.yml \
 			"$XDG_CONFIG_HOME"/lazydocker/config.yml \
 			"$XDG_CONFIG_HOME"/nvim \
 			"$XDG_DATA_HOME"/nvim/lazy \
