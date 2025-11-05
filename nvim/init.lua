@@ -1172,7 +1172,8 @@ local lazy_plugins = {
 	},
 	-- Preview Markdown in your modern browser with synchronised scrolling and flexible configuration
 	{ 'iamcco/markdown-preview.nvim',
-		-- ft = 'markdown',
+		ft = 'markdown',
+		init = function() vim.g.mkdp_filetypes = { 'markdown' } end,
 		cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
 		keys = { { '<leader>mp', '<cmd>MarkdownPreviewToggle<CR>', ft = 'markdown', desc = 'Toggle Markdown previewer' } },
 		build = 'cd app && npx --yes yarn install'
