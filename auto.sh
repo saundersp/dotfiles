@@ -47,6 +47,10 @@ case $1 in
 
 		# Common configuration files
 		pkg_link fastfetch "$XDG_CONFIG_HOME"/fastfetch
+		if cmd_check lazydocker; then
+			mkdir --parents --verbose "$XDG_CONFIG_HOME"/lazydocker
+			link lazydocker/config.yml "$XDG_CONFIG_HOME"/lazydocker/config.yml
+		fi
 		pkg_link starship starship.toml "$XDG_CONFIG_HOME"/starship.toml
 		pkg_link yazi "$XDG_CONFIG_HOME"/yazi
 
@@ -114,6 +118,10 @@ case $1 in
 
 		# Common configuration files
 		pkg_link fastfetch "$XDG_CONFIG_HOME"/fastfetch
+		if cmd_check lazydocker; then
+			mkdir --parents --verbose "$XDG_CONFIG_HOME"/lazydocker
+			link lazydocker/config.yml "$XDG_CONFIG_HOME"/lazydocker/config.yml
+		fi
 		pkg_link starship starship.toml "$XDG_CONFIG_HOME"/starship.toml
 		pkg_link yazi "$XDG_CONFIG_HOME"/yazi
 
@@ -162,6 +170,7 @@ case $1 in
 			"$XDG_CONFIG_HOME"/git \
 			"$XDG_CONFIG_HOME"/i3 \
 			"$XDG_CONFIG_HOME"/kitty \
+			"$XDG_CONFIG_HOME"/lazydocker/config.yml \
 			"$XDG_CONFIG_HOME"/nvim \
 			"$XDG_DATA_HOME"/nvim/lazy \
 			"$XDG_CONFIG_HOME"/picom \

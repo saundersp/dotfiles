@@ -1,0 +1,15 @@
+gui:
+  scrollHeight: 4
+  border: "single"
+  theme:
+    activeBorderColor:
+      - "#cccccc"
+      - bold
+    inactiveBorderColor:
+      - "#666666"
+    selectedLineBgColor:
+      - "#396ec7"
+    optionsTextColor:
+      - "#666666"
+  expandFocusedSidePanel: true
+  containerStatusHealthStyle: "icon"
