@@ -418,11 +418,11 @@ local lazy_plugins = {
 	-- Debugging purposes
 	{ 'jay-babu/mason-nvim-dap.nvim',
 		init  = function()
-			vim.fn.sign_define('DapBreakpoint',	     { text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-fa-stop
-			vim.fn.sign_define('DapBreakpointCondition', { text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-cod-debug_breakpoint_conditional
-			vim.fn.sign_define('DapBreakpointRejected',  { text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-fa-hand
+			vim.fn.sign_define('DapBreakpoint',	     { text = '', texthl = 'DapUIStop' })	      -- nf-cod-debug_stop
+			vim.fn.sign_define('DapBreakpointCondition', { text = '', texthl = 'DapUIStop' })	      -- nf-cod-debug_breakpoint_conditional
+			vim.fn.sign_define('DapBreakpointRejected',  { text = '', texthl = 'DapUIStop' })	      -- nf-oct-stop
 			vim.fn.sign_define('DapLogPoint',	     { text = '', texthl = 'DapUIBreakpointsInfo' }) -- nf-cod-debug_breakpoint_log
-			vim.fn.sign_define('DapStopped',	     { text = '', texthl = 'DapUIStopped' })	      -- nf-fa-circle_stop
+			vim.fn.sign_define('DapStopped',	     { text = '', texthl = 'DapUIStoppedThread' })   -- nf-fa-circle_stop
 		end,
 		config = function()
 			local dap = require('dap')
