@@ -1210,41 +1210,12 @@ local lazy_plugins = {
 	-- NeoVim lua plugin that annotates source code with profiling information from perf, LuaJIT, or other profilers
 	{ 't-troebst/perfanno.nvim',
 		-- ft = { 'c', 'cpp', 'lua', 'python' },
-		config = function()
-			require('perfanno').setup()
-			local telescope = require('telescope')
-			local actions = telescope.extensions.perfanno.actions
-			telescope.setup({
-				extensions = {
-					perfanno = {
-						-- Special mappings in the telescope finders
-						mappings = {
-							['i'] = {
-								['<C-h>'] = actions.hottest_callers,
-								['<C-l>'] = actions.hottest_callees
-							},
-							['n'] = {
-								['gu'] = actions.hottest_callers,
-								['gd'] = actions.hottest_callees
-							}
-						}
-					}
-				}
-			})
-		end,
+		opts = {},
 		keys = {
-			{ '<leader>plf', '<cmd>PerfLoadFlat<CR>' },
-			{ '<leader>plg', '<cmd>PerfLoadCallGraph<CR>' },
-			{ '<leader>plo', '<cmd>PerfLoadFlameGraph<CR>' },
-			{ '<leader>pe',  '<cmd>PerfPickEvent<CR>' },
-			{ '<leader>pa',  '<cmd>PerfAnnotate<CR>' },
-			{ '<leader>pf',  '<cmd>PerfAnnotateFunction<CR>' },
-			{ '<leader>pa',  '<cmd>PerfAnnotateSelection<CR>', mode = 'v' },
-			{ '<leader>pt',  '<cmd>PerfToggleAnnotations<CR>' },
-			{ '<leader>ph',  '<cmd>PerfHottestLines<CR>' },
-			{ '<leader>ps',  '<cmd>PerfHottestSymbols<CR>' },
-			{ '<leader>pc',  '<cmd>PerfHottestCallersFunction<CR>' },
-			{ '<leader>pc',  '<cmd>PerfHottestCallersSelection<CR>', mode = 'v' }
+			{ '<leader>pl', '<cmd>PerfLoadCallGraph<CR>',  ft = { 'c', 'cpp', 'lua', 'python' }, desc = 'Load profiling data with call graph' },
+			{ '<leader>pe', '<cmd>PerfPickEvent<CR>',      ft = { 'c', 'cpp', 'lua', 'python' }, desc = 'Chooses an event from the loaded call graph data to display' },
+			{ '<leader>ph', '<cmd>PerfHottestLines<CR>',   ft = { 'c', 'cpp', 'lua', 'python' }, desc = 'Shows the hottest lines of code in the code base according to the currently selected event.' },
+			{ '<leader>ps', '<cmd>PerfHottestSymbols<CR>', ft = { 'c', 'cpp', 'lua', 'python' }, desc = 'Shows the hottest symboles in the code base.' }
 		},
 		cmd = {
 			'PerfAnnotate', 'PerfAnnotateFunction', 'PerfAnnotateSelection', 'PerfCacheDelete',
