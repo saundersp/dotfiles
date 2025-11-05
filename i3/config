@@ -129,7 +129,7 @@ set $ws10 10: 
 #exec --no-startup-id wasistlos
 
 for_window [class="term_annex"] move to scratchpad
-exec --no-startup-id st -c term_annex
+exec --no-startup-id kitty --class term_annex
 
 bindsym $mod+Shift+m move scratchpad
 bindsym $mod+m scratchpad show
