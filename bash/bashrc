@@ -51,7 +51,7 @@ __cmd_checker__(){
 __cmd_checker__ __command_requirer_pkg__
 __command_requirer_pkg__(){
 	if cmd_check "$2"; then
-			bash -c "$1 $4"
+			bash --login -c "$1 $4"
 		else
 			echo "This command requires $2 from \"$3\" installed" && return 1
 	fi

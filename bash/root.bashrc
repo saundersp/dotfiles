@@ -51,7 +51,7 @@ __cmd_checker__(){
 __cmd_checker__ __command_requirer_pkg__
 __command_requirer_pkg__(){
 	if cmd_check "$2"; then
-			bash -c "$1 $4"
+			bash --login -c "$1 $4"
 		else
 			echo "This command requires $2 from \"$3\" installed" && return 1
 	fi
@@ -298,8 +298,8 @@ Available flags:
 	-b, b, board, --board		Show the latest sync timestamp of the repositories.
 	-h, h, help, --help		Show this help message."
 		case "$1" in
-			-s|s|sync|--sync) bash -c 'emerge --sync; if cmd_check eix; then eix-update && eix-remote update; fi' ;;
-			-u|u|update|--update) bash -c '
+			-s|s|sync|--sync) env bash --login -c 'emerge --sync; if cmd_check eix; then eix-update && eix-remote update; fi' ;;
+			-u|u|update|--update) env bash --login -c '
 				cmd_check haskell-updater && haskell-updater
 				emerge --update --newuse --deep --verbose --changed-use --keep-going y @world && emerge --verbose @preserved-rebuild && dispatch-conf
 			' ;;
