@@ -481,7 +481,7 @@ Available flags:
 	-h, h, help, --help		Show this help message"
 		case "$1" in
 			-u|u|update|--update) sudo sh -c 'apt-get update && apt-get upgrade --yes' ;;
-			-l|l|list|--list) apt-get list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
+			-l|l|list|--list) apt list --installed | grep '\[installed\]' | awk '{ print($1, $2, $3) }' ;;
 			-q|q|query|--query) __command_requirer_pkg__ apt-file apt-file apt-file "search $2" ;;
 			-p|p|prune|--prune) sudo apt-get autoremove --yes ;;
 			-h|h|help|--help) echo "$USAGE" ;;
