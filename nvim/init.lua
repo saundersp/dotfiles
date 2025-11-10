@@ -1101,7 +1101,7 @@ local lazy_plugins = {
 
 			vim.api.nvim_create_user_command('LtexSwitchLang', function(args)
 				local splited_args = vim.split(args.args, ' ', { trimemtpy = true })
-				local ltex_clients = vim.lsp.get_clients({ bufnr = 0, name = 'ltex' })
+				local ltex_clients = vim.lsp.get_clients({ bufnr = 0, name = 'ltex_plus' })
 				for _, ltex_client in ipairs(ltex_clients) do
 					vim.lsp.stop_client(ltex_client.id, false)
 				end
@@ -1110,7 +1110,8 @@ local lazy_plugins = {
 				nargs = 1,
 				complete = function (ArgLead, _, _)
 					return vim.tbl_filter(function(el) return el:find(ArgLead, 1, true) end, ltex_languages)
-				end
+				end,
+				desc = 'Change current LTeX language'
 			})
 		end,
 		dependencies = {
