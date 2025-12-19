@@ -134,7 +134,7 @@ case "$1" in
 		# git://g.blicky.net/ncdu.git
 		# Dependencies : dev-lang/zig
 		__update_zig__(){
-		│       zig build --release=fast && mv zig-out/bin/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME" && rm -r .zig-cache zig-out
+			zig build --release=fast && mv zig-out/bin/"$PACKAGE_NAME" /usr/local/bin/"$PACKAGE_NAME" && rm -r .zig-cache zig-out
 		}
 		__updatepackages__ 'ncdu' '__update_zig__'
 
