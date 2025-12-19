@@ -17,6 +17,19 @@ Available flags:
 	s, sign, -s, --sign			Sign the specified module path
 	h, help, -h, --help			Which display this help message."
 
+cmd_check(){
+	command -v "$1" > /dev/null
+}
+
+get_kernel_flags(){
+	if cmd_check resolve-march-native; then
+		KCFLAGS="-O3 $(resolve-march-native) -pipe"
+	else
+		KCFLAGS="-O3 -pipe"
+	fi
+	export KCFLAGS
+}
+
 case "$1" in
 	m|mod|-m|--mod) rg "=y" /usr/src/linux/.config | rg -v '_HAVE_' | sed 's/CONFIG_//;s/=y//' | less ;;
 	f|fill|-f|--fill) rg 'is not set' /usr/src/linux/.config | sed 's/# CONFIG_//;s/ is not set//' | less ;;
@@ -24,8 +37,9 @@ case "$1" in
 	c|compare|-c|--compare) nvim -d /usr/src/linux/.config DEFAULT.config ;;
 	u|update|-u|--update)
 		cd /usr/src/linux
+		get_kernel_flags
 		NPROC=$(nproc)
-		if command -v distcc >> /dev/null; then
+		if cmd_check distcc; then
 			DISTCC_PROC=$(distcc-config --get-hosts | grep -Po '/(\d)' | sed 's./..' | paste -sd + | bc)
 			if ! distcc-config --get-hosts | grep -Pq 'localhost/\d'; then
 				DISTCC_PROC=$((DISTCC_PROC + NPROC))
@@ -173,10 +187,12 @@ case "$1" in
 		cp /usr/src/linux/.config "$TMP_FILE"
 		eselect kernel set "$2"
 		mv "$TMP_FILE" /usr/src/linux/.config
+		get_kernel_flags
 		(cd /usr/src/linux && make oldconfig)
 	;;
 	M|make|-M|--make)
 		cd /usr/src/linux
+		get_kernel_flags
 		if [ -n "$2" ]; then
 			# shellcheck disable=2086
 			make $2
