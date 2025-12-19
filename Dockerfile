@@ -38,17 +38,17 @@ RUN apt-get update \
 	tree-sitter-cli=0.22.6-6 \
 	starship=1.22.1-6 \
 	lazygit=0.53.0+ds1-1 \
-	ueberzugpp=2.9.7 \
+	ueberzugpp=2.9.8 \
 	&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 50 \
 	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 50 \
 	&& update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-15 50 \
 	&& update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-15 50 \
-	&& rustup default 1.90.0 \
+	&& rustup default 1.92.0 \
 	&& ln -s "$(command -v fdfind)" /usr/bin/fd \
 	&& ln -s "$(command -v batcat)" /usr/bin/bat \
-	&& go install github.com/jesseduffield/lazydocker@v0.24.1 \
+	&& go install github.com/jesseduffield/lazydocker@v0.24.2 \
 	&& mv /root/go/bin/lazydocker /usr/bin/lazydocker \
-	&& cargo install --locked difftastic@0.64.0 \
+	&& cargo install --locked difftastic@0.67.0 \
 	&& mv /root/.cargo/bin/difft /usr/bin/difft \
 	&& cargo install --locked yazi-fm@25.5.31 \
 	&& mv /root/.cargo/bin/yazi /usr/bin/yazi \
