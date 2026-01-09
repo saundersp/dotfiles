@@ -6,7 +6,7 @@ RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
 	ca-certificates=20250419 \
 	curl=8.14.1-2ubuntu1 \
-	gpg=2.4.8-2ubuntu2 \
+	gpg=2.4.8-2ubuntu2.1 \
 	&& echo 'deb http://download.opensuse.org/repositories/home:/justkidding/xUbuntu_25.04/ /' | tee /etc/apt/sources.list.d/home:justkidding.list \
 	&& curl -fsSL https://download.opensuse.org/repositories/home:justkidding/xUbuntu_25.04/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/home_justkidding.gpg \
 	&& apt-get update \
@@ -46,11 +46,12 @@ RUN apt-get update \
 	&& rustup default 1.92.0 \
 	&& ln -s "$(command -v fdfind)" /usr/bin/fd \
 	&& ln -s "$(command -v batcat)" /usr/bin/bat \
-	&& go install github.com/jesseduffield/lazydocker@v0.24.2 \
+	&& go install github.com/jesseduffield/lazydocker@v0.24.3 \
 	&& mv /root/go/bin/lazydocker /usr/bin/lazydocker \
 	&& cargo install --locked difftastic@0.67.0 \
 	&& mv /root/.cargo/bin/difft /usr/bin/difft \
-	&& cargo install --locked yazi-fm@25.5.31 \
+	&& cargo install --force yazi-build@26.1.4 \
+	&& cargo install --locked yazi-fm@26.1.4 \
 	&& mv /root/.cargo/bin/yazi /usr/bin/yazi \
 	&& apt-get remove -y golang-go rustup \
 	&& apt-get autoremove -y \
@@ -74,4 +75,4 @@ RUN cp nvim/init.lua nvim/server_init.lua \
 	&& ./auto.sh server \
 	&& rm -r /home/saundersp/.npm /home/saundersp/.bash_logout /home/saundersp/.XDG/cache/yarn
 
-ENTRYPOINT ["bash"]
+ENTRYPOINT ["bash", "-l"]
