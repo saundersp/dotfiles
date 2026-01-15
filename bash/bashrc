@@ -696,7 +696,6 @@ __help_me__(){
 	tprint_cmd 'pa' 'Pulseaudio modules helper script'
 	tprint_cmd 'pm' 'Pulsemixer shortcut'
 	print_cmd 'pow' 'CPU scaling governor helper'
-	tprint_cmd 'sync_books' "Sync calibre's books to the StreamPC"
 	print_cmd '?' 'Print this reminder'
 
 	echo -e "${BOLD}\nBash bang shortcuts remainders :${NO_COLOUR}"
