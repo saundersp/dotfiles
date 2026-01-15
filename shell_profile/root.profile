@@ -1,11 +1,12 @@
 #!/bin/sh
 
 # Set config and data folder for nvim, etc...
-export XDG_CONFIG_HOME="$HOME"/.XDG/config
-export XDG_CACHE_HOME="$HOME"/.XDG/cache
-export XDG_DATA_HOME="$HOME"/.XDG/data
-export XDG_STATE_HOME="$HOME"/.XDG/state
-export XDG_RUNTIME_DIR="$HOME"/.XDG/runtime
+export XDG_ROOT="$HOME"/.XDG
+export XDG_CONFIG_HOME="$XDG_ROOT"/config
+export XDG_CACHE_HOME="$XDG_ROOT"/cache
+export XDG_DATA_HOME="$XDG_ROOT"/data
+export XDG_STATE_HOME="$XDG_ROOT"/state
+export XDG_RUNTIME_DIR="$XDG_ROOT"/runtime
 
 # Some global XDG variables
 if [ -d /opt/cuda ]; then
@@ -27,6 +28,7 @@ fi
 command -v cargo >> /dev/null && export CARGO_HOME="$XDG_DATA_HOME"/cargo
 command -v npm >> /dev/null && export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
 command -v wget >> /dev/null && alias wget='wget --hsts-file=$XDG_DATA_HOME/wget-hsts'
+test -d "$XDG_ROOT/bin" && export PATH="$XDG_ROOT/bin:$PATH"
 
 if test -f "$HOME"/.bashrc; then
 	. "$HOME"/.bashrc
