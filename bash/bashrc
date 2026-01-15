@@ -246,8 +246,9 @@ fi
 
 if cmd_check nvim; then
 	test -z "$EDITOR" && export EDITOR=nvim
-	__cmd_checker__ vid vi
-	alias vid='nvim -d' && alias vi='nvim'
+	__cmd_checker__ vid
+	alias vid='nvim -d'
+	! cmd_check vi && alias vi='nvim'
 fi
 
 if cmd_check pacman; then
