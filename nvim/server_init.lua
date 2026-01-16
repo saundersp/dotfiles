@@ -107,11 +107,7 @@ local lazy_plugins = {
 			local gs = require('gitsigns')
 			gs.setup({})
 			require('scrollbar.handlers.gitsigns').setup()
-			-- NOTE: Removes warning about not properly documented 'nav_hunk' method
-			---@diagnostic disable-next-line: param-type-mismatch
 			map('n', ']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.nav_hunk('next') end end, 'Next Hunk (or change)')
-			-- NOTE: Removes warning about not properly documented 'nav_hunk' method
-			---@diagnostic disable-next-line: param-type-mismatch
 			map('n', '[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.nav_hunk('prev') end end, 'Previous Hunk (or change)')
 		end,
 		keys = {
@@ -275,7 +271,7 @@ local lazy_plugins = {
 			-- Enabling highlighting
 			vim.api.nvim_create_autocmd('FileType', {
 				pattern = languages,
-				callback = function() vim.treesitter.start() end,
+				callback = function() vim.treesitter.start() end
 			})
 			-- Enabling folds
 			vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
@@ -398,8 +394,8 @@ local lazy_plugins = {
 			}}
 		},
 		keys = {
-			{ '<leader>nd', '<cmd>Noice dismiss<CR>', 'Dismiss the notifications' },
-			{ '<leader>nl', '<cmd>Noice last<CR>',	  'Show the last notification in a popup' }
+			{ '<leader>nd', '<cmd>Noice dismiss<CR>', desc = 'Dismiss the notifications' },
+			{ '<leader>nl', '<cmd>Noice last<CR>',	  desc = 'Show the last notification in a popup' }
 		},
 		cmd = {
 			'Noice', 'NoiceConfig', 'NoiceDebug', 'NoiceDisable', 'NoiceDismiss', 'NoiceEnable', 'NoiceErrors',

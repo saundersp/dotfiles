@@ -153,11 +153,7 @@ local lazy_plugins = {
 			local gs = require('gitsigns')
 			gs.setup({})
 			require('scrollbar.handlers.gitsigns').setup()
-			-- NOTE: Removes warning about not properly documented 'nav_hunk' method
-			---@diagnostic disable-next-line: param-type-mismatch
 			map('n', ']c', function() if vim.wo.diff then vim.cmd.normal({ ']c', bang = true }) else gs.nav_hunk('next') end end, 'Next Hunk (or change)')
-			-- NOTE: Removes warning about not properly documented 'nav_hunk' method
-			---@diagnostic disable-next-line: param-type-mismatch
 			map('n', '[c', function() if vim.wo.diff then vim.cmd.normal({ '[c', bang = true }) else gs.nav_hunk('prev') end end, 'Previous Hunk (or change)')
 		end,
 		keys = {
@@ -411,7 +407,7 @@ local lazy_plugins = {
 			-- Fully customizable previewer for LSP code actions
 			{ 'aznhe21/actions-preview.nvim',
 				config = true,
-				keys = { { '<leader>ca', function() require('actions-preview').code_actions() end, desc = 'LSP: Code action' }, }
+				keys = { { '<leader>ca', function() require('actions-preview').code_actions() end, desc = 'LSP: Code action' } }
 			}
 		}
 	},
@@ -679,7 +675,6 @@ local lazy_plugins = {
 	-- Highlight, edit, and navigate code
 	{ 'nvim-treesitter/nvim-treesitter',
 		branch = 'main',
-		lazy = false,
 		event = 'BufReadPost',
 		config = function()
 			local languages = {
@@ -695,7 +690,7 @@ local lazy_plugins = {
 			-- Enabling highlighting
 			vim.api.nvim_create_autocmd('FileType', {
 				pattern = languages,
-				callback = function() vim.treesitter.start() end,
+				callback = function() vim.treesitter.start() end
 			})
 			-- Enabling folds
 			vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
@@ -856,8 +851,8 @@ local lazy_plugins = {
 			}}
 		},
 		keys = {
-			{ '<leader>nd', '<cmd>Noice dismiss<CR>', 'Dismiss the notifications' },
-			{ '<leader>nl', '<cmd>Noice last<CR>',	  'Show the last notification in a popup' }
+			{ '<leader>nd', '<cmd>Noice dismiss<CR>', desc = 'Dismiss the notifications' },
+			{ '<leader>nl', '<cmd>Noice last<CR>',	  desc = 'Show the last notification in a popup' }
 		},
 		cmd = {
 			'Noice', 'NoiceConfig', 'NoiceDebug', 'NoiceDisable', 'NoiceDismiss', 'NoiceEnable', 'NoiceErrors',
@@ -936,7 +931,7 @@ local lazy_plugins = {
 				end)
 			})
 		end,
-		keys = { { '<leader>gf', vim.lsp.buf.format, mode = { 'n', 'v', }, desc = 'Format the document' } },
+		keys = { { '<leader>gf', vim.lsp.buf.format, mode = { 'n', 'v' }, desc = 'Format the document' } },
 		cmd = { 'NullLsInstall', 'NoneLsInstall', 'NullLsUninstall', 'NoneLsUninstall' },
 		dependencies = {
 			-- Add additional LSP, linters and formatters not provided by williamboman/mason-lspconfig
@@ -964,7 +959,7 @@ local lazy_plugins = {
 	-- Hex editing done right
 	{ 'RaafatTurki/hex.nvim',
 		config = true,
-		keys = { { '<leader>xt', '<cmd>HexToggle<CR>', 'Toggle between hex view and normal view' } },
+		keys = { { '<leader>xt', '<cmd>HexToggle<CR>', desc = 'Toggle between hex view and normal view' } },
 		cmd = { 'HexDump', 'HexAssemble', 'HexToggle' }
 	},
 	-- Better navigation inside tmux
@@ -1183,11 +1178,11 @@ local lazy_plugins = {
 	{ 'mistweaverco/kulala.nvim',
 		config = true,
 		keys = {
-			{ '<leader>rr', function() require('kulala').run() end, ft = 'http', desc = 'Run the current request' },
-			{ '<leader>rR', function() require('kulala').run_all() end, ft = 'http', desc = 'Run all requests in the current buffer' },
+			{ '<leader>rr', function() require('kulala').run() end,         ft = 'http', desc = 'Run the current request' },
+			{ '<leader>rR', function() require('kulala').run_all() end,     ft = 'http', desc = 'Run all requests in the current buffer' },
 			{ '<leader>rt', function() require('kulala').toggle_view() end, ft = 'http', desc = 'Toggle between the body and headers view of the last run request' },
-			{ ']r', function() require('kulala').jump_next() end, ft = 'http', desc = 'Jump to the next request' },
-			{ '[r', function() require('kulala').jump_prev() end, ft = 'http', desc = 'Jump to the previous request' }
+			{ ']r',         function() require('kulala').jump_next() end,   ft = 'http', desc = 'Jump to the next request' },
+			{ '[r',         function() require('kulala').jump_prev() end,   ft = 'http', desc = 'Jump to the previous request' }
 		}
 	},
 	-- Low latency typst preview for Neovim
