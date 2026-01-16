@@ -197,7 +197,11 @@ local lazy_plugins = {
 	},
 	-- Edit the filesystem like a buffer
 	{ 'stevearc/oil.nvim',
-		opts = {},
+		opts = {
+			keymaps = {
+				['<C-s>'] = false -- Fixes saving keybinding
+			}
+		},
 		keys = { { '<C-n>', '<cmd>Oil<CR>', desc = 'Open Oil file manager' } },
 		cmd = 'Oil',
 		dependencies = {
