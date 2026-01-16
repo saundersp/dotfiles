@@ -85,12 +85,13 @@ local lazy_plugins = {
 						function() return require('noice').api.status.mode.get() end,
 						-- NOTE: Removes warning about not properly documented 'has' field
 						---@diagnostic disable-next-line: undefined-field
-						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
+						cond = function() return require('noice').api.status.mode.has() end,
 						color = { gui = 'bold' }
 					},
 					{ 'selectioncount', color = { gui = 'bold' } }
 				}
-			}
+			},
+			extensions = { 'oil' }
 		},
 		dependencies = {
 			-- Provides nerd fonts icons

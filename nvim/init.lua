@@ -121,7 +121,6 @@ local lazy_plugins = {
 		event = 'UIEnter',
 		opts = {
 			options = {
-				ignore_focus = { 'dapui_watches', 'dapui_breakpoints', 'dapui_scopes', 'dapui_console', 'dapui_stacks', 'dap-repl' },
 				disabled_filetypes = { statusline = { 'snacks_dashboard' } }
 			},
 			sections = {
@@ -132,12 +131,13 @@ local lazy_plugins = {
 						function() return require('noice').api.status.mode.get() end,
 						-- NOTE: Removes warning about not properly documented 'has' field
 						---@diagnostic disable-next-line: undefined-field
-						cond = function() return package.loaded['noice'] and require('noice').api.status.mode.has() end,
+						cond = function() return require('noice').api.status.mode.has() end,
 						color = { gui = 'bold' }
 					},
 					{ 'selectioncount', color = { gui = 'bold' } }
 				}
-			}
+			},
+			extensions = { 'nvim-dap-ui', 'oil' }
 		},
 		dependencies = {
 			-- Provides nerd fonts icons
